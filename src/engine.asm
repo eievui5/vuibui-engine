@@ -14,133 +14,62 @@ SECTION "Main", ROMX
 Main::
     call Initialize
 .loop
-    call Process
+    call EntityHandler
     halt
     nop
     jr .loop
 
 
-SECTION "Process", ROMX
+SECTION "Entity Handler", ROMX
 
-; Runs at 60 ticks per second.
-Process:
-    ; iterate though the process array.
-    ld b, $00
-    ; we start 1 byte behind so that our loop is more efficient
-    ld de, wProcessArray - 1
+; Entities are structured as:
+; dw Script     (+0)
+; db X Loc      (+2)
+; db Y Loc      (+3)
+
+EntityHandler:
+    ld b, MAXIMUM_ENTITIES
+    ; Load the current entity data reference
+    ld de, wActiveEntityArray
 .iterate
-    inc b
-    ; b counts the current array element. This is crucial for when elements are
-    ; removed, if slow.
-    ld a, b
-    cp a, PROCESS_SIZE
-    ret z
-    inc de
     ld a, [de]
     inc de
-    ; if there is nothing in the array, don't run it
-    ; $00 should always be invalid, since calls should occur in a non-zero bank.
-    cp a, $00
-    jr z, .iterate
-    ld h, a
-    ld a, [de]
     ld l, a
-    ; Save b and de, since the process may change them and we need them.
-    push bc
-    ; de can be used as a sort of identifier
+    ld a, [de]
+    inc de
+    ld h, a
+    xor a ; ld a, $00
+    cp h ; cp a, h
+    jr z, .counter
+    ; Call the entity's script.
     push de
     call _hl_
-    pop de
-    pop bc
-    jr .iterate
-
-; Moves the first sprite across the screen
-TestProcess:
-    ld hl, wShadowOAM
-    ld a, $19
-    cp [hl]
-    jr nz, .increment
-    ld de, TestProcess
-    call RemoveProcess
-.increment
-    inc [hl]
-    ret
-
-TestProcess2:
-    ld hl, wShadowOAM + 1
-    inc [hl]
-    ret
-
-; Takes de and puts it in wProcessArray, breaking if there's not enough space.
-; @ arguments:
-; @ de: Process to add
-; @ only preserves de and c.
-RegisterProcess:
-    ; offset by 2, makes iterate easier
-    ld hl, wProcessArray - 2
-    ld b, PROCESS_SIZE
-.iterate
-    ; Can be removed, for safety only 
+    pop de ; let the script use `de` but restore it's location to be safe.
+.counter
+    ; Skip the remaining data; we only care about the script (for now...)
+    inc de ; X Loc
+    inc de ; Y Loc
     dec b
-    jr z, .error
-    ; No hli, we need to preserve hl if [hl] != 0
-    inc hl
-    inc hl
-    ; if the first byte is empty, break. this will cause issues if the function
-    ; is within the first $0000 bytes
-    ld a, [hl]
-    cp 0
     jr nz, .iterate
-    ld [hl], d
-    inc hl
-    ld [hl], e
+    ; End
     ret
-.error
-    ld b, b
-    di 
-    stop
-
-; Finds de and overwrites it with 0, breaking if not found.
-; @ arguments:
-; @ de: Process to remove
-RemoveProcess:
-    ; offset by 2, makes iterate easier
-    ld hl, wProcessArray - 2
-    ld b, PROCESS_SIZE
-.iterate
-    ; Can be removed, for safety only 
-    dec b
-    jr z, .error
-    ; No hli, we need to preserve hl if [hl] != de
-    inc hl
-    inc hl
-    ; if the first byte is empty, break. this will cause issues if the function
-    ; is within the first $0000 bytes
-    ld a, [hl]
-    cp a, d
-    jr nz, .iterate
-    inc hl
-    ld a, [hld]
-    cp a, e
-    jr nz, .iterate
-    xor a
-    ld [hli], a
-    ld [hl], a
-    ret
-.error
-    ld b, b
-    di 
-    stop
-
 
 SECTION "VBlank", ROMX
 
 ; Verticle Screen Blanking, 60x per second
 VBlank:
 
-    ; VBlank processes
-
-    ; VBlank Routine
+    ; get input
+    ld hl, rP1
+    ld b, P1F_GET_DPAD
+    ld [hl], b
+    call _ret_
+    ld a, [hl]
+    ld a, [hl]
+    ld a, [hl]
+    swap a
+    cpl ; xor a, $FF / Flips bits
+    ldh [hInputBuffer], a
 
     ; push wShadowOAM to OAM though DMA
     ld a, high(wShadowOAM)
@@ -191,11 +120,12 @@ Initialize:
     call OverwriteBytes
     ld a, $01
     ld [wShadowOAM+2], a
-    ; register the initial process
-    ld de, TestProcess
-    call RegisterProcess
-    ld de, TestProcess2
-    call RegisterProcess
+
+    ld bc, Player.end - Player
+    ld de, wActiveEntityArray
+    ld hl, Player
+    call CopyBytes
+
     ; Re-enable the screen
     ld a, LCDCF_ON | LCDCF_OBJON
     ld [rLCDC], a

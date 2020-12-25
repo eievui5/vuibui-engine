@@ -38,7 +38,7 @@ SECTION "Copy Bytes", ROM0
 ; @ bc: $00
 ; @ cd: cd + bc + 1
 ; @ hl: hl + bc + 1
-CopyBytes::
+;CopyBytes::
     ld a, [hli]
     ld [de], a
     inc de
@@ -49,6 +49,21 @@ CopyBytes::
     jr nz, CopyBytes
     ret
 
+CopyBytes::
+	inc b
+	inc c
+	jr .decCounter
+.loadByte
+    ld a, [hli]
+	ld [de], a
+    inc de
+.decCounter
+	dec c
+	jr nz, .loadByte
+	dec b
+	jr nz, .loadByte
+	ret
+
 
 SECTION "Call hl", ROM0 
 
@@ -56,3 +71,6 @@ SECTION "Call hl", ROM0
 
 _hl_::
     jp hl
+
+_ret_::
+    ret
