@@ -35,8 +35,7 @@ SECTION "Copy Bytes", ROM0
 ; @ hl: source
 ; @ return:
 ; @  a: final byte copied
-; @ bc: $00
-; @ cd: cd + bc + 1
+; @ de: de + bc + 1
 ; @ hl: hl + bc + 1
 ;CopyBytes::
     ld a, [hli]
@@ -63,14 +62,3 @@ CopyBytes::
 	dec b
 	jr nz, .loadByte
 	ret
-
-
-SECTION "Call hl", ROM0 
-
-;call hl
-
-_hl_::
-    jp hl
-
-_ret_::
-    ret
