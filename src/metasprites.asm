@@ -1,4 +1,5 @@
 include "include/hardware.inc"
+include "include/defines.inc"
 
 ;Bytes 1 and 2 are X and Y offsets for the Metasprite.
 ;Byte 3 is the tile used by the Metasprite.
@@ -13,13 +14,16 @@ include "include/hardware.inc"
 ;0: Palette number bit 1 (GB Color only)
 
 SOLID_TILE EQU $01
-METASPRITE_END EQU $64
 
 SECTION "Metasprites", ROM0
 
 TestMetasprite::
-    db $11 ; y
-    db $09 ; x
+    db -2 ; y
+    db -4 ; x
+    db SOLID_TILE ; Tile ID
+    db OAMF_PAL0 | OAMF_BANK0 ; Flags
+    db -2 ; y
+    db 4 ; x
     db SOLID_TILE ; Tile ID
     db OAMF_PAL0 | OAMF_BANK0 ; Flags
     db METASPRITE_END

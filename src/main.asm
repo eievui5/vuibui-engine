@@ -1,5 +1,6 @@
 INCLUDE "include/hardware.inc"
 INCLUDE "include/defines.inc"
+include "include/tiles.inc"
 
 
 SECTION "VBlankInterrupt", ROM0[$40]
@@ -23,9 +24,10 @@ EntryPoint:
 
 
 SECTION "Main", ROM0
-Main::
+Main:
     call Initialize
 
+    ; Load Players
     ld hl, wEntityArray
     ld a, high(Player)
     ld [hli], a
@@ -33,10 +35,6 @@ Main::
     ld [hli], a
     ld a, 20
     ld [hli], a
-    ld [hli], a
-    ld a, high(Player)
-    ld [hli], a
-    ld a, low(Player)
     ld [hli], a
 .loop
     xor a ; ld a, 0
@@ -59,20 +57,20 @@ Initialize:
 .waitVBlank
     cp a, [hl]
     jr nz, .waitVBlank
-    ld a, LCDCF_OFF
+    xor a ; Turn off the screen
     ld [rLCDC], a
 
-    ; Enable VBlank interrupts
+; Enable VBlank interrupts
     ld a, IEF_VBLANK
     ld [rIE], a
 
-    ; Clear VRAM, SRAM, and WRAM
+; Clear VRAM, SRAM, and WRAM
     ld hl, _VRAM
     ld bc, RAM_LENGTH * 3
     xor a
     call OverwriteBytes
 
-    ; Load the OAM Routine into HRAM
+; Load the OAM Routine into HRAM
 	ld hl, OAMDMA
 	ld b, OAMDMA.end - OAMDMA 
     ld c, LOW(hOAMDMA)
@@ -83,16 +81,27 @@ Initialize:
 	dec b
 	jr nz, .copyOAMDMA
 
-    ; add a black tile to ram
+; add a black tile to ram
     ld a, $FF
     ld bc, $0010
     ld hl, $8010
     call OverwriteBytes
-    ld a, $01
-    ld [wShadowOAM+2], a
 
-    ; Re-enable the screen
-    ld a, LCDCF_ON | LCDCF_OBJON
+;Load Tiles
+    ld bc, DebugTiles.end - DebugTiles
+    ld hl, DebugTiles
+    ld de, VRAM_TILES_BG
+    call MemCopy
+    
+    call LoadMetatileMap
+
+; Configure Default Pallet
+    ld a, %11011000
+    ld hl, rBGP
+    ld [hl], a
+
+; Re-enable the screen
+    ld a, LCDCF_ON | LCDCF_OBJON | LCDCF_BGON | LCDCF_OBJ8
     ld [rLCDC], a
     reti
 

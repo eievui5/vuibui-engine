@@ -13,21 +13,33 @@ FindEntity: MACRO
 ENDM
 
 
-SECTION "Handle Entities", ROMX
+SECTION "Entity Bank", ROMX
 ; Loops through the entity array, calling any script it finds
 HandleEntities::
     ; loop through entity array
     ; c: offset of current entity !!! MUST NOT CHANGE C !!!
-    ld c, -ENTITY_SIZE
-.loop
-    ld a, c
-    add a, ENTITY_SIZE
-     ; if you get an error here, the entity array is larger than 8 bits
-    cp a, ENTITY_SIZE * MAX_ENTITIES
-    ret z ; Return if we've reached the end of the array
+    ; @OPTIMIZE: This needlessly uses a 16-bit index. The entity array should never be so large.
+    ; It previously used c alone, and may be reverted later.
     ld b, 0
-    ld c, a
-
+    ld c, 0
+    jr .skip
+.loop
+    ; Increment the array index
+    ld h, b ; Swap over to hl for some math
+    ld l, c
+    ld b, 0
+    ld c, ENTITY_SIZE
+    add hl, bc
+    ld a, h
+    cp a, high(ENTITY_SIZE * MAX_ENTITIES)
+    jr nz, .continue ; Skip if there's no match
+    ld a, l
+    cp a, low(ENTITY_SIZE * MAX_ENTITIES)
+    ret z ; Return if we've reached the end of the array
+.continue
+    ld b, h
+    ld c, l
+.skip
     ld hl, wEntityArray
     add hl, bc ; Apply the entity offset
 
@@ -92,9 +104,10 @@ RenderMetasprite:
     add hl, de
     ld d, h
     ld e, l
-    ; Load and offset Y
     pop hl
+    ; Load and offset Y
     ld a, [hli]
+.pushSprite ; We can skip that load, since a loop will have already done it.
     add a, b
     ld [de], a
     inc de
@@ -110,9 +123,15 @@ RenderMetasprite:
     ; Load attributes.
     ld a, [hli]
     ld [de], a
+    inc de
+    ; Update OAM Index
     ldh a, [hOAMIndex]
     add a, 4
     ldh [hOAMIndex], a
+    ; Check for End byte
+    ld a, [hli]
+    cp a, METASPRITE_END
+    jr nz, .pushSprite
     ret
 
 SECTION "Entity Array", WRAM0 

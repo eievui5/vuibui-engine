@@ -37,18 +37,7 @@ SECTION "Copy Bytes", ROM0
 ; @  a: final byte copied
 ; @ de: de + bc + 1
 ; @ hl: hl + bc + 1
-;CopyBytes::
-    ld a, [hli]
-    ld [de], a
-    inc de
-    dec c
-    jr nz, CopyBytes
-    dec b
-    ld c, $FF
-    jr nz, CopyBytes
-    ret
-
-CopyBytes::
+MemCopy::
 	inc b
 	inc c
 	jr .decCounter
