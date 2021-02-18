@@ -1,15 +1,28 @@
-include "include/hardware.inc"
 include "include/defines.inc"
+include "include/entities.inc"
+include "include/hardware.inc"
+include "include/macros.inc"
 
 ; Entities are stored in wEntityArray, which includes a 2-byte pointer to the
-; entity's data, and then additional info, listed in defines.inc
+; entity's data, and then additional info, listed in entities.inc
 
-; Used to find an entity's data, storing it in hl. Starts on X_POS
+; Used to find an entity's data, storing it in hl. Starts on ENTITY_Y_OFF
 FindEntity: MACRO
     ld hl, wEntityArray
     add hl, bc
     inc hl ; skip the script!
     inc hl
+ENDM
+
+
+; Destroys a script
+; @ hl: Entity Script
+KillEntity: MACRO 
+    ld hl, wEntityArray
+    add hl, bc
+    xor a
+    ld [hli], a
+    ld [hli], a
 ENDM
 
 
@@ -28,13 +41,13 @@ HandleEntities::
     ld h, b ; Swap over to hl for some math
     ld l, c
     ld b, 0
-    ld c, ENTITY_SIZE
+    ld c, sizeof_Entity
     add hl, bc
     ld a, h
-    cp a, high(ENTITY_SIZE * MAX_ENTITIES)
+    cp a, high(sizeof_Entity * MAX_ENTITIES)
     jr nz, .continue ; Skip if there's no match
     ld a, l
-    cp a, low(ENTITY_SIZE * MAX_ENTITIES)
+    cp a, low(sizeof_Entity * MAX_ENTITIES)
     ret z ; Return if we've reached the end of the array
 .continue
     ld b, h
@@ -55,38 +68,46 @@ HandleEntities::
     pop bc
     jr .loop
 
-; #################################################
-; ###                 Entities                  ###
-; #################################################
 
-Player::
-    FindEntity
-    ldh a, [hCurrentKeys]
-.moveUp
-    bit PADB_UP, a
-    jr z, .moveDown
-    dec [hl] ; If up is pressed move up
-.moveDown
-    bit PADB_DOWN, a
-    jr z, .moveRight
-    inc [hl] ; If down is pressed move down
-.moveRight
-    inc hl
-    bit PADB_RIGHT, a
-    jr z, .moveLeft
-    inc [hl] ; If right is pressed move right
-.moveLeft
-    bit PADB_LEFT, a
-    jr z, .render
-    dec [hl] ; If left is pressed move left
-.render
-    FindEntity
-    ld a, [hli]
-    ld b, a
+; Loads a script into wEntityArray at a given location. The Script must initiallize other vars.
+; @ b:  World X position
+; @ c:  World Y position
+; @ de: Entity Script
+; @ Preserves all input, destroys hl and a
+SpawnEntity::
+    push bc
+    push de
+    ld d, MAX_ENTITIES + 1
+    ld bc, sizeof_Entity
+    ld hl, wEntityArray - sizeof_Entity
+.loop
+    dec d
+    jr z, .break
+    add hl, bc
     ld a, [hl]
-    ld c, a
-    ld hl, TestMetasprite
-    jp RenderMetasprite
+    ; Check the first script byte. 
+    ; Since all Entities exist off the main bank, this will never be $00
+    cp a, $00
+    jr nz, .loop ; if a == 0, loop
+    pop de
+    pop bc
+    ld a, d
+    ld [hli], a ; Load the first script byte.
+    ld a, e
+    ld [hli], a ; Load the second script byte
+    ld a, c
+    ld [hli], a ; Load the Y Position
+    ld a, b
+    ld [hli], a ; Load the X Position
+    ; We can ignore the rest of these, since they *should* be overwritten by the entity constructor.
+    ret
+.break
+    pop de ; Get rid of those stacked regs.
+    pop bc
+    ; Since spawning scripts may want to overwrite some stats, we let them know
+    ; if the spawn failed using hl.
+    ld hl, $0000 
+    ret
 
 ; Renders a given metasprite at a given location
 ; @ arguments:
@@ -134,6 +155,102 @@ RenderMetasprite:
     jr nz, .pushSprite
     ret
 
-SECTION "Entity Array", WRAM0 
+; #################################################
+; ###                 Entities                  ###
+; #################################################
+
+; Very Experimental Player Script !!!
+; This should later be moved into it's own
+
+; Flags:
+; 0-1: Facing Direction
+FACING_MASK EQU %00000011
+
+Player:: 
+    FindEntity
+    push bc
+
+; Timer handling
+    StructSeekUnsafe l, Entity_YPos, Entity_Timer
+    ld a, [hl] ; Load Timer
+    inc a ; Step the timer
+    ld c, a ; Save the timer for later.
+    ld [hld], a
+
+; Determine Facing Direction.
+    ld a, [hl] ; Load Flags
+    and a, FACING_MASK
+    ld b, a
+    push bc
+    inc b
+    ld de, OctaviaDown - $09 ; Down is offset 0, each metasprite is 9 bytes
+.facingLoop
+    ld a, $09
+    add_r16_a d, e
+    dec b
+    jr nz, .facingLoop
+    pop bc
+    ; `de` is now a facing direction, which can be offset to find anything else.
+    StructSeekUnsafe l, Entity_Flags, Entity_YPos
+
+    ; b:  Facing Direction
+    ; c:  Timer
+    ; de: Metasprite pointer
+    ; hl: Pointer to Y
+
+    ldh a, [hCurrentKeys]
+    cp a, $00
+    jr z, .render ; Skip movement if there is none
+
+.moveUp
+    bit PADB_UP, a
+    jr z, .moveDown
+    dec [hl] ; If up is pressed move up
+    ld b, 1 ; Face up
+    jr .moveRight ; Skip down.
+
+.moveDown
+    bit PADB_DOWN, a
+    jr z, .moveRight
+    inc [hl] ; If down is pressed move down
+    ld b, 0 ; Face down
+
+.moveRight
+    inc hl
+    bit PADB_RIGHT, a
+    jr z, .moveLeft
+    inc [hl] ; If right is pressed move right
+    ld b, 2 ; Face right
+    jr .moveFinal ; Skip Left
+
+.moveLeft
+    bit PADB_LEFT, a
+    jr z, .moveFinal
+    dec [hl] ; If left is pressed move left
+    ld b, 3 ; Face left
+.moveFinal
+; Store Facing dir
+    StructSeekUnsafe l, Entity_XPos, Entity_Flags
+    ld a, ~FACING_MASK
+    and a, [hl] ; Mask out the old facing bits
+    or a, b
+    ld [hli], a ; Store the new flags
+    bit 4, c
+    jr nz, .render
+    ld a, 9 * 4 ; Size of metasprite * 4 directions
+    add_r16_a d, e ; offset to the step location
+
+.render
+    pop bc
+    FindEntity ; Find the entity again (slow!, please fix using something else!)
+    ld a, [hli]
+    ld b, a
+    ld a, [hl]
+    ld c, a ; Load the X and Y
+    ld h, d
+    ld l, e ; Load the metasprite Pointer
+    jp RenderMetasprite
+
+SECTION "Entity Array", WRAM0, ALIGN[$00] ; Align with $00 so that we can use unsafe struct seeking
 wEntityArray::
-    ds ENTITY_SIZE * MAX_ENTITIES
+    ds sizeof_Entity * MAX_ENTITIES

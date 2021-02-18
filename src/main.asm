@@ -25,19 +25,19 @@ EntryPoint:
 
 SECTION "Main", ROM0
 Main:
+    ld sp, $FFFE ; Reset Stack
     call Initialize
 
-    ; Load Players
-    ld hl, wEntityArray
-    ld a, high(Player)
-    ld [hli], a
-    ld a, low(Player)
-    ld [hli], a
-    ld a, 20
-    ld [hli], a
-    ld [hli], a
+    ld de, Player ; Spawn Player at 16, 16
+    ld bc, $1010
+    call SpawnEntity
+
+
 .loop
     xor a ; ld a, 0
+    ld bc, wShadowOAM.end - wShadowOAM
+    ld hl, wShadowOAM
+    call OverwriteBytes
     ldh [hOAMIndex], a ; Reset the OAM index.
 
     call HandleEntities
@@ -46,8 +46,10 @@ Main:
     nop
     jr .loop
 
+
 _hl_::
     jp hl
+
 
 SECTION "Initialize", ROM0
 Initialize:
@@ -93,15 +95,26 @@ Initialize:
     ld de, VRAM_TILES_BG
     call MemCopy
     
+    ld bc, GfxOctaviaMain.end - GfxOctaviaMain
+    ld hl, GfxOctaviaMain
+    ld de, VRAM_TILES_OBJ
+    call MemCopy
+
     call LoadMetatileMap
 
 ; Configure Default Pallet
-    ld a, %11011000
+    ld a, %11100100 ; Black, Dark, Light, White
     ld hl, rBGP
+    ld [hl], a
+    ld a, %11010000 ; Black, Light, White
+    ld hl, rOBP0
+    ld [hl], a
+    ld a, %11100100 ; Black, Dark, Light
+    ld hl, rOBP1
     ld [hl], a
 
 ; Re-enable the screen
-    ld a, LCDCF_ON | LCDCF_OBJON | LCDCF_BGON | LCDCF_OBJ8
+    ld a, LCDCF_ON | LCDCF_OBJON | LCDCF_BGON | LCDCF_OBJ16
     ld [rLCDC], a
     reti
 
@@ -140,6 +153,7 @@ OAMDMA:
 SECTION UNION "Shadow OAM", WRAM0,ALIGN[8]
 wShadowOAM::
 	ds MAXIMUM_SPRITES * 4
+.end
 
 
 SECTION "OAM DMA", HRAM

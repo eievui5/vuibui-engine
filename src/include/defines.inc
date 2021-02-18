@@ -1,20 +1,4 @@
 
-; ### Entity Data ###
-
-; Entity Script - Run once every frame.
-ENTITY_SCRIPT_SIZE EQU 2
-ENTITY_SCRIPT_OFF EQU 0
-; Entity Y position
-ENTITY_Y_SIZE EQU 1
-ENTITY_Y_OFF EQU ENTITY_SCRIPT_SIZE
-; Entity X position
-ENTITY_X_SIZE EQU 1
-ENTITY_X_OFF EQU ENTITY_Y_OFF + ENTITY_Y_SIZE
-
-ENTITY_SIZE EQU ENTITY_SCRIPT_SIZE + ENTITY_X_SIZE + ENTITY_Y_SIZE
-
-MAX_ENTITIES EQU 16
-
 ; ### Sprites ###
 
 ; Max number of sprites
