@@ -26,7 +26,7 @@ DebugTiles::
 .end::
 
 SECTION "Metatiles", ROMX 
-DebugMetatiles::
+DebugMetatileDefinitions::
     ; $00
     db $00, $00, $00, $00
     db $00, $00, $00, $00
@@ -44,22 +44,32 @@ DebugMetatiles::
     db $03, $03, $03, $03
 .end::
 
+DebugMetatileData::
+    ; $00
+    db $00, $00, $00, $00
+    db $00, $00, $00, $00
+    db $00, $00, $00, $00
+    db $00, $00, $00, $00
+    ; $01
+    db TILE_COLLISION, TILE_COLLISION, TILE_COLLISION, TILE_COLLISION
+    db TILE_COLLISION, TILE_COLLISION, TILE_COLLISION, TILE_COLLISION
+    db TILE_COLLISION, TILE_COLLISION, TILE_COLLISION, TILE_COLLISION
+    db TILE_COLLISION, TILE_COLLISION, TILE_COLLISION, TILE_COLLISION
+    ; $02
+    db $00, $00, $00, $00
+    db $00, $00, $00, $00
+    db $00, $00, $00, $00
+    db $00, $00, $00, $00
+.end::
+
 SECTION "Tilemap", ROMX 
 DebugTilemap:: ; DebugMetatiles
     db $00, $02, $00, $02, $00, $02, $00, $02
     db $02, $00, $02, $00, $02, $00, $02, $00
-    db $00, $02, $00, $02, $00, $02, $00, $02
-    db $02, $00, $02, $00, $02, $00, $02, $00
+    db $00, $01, $01, $02, $00, $02, $00, $02
+    db $02, $01, $01, $00, $02, $00, $02, $00
     db $00, $02, $00, $02, $00, $02, $00, $02
     db $02, $00, $02, $00, $00, $00, $02, $00
     db $00, $02, $00, $02, $00, $02, $00, $02
     db $02, $00, $02, $00, $02, $00, $02, $00
 .end::
-
-SECTION "Metatile Definitions", WRAM0 
-wMetatileDefinitions::
-    ds 16 * MAX_METATILES
-wMetatileAttributes::
-    ds 16 * MAX_METATILES
-wMetatileData::
-    ds 16 * MAX_METATILES

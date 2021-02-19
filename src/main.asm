@@ -1,5 +1,5 @@
-INCLUDE "include/hardware.inc"
-INCLUDE "include/defines.inc"
+include "include/hardware.inc"
+include "include/defines.inc"
 include "include/tiles.inc"
 
 
@@ -14,45 +14,13 @@ SECTION "VBlankInterrupt", ROM0[$40]
 
 SECTION "Header", ROM0[$100]
 	di
-	jp EntryPoint
+	jp Initiallize
 	ds $150 - $104, 0
 
 
-SECTION "Entry point", ROM0
-EntryPoint:
-	jp Main
-
-
-SECTION "Main", ROM0
-Main:
-    ld sp, $FFFE ; Reset Stack
-    call Initialize
-
-    ld de, Player ; Spawn Player at 16, 16
-    ld bc, $1010
-    call SpawnEntity
-
-
-.loop
-    xor a ; ld a, 0
-    ld bc, wShadowOAM.end - wShadowOAM
-    ld hl, wShadowOAM
-    call OverwriteBytes
-    ldh [hOAMIndex], a ; Reset the OAM index.
-
-    call HandleEntities
-
-    halt
-    nop
-    jr .loop
-
-
-_hl_::
-    jp hl
-
-
-SECTION "Initialize", ROM0
-Initialize:
+SECTION "Initiallize", ROM0
+Initiallize:
+    
     ; Wait to turn off the screen
     ld a, 144
     ld hl, rLY
@@ -90,43 +58,84 @@ Initialize:
     call OverwriteBytes
 
 ;Load Tiles
-    ld bc, DebugTiles.end - DebugTiles
-    ld hl, DebugTiles
-    ld de, VRAM_TILES_BG
-    call MemCopy
-    
+    ; Octavia
     ld bc, GfxOctaviaMain.end - GfxOctaviaMain
     ld hl, GfxOctaviaMain
     ld de, VRAM_TILES_OBJ
     call MemCopy
 
+    ; Debug Tiles
+    ld bc, DebugTiles.end - DebugTiles
+    ld hl, DebugTiles
+    ld de, VRAM_TILES_BG
+    call MemCopy
+    
+    ; Debug Metatiles
+    ld bc, DebugMetatileDefinitions.end - DebugMetatileDefinitions
+    ld hl, DebugMetatileDefinitions
+    ld de, wMetatileDefinitions ; Metatiles must be defined
+    call MemCopy
+
+    ld bc, DebugMetatileData.end - DebugMetatileData
+    ld hl, DebugMetatileData
+    ld de, wMetatileData ; Metatile data must be defined
+    call MemCopy
+
+    ld bc, DebugTilemap
+    ld de, wMetatileDefinitions
+    ld hl, _SCRN0
     call LoadMetatileMap
 
 ; Configure Default Pallet
     ld a, %11100100 ; Black, Dark, Light, White
     ld hl, rBGP
     ld [hl], a
-    ld a, %11010000 ; Black, Light, White
+    ld a, %11010000 ; Black, Light, White (Normal)
     ld hl, rOBP0
     ld [hl], a
-    ld a, %11100100 ; Black, Dark, Light
+    ld a, %00011100 ; White, Light, Black (Damage)
     ld hl, rOBP1
     ld [hl], a
 
 ; Re-enable the screen
     ld a, LCDCF_ON | LCDCF_OBJON | LCDCF_BGON | LCDCF_OBJ16
     ld [rLCDC], a
-    reti
+; Reset Stack
+    ld sp, wStackOrigin 
+    ei
 
+    ld de, Player ; Spawn Player at 16, 16
+    ld bc, $1010
+    call SpawnEntity
+
+Main:
+    xor a ; ld a, 0
+    ld bc, wShadowOAM.end - wShadowOAM
+    ld hl, wShadowOAM
+    call OverwriteBytes
+    ldh [hOAMIndex], a ; Reset the OAM index.
+
+    call HandleEntities
+
+    halt
+    nop
+    jr Main
+
+
+_hl_::
+    jp hl
 
 SECTION "VBlank", ROM0
 ; Verticle Screen Blanking
 VBlank:
-    call UpdateInput
-
     ; push wShadowOAM to OAM though DMA
     ld a, high(wShadowOAM)
     call hOAMDMA
+
+    ; There is minimal room to load a few tiles here.
+
+    ; Updating Input should happen last, since it does not rely on VBlank
+    call UpdateInput
 
     ; Restore register state
     pop hl
@@ -160,6 +169,13 @@ SECTION "OAM DMA", HRAM
 ; Location of the copied OAM DMA Routine
 hOAMDMA:
 	ds OAMDMA.end - OAMDMA
+
+
+; Stack Allocation
+STACK_SIZE EQU 32 * 2
+SECTION "Stack", WRAMX[$E000 - STACK_SIZE]
+    ds STACK_SIZE
+wStackOrigin:
 
 
 SECTION "OAM Index", HRAM

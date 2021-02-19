@@ -17,6 +17,24 @@
     - See [The Entity Array](#the-entity-array)
 - Ends by halting to save power, waiting for an interrupt. Currently only wants for VBlank, so a routine must be put in place when other interrupts are used.
 
+## VBlank
+
+- Push wShadowOAM to OAM
+- Collect the input
+
+# Limited Tiles
+
+Scales' main gimmick is the use of 3 main characters with unique sprites and items, and this is a huge demand on the limited number of tiles. While the GBC mode will have the freedom to splurge, the Gameboy's limited graphical capabilities mean that we need to be extremely careful with the character's tiles. The only limitation I gave myself was that I would keep them within the OAM-exclusive tiles.
+
+This is how they are structured:
+- Standing/walking frames: 16 tiles each (48 total)
+- "Use" frames: 6 tiles each (18 total)
+    - This is done by including just a single outstretched arm, which can be flipped to stretch both.
+- Item frames: 8 tiles each (24 total)
+    - Items, When equipped, load their special effects into these slots. (Arrows, Sword, Spell, etc)
+
+Total: 90 / 128 tiles, leaving 38 open.
+
 # Entities
 
 ## The Entity Array

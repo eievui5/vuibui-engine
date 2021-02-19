@@ -2,7 +2,7 @@ add_hl_a: Macro ; deprecated
     add_r16_a h, l
 ENDM
 
-; Adds a into \1 \2
+; Adds a into \1 \2. a will become \2's result.
 ; @ 5 bytes
 ; @ 5 cycles
 add_r16_a: Macro
@@ -19,6 +19,14 @@ mult_hl_16: Macro
     add hl, hl ; x4
     add hl, hl ; x8
     add hl, hl ; x16 !!
+ENDM
+
+; Multiply \1 by \2. Store the result in A. Does not work on A.
+mult_r8_n8: MACRO 
+    xor a
+REPT \2
+    add a, \1
+ENDR
 ENDM
 
 ; Seek through \1 \2 from \3 to \4. Slow but 16-bit safe.

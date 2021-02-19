@@ -60,7 +60,7 @@ ASFLAGS += -h
 # LDFLAGS += -d
 
 # No banked WRAM mode
-# LDFLAGS += -w
+LDFLAGS += -w
 
 # 32k mode
 # LDFLAGS += -t

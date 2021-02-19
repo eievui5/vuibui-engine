@@ -14,7 +14,7 @@ FindEntity: MACRO
     inc hl
 ENDM
 
-
+ 
 ; Destroys a script
 ; @ hl: Entity Script
 KillEntity: MACRO 
@@ -190,7 +190,7 @@ Player::
     dec b
     jr nz, .facingLoop
     pop bc
-    ; `de` is now a facing direction, which can be offset to find anything else.
+    ; `de` is now a metasprite facing direction, which can be offset to find anything else.
     StructSeekUnsafe l, Entity_Flags, Entity_YPos
 
     ; b:  Facing Direction
@@ -228,6 +228,7 @@ Player::
     jr z, .moveFinal
     dec [hl] ; If left is pressed move left
     ld b, 3 ; Face left
+
 .moveFinal
 ; Store Facing dir
     StructSeekUnsafe l, Entity_XPos, Entity_Flags
@@ -236,9 +237,11 @@ Player::
     or a, b
     ld [hli], a ; Store the new flags
     bit 4, c
-    jr nz, .render
+    jr nz, .collide
     ld a, 9 * 4 ; Size of metasprite * 4 directions
     add_r16_a d, e ; offset to the step location
+
+.collide
 
 .render
     pop bc
@@ -253,4 +256,5 @@ Player::
 
 SECTION "Entity Array", WRAM0, ALIGN[$00] ; Align with $00 so that we can use unsafe struct seeking
 wEntityArray::
-    ds sizeof_Entity * MAX_ENTITIES
+    ; define an array of `MAX_ENTITIES` Entities, each named wEntityX
+    dstructs MAX_ENTITIES, Entity, wEntity
