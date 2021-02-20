@@ -124,7 +124,7 @@ Initiallize:
     ld sp, wStackOrigin 
     ei
 
-    ld de, Player ; Spawn Player at 16, 16
+    ld de, DebugPlayer ; Spawn controllable entity at 16, 16
     ld bc, $1010
     call SpawnEntity
 

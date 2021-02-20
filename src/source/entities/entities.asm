@@ -8,7 +8,8 @@ include "source/metasprites.asm"
 ; Entities are stored in wEntityArray, which includes a 2-byte pointer to the
 ; entity's data, and then additional info, listed in entities.inc
 
-; Used to find an entity's data, storing it in hl. Starts on ENTITY_Y_OFF
+; Used to find an entity's data, storing it in hl. Starts on Entity_Y
+; @ bc: Entity Index
 FindEntity: MACRO
     ld hl, wEntityArray
     add hl, bc
@@ -18,13 +19,12 @@ ENDM
 
  
 ; Destroys a script
-; @ hl: Entity Script
+; @ bc: Entity Index
 KillEntity: MACRO 
     ld hl, wEntityArray
     add hl, bc
     xor a
-    ld [hli], a
-    ld [hli], a
+    ld [hli], a ; Destroy the first script byte. Other data will be left behind.
 ENDM
 
 
@@ -117,7 +117,6 @@ SpawnEntity::
 ; @ b:  Screen X position
 ; @ c:  Screen Y position
 ; @ hl: Metasprite
-; @ TODO: Add support for >1 sprite, using the METASPRITE_END byte
 RenderMetasprite:
     push hl 
     ; Find Available Shadow OAM
@@ -162,100 +161,10 @@ RenderMetasprite:
 ; ###                 Entities                  ###
 ; #################################################
 
-; Very Experimental Player Script !!!
-; This should later be moved into it's own
+; The players should be special cases. 
+; They do not need be in the entity array
 
-; Flags:
-; 0-1: Facing Direction
-FACING_MASK EQU %00000011
-
-Player:: 
-    FindEntity
-    push bc
-
-; Timer handling
-    StructSeekUnsafe l, Entity_YPos, Entity_Timer
-    ld a, [hl] ; Load Timer
-    inc a ; Step the timer
-    ld c, a ; Save the timer for later.
-    ld [hld], a
-
-; Determine Facing Direction.
-    ld a, [hl] ; Load Flags
-    and a, FACING_MASK
-    ld b, a
-    push bc
-    inc b
-    ld de, OctaviaDown - $09 ; Down is offset 0, each metasprite is 9 bytes
-.facingLoop
-    ld a, $09
-    add_r16_a d, e
-    dec b
-    jr nz, .facingLoop
-    pop bc
-    ; `de` is now a metasprite facing direction, which can be offset to find anything else.
-    StructSeekUnsafe l, Entity_Flags, Entity_YPos
-
-    ; b:  Facing Direction
-    ; c:  Timer
-    ; de: Metasprite pointer
-    ; hl: Pointer to Y
-
-    ldh a, [hCurrentKeys]
-    cp a, $00
-    jr z, .render ; Skip movement if there is none
-
-.moveUp
-    bit PADB_UP, a
-    jr z, .moveDown
-    dec [hl] ; If up is pressed move up
-    ld b, 1 ; Face up
-    jr .moveRight ; Skip down.
-
-.moveDown
-    bit PADB_DOWN, a
-    jr z, .moveRight
-    inc [hl] ; If down is pressed move down
-    ld b, 0 ; Face down
-
-.moveRight
-    inc hl
-    bit PADB_RIGHT, a
-    jr z, .moveLeft
-    inc [hl] ; If right is pressed move right
-    ld b, 2 ; Face right
-    jr .moveFinal ; Skip Left
-
-.moveLeft
-    bit PADB_LEFT, a
-    jr z, .moveFinal
-    dec [hl] ; If left is pressed move left
-    ld b, 3 ; Face left
-
-.moveFinal
-; Store Facing dir
-    StructSeekUnsafe l, Entity_XPos, Entity_Flags
-    ld a, ~FACING_MASK
-    and a, [hl] ; Mask out the old facing bits
-    or a, b
-    ld [hli], a ; Store the new flags
-    bit 4, c
-    jr nz, .collide
-    ld a, 9 * 4 ; Size of metasprite * 4 directions
-    add_r16_a d, e ; offset to the step location
-
-.collide
-
-.render
-    pop bc
-    FindEntity ; Find the entity again (slow!, please fix using something else!)
-    ld a, [hli]
-    ld b, a
-    ld a, [hl]
-    ld c, a ; Load the X and Y
-    ld h, d
-    ld l, e ; Load the metasprite Pointer
-    jp RenderMetasprite
+include "source/entities/debug_player.asm"
 
 SECTION "Entity Array", WRAM0, ALIGN[$00] ; Align with $00 so that we can use unsafe struct seeking
 wEntityArray::

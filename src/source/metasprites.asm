@@ -27,12 +27,12 @@ SECTION "Metasprites", ROMX
 ; Octavia
 
 OctaviaDown::
-    db -2 ; y
+    db -8 ; y
     db -4 ; x
     db OCTAVIA_DOWN_1 ; Tile ID
     db OAMF_PAL0 | OAMF_BANK0 ; Flags
 
-    db -2 ; y
+    db -8 ; y
     db 4 ; x
     db OCTAVIA_DOWN_2 ; Tile ID
     db OAMF_PAL0 | OAMF_BANK0 ; Flags

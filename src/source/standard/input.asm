@@ -1,7 +1,7 @@
 
 ; Consider this my compliance with Restriction 2:
 ; This version of input.asm has been modified to fit 
-; my naming conventions.
+; my naming conventions. (ex: hCurKeys rather than cur_keys)
 
 ;
 ; Controller reading for Game Boy and Super Game Boy
