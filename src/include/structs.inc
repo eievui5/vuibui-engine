@@ -35,7 +35,8 @@
 ; You have all my apologies, how little they may matter, if you are trying to read this code
 ; I still did my best to use explicit comments and variable names, hope they will help!
 
-
+    IF !DEF(STRUCTS_INC)
+STRUCTS_INC SET 1
 
 ; strreplace variable_name, original_char, new_char
 strreplace: MACRO
@@ -364,3 +365,5 @@ STRUCT_ID = STRUCT_ID + 1
 
     PURGE STRUCT_ID
 ENDM
+
+    ENDC

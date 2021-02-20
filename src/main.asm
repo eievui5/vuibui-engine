@@ -1,7 +1,19 @@
+
+; Root
+
 include "include/hardware.inc"
 include "include/defines.inc"
 include "include/tiles.inc"
 
+include "source/standard/memover.asm"
+include "source/standard/memcopy.asm"
+include "source/standard/input.asm"
+
+include "source/tiles.asm"
+include "source/tileloader.asm"
+include "source/entities/entities.asm"
+
+include "gfx/graphics.asm"            
 
 SECTION "VBlankInterrupt", ROM0[$40]
     ; Save register state
@@ -38,7 +50,7 @@ Initiallize:
     ld hl, _VRAM
     ld bc, RAM_LENGTH * 3
     xor a
-    call OverwriteBytes
+    call MemOver
 
 ; Load the OAM Routine into HRAM
 	ld hl, OAMDMA
@@ -55,7 +67,7 @@ Initiallize:
     ld a, $FF
     ld bc, $0010
     ld hl, $8010
-    call OverwriteBytes
+    call MemOver
 
 ;Load Tiles
     ; Octavia
@@ -81,9 +93,17 @@ Initiallize:
     ld de, wMetatileData ; Metatile data must be defined
     call MemCopy
 
-    ld bc, DebugTilemap
-    ld de, wMetatileDefinitions
-    ld hl, _SCRN0
+    ; Debug Map
+    ld bc, DebugTilemap.end - DebugTilemap
+    ld hl, DebugTilemap
+    ld de, wMetatileMap
+    call MemCopy
+
+    ld de, _SCRN0
+    ld hl, wMetatileDefinitions
+    call LoadMetatileMap
+    ld de, wMapData
+    ld hl, wMetatileData
     call LoadMetatileMap
 
 ; Configure Default Pallet
@@ -112,7 +132,7 @@ Main:
     xor a ; ld a, 0
     ld bc, wShadowOAM.end - wShadowOAM
     ld hl, wShadowOAM
-    call OverwriteBytes
+    call MemOver
     ldh [hOAMIndex], a ; Reset the OAM index.
 
     call HandleEntities

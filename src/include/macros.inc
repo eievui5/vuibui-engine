@@ -1,6 +1,6 @@
-add_hl_a: Macro ; deprecated
-    add_r16_a h, l
-ENDM
+
+    IF !DEF(MACROS_INC)
+MACROS_INC SET 1
 
 ; Adds a into \1 \2. a will become \2's result.
 ; @ 5 bytes
@@ -9,7 +9,7 @@ add_r16_a: Macro
     add a, \2 ; a = low + old_l
     ld \2, a  ; a = low + old_l = new_l
     adc a, \1 ; a = new_l + old_h + carry
-    sub \2    ; a = old_h + carry
+    sub a, \2    ; a = old_h + carry
     ld \1, a
 ENDM
 
@@ -45,3 +45,5 @@ StructSeekUnsafe: Macro
     add a, \1
     ld \1, a
 ENDM
+
+    ENDC

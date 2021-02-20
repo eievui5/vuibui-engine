@@ -1,5 +1,8 @@
 include "structs.inc"
 
+    IF !DEF(ENTITIES_INC)
+ENTITIES_INC SET 1
+
     struct Entity
         bytes 2, Script 
         bytes 1, YPos
@@ -17,3 +20,5 @@ include "structs.inc"
         end_struct
 
 MAX_ENTITIES EQU 12
+
+    ENDC

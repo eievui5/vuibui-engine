@@ -1,3 +1,8 @@
+
+; Consider this my compliance with Restriction 2:
+; This version of input.asm has been modified to fit 
+; my naming conventions.
+
 ;
 ; Controller reading for Game Boy and Super Game Boy
 ;
@@ -33,8 +38,8 @@ hCurrentKeys:: ds 1
 hNewKeys:: ds 1
 
 SECTION "ram_pads", WRAM0
-das_keys:: ds 1
-das_timer:: ds 1
+wDasKeys:: ds 1
+wDasTimer:: ds 1
 
 SECTION "rom_pads", ROM0
 
@@ -95,7 +100,7 @@ UpdateInput::
 ; Adds held keys to hNewKeys, DAS_DELAY frames after press and
 ; every DAS_SPEED frames thereafter
 ; @param B which keys are eligible for autorepeat
-autorepeat::
+AutoRepeat::
   ; If no eligible keys are held, skip all autorepeat processing
   ldh a,[hCurrentKeys]
   and b
@@ -110,20 +115,20 @@ autorepeat::
   or a
   jr z,.no_restart_das
   and b
-  ld [das_keys],a
+  ld [wDasKeys],a
   ld a,DAS_DELAY
-  jr .have_das_timer
+  jr .have_wDasTimer
 .no_restart_das:
 
   ; If time has expired, merge in the autorepeating set
-  ld a,[das_timer]
+  ld a,[wDasTimer]
   dec a
-  jr nz,.have_das_timer
-  ld a,[das_keys]
+  jr nz,.have_wDasTimer
+  ld a,[wDasKeys]
   and c
   or d
   ldh [hNewKeys],a
   ld a,DAS_SPEED
-.have_das_timer:
-  ld [das_timer],a
+.have_wDasTimer:
+  ld [wDasTimer],a
   ret

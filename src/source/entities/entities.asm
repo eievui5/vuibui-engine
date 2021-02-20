@@ -3,6 +3,8 @@ include "include/entities.inc"
 include "include/hardware.inc"
 include "include/macros.inc"
 
+include "source/metasprites.asm"
+
 ; Entities are stored in wEntityArray, which includes a 2-byte pointer to the
 ; entity's data, and then additional info, listed in entities.inc
 
@@ -27,6 +29,7 @@ ENDM
 
 
 SECTION "Entity Bank", ROMX
+
 ; Loops through the entity array, calling any script it finds
 HandleEntities::
     ; loop through entity array

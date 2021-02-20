@@ -1,24 +1,24 @@
-include "include/defines.inc"
-include "include/hardware.inc"
+
 include "include/tiles.inc"
 
 SECTION "Tiles", ROMX 
 DebugTiles::
+    ; $00
     db $00, $00, $00, $00
     db $00, $00, $00, $00
     db $00, $00, $00, $00
     db $00, $00, $00, $00
-
+    ; $01
     db $FF, $FF, $FF, $FF
     db $FF, $FF, $FF, $FF
     db $FF, $FF, $FF, $FF
     db $FF, $FF, $FF, $FF
-
-    db $FF, $FF, $FF, $FF
-    db $00, $00, $00, $00
+    ; $02
     db $FF, $FF, $FF, $FF
     db $00, $00, $00, $00
-
+    db $FF, $FF, $FF, $FF
+    db $00, $00, $00, $00
+    ; $03
     db $FF, $00, $00, $FF
     db $FF, $00, $00, $FF
     db $FF, $00, $00, $FF
@@ -26,7 +26,7 @@ DebugTiles::
 .end::
 
 SECTION "Metatiles", ROMX 
-DebugMetatileDefinitions::
+DebugMetatileDefinitions:: ; Only 16 per set... is that bad?
     ; $00
     db $00, $00, $00, $00
     db $00, $00, $00, $00
@@ -62,8 +62,8 @@ DebugMetatileData::
     db $00, $00, $00, $00
 .end::
 
-SECTION "Tilemap", ROMX 
-DebugTilemap:: ; DebugMetatiles
+SECTION "Level Maps", ROMX 
+DebugTilemap:: ; Using DebugMetatiles
     db $00, $02, $00, $02, $00, $02, $00, $02
     db $02, $00, $02, $00, $02, $00, $02, $00
     db $00, $01, $01, $02, $00, $02, $00, $02
