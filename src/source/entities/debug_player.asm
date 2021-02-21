@@ -80,18 +80,20 @@ MoveAndSlide:
 LookupMapData:
     ld de, wMapData
     ; X translation (255 -> 31)
-    srl c ; b / 2
-    srl c ; b / 4
-    srl c ; b / 8 !!!
+    srl c ; c / 2
+    srl c ; c / 4
+    srl c ; c / 8 !!!
+    dec c ; There's a bit of a rounding error here, so we need to decrement.
     ld a, e
     add a, c
     ld e, a ; Offset map data by X. Lower byte is safe to use.
     ; Y translation (255 -> 1023)
-    ld a, %11111000 ; Bitmask, we want to ignore the lower 3.
+    ld a, %11111000 ; Bitmask, we want to ignore the lower 3
     and a, b ; This skips division and much of the multiplication.
+    sub a, %00010000 ; Again, fix a rounding error
     ld h, $00
     ld l, a ; We need to swap into hl since $0400 won't fit in 8 bits.
-    add hl, hl ; c * 16
-    add hl, hl ; c * 32 !!!
+    add hl, hl ; b * 16
+    add hl, hl ; b * 32 !!!
     add hl, de ; HL now contains the mapdata, offset by the X and Y positions
     ret
