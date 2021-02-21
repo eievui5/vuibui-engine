@@ -16,10 +16,14 @@ ENTITIES_INC SET 1
         bytes 1, Direction      ; Often used to offset metasprites.
         bytes 1, State          ; Have I been knocked back? Killed? Am I attacking?
         bytes 1, Timer          ; Used for various delays and animations
-        bytes 1, Priv1          ; Reserved Private Vars
+        ; Reserved Private Vars - No suggested use, but required for padding size up to 16
+        bytes 1, Priv1          ; 
         bytes 1, Priv2          ; 
-        end_struct              ; 13 bytes long. Let's keep this under 16.
+        bytes 1, Priv3          ; 
+        bytes 1, Priv4          ; 
+        bytes 1, Priv5          ; 
+        end_struct              ; 16 bytes long. You may not go over 16, because entities use StructSeekUnsafe for speed.
 
-MAX_ENTITIES EQU 12
+MAX_ENTITIES EQU 20
 
     ENDC

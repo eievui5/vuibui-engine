@@ -30,7 +30,6 @@ DebugPlayer::
     ld [hl], -1 ; X velocity of -1
 
 .moveAndSlide
-    dec hl ; Seek to Y Vel
     call MoveAndSlide
     
 .render 
@@ -42,9 +41,74 @@ DebugPlayer::
 
     ret
 
+BOUNDING_BOX_X EQU 6 ; A bit smaller than 8*8, because that feel/looks better.
+BOUNDING_BOX_Y EQU 6
+
 ; Move the Entity based on its Velocity. Slide along collision.
-; @ hl: pointer to Entity_YVel. This will be conserved.
+; @ hl: pointer to Entity_XVel. 
 MoveAndSlide:
+.xMovement
+    ld c, [hl] ; C contains X Velocity
+    StructSeekUnsafe l, Entity_XVel, Entity_YPos
+    ld a, [hli]
+    ld b, a ; Save the Y Pos for later
+    ld a, c
+    add a, [hl] ; Add the XPos to the XVel
+    ld d, a
+    bit 7, c ; Check whether c is negative.
+    jr nz, .xNeg
+.xPos
+    add a, BOUNDING_BOX_X ; offset by the Bounding box
+    jr .xCheckCollision
+.xNeg
+    add a, -BOUNDING_BOX_X
+.xCheckCollision
+    ld c, a
+    push de ; Save our target Location (d). Using ram may be better here.
+    push hl ; Save our struct pointer
+    call LookupMapData
+    ld a, [hl]
+    and a, a ; cp a, $00
+    pop hl
+    pop de
+    jr nz, .yMovement ; Is there data here? Don't move.
+    ld a, d
+    ld [hl], a ; Update X Pos. 
+; WARNING!!! This is a disgusting copy/paste rather than a loop.
+.yMovement
+    inc l ; Seek to YVel
+    ld a, [hld] ; Seek to XPos
+    ld b, a ; B contains Y Velocity
+    ld a, [hld] ; Seek to YPos
+    ld c, a ; Save the XPos for later
+    ld a, b
+    add a, [hl] ; Add the YPos to the YVel
+    ld d, a
+    bit 7, b ; Check whether b is negative.
+    jr nz, .yNeg
+.yPos
+    add a, BOUNDING_BOX_Y ; offset by the Bounding box
+    jr .yCheckCollision
+.yNeg
+    add a, -BOUNDING_BOX_Y
+.yCheckCollision
+    ld b, a
+    push de ; Save our target Location (d). Using ram may be better here.
+    push hl ; Save our struct pointer
+    call LookupMapData
+    ld a, [hl]
+    and a, a ; cp a, $00
+    pop hl
+    pop de
+    ret nz ; Is there data here? Don't move.
+    ld [hl], d ; Update Y Pos.
+    ret
+
+
+
+
+    
+    ; deprecated code 
     ld a, [hli] ; Load the Y velocity, seek to Entity_XVel
     ld b, a ; this is faster than ld b, [hl] inc hl (4c, 2b vs 3c, 2b)
     ld a, [hl] ; Load the X velocity

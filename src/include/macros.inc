@@ -29,21 +29,27 @@ REPT \2
 ENDR
 ENDM
 
-; Seek through \1 \2 from \3 to \4. Slow but 16-bit safe.
+; Seek through \1 \2 (r16) from \3 to \4. Slow but 16-bit safe.
 ; @ 7 bytes
 ; @ 7 cycles
 StructSeek: Macro
     ld a, \4 - \3
-    add_r16_a
+    add_r16_a \1, \2
 ENDM
 
-; Seek through \1 from \2 to \3. Only 8-bit; prone to overflowing.
+; Seek through \1 (r8) from \2 to \3. Only 8-bit; prone to overflowing. If the distance between fields is 1 or -1, the macro will simply use inc/dec
 ; @ 4 bytes
 ; @ 4 cycles
 StructSeekUnsafe: Macro
-    ld a, \3 - \2 ; Distance between fields
-    add a, \1
-    ld \1, a
+    IF \3 - \2 == 1
+        inc \1
+    ELIF \3 - \2 == -1
+        dec \1
+    ELSE
+        ld a, \3 - \2 ; Distance between fields
+        add a, \1
+        ld \1, a
+    ENDC
 ENDM
 
     ENDC

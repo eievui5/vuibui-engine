@@ -125,7 +125,7 @@ Initiallize:
     ei
 
     ld de, DebugPlayer ; Spawn controllable entity at 16, 16
-    ld bc, $1010
+    ld bc, $1060
     call SpawnEntity
 
 Main:
