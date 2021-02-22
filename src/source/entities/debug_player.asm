@@ -33,6 +33,14 @@ DebugPlayer::
     call MoveAndSlide
     
 .render 
+
+    ld a, [hli]
+    sub a, 80 + 8
+    ldh [rSCY], a
+    ld a, [hld]
+    sub a, 72 + 8
+    ldh [rSCX], a
+
     ld a, [hli]
     ld b, a
     ld c, [hl]
@@ -104,39 +112,6 @@ MoveAndSlide:
     ld [hl], d ; Update Y Pos.
     ret
 
-
-
-
-    
-    ; deprecated code 
-    ld a, [hli] ; Load the Y velocity, seek to Entity_XVel
-    ld b, a ; this is faster than ld b, [hl] inc hl (4c, 2b vs 3c, 2b)
-    ld a, [hl] ; Load the X velocity
-    ld c, a
-    StructSeekUnsafe l, Entity_XVel, Entity_XPos
-    ld a, c ; It's better to do X first so that we end on Y
-    add a, [hl]
-    ld c, a ; C has become the X destination
-    dec l ; Seek to the X Positon
-
-    ld a, b 
-    add a, [hl] ; Add the Y pos into Y Vel
-    ld b, a ; B has become the Y destination
-
-    push bc ; we need to save the target location
-    push hl ; and the struct pointer. It's at XPos
-    call LookupMapData ; Find the tile we're about to step on
-    ld a, [hl] ; Load the tile we're about to step on
-    pop hl
-    pop bc
-
-    and a, a ; Is the data clear?
-    ret nz
-    ld a, b ; Move if a == 0
-    ld [hli], a
-    ld a, c
-    ld [hld], a ; We need to restore this to Y because the ret has no idea which path was taken
-    ret
 
 ; Locates a given position in the map data and returns it in HL. Destroys all registers.
 ; @ b:  Y position

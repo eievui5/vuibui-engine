@@ -131,11 +131,20 @@ RenderMetasprite:
     ; Load and offset Y
     ld a, [hli]
 .pushSprite ; We can skip that load, since a loop will have already done it.
+    push bc
+    add a, b
+    ld b, a
+    ldh a, [rSCY]
+    cpl
     add a, b
     ld [de], a
     inc de
     ; Load and offset X
     ld a, [hli]
+    add a, c
+    ld c, a
+    ldh a, [rSCX]
+    cpl
     add a, c
     ld [de], a
     inc de
@@ -152,6 +161,7 @@ RenderMetasprite:
     add a, 4
     ldh [hOAMIndex], a
     ; Check for End byte
+    pop bc
     ld a, [hli]
     cp a, METASPRITE_END
     jr nz, .pushSprite
