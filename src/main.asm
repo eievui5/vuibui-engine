@@ -26,12 +26,12 @@ SECTION "VBlankInterrupt", ROM0[$40]
 
 SECTION "Header", ROM0[$100]
 	di
-	jp Initiallize
+	jp Initialize
 	ds $150 - $104, 0
 
 
-SECTION "Initiallize", ROM0
-Initiallize:
+SECTION "Initialize", ROM0
+Initialize:
     
     ; Wait to turn off the screen
     ld a, 144

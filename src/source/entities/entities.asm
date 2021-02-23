@@ -18,13 +18,14 @@ FindEntity: MACRO
 ENDM
 
  
-; Destroys a script
-; @ bc: Entity Index
+; Clears an entity
+; @ bc: Entity Index. Will be lost, but shouldn't matter.
 KillEntity: MACRO 
     ld hl, wEntityArray
     add hl, bc
     xor a
-    ld [hli], a ; Destroy the first script byte. Other data will be left behind.
+    ld bc, sizeof_Entity
+    call MemOver
 ENDM
 
 
