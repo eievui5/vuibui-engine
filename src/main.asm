@@ -102,9 +102,8 @@ Initialize:
     ld de, _SCRN0
     ld hl, wMetatileDefinitions
     call LoadMetatileMap
-    ld de, wMapData
-    ld hl, wMetatileData
-    call LoadMetatileMap
+    
+    call LoadMapData
 
 ; Configure Default Pallet
     ld a, %11100100 ; Black, Dark, Light, White
@@ -125,7 +124,7 @@ Initialize:
     ei
 
     ld de, DebugPlayer ; Spawn controllable entity at 16, 16
-    ld bc, $1060
+    ld bc, $FFFF - 6
     call SpawnEntity
 
 Main:

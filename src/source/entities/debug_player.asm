@@ -49,7 +49,7 @@ DebugPlayer::
 
     ret
 
-BOUNDING_BOX_X EQU 6 ; A bit smaller than 8*8, because that feel/looks better.
+BOUNDING_BOX_X EQU 6 ; A bit smaller than 16*16, because that feel/looks better.
 BOUNDING_BOX_Y EQU 6
 
 ; Move the Entity based on its Velocity. Slide along collision.
@@ -117,22 +117,29 @@ MoveAndSlide:
 ; @ b:  Y position
 ; @ c:  X position
 LookupMapData:
-    ld de, wMapData
-    ; X translation (255 -> 31)
-    srl c ; c / 2
-    srl c ; c / 4
-    srl c ; c / 8 !!!
-    dec c ; There's a bit of a rounding error here, so we need to decrement.
-    ld a, e
-    add a, c
-    ld e, a ; Offset map data by X. Lower byte is safe to use.
-    ; Y translation (255 -> 1023)
-    ld a, %11111000 ; Bitmask, we want to ignore the lower 3
-    and a, b ; This skips division and much of the multiplication.
-    sub a, %00010000 ; Again, fix a rounding error
-    ld h, $00
-    ld l, a ; We need to swap into hl since $0400 won't fit in 8 bits.
-    add hl, hl ; b * 16
-    add hl, hl ; b * 32 !!!
-    add hl, de ; HL now contains the mapdata, offset by the X and Y positions
+
+    ; This is weird. 
+    ; I don't have the time or care to look into it, but the X and Y need an offset. 
+    ; Maybe just a result of my weird method of multiplication and division?
+    ld a, b
+    sub a, 16
+    ld b, a
+
+    ; This *is* neccassary. Sprites cannot be centered, so lets correct that a bit.
+    ; Partially why I don't mind leaving this part in, though dec c would be faster.
+    ld a, c
+    sub a, 9 
+    ld c, a
+
+    ld hl, wMapData
+    ; X translation (255 -> 16)
+    ld a, c
+    swap a ; a / 16 (sort of...)
+    and a, %00001111 ; Mask out the upper bits
+    add a, l
+    ld l, a ; Offset map data by X. Lower byte is safe to use.
+    ; Y translation (255 -> 16 * 16 or 256 ! )
+    ld a, b
+    and a, %11110000 ; We do need to mask out a bit...s
+    add_r16_a h, l
     ret

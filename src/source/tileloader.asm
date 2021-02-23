@@ -5,8 +5,8 @@ include "include/macros.inc"
 
 SECTION "Tileloader", ROM0 
 
-; TODO: Make this load based on coordinates, so that scrolling works.
-; @ de: Destination ( _SCRN0, _SCRN1, wMapData. VRAM Bank 1 for attributes. )
+; Automatically loads the entire tilemap. Screen must be off.
+; @ de: Destination ( _SCRN0, _SCRN1. VRAM Bank 1 for attributes. )
 ; @ hl: Metatiles definitions pointer
 LoadMetatileMap:
     ld bc, $0000
@@ -18,6 +18,26 @@ LoadMetatileMap:
     pop bc
     pop hl
     pop de
+
+    inc b ; Next X pos
+    ld a, b
+    cp a, 16 ; Have we gone over?
+    jr nz, .loop
+
+    inc c ; Next Y pos
+    ld a, c
+    cp a, 16 ; Have we gone over?
+    ret z
+    ld b, $00 ; Reset X pos
+    jr .loop
+
+; Load the Entire map's data
+LoadMapData:
+    ld bc, $0000
+.loop
+    push bc
+    call LoadMetatileData
+    pop bc
 
     inc b ; Next X pos
     ld a, b
@@ -88,6 +108,26 @@ LoadMetatile::
     add_r16_a d, e
     jr .loadRow
 
+
+; Looks up a given metatile's data and copies it to wMapData
+; @ b:  Metatile X Location (0 - 15)
+; @ c:  Metatile Y Location (0 - 15)
+LoadMetatileData::
+    swap c ; c * 16
+    ld d, $00
+    ld e, b
+    ld a, c
+    add_r16_a d, e
+    ld hl, wMetatileMap
+    add hl, de
+    ld a, [hl] ; Load the current tile
+    ld hl, wMetatileData
+    add_r16_a h, l
+    ld a, [hl] ; Load that tile's data.
+    ld hl, wMapData
+    add hl, de
+    ld [hl], a
+    ret
 
 
 SECTION "Metatile Definitions", WRAM0 
