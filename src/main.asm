@@ -9,7 +9,7 @@ include "source/standard/memover.asm"
 include "source/standard/memcopy.asm"
 include "source/standard/input.asm"
 
-include "source/tiles.asm"
+include "source/debug_tiles.asm"
 include "source/tileloader.asm"
 include "source/entities/entities.asm"
 

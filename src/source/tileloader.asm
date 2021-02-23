@@ -21,33 +21,34 @@ LoadMetatileMap:
 
     inc b ; Next X pos
     ld a, b
-    cp a, $08 ; Have we gone over?
+    cp a, 16 ; Have we gone over?
     jr nz, .loop
 
     inc c ; Next Y pos
     ld a, c
-    cp a, $08 ; Have we gone over?
+    cp a, 16 ; Have we gone over?
     ret z
     ld b, $00 ; Reset X pos
     jr .loop
 
 
 ; Loads a metatile from a given location on the current wMetatileMap, and places it accordingly.
-; @ b:  Metatile X Location ($00 - $08)
-; @ c:  Metatile Y Location ($00 - $08)
+; @ b:  Metatile X Location (0 - 15)
+; @ c:  Metatile Y Location (0 - 15)
 ; @ de: Destination ( _SCRN0, _SCRN1, wMapData. VRAM Bank 1 for attributes. )
 ; @ hl: Metatiles definitions pointer
 LoadMetatile::
     push hl
 
-    ld a, b ; (0 - 8) -> (0 - 32)
+    ld a, b ; (0 - 16) -> (0 - 32)
     add a, a  ; a * 2
-    add a, a ; a * 4 
     add_r16_a d, e
-    ld  h, c
-    ld  l, $00
+    ld  h, c ; c * 256
+    ld  l, $00 ; (0 - 16) -> (0 - 1024)
     srl h
-    rr l ; HL * 128
+    rr l ; c * 128
+    srl h
+    rr l ; c * 64
     add hl, de
     ld d, h
     ld e, l
@@ -58,22 +59,22 @@ LoadMetatile::
     ld a, b
     add_r16_a h, l ; add the X value
     ld a, c
-    add a, a ; a * 2
-    add a, a ; a * 4
-    add a, a ; a * 8 !!!
+    swap a ; c * 16
     add_r16_a h, l ; add the Y value
     ; [hl] contains our target tile.
 
     ; The use of a here is the only reason MAX_METATILES is currently 16.
     ; TODO: Sacrifice a bit of speed and use 16 bits.
     ld a, [hl] ; Load the tile
-    swap a ; a * 16
+    ; Tiles are 4 bytes long.
+    add a, a ; a * 2 !!!
+    add a, a ; a * 4 !!!
     
     pop hl ; Definition target
     add_r16_a h, l ; Offset definition pointer
     ; [hl] is now the metatile data to copy.
 
-    ld bc, $0404 ; loop counter: b = x, c = y
+    ld bc, $0202 ; loop counter: b = x, c = y
 .loadRow
     ld a, [hli]
     ld [de], a
@@ -82,8 +83,8 @@ LoadMetatile::
     jr nz, .loadRow
     dec c ; Are we done with the block yet?
     ret z
-    ld b, $04 ; Neither? Next Row.
-    ld a, 32 - 4
+    ld b, $02 ; Neither? Next Row.
+    ld a, 32 - 2
     add_r16_a d, e
     jr .loadRow
 
@@ -91,16 +92,16 @@ LoadMetatile::
 
 SECTION "Metatile Definitions", WRAM0 
 wMetatileDefinitions:
-    ds 16 * MAX_METATILES
+    ds 4 * MAX_METATILES
 wMetatileAttributes:
-    ds 16 * MAX_METATILES
+    ds 4 * MAX_METATILES
 wMetatileData:
-    ds 16 * MAX_METATILES
+    ds 4 * MAX_METATILES
 
 SECTION "Tilemap", WRAM0
 wMetatileMap:
-    ds 8 * 8
+    ds 16 * 16
 
 SECTION "Map Data", WRAM0 ;Must be aligned to work with the fuction in place
 wMapData: ; Like the tile map, but for data. Collision, pits, water.
-    ds 32 * 32
+    ds 16 * 16
