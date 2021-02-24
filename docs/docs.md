@@ -1,6 +1,3 @@
-# Info
-
-- Todo
 
 # Main
 

@@ -135,7 +135,7 @@ RenderMetasprite:
     push bc
     add a, b
     ld b, a
-    ldh a, [rSCY]
+    ld a, [wSCYBuffer]
     cpl
     add a, b
     ld [de], a
@@ -144,7 +144,7 @@ RenderMetasprite:
     ld a, [hli]
     add a, c
     ld c, a
-    ldh a, [rSCX]
+    ld a, [wSCXBuffer]
     cpl
     add a, c
     ld [de], a

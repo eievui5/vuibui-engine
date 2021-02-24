@@ -1,10 +1,21 @@
 
 ; An Entity that can be controlled by inputs to test collision
+; TODO: When you rewrite the player and finally start working on 
+; entities switch to 12.4 bit position vectors.
 
 DebugPlayer::
     FindEntity ; Locate my struct data
-    StructSeekUnsafe l, Entity_YPos, Entity_YVel
+    SeekAssert Entity_YPos, Entity_YVel, 2
+        inc l
+        inc l
     ldh a, [hCurrentKeys]
+    and a, %11110000 ; Mask out Buttons
+    and a, a
+    jr nz, .downCheck ; Are we moving?
+    SeekAssert Entity_YVel, Entity_YPos, -2
+        dec l
+        dec l
+    jr .render
 
 .downCheck
     ld [hl], 0 ; reset Y velocity
@@ -34,13 +45,16 @@ DebugPlayer::
     
 .render 
 
+    ; Scroll
+    SeekAssert Entity_YPos, Entity_XPos, 1
     ld a, [hli]
     sub a, 80 + 8
-    ldh [rSCY], a
+    ld [wSCYBuffer], a
+    SeekAssert Entity_XPos, Entity_YPos, -1
     ld a, [hld]
     sub a, 72 + 8
-    ldh [rSCX], a
-
+    ld [wSCXBuffer], a
+    ; Sprite
     ld a, [hli]
     ld b, a
     ld c, [hl]
@@ -53,11 +67,12 @@ BOUNDING_BOX_X EQU 6 ; A bit smaller than 16*16, because that feel/looks better.
 BOUNDING_BOX_Y EQU 6
 
 ; Move the Entity based on its Velocity. Slide along collision.
-; @ hl: pointer to Entity_XVel. 
+; @ hl: pointer to Entity_XVel. Returns Entity_YPos
 MoveAndSlide:
 .xMovement
     ld c, [hl] ; C contains X Velocity
     StructSeekUnsafe l, Entity_XVel, Entity_YPos
+    SeekAssert Entity_YPos, Entity_XPos, 1
     ld a, [hli]
     ld b, a ; Save the Y Pos for later
     ld a, c
@@ -120,9 +135,12 @@ MoveAndSlide:
     
 ; WARNING!!! This is a disgusting copy/paste rather than a loop.
 .yMovement
+    SeekAssert Entity_XPos, Entity_YVel, 1
     inc l ; Seek to YVel
+    SeekAssert Entity_YVel, Entity_XPos, -1
     ld a, [hld] ; Seek to XPos
     ld b, a ; B contains Y Velocity
+    SeekAssert Entity_XPos, Entity_YPos, -1
     ld a, [hld] ; Seek to YPos
     ld c, a ; Save the XPos for later
     ld a, b

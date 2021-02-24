@@ -23,19 +23,36 @@ StructSeek: Macro
     add_r16_a \1, \2
 ENDM
 
-; Seek through \1 (r8) from \2 to \3. Only 8-bit; prone to overflowing. If the distance between fields is 1 or -1, the macro will simply use inc/dec
+; Seek through \1 (r8) from \2 to \3. Only 8-bit; prone to overflowing. Will warn about being used stupidly.
 ; @ StructSeekUnsafe r8, Current pointer, Target pointer.
 ; @ 4 bytes
 ; @ 4 cycles
 StructSeekUnsafe: Macro
     IF \3 - \2 == 1
         inc \1
+        WARN "This should be optimized by hand"
     ELIF \3 - \2 == -1
         dec \1
+        WARN "This should be optimized by hand"
+    ELIF \3 - \2 == 2
+        inc \1
+        inc \1
+        WARN "This should be optimized by hand"
+    ELIF \3 - \2 == -2
+        dec \1
+        dec \1
+        WARN "This should be optimized by hand"
     ELSE
         ld a, \3 - \2 ; Distance between fields
         add a, \1
         ld \1, a
+    ENDC
+ENDM
+
+; Used to confirm that a hand-optimized seek is valid.
+SeekAssert: MACRO
+    IF \2 - \1 != \3
+        WARN "Invalid Seeking"
     ENDC
 ENDM
 

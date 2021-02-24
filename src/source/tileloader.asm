@@ -83,7 +83,6 @@ LoadMetatile::
     add_r16_a h, l ; add the Y value
     ; [hl] contains our target tile.
 
-    ; The use of a here is the only reason MAX_METATILES is currently 16.
     ; TODO: Sacrifice a bit of speed and use 16 bits.
     ld a, [hl] ; Load the tile
     ; Tiles are 4 bytes long.
@@ -132,16 +131,19 @@ LoadMetatileData::
 
 SECTION "Metatile Definitions", WRAM0 
 wMetatileDefinitions:
+    ; 2 * 2 Tiles
     ds 4 * MAX_METATILES
 wMetatileAttributes:
+    ; 2 * 2 Attributes
     ds 4 * MAX_METATILES
 wMetatileData:
-    ds 4 * MAX_METATILES
+    ; 1 data byte per tile.
+    ds MAX_METATILES
 
 SECTION "Tilemap", WRAM0
 wMetatileMap:
     ds 16 * 16
 
-SECTION "Map Data", WRAM0 ;Must be aligned to work with the fuction in place
+SECTION "Map Data", WRAM0 
 wMapData: ; Like the tile map, but for data. Collision, pits, water.
     ds 16 * 16

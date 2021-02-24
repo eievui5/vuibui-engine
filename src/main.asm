@@ -8,7 +8,10 @@ include "include/tiles.inc"
 include "source/standard/memover.asm"
 include "source/standard/memcopy.asm"
 include "source/standard/input.asm"
+include "source/standard/call_hl.asm"
 
+include "source/vblank.asm"
+include "source/oam.asm"
 include "source/debug_tiles.asm"
 include "source/tileloader.asm"
 include "source/entities/entities.asm"
@@ -141,62 +144,8 @@ Main:
     jr Main
 
 
-_hl_::
-    jp hl
-
-SECTION "VBlank", ROM0
-; Verticle Screen Blanking
-VBlank:
-    ; push wShadowOAM to OAM though DMA
-    ld a, high(wShadowOAM)
-    call hOAMDMA
-
-    ; There is minimal room to load a few tiles here.
-
-    ; Updating Input should happen last, since it does not rely on VBlank
-    call UpdateInput
-
-    ; Restore register state
-    pop hl
-    pop de
-    pop bc
-    pop af
-    reti
-
-
-SECTION "OAM DMA routine", ROM0
-; OAM DMA prevents access to most memory, but never HRAM.
-; This routine starts an OAM DMA transfer, then waits for it to complete.
-; It gets copied to HRAM and is called there from the VBlank handler
-OAMDMA:
-	ldh [rDMA], a
-	ld a, MAXIMUM_SPRITES
-.wait
-	dec a
-	jr nz, .wait
-	ret
-.end
-
-
-SECTION UNION "Shadow OAM", WRAM0,ALIGN[8]
-wShadowOAM::
-	ds MAXIMUM_SPRITES * 4
-.end
-
-
-SECTION "OAM DMA", HRAM
-; Location of the copied OAM DMA Routine
-hOAMDMA:
-	ds OAMDMA.end - OAMDMA
-
-
 ; Stack Allocation
 STACK_SIZE EQU 32 * 2
 SECTION "Stack", WRAMX[$E000 - STACK_SIZE]
     ds STACK_SIZE
 wStackOrigin:
-
-
-SECTION "OAM Index", HRAM
-; Used to order sprites in shadow OAM
-hOAMIndex:: ds 1
