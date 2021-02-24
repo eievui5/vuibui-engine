@@ -3,6 +3,7 @@
 MACROS_INC SET 1
 
 ; Adds a into \1 \2. a will become \2's result.
+; @ add_r16_a r8, r8
 ; @ 5 bytes
 ; @ 5 cycles
 add_r16_a: Macro
@@ -13,23 +14,8 @@ add_r16_a: Macro
     ld \1, a
 ENDM
 
-
-mult_hl_16: Macro 
-    add hl, hl ; x2
-    add hl, hl ; x4
-    add hl, hl ; x8
-    add hl, hl ; x16 !!
-ENDM
-
-; Multiply \1 by \2. Store the result in A. Does not work on A.
-mult_r8_n8: MACRO 
-    xor a
-REPT \2
-    add a, \1
-ENDR
-ENDM
-
-; Seek through \1 \2 (r16) from \3 to \4. Slow but 16-bit safe.
+; Seek through \1 \2 (r16) from \3 to \4. Slow but 16-bit safe. Avoid using this.
+; @ StructSeek r8, r8, Current pointer, Target pointer.
 ; @ 7 bytes
 ; @ 7 cycles
 StructSeek: Macro
@@ -38,6 +24,7 @@ StructSeek: Macro
 ENDM
 
 ; Seek through \1 (r8) from \2 to \3. Only 8-bit; prone to overflowing. If the distance between fields is 1 or -1, the macro will simply use inc/dec
+; @ StructSeekUnsafe r8, Current pointer, Target pointer.
 ; @ 4 bytes
 ; @ 4 cycles
 StructSeekUnsafe: Macro

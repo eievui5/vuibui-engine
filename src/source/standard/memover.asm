@@ -1,7 +1,7 @@
 
 SECTION "Overwrite Bytes", ROM0
 
-; Overwrites a certain amount of bytes with a single byte, only works if bc is > $FF
+; Overwrites a certain amount of bytes with a single byte.
 ; @ arguments:
 ; @  a: source (is preserved)
 ; @ bc: length

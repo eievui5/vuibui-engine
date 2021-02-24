@@ -74,14 +74,50 @@ MoveAndSlide:
     ld c, a
     push de ; Save our target Location (d). Using ram may be better here.
     push hl ; Save our struct pointer
+    push bc ; And save our test position, incase we need to slide around a corner.
     call LookupMapData
     ld a, [hl]
-    and a, a ; cp a, $00
+    cp a, TILE_COLLISION
+    pop bc
     pop hl
     pop de
-    jr nz, .yMovement ; Is there data here? Don't move.
+    jr z, .yMovement ; Is there data here? Don't move.
+    ; Handle movement
     ld a, d
     ld [hl], a ; Update X Pos. 
+    ; Check for corners. 
+    ; This is only really needed for the players and 
+    ; could be avoided for others to save *lots* of time
+.xTopCornerCheck
+    push hl ; These two need to be saved. D is no longer important
+    push bc
+    ld a, b
+    add a, BOUNDING_BOX_Y
+    ld b, a
+    call LookupMapData
+    ld a, [hl]
+    pop bc
+    pop hl
+    cp a, TILE_COLLISION; Is there a wall on the corner?
+    jr nz, .xBottomCornerCheck 
+    inc l
+    dec [hl] ; Slide out
+    dec l
+    jr .yMovement
+.xBottomCornerCheck
+    push hl ; We no longer need to preserve bc.
+    ld a, b
+    sub a, BOUNDING_BOX_Y
+    ld b, a
+    call LookupMapData
+    ld a, [hl]
+    pop hl
+    cp a, TILE_COLLISION; Is there a wall on the corner?
+    jr nz, .yMovement
+    inc l
+    inc [hl] ; Slide out
+    dec l
+    
 ; WARNING!!! This is a disgusting copy/paste rather than a loop.
 .yMovement
     inc l ; Seek to YVel
@@ -103,13 +139,30 @@ MoveAndSlide:
     ld b, a
     push de ; Save our target Location (d). Using ram may be better here.
     push hl ; Save our struct pointer
+    push bc
     call LookupMapData
     ld a, [hl]
-    and a, a ; cp a, $00
+    cp a, TILE_COLLISION
+    pop bc
     pop hl
     pop de
-    ret nz ; Is there data here? Don't move.
+    ret z ; Is there data here? Don't move.
     ld [hl], d ; Update Y Pos.
+    ; Due to what some might call a bug, I only need to check one corner here.
+    ; TODO: Make it check both.
+.yLeftCornerCheck
+    push hl ; We no longer need to preserve bc.
+    ld a, c
+    sub a, BOUNDING_BOX_X
+    ld c, a
+    call LookupMapData
+    ld a, [hl]
+    pop hl
+    cp a, TILE_COLLISION; Is there a wall on the corner?
+    ret nz
+    inc l
+    inc [hl] ; Slide out
+    dec l
     ret
 
 

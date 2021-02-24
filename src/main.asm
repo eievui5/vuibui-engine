@@ -124,7 +124,7 @@ Initialize:
     ei
 
     ld de, DebugPlayer ; Spawn controllable entity at 16, 16
-    ld bc, $FFFF - 6
+    ld bc, $0000
     call SpawnEntity
 
 Main:
