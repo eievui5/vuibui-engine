@@ -1,7 +1,9 @@
 
+include "include/hardware.inc"
+
 SECTION "VBlank", ROM0
 ; Verticle Screen Blanking
-VBlank:
+VBlank::
     ; push wShadowOAM to OAM though DMA
     ld a, high(wShadowOAM)
     call hOAMDMA

@@ -1,24 +1,27 @@
 
+include "include/hardware.inc"
+include "include/defines.inc"
+
 SECTION "OAM DMA routine", ROM0
-OAMDMA:
+OAMDMA::
 	ldh [rDMA], a
 	ld a, MAXIMUM_SPRITES
 .wait
 	dec a
 	jr nz, .wait
 	ret
-.end
+.end::
 
 
 SECTION UNION "Shadow OAM", WRAM0, ALIGN[8]
 wShadowOAM::
 	ds MAXIMUM_SPRITES * 4
-.end
+.end::
 
 
 SECTION "OAM DMA", HRAM
 ; Location of the copied OAM DMA Routine
-hOAMDMA:
+hOAMDMA::
 	ds OAMDMA.end - OAMDMA
 
 

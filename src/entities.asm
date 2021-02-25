@@ -2,8 +2,7 @@ include "include/defines.inc"
 include "include/entities.inc"
 include "include/hardware.inc"
 include "include/macros.inc"
-
-include "source/metasprites.asm"
+include "include/tiles.inc"
 
 ; Entities are stored in wEntityArray, which includes a 2-byte pointer to the
 ; entity's data, and then additional info, listed in entities.inc
@@ -308,7 +307,7 @@ LookupMapData::
 ; The players should be special cases. 
 ; They do not need be in the entity array
 
-include "source/entities/debug_player.asm"
+include "entities/debug_player.asm"
 
 SECTION "Entity Array", WRAM0, ALIGN[$00] ; Align with $00 so that we can use unsafe struct seeking
 wEntityArray::

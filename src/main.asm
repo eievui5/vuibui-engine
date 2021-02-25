@@ -5,17 +5,6 @@ include "include/hardware.inc"
 include "include/defines.inc"
 include "include/tiles.inc"
 
-include "source/standard/memover.asm"
-include "source/standard/memcopy.asm"
-include "source/standard/input.asm"
-include "source/standard/call_hl.asm"
-
-include "source/vblank.asm"
-include "source/oam.asm"
-include "source/debug_tiles.asm"
-include "source/tileloader.asm"
-include "source/entities/entities.asm"
-
 include "gfx/graphics.asm"            
 
 SECTION "VBlankInterrupt", ROM0[$40]

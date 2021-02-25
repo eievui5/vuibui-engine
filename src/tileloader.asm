@@ -8,7 +8,7 @@ SECTION "Tileloader", ROM0
 ; Automatically loads the entire tilemap. Screen must be off.
 ; @ de: Destination ( _SCRN0, _SCRN1. VRAM Bank 1 for attributes. )
 ; @ hl: Metatiles definitions pointer
-LoadMetatileMap:
+LoadMetatileMap::
     ld bc, $0000
 .loop
     push de ; A lot of stack usage? This is the slow version, who cares.
@@ -32,7 +32,7 @@ LoadMetatileMap:
     jr .loop
 
 ; Load the Entire map's data
-LoadMapData:
+LoadMapData::
     ld bc, $0000
 .loop
     push bc
@@ -128,22 +128,21 @@ LoadMetatileData::
     ld [hl], a
     ret
 
-
 SECTION "Metatile Definitions", WRAM0 
-wMetatileDefinitions:
+wMetatileDefinitions::
     ; 2 * 2 Tiles
     ds 4 * MAX_METATILES
-wMetatileAttributes:
+wMetatileAttributes::
     ; 2 * 2 Attributes
     ds 4 * MAX_METATILES
-wMetatileData:
+wMetatileData::
     ; 1 data byte per tile.
     ds MAX_METATILES
 
 SECTION "Tilemap", WRAM0
-wMetatileMap:
+wMetatileMap::
     ds 16 * 16
 
 SECTION "Map Data", WRAM0 
-wMapData: ; Like the tile map, but for data. Collision, pits, water.
+wMapData:: ; Like the tile map, but for data. Collision, pits, water.
     ds 16 * 16
