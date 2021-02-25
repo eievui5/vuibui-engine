@@ -30,18 +30,18 @@ ENDM
 StructSeekUnsafe: Macro
     IF \3 - \2 == 1
         inc \1
-        WARN "This should be optimized by hand"
+        WARN "1 Distance. This should be optimized by hand"
     ELIF \3 - \2 == -1
         dec \1
-        WARN "This should be optimized by hand"
+        WARN "-1 Distance. This should be optimized by hand"
     ELIF \3 - \2 == 2
         inc \1
         inc \1
-        WARN "This should be optimized by hand"
+        WARN "2 Distance. This should be optimized by hand"
     ELIF \3 - \2 == -2
         dec \1
         dec \1
-        WARN "This should be optimized by hand"
+        WARN "-2 Distance. This should be optimized by hand"
     ELSE
         ld a, \3 - \2 ; Distance between fields
         add a, \1

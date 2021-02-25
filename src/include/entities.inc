@@ -3,13 +3,34 @@ include "structs.inc"
     IF !DEF(ENTITIES_INC)
 ENTITIES_INC SET 1
 
+; Used to find an entity's data at a given offset, storing it in hl. 
+; @ bc: Entity Index
+; @ 3 bytes
+; @ 5 cycles
+FindEntity: MACRO
+    ld hl, wEntityArray + \1
+    add hl, bc
+ENDM
+
+ 
+; Clears an entity
+; @ bc: Entity Index. Will be lost, but shouldn't matter.
+KillEntity: MACRO 
+    ld hl, wEntityArray
+    add hl, bc
+    xor a
+    ld bc, sizeof_Entity
+    call MemOver
+ENDM
+
     struct Entity
         ; Public - Engine relies on these values.
         bytes 2, Script         ; Run once per frame by the entity handler.
+        dunion Origin           ; Used to return to the start of the struct.
         bytes 1, YPos           ; Where is the entity. Used for collision.
         bytes 1, XPos           ; 
         bytes 1, YVel           ; How much should we be moving right now?
-        bytes 1, XVel           ; 
+        bytes 1, XVel           ; Also used for knockback, since entities overwrite their velocities.
         bytes 1, CollisionData  ; Upper nibble for flags, lower for damage.
         ; Private - Names are just suggestions. The engine may set these, but they can be ignored.
         bytes 1, Flags          ; Flags can be set by the spawning script to slightly vary enemies

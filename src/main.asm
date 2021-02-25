@@ -126,8 +126,10 @@ Initialize:
     ld sp, wStackOrigin 
     ei
 
-    ld de, DebugPlayer ; Spawn controllable entity at 16, 16
+    ld de, DebugPlayer ; Spawn controllable entity
     ld bc, $0000
+    call SpawnEntity
+    ld de, HitDummy
     call SpawnEntity
 
 Main:
