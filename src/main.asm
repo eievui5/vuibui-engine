@@ -106,7 +106,7 @@ Initialize:
     ld [rAUDVOL], a
 
     ld hl, SongOne
-    call _hUGE_init
+    call hUGE_init
 
 ; Configure Default Pallet
     ld a, %11100100 ; Black, Dark, Light, White
