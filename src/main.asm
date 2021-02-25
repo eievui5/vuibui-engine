@@ -96,6 +96,17 @@ Initialize:
     call LoadMetatileMap
     
     call LoadMapData
+    
+    ; Enable audio
+    ld a, $80
+    ld [rAUDENA], a
+    ld a, $FF
+    ld [rAUDTERM], a
+    ld a, $FF
+    ld [rAUDVOL], a
+
+    ld hl, SongOne
+    call _hUGE_init
 
 ; Configure Default Pallet
     ld a, %11100100 ; Black, Dark, Light, White
@@ -127,6 +138,8 @@ Main:
     ld hl, wShadowOAM
     call MemOver
     ldh [hOAMIndex], a ; Reset the OAM index.
+
+    call _hUGE_dosound
 
     call HandleEntities
 
