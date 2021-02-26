@@ -4,6 +4,7 @@
 include "include/hardware.inc"
 include "include/defines.inc"
 include "include/tiles.inc"
+include "include/map.inc"
 
 include "gfx/graphics.asm"            
 
@@ -86,8 +87,8 @@ Initialize:
     call MemCopy
 
     ; Debug Map
-    ld bc, DebugTilemap.end - DebugTilemap
-    ld hl, DebugTilemap
+    call GetActiveMap ; map pointer -> hl
+    ld bc, MAP_SIZE
     ld de, wMetatileMap
     call MemCopy
 
@@ -104,9 +105,6 @@ Initialize:
     ld [rAUDTERM], a
     ld a, $FF
     ld [rAUDVOL], a
-
-    ld hl, SongOne
-    call hUGE_init
 
 ; Configure Default Pallet
     ld a, %11100100 ; Black, Dark, Light, White
@@ -138,8 +136,6 @@ Main:
     ld hl, wShadowOAM
     call MemOver
     ldh [hOAMIndex], a ; Reset the OAM index.
-
-    call _hUGE_dosound
 
     call HandleEntities
 

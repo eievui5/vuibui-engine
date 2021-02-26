@@ -10,7 +10,9 @@ VBlank::
 
     ; There is minimal room to load a few tiles here.
 
-    ; Update screen scrolling here to avoid tearing. This is low priority.
+    ; Update screen scrolling here to avoid tearing. 
+    ; This is low priority, but should happen at a point where the screen will not be torn.
+    ; Smooth the screen scrolling, so that jumping between players is not jarring.
     ld a, [wSCXBuffer]
     ldh [rSCX], a
     ld a, [wSCYBuffer]
@@ -25,6 +27,21 @@ VBlank::
     pop bc
     pop af
     reti
+
+; Stores de into the scroll buffers, making sure not to leave the screen bounds. Only a is used.
+; @ d:  X
+; @ e:  Y
+SetScrollBuffer::
+    ld a, d
+    cp a, 255 - 160 ; Is A past the screen bounds?
+    jr nc, .storeY
+    ld [wSCXBuffer], a
+.storeY
+    ld a, e
+    cp a, 255 - 144 ; Is A past the screen bounds?
+    ret nc
+    ld [wSCYBuffer], a
+    ret
 
 
 SECTION "Scroll Buffer", WRAM0

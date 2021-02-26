@@ -40,11 +40,12 @@ DebugPlayer::
     SeekAssert Entity_YPos, Entity_XPos, 1
     ld a, [hli]
     sub a, 80 + 8
-    ld [wSCYBuffer], a
+    ld e, a
     SeekAssert Entity_XPos, Entity_YPos, -1
     ld a, [hld]
     sub a, 72 + 8
-    ld [wSCXBuffer], a
+    ld d, a
+    call SetScrollBuffer
     ; Sprite
     SeekAssert Entity_YPos, Entity_XPos, 1
     ld a, [hli]

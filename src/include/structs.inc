@@ -70,18 +70,6 @@ check_ver: MACRO
     ENDC
 ENDM
 
-CHECK_VER_CALL equs "check_ver {EXPECTED_VERSION},{CURRENT_VERSION}"
-    CHECK_VER_CALL
-    IF !DEF(EXPECTED_VERSION)
-        strreplace CURRENT_VERSION, "\,", "."
-        FAIL "RGBDS-structs version \1 is required, which is incompatible with current version {CURRENT_VERSION}"
-    ENDC
-    PURGE CHECK_VER_CALL
-    PURGE check_ver
-    PURGE CURRENT_VERSION
-    PURGE EXPECTED_VERSION
-ENDM
-
 
 ; struct struct_name
 ; Begins a struct declaration

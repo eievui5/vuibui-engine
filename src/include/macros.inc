@@ -14,6 +14,12 @@ add_r16_a: Macro
     ld \1, a
 ENDM
 
+; Far pointer. Bank, then pointer.
+far_pointer: Macro 
+    db BANK(\1)
+    dw \1
+ENDM
+
 ; Seek through \1 \2 (r16) from \3 to \4. Slow but 16-bit safe. Avoid using this.
 ; @ StructSeek r8, r8, Current pointer, Target pointer.
 ; @ 7 bytes
