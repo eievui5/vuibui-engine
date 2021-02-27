@@ -1,7 +1,8 @@
 {
     "rgbdsz80.includePath": [
-        "src/",
-        "src/constants",
-        "src/macros"
-    ]
+        "src/"
+    ],
+    "rgbdsz80.formatting.capitalization": {
+        "language.keyword" : "upper"
+    }
 }

@@ -94,9 +94,9 @@ Initialize:
 
     ld de, _SCRN0
     ld hl, wMetatileDefinitions
-    call LoadMetatileMap
+    ;call LoadMetatileMap
     
-    call LoadMapData
+    ;call LoadMapData
     
     ; Enable audio
     ld a, $80
