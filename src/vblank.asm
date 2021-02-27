@@ -2,6 +2,10 @@
 include "include/hardware.inc"
 include "include/defines.inc"
 
+; 4 is possible on the DMG, but I think it's cutting it close.
+; Try setting this to 3 if you have issues.
+TILES_PER_FRAME EQU 4
+
 SECTION "VBlank", ROM0
 ; Verticle Screen Blanking
 VBlank::
@@ -16,21 +20,34 @@ VBlank::
     ; Load a metatile if needed
     ld a, [wVBlankMapLoadPosition]
     ld b, a
-    ld a, [wRoomTransitionFlag]
+    ld a, [wRoomTransitionDirection]
     and a, a
-    jr z, .scrolling
+    jp z, .scrolling ; Too far for jr!
+
 
     ld a, b
+    ld b, TILES_PER_FRAME ; Save the index up here so that we can push in the loop
     and a, a
     jr nz, .skipFirst
-    ; This part's a bit hacky, but since $00 ends the loop, we just throw it in here.
-    ; This means that $0000 loads first, even when moving left. Don't worry about it.
+    ; If this is our first pass, tell the Main loop to load tile data.
+    inc a ; We just need a != 0, and this is fast.
+    ld [wUpdateMapDataFlag], a
+    ld a, [wRoomTransitionDirection]
+    ; Up and left must not load the 0 tile until the end.
+    cp a, DIRECTION_UP
+    jr z, .skipFirst
+    cp a, DIRECTION_LEFT
+    jr z, .skipFirst
     ld bc, $0000
     ld de, _SCRN0
     ld hl, wMetatileDefinitions
     call LoadMetatile
+    ld b, TILES_PER_FRAME - 1 ; Keep track of the extra tile so that we're not overloaded.
 .skipFirst
-    ld a, [wRoomTransitionFlag]
+    push bc ; Save that index...
+    ld a, [wVBlankMapLoadPosition]
+    ld b, a
+    ld a, [wRoomTransitionDirection]
 
     ASSERT DIRECTION_DOWN == 1
     dec a
@@ -65,7 +82,13 @@ VBlank::
 
 .endLoad
     xor a
-    ld [wRoomTransitionFlag], a
+    ld [wRoomTransitionDirection], a
+    ; The 0 tile still needs to be loaded.
+    ; Don't worry about overwriting it if it's already there.
+    ld bc, $0000
+    ld de, _SCRN0
+    ld hl, wMetatileDefinitions
+    call LoadMetatile
     jr .scrolling
 
 .horzontalLoadTile
@@ -92,6 +115,81 @@ VBlank::
 
     ; pop bc and swap VRAM Banks for color.
 
+    ; We can load more than one tile, so lets see how many are left.
+    pop bc ; Remember the tile index? 
+    dec b
+    jr nz, .skipFirst ; Still more? Keep going!
+    ld a, [wVBlankMapLoadPosition]
+    ; Only move the player/screen after the first row is done.
+    and a, %11110000
+    jr z, .input
+    cp a, $F0 
+    jr z, .input
+
+    ; Update the position of the active player.
+
+    ; Scrolling logic, then fall through ↓
+    ld a, [wRoomTransitionDirection]
+    ASSERT DIRECTION_DOWN == 1
+    dec a
+    jr z, .scrollDown
+    ASSERT DIRECTION_UP == 2
+    dec a
+    jr z, .scrollUp
+    ASSERT DIRECTION_RIGHT == 3
+    dec a
+    jr z, .scrollRight
+    ASSERT DIRECTION_LEFT == 4
+    jr .scrollLeft
+
+.scrollDown
+    ld a, [wSCYBuffer]
+    and a, a
+    jr z, .input ; We can skip scrolling :)
+    inc a
+    jr z, .storeY
+    inc a
+    jr z, .storeY
+    inc a
+    jr .storeY
+.scrollUp
+    ld a, [wSCYBuffer]
+    sub a, 256 - 144 ; This might be dumb.
+    jr z, .input ; We can skip scrolling :)
+    dec a
+    jr z, .storeDown
+    dec a
+    jr z, .storeDown
+    dec a
+.storeDown
+    add a, 256 - 144 ; Fix offset
+.storeY
+    ld [wSCYBuffer], a
+    jr .scrolling
+.scrollRight
+    ld a, [wSCXBuffer]
+    and a, a
+    jr z, .input ; We can skip scrolling :)
+    inc a
+    jr z, .storeX
+    inc a
+    jr z, .storeX
+    inc a
+    jr .storeX
+.scrollLeft
+    ld a, [wSCXBuffer]
+    sub a, 256 - 160 ; This might be dumb.
+    jr z, .input ; We can skip scrolling :)
+    dec a
+    jr z, .storeLeft
+    dec a
+    jr z, .storeLeft
+    dec a
+.storeLeft
+    add a, 256 - 160 ; Fix offset
+.storeX
+    ld [wSCXBuffer], a
+
 .scrolling
     ; Update screen scrolling here to avoid tearing. 
     ; This is low priority, but should happen at a point where the screen will not be torn.
@@ -108,8 +206,8 @@ VBlank::
     ldh a, [hCurrentKeys]
     bit PADB_START, a
     jr z, .return
-    ld a, DIRECTION_DOWN
-    ld [wRoomTransitionFlag], a
+    ld a, DIRECTION_UP
+    ld [wRoomTransitionDirection], a
 
 .return
     ; Restore register state
@@ -124,12 +222,12 @@ VBlank::
 ; @ e:  Y
 SetScrollBuffer::
     ld a, d
-    cp a, 255 - 160 ; Is A past the screen bounds?
+    cp a, 256 - 160 + 1 ; Is A past the screen bounds?
     jr nc, .storeY
     ld [wSCXBuffer], a
 .storeY
     ld a, e
-    cp a, 255 - 144 ; Is A past the screen bounds?
+    cp a, 256 - 144 + 1 ; Is A past the screen bounds?
     ret nc
     ld [wSCYBuffer], a
     ret
@@ -147,7 +245,7 @@ wSCYBuffer::
 wVBlankMapLoadPosition::
     ds 1
 
-wRoomTransitionFlag::
+wRoomTransitionDirection::
     ; 0 == inactive
     ; FACING_ENUMS slide the camera and load the room.
     ds 1

@@ -131,17 +131,33 @@ Initialize:
     call SpawnEntity
 
 Main:
+.cleanOAM
     xor a ; ld a, 0
     ld bc, wShadowOAM.end - wShadowOAM
     ld hl, wShadowOAM
     call MemOver
     ldh [hOAMIndex], a ; Reset the OAM index.
 
+.updateMap
+    ld a, [wUpdateMapDataFlag]
+    and a, a
+    jr z, .entities 
+    call LoadMapData
+    xor a
+    ld [wUpdateMapDataFlag], a
+
+.entities
     call HandleEntities
 
+.end
     halt
     nop
     jr Main
+
+
+SECTION "Main Vars", WRAM0
+wUpdateMapDataFlag::
+    ds 1
 
 
 ; Stack Allocation
