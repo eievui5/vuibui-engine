@@ -7,7 +7,7 @@ ENTITIES_INC SET 1
 ; @ bc: Entity Index
 ; @ 3 bytes
 ; @ 5 cycles
-FindEntity: MACRO
+MACRO FindEntity
     ld hl, wEntityArray + \1
     add hl, bc
 ENDM
@@ -15,13 +15,15 @@ ENDM
  
 ; Clears an entity
 ; @ bc: Entity Index. Will be lost, but shouldn't matter.
-KillEntity: MACRO 
+MACRO KillEntity
     ld hl, wEntityArray
     add hl, bc
     xor a
     ld bc, sizeof_Entity
     call MemOver
 ENDM
+
+ENTITY_DETECTION_SIZE EQU 7 ; (7 * 7) = 14 / (16 - 2)
 
     struct Entity
         ; Public - Engine relies on these values.

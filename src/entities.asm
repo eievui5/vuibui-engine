@@ -16,8 +16,7 @@ HandleEntities::
     ; c: offset of current entity !!! MUST NOT CHANGE C !!!
     ; @OPTIMIZE: This needlessly uses a 16-bit index. The entity array should never be so large.
     ; It previously used c alone, and may be reverted later.
-    ld b, 0
-    ld c, 0
+    ld bc, $0000
     jr .skip
 .loop
     ; Increment the array index
@@ -299,6 +298,80 @@ LookupMapData::
     and a, %11110000 ; We do need to mask out a bit...s
     add_r16_a h, l
     ret
+
+; Returns The index of the first entity to collide with a location in bc. If c == $FF, no entity was found.
+; @ d:  Y position
+; @ e:  X position
+; @ bc: Source entity Index
+DetectEntity::
+    push bc
+    ld bc, $0000
+    jr .skip
+.loop
+    ; Increment the array index
+    ld h, b ; Swap over to hl for some math
+    ld l, c
+    ld b, 0
+    ld c, sizeof_Entity
+    add hl, bc
+    ld a, h
+    cp a, high(sizeof_Entity * MAX_ENTITIES)
+    jr nz, .continue ; Skip if there's no match
+    ld a, l
+    cp a, low(sizeof_Entity * MAX_ENTITIES)
+    jr nz, .continue ; Return if we've reached the end of the array 
+    pop bc ; throw away source index.
+    ld c, $FF
+    ret 
+.continue
+    ld b, h
+    ld c, l
+.skip
+    ld hl, wEntityArray
+    add hl, bc ; Apply the entity offset
+
+    ld a, [hli] ; Load the first byte of the entity
+    cp a, 0 ; If the first byte is 0, skip
+    jr z, .loop
+    ; Lets see if that entity collides with us!
+    inc l
+    ; Y time
+    ld a, [hli] ; Load the YPos
+    sub a, d ; Find the difference between the two.
+    ; abs
+    bit 7, a
+    jr z, .absSkipY
+    cpl
+    inc a
+.absSkipY
+    ; let's compare. c is >
+    cp a, ENTITY_DETECTION_SIZE
+    jr nc, .loop ; If the distance is greater than ENTITY_DETECTION_SIZE, check the next one.
+    ; X time
+    ld a, [hl] ; Load the XPos
+    sub a, e ; Find the difference between the two.
+    ; abs
+    bit 7, a
+    jr z, .absSkipX
+    cpl
+    inc a
+.absSkipX
+    ; let's compare. c is >
+    cp a, ENTITY_DETECTION_SIZE
+    jr nc, .loop ; If the distance is greater than ENTITY_DETECTION_SIZE, check the next one.
+    pop hl ; Have we just found ourselves? (This is collecting the earlier push bc)
+    ld a, l ; Low byte is more likely to be different
+    cp a, c
+    jr nz, .return
+    ld a, h
+    cp a, b
+    jr nz, .return
+    push bc
+    jr .loop
+.return
+    ret
+
+
 
 ; #################################################
 ; ###                 Entities                  ###

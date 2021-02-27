@@ -94,9 +94,9 @@ Initialize:
 
     ld de, _SCRN0
     ld hl, wMetatileDefinitions
-    ;call LoadMetatileMap
+    call LoadMetatileMap
     
-    ;call LoadMapData
+    call LoadMapData
     
     ; Enable audio
     ld a, $80
@@ -125,9 +125,10 @@ Initialize:
     ei
 
     ld de, DebugPlayer ; Spawn controllable entity
-    ld bc, $0000
+    ld bc, $6060
     call SpawnEntity
     ld de, HitDummy
+    ld bc, $8080
     call SpawnEntity
 
 Main:

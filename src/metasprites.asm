@@ -41,13 +41,13 @@ OctaviaDown::
 
 
 OctaviaUp::
-    db -2 ; y
-    db -4 ; x
+    db -8 ; y
+    db -8 ; x
     db OCTAVIA_UP_1 ; Tile ID
     db OAMF_PAL0 | OAMF_BANK0 ; Flags
 
-    db -2 ; y
-    db 4 ; x
+    db -8 ; y
+    db 0 ; x
     db OCTAVIA_UP_2 ; Tile ID
     db OAMF_PAL0 | OAMF_BANK0 ; Flags
 
@@ -55,13 +55,13 @@ OctaviaUp::
 
 
 OctaviaRight::
-    db -2 ; y
-    db -4 ; x
+    db -8 ; y
+    db -8 ; x
     db OCTAVIA_RIGHT_1 ; Tile ID
     db OAMF_PAL0 | OAMF_BANK0 ; Flags
 
-    db -2 ; y
-    db 4 ; x
+    db -8 ; y
+    db 0 ; x
     db OCTAVIA_RIGHT_2 ; Tile ID
     db OAMF_PAL0 | OAMF_BANK0 ; Flags
 
@@ -69,13 +69,13 @@ OctaviaRight::
 
 
 OctaviaLeft:: ; Flipped version of OctaviaRight
-    db -2 ; y
-    db -4 ; x
+    db -8 ; y
+    db -8 ; x
     db OCTAVIA_RIGHT_2 ; Tile ID
     db OAMF_PAL0 | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
-    db -2 ; y
-    db 4 ; x
+    db -8 ; y
+    db 0 ; x
     db OCTAVIA_RIGHT_1 ; Tile ID
     db OAMF_PAL0 | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
@@ -84,13 +84,13 @@ OctaviaLeft:: ; Flipped version of OctaviaRight
 ; Steps
 
 OctaviaDownStep:: ; Flipped version
-    db -2 ; y
-    db -4 ; x
+    db -8 ; y
+    db -8 ; x
     db OCTAVIA_DOWN_2 ; Tile ID
     db OAMF_PAL0 | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
-    db -2 ; y
-    db 4 ; x
+    db -8 ; y
+    db 0 ; x
     db OCTAVIA_DOWN_1 ; Tile ID
     db OAMF_PAL0 | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
@@ -98,13 +98,13 @@ OctaviaDownStep:: ; Flipped version
 
 
 OctaviaUpStep:: ; Flipped version
-    db -2 ; y
-    db -4 ; x
+    db -8 ; y
+    db -8 ; x
     db OCTAVIA_UP_2 ; Tile ID
     db OAMF_PAL0 | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
-    db -2 ; y
-    db 4 ; x
+    db -8 ; y
+    db 0 ; x
     db OCTAVIA_UP_1 ; Tile ID
     db OAMF_PAL0 | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
@@ -112,13 +112,13 @@ OctaviaUpStep:: ; Flipped version
 
 
 OctaviaRightStep::
-    db -2 ; y
-    db -4 ; x
+    db -8 ; y
+    db -8 ; x
     db OCTAVIA_RIGHT_STEP_1 ; Tile ID
     db OAMF_PAL0 | OAMF_BANK0 ; Flags
 
-    db -2 ; y
-    db 4 ; x
+    db -8 ; y
+    db 0 ; x
     db OCTAVIA_RIGHT_STEP_2 ; Tile ID
     db OAMF_PAL0 | OAMF_BANK0 ; Flags
 
@@ -126,13 +126,13 @@ OctaviaRightStep::
 
 
 OctaviaLeftStep:: ; Flipped version of OctaviaRight
-    db -2 ; y
-    db -4 ; x
+    db -8 ; y
+    db -8 ; x
     db OCTAVIA_RIGHT_STEP_2 ; Tile ID
     db OAMF_PAL0 | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
-    db -2 ; y
-    db 4 ; x
+    db -8 ; y
+    db 0 ; x
     db OCTAVIA_RIGHT_STEP_1 ; Tile ID
     db OAMF_PAL0 | OAMF_BANK0 | OAMF_XFLIP ; Flags
 

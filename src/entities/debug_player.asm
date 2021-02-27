@@ -32,10 +32,28 @@ DebugPlayer::
 
 
 .moveAndSlide
+    push bc ; Save entity index
     call MoveAndSlide
+    pop bc
+
+    push hl
+
+    ld a, [hli]
+    ld d, a
+    ld a, [hld]
+    ld e, a
+    call DetectEntity
+    ld a, $FF
+    cp a, c ; $FF == no entity
+    jr z, .render
+    FindEntity Entity_CollisionData
+    ld b, b
 
 
 .render 
+
+    pop hl
+
     ; Scroll
     SeekAssert Entity_YPos, Entity_XPos, 1
     ld a, [hli]
