@@ -51,9 +51,6 @@ VBlank:
     ;call HandleTextbox
 
 .return
-    ; Let the Main loop know it's returning from a vblank
-    ld a, $01
-    ld [wNewFrame], a 
     ; Restore register state
     pop hl
     pop de

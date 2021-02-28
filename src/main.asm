@@ -9,14 +9,6 @@ include "include/engine.inc"
 
 include "gfx/graphics.asm"
 
-SECTION "STAT Interrupt", ROM0[$48]
-    ; Save register state
-    push af
-    push bc
-    push de
-    push hl
-    jp Stat
-
 SECTION "Header", ROM0[$100]
 	di
 	jp Initialize
@@ -36,12 +28,7 @@ Initialize:
     ld [rLCDC], a
 
 ; Enable interrupts
-    ld a, STATF_LYC
-    ldh [rSTAT], a
-    ld a, 144 - 16
-    ld [wWindowStart], a ; Store the window starting position
-    ldh [rLYC], a
-    ld a, IEF_VBLANK | IEF_LCDC
+    ld a, IEF_VBLANK
     ldh [rIE], a
 
 ; Clear VRAM, SRAM, and WRAM
@@ -72,6 +59,11 @@ Initialize:
     ; Copy Plain Tiles
     ld bc, PlainTiles.end - PlainTiles
     ld de, $97D0
+    ld hl, PlainTiles
+    call MemCopy
+    ; Copy Plain Tiles
+    ld bc, PlainTiles.end - PlainTiles
+    ld de, $87E0
     ld hl, PlainTiles
     call MemCopy
 ; add a black tile to ram
@@ -120,6 +112,12 @@ Initialize:
     
     call LoadMapData
     
+    ; Place window
+    xor a, a
+    ldh [rWX], a
+    ld a, 144 - 16
+    ldh [rWY], a
+
     ; Enable audio
     ld a, $80
     ld [rAUDENA], a
@@ -156,9 +154,6 @@ SECTION "Main Loop", ROM0
 
 ; Split these up into an engine state jump table. Engine should only call out so that code can be reused.
 Main:
-    xor a, a
-    ld [wNewFrame], a ; Reset Frame wait.
-
 .cleanOAM
     xor a ; ld a, 0
     ld bc, wShadowOAM.end - wShadowOAM
@@ -180,26 +175,7 @@ Main:
 .end
     halt
     nop
-    ld a, [wNewFrame]
-    and a, a
-    jr z, .end
     jr Main
-
-SECTION "Stat Interrupt", ROM0
-
-Stat:
-
-    ld a, SCREEN_WINDOW
-    ldh [rLCDC], a
-    
-.return
-    xor a, a
-    ld [wNewFrame], a ; Reset Frame wait.
-    pop hl
-    pop de
-    pop bc
-    pop af
-    reti
 
 SECTION "Plain Tiles", ROMX
 
@@ -219,16 +195,6 @@ PlainTiles:
 
 SECTION "Main Vars", WRAM0
 wUpdateMapDataFlag::
-    ds 1
-
-; Used to make sure that the VBlank interrupt is un-halting the main loop
-wNewFrame::
-    ds 1
-
-wWindowStart::
-    ds 1
-
-wStatState::
     ds 1
 
 SECTION "Engine Flags", HRAM
