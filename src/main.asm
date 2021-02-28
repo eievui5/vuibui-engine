@@ -5,17 +5,17 @@ include "include/hardware.inc"
 include "include/defines.inc"
 include "include/tiles.inc"
 include "include/map.inc"
+include "include/engine.inc"
 
-include "gfx/graphics.asm"            
+include "gfx/graphics.asm"
 
-SECTION "VBlankInterrupt", ROM0[$40]
+SECTION "STAT Interrupt", ROM0[$48]
     ; Save register state
     push af
     push bc
     push de
     push hl
-    jp VBlank
-
+    jp Stat
 
 SECTION "Header", ROM0[$100]
 	di
@@ -35,14 +35,27 @@ Initialize:
     xor a ; Turn off the screen
     ld [rLCDC], a
 
-; Enable VBlank interrupts
-    ld a, IEF_VBLANK
-    ld [rIE], a
+; Enable interrupts
+    ld a, STATF_LYC
+    ldh [rSTAT], a
+    ld a, 144 - 16
+    ld [wWindowStart], a ; Store the window starting position
+    ldh [rLYC], a
+    ld a, IEF_VBLANK | IEF_LCDC
+    ldh [rIE], a
 
 ; Clear VRAM, SRAM, and WRAM
     ld hl, _VRAM
     ld bc, RAM_LENGTH * 3
     xor a
+    call MemOver
+
+; Reset Stack to WRAMX
+    ld sp, wStackOrigin 
+
+; Clear HRAM
+    ld hl, _HRAM
+    ld bc, $FFFE - _HRAM
     call MemOver
 
 ; Load the OAM Routine into HRAM
@@ -56,10 +69,15 @@ Initialize:
 	dec b
 	jr nz, .copyOAMDMA
 
+    ; Copy Plain Tiles
+    ld bc, PlainTiles.end - PlainTiles
+    ld de, $97D0
+    ld hl, PlainTiles
+    call MemCopy
 ; add a black tile to ram
     ld a, $FF
     ld bc, $0010
-    ld hl, $8010
+    ld hl, $97F0
     call MemOver
 
 ;Load Tiles
@@ -95,6 +113,10 @@ Initialize:
     ld de, _SCRN0
     ld hl, wMetatileDefinitions
     call LoadMetatileMap
+    ld a, $7F
+    ld bc, $0400
+    ld hl, _SCRN1
+    call MemOver
     
     call LoadMapData
     
@@ -118,10 +140,8 @@ Initialize:
     ld [hl], a
 
 ; Re-enable the screen
-    ld a, LCDCF_ON | LCDCF_OBJON | LCDCF_BGON | LCDCF_OBJ16
+    ld a, SCREEN_NORMAL
     ld [rLCDC], a
-; Reset Stack
-    ld sp, wStackOrigin 
     ei
 
     ld de, DebugPlayer ; Spawn controllable entity
@@ -130,8 +150,15 @@ Initialize:
     ld de, HitDummy
     ld bc, $8080
     call SpawnEntity
+    jp Main 
 
+SECTION "Main Loop", ROM0
+
+; Split these up into an engine state jump table. Engine should only call out so that code can be reused.
 Main:
+    xor a, a
+    ld [wNewFrame], a ; Reset Frame wait.
+
 .cleanOAM
     xor a ; ld a, 0
     ld bc, wShadowOAM.end - wShadowOAM
@@ -153,13 +180,60 @@ Main:
 .end
     halt
     nop
+    ld a, [wNewFrame]
+    and a, a
+    jr z, .end
     jr Main
 
+SECTION "Stat Interrupt", ROM0
+
+Stat:
+
+    ld a, SCREEN_WINDOW
+    ldh [rLCDC], a
+    
+.return
+    xor a, a
+    ld [wNewFrame], a ; Reset Frame wait.
+    pop hl
+    pop de
+    pop bc
+    pop af
+    reti
+
+SECTION "Plain Tiles", ROMX
+
+; It's more efficient to MemCopy these.
+PlainTiles:
+    ; Light
+    db $FF, $00, $FF, $00
+    db $FF, $00, $FF, $00
+    db $FF, $00, $FF, $00
+    db $FF, $00, $FF, $00
+    ; Dark
+    db $00, $FF, $00, $FF
+    db $00, $FF, $00, $FF
+    db $00, $FF, $00, $FF
+    db $00, $FF, $00, $FF
+.end
 
 SECTION "Main Vars", WRAM0
 wUpdateMapDataFlag::
     ds 1
 
+; Used to make sure that the VBlank interrupt is un-halting the main loop
+wNewFrame::
+    ds 1
+
+wWindowStart::
+    ds 1
+
+wStatState::
+    ds 1
+
+SECTION "Engine Flags", HRAM
+hEngineState::
+    ds 1 
 
 ; Stack Allocation
 STACK_SIZE EQU 32 * 2

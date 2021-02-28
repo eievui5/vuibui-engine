@@ -1,4 +1,6 @@
 
+INCLUDE "include/engine.inc"
+
 ; An Entity that can be controlled by inputs to test collision
 ; TODO: When you rewrite the player and finally start working on 
 ; entities switch to 12.4 bit position vectors.
@@ -45,15 +47,15 @@ DebugPlayer::
     call DetectEntity
     ld a, $FF
     cp a, c ; $FF == no entity
-    jr z, .render
+    jr z, .endDetect
     FindEntity Entity_CollisionData
     ld b, b
 
-
-.render 
+.endDetect
 
     pop hl
 
+.render 
     ; Scroll
     SeekAssert Entity_YPos, Entity_XPos, 1
     ld a, [hli]
