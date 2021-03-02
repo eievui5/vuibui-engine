@@ -2,6 +2,7 @@
 include "include/hardware.inc"
 include "include/defines.inc"
 include "include/engine.inc"
+include "include/text.inc"
 
 SECTION "VBlank Interrupt", ROM0[$40]
     ; Save register state
@@ -10,6 +11,14 @@ SECTION "VBlank Interrupt", ROM0[$40]
     push de
     push hl
     jp VBlank
+
+SECTION "Stat Interrupt", ROM0[$48]
+    ; Save register state
+    push af
+    push bc
+    push de
+    push hl
+    jp Stat
 
 SECTION "VBlank", ROM0
 ; Verticle Screen Blanking
@@ -28,6 +37,9 @@ VBlank:
 .metatileLoading
     call VBlankScrollLoader
 
+.textbox
+    call HandleTextbox
+
 .scrolling
     ; Update screen scrolling here to avoid tearing. 
     ; This is low priority, but should happen at a point where the screen will not be torn.
@@ -44,19 +56,41 @@ VBlank:
     ldh a, [hNewKeys]
     bit PADB_START, a
     jr z, .return
-    ld a, DIRECTION_UP
-    ld [wRoomTransitionDirection], a
-
-.textbox
-    ;call HandleTextbox
+    ;ld a, DIRECTION_UP
+    ;ld [wRoomTransitionDirection], a
+    ld a, TEXT_START
+    ld [wTextState], a
+    ld a, high(DebugHello)
+    ld [wTextPointer], a
+    ld a, low(DebugHello)
+    ld [wTextPointer + 1], a
 
 .return
+
+    ; Let the main loop know a new frame is ready
+    ld a, 1 
+    ld [wNewFrame], a
+
     ; Restore register state
     pop hl
     pop de
     pop bc
     pop af
     reti
+
+
+Stat:
+
+    ld a, SCREEN_WINDOW
+    ldh [rLCDC], a
+
+    ; Restore register state
+    pop hl
+    pop de
+    pop bc
+    pop af
+    reti
+
 
 ; Stores de into the scroll buffers, making sure not to leave the screen bounds. Only a is used.
 ; @ d:  X

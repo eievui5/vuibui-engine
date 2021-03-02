@@ -28,8 +28,12 @@ Initialize:
     ld [rLCDC], a
 
 ; Enable interrupts
-    ld a, IEF_VBLANK
+    ld a, IEF_VBLANK | IEF_LCDC
     ldh [rIE], a
+    ld a, STATF_LYC
+    ldh [rSTAT], a
+    ld a, 144 - 16
+    ldh [rLYC], a
 
 ; Clear VRAM, SRAM, and WRAM
     ld hl, _VRAM
@@ -102,18 +106,15 @@ Initialize:
     ld de, wMetatileMap
     call MemCopy
 
+    ; Load metatiles onto _SCRN0
     ld de, _SCRN0
     ld hl, wMetatileDefinitions
     call LoadMetatileMap
-    ld a, $7F
-    ld bc, $0400
-    ld hl, _SCRN1
-    call MemOver
     
     call LoadMapData
     
     ; Place window
-    xor a, a
+    ld a, 7
     ldh [rWX], a
     ld a, 144 - 16
     ldh [rWY], a
@@ -173,8 +174,16 @@ Main:
     call HandleEntities
 
 .end
+    ; When main is unhalted we ensure that it will not loop.
+    xor a, a
+    ld [wNewFrame], a
     halt
     nop
+    ld a, [wNewFrame]
+    and a, a
+    jr z, .end
+    xor a, a
+    ld [wNewFrame], a
     jr Main
 
 SECTION "Plain Tiles", ROMX
@@ -195,6 +204,10 @@ PlainTiles:
 
 SECTION "Main Vars", WRAM0
 wUpdateMapDataFlag::
+    ds 1
+
+; if != 0, restart main loop
+wNewFrame::
     ds 1
 
 SECTION "Engine Flags", HRAM
