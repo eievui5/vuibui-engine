@@ -60,9 +60,9 @@ VBlank:
     ;ld [wRoomTransitionDirection], a
     ld a, TEXT_START
     ld [wTextState], a
-    ld a, high(DebugHello)
+    ld a, high(DebugGoodbye)
     ld [wTextPointer], a
-    ld a, low(DebugHello)
+    ld a, low(DebugGoodbye)
     ld [wTextPointer + 1], a
 
 .return

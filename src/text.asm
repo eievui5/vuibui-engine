@@ -27,6 +27,9 @@ HandleTextbox::
     ASSERT TEXT_DRAWING == 4
     dec a
     jp z, .drawing
+    ASSERT TEXT_WAITING == 5
+    dec a
+    jp z, .waiting
     ret ; Catch for a screwed up state
 .start
     ; Reset Textbox screen index.
@@ -123,12 +126,12 @@ HandleTextbox::
     jr z, .newLine
     
     swap a
-    push af
+    ld e, a ; Save a
     ; TODO: Use a Charmap
     ld hl, GameFont - ($20 * 16) ; We start on ascii character 32 (space), so we need to subtract 32 * 16 as an offset.
     and a, %11110000
     add_r16_a h, l
-    pop af
+    ld a, e
     and a, %00001111
     add a, h
     ld h, a ; I think this multiplies the offset by 16?
@@ -136,15 +139,15 @@ HandleTextbox::
 
     ld a, [wTextScreenIndex]
     swap a
-    push af
-    ld de, _VRAM + $1500 ; Bg-Exclusive Tile $50
-    and a, %11110000
-    add a, e
     ld e, a
-    pop af
-    and a, %00001111
-    add a, d
-    ld d, a ; I think this multiplies the offset by 16?
+    and $0F
+    add a, HIGH(vTextTiles)
+    ld d, a
+    ld a, e
+    and $F0
+    ASSERT LOW(vTextTiles) == 0
+    ; add a, LOW(vTextTiles)
+    ld e, a
 
     ld bc, $0010
     call MemCopy
@@ -159,8 +162,45 @@ HandleTextbox::
     ld [wTextState], a
     ret
 .newLine
+    ld a, [wTextScreenIndex]
+    ; If we're past line 1
+    cp a, 16
+    jr c, .nextLine
+    ld a, TEXT_WAITING
+    ld [wTextState], a
+    ret
+.nextLine
     ld a, 16
     ld [wTextScreenIndex], a
+    ret
+.waiting 
+    ldh a, [hNewKeys]
+    bit PADB_A, a
+    ret z ; No input? Keep waiting...
+    ld a, [wTextPointer]
+    ld h, a
+    ld a, [wTextPointer + 1]
+    ld l, a
+    dec hl ; Check what character got us here.
+    ld a, [hl]
+    cp a, "@"
+    jr z, .close
+    ; If it wasn't an "@", we must be waiting for the next line!
+    ; Reset screen index and switch to cleaning state
+    xor a, a
+    ld [wTextScreenIndex], a
+    ld a, TEXT_CLEANING
+    ld [wTextState], a
+    ret
+.close
+    ; Lower the window. The UI may fix this, so 
+    ; TODO: Remove?
+    ld a, 144 - 16
+    ldh [rWY], a
+    ldh [rLYC], a
+    ; Reset Engine State
+    ld a, ENGINE_NORMAL
+    ldh [hEngineState], a
     ret
 
 
