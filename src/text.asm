@@ -107,7 +107,7 @@ HandleTextbox::
 .drawing
     ; 10 Chars per line, 20 max.
 
-    ; This is messy and dumb, I know. But it's only a few (2) cycles to save 2 bytes of ram
+    ; This is messy and dumb, I know. But it's only a few (2) extra cycles to save 2 bytes of ram
     ld a, [wTextPointer]
     ld h, a
     ld a, [wTextPointer + 1]
@@ -215,18 +215,21 @@ TextboxMap::
     db $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F
 
 DebugOh::
-    db "Oh?@"
+    db "Oh?"
+    end_text
 
 DebugHello::
     db "Hello. How're\n"
-    db "you?@"
+    db "you?"
+    end_text
 
 DebugGoodbye::
     db "See ya!\n"
     db " $ $ $ $\n"
     
     db "... why haven't\n"
-    db "you left yet?@"
+    db "you left yet?"
+    end_text
 
 SECTION "Text Variables", WRAM0
 

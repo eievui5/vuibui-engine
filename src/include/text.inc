@@ -2,6 +2,12 @@
     IF !DEF(TEXT_INC)
 TEXT_INC SET 1
 
+; Types an "@" and creates an `.end` label
+MACRO end_text
+    db "@"
+.end
+ENDM
+
 vTextTiles EQU $8000 + $1500
 
 TEXT_HIDDEN EQU 0
