@@ -17,7 +17,7 @@ RESDIR := res
 # Program constants
 MKDIR  := $(shell which mkdir)
 # Shortcut if you want to use a local copy of RGBDS
-RGBDS   =
+RGBDS   = #rgbds-0.4.2-win64/# remove path after the label to use another version of RGBDS
 RGBASM  = $(RGBDS)rgbasm
 RGBLINK = $(RGBDS)rgblink
 RGBFIX  = $(RGBDS)rgbfix
@@ -32,7 +32,7 @@ LDFLAGS  = -p $(PADVALUE)
 FIXFLAGS = -p $(PADVALUE) -v -i "$(GAMEID)" -k "$(LICENSEE)" -l $(OLDLIC) -m $(MBC) -n $(VERSION) -r $(SRAMSIZE) -t $(TITLE)
 
 # The list of "root" ASM files that RGBASM will be invoked on
-SRCS = $(wildcard $(SRCDIR)/*.asm)
+SRCS = $(wildcard $(SRCDIR)/*.asm) $(wildcard $(SRCDIR)/entities/*.asm)
 
 ## Project-specific configuration
 # Use this to override the above

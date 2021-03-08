@@ -3,7 +3,7 @@
 TEXT_INC SET 1
 
 ; Types an "@" and creates an `.end` label
-MACRO end_text
+end_text: MACRO 
     db "@"
 .end
 ENDM

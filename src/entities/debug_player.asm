@@ -1,11 +1,20 @@
 
 INCLUDE "include/engine.inc"
+INCLUDE "include/entities.inc"
+INCLUDE "include/macros.inc"
+include "include/hardware.inc"
+include "include/defines.inc"
+
+SECTION "Debug Player", ROMX
 
 ; An Entity that can be controlled by inputs to test collision
 ; TODO: When you rewrite the player and finally start working on 
 ; entities switch to 12.4 bit position vectors.
-
 DebugPlayer::
+    dw DebugPlayerScript
+    ; Metasprites
+
+DebugPlayerScript:
 
 .movement
     FindEntity Entity_YVel 
@@ -73,8 +82,6 @@ DebugPlayer::
     ld c, [hl]
     ld hl, OctaviaDown
     jp RenderMetasprite
-
-
 
 
 DUMMY_STATE_IDLE EQU 0

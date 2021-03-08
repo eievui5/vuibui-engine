@@ -12,6 +12,7 @@ TEXTBOX_WIDTH EQU 20
 ; Initiallize, render, and close the textbox.
 ; Sorry to anyone reading through this, it's not well-commented.
 HandleTextbox::
+
     ld a, [wTextState]
     and a, a
     ret z ; No flag state? Return
@@ -39,9 +40,6 @@ HandleTextbox::
     ld a, 143
     ldh [rWY], a
     ldh [rLYC], a
-    ; Update Engine state.
-    ld a, ENGINE_TEXT
-    ldh [hEngineState], a
     ; Update wTextState
     ld a, TEXT_CLEARING
     ld [wTextState], a
@@ -198,9 +196,11 @@ HandleTextbox::
     ld a, 144 - 16
     ldh [rWY], a
     ldh [rLYC], a
-    ; Reset Engine State
-    ld a, ENGINE_NORMAL
-    ldh [hEngineState], a
+    ; Let scripting knpow we're done
+    ld [wTextScriptFinished], a
+    ASSERT TEXT_HIDDEN == 0
+    xor a, a
+    ld [wTextState], a
     ret
 
 
@@ -238,6 +238,8 @@ wTextState::
     ds 1
 
 ; Pointer to the next character.
+wTextBank::
+    ds 1
 wTextPointer::
     ds 2
 

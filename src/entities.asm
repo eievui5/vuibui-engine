@@ -12,6 +12,9 @@ SECTION "Entity Bank", ROMX
 
 ; Loops through the entity array, calling any script it finds
 HandleEntities::
+
+    call OctaviaPlayerLogic
+
     ; loop through entity array
     ; c: offset of current entity !!! MUST NOT CHANGE C !!!
     ; @OPTIMIZE: This needlessly uses a 16-bit index. The entity array should never be so large.
@@ -96,7 +99,7 @@ SpawnEntity::
 ; @ b:  Screen X position
 ; @ c:  Screen Y position
 ; @ hl: Metasprite
-RenderMetasprite:
+RenderMetasprite::
     push hl 
     ; Find Available Shadow OAM
     ldh a, [hOAMIndex]
@@ -377,12 +380,13 @@ DetectEntity::
 ; ###                 Entities                  ###
 ; #################################################
 
-; The players should be special cases. 
-; They do not need be in the entity array
-
-include "entities/debug_player.asm"
-
 SECTION "Entity Array", WRAM0, ALIGN[$00] ; Align with $00 so that we can use unsafe struct seeking
 wEntityArray::
     ; define an array of `MAX_ENTITIES` Entities, each named wEntityX
     dstructs MAX_ENTITIES, Entity, wEntity
+
+
+SECTION "Entity Buffers", HRAM ; A few common variables for entities. High ram for efficiency.
+; Used to offset the entity's metasprites without adding a certain value each time.
+hActiveEntityFrame::
+    ds 1

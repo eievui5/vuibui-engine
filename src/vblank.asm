@@ -56,14 +56,28 @@ VBlank:
     ldh a, [hNewKeys]
     bit PADB_START, a
     jr z, .return
+
+    ; debug....
+
     ;ld a, DIRECTION_UP
     ;ld [wRoomTransitionDirection], a
-    ld a, TEXT_START
-    ld [wTextState], a
-    ld a, high(DebugGoodbye)
-    ld [wTextPointer], a
-    ld a, low(DebugGoodbye)
-    ld [wTextPointer + 1], a
+
+    ;ld a, TEXT_START
+    ;ld [wTextState], a
+    ;ld a, high(DebugGoodbye)
+    ;ld [wTextPointer], a
+    ;ld a, low(DebugGoodbye)
+    ;ld [wTextPointer + 1], a
+
+    ld a, ENGINE_SCRIPT
+    ldh [hEngineState], a
+    ld hl, wActiveScriptPointer
+    ld a, bank(DebugScript)
+    ld [hli], a
+    ld a, low(DebugScript)
+    ld [hli], a
+    ld a, high(DebugScript)
+    ld [hli], a
 
 .return
 

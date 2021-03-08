@@ -143,9 +143,11 @@ Initialize:
     ld [rLCDC], a
     ei
 
-    ld de, DebugPlayer ; Spawn controllable entity
-    ld bc, $6060
-    call SpawnEntity
+    ;ld de, DebugPlayer ; Spawn controllable entity
+    ;ld bc, $6060
+    ;call SpawnEntity
+    ld a, 1
+    ld [wActivePlayer], a
     ld de, HitDummy
     ld bc, $8080
     call SpawnEntity
@@ -155,6 +157,23 @@ SECTION "Main Loop", ROM0
 
 ; Split these up into an engine state jump table. Engine should only call out so that code can be reused.
 Main:
+
+    ; Check engine state
+    ; TODO: make this offset OAM during Scrolling
+    ldh a, [hEngineState]
+    and a, a
+    ASSERT ENGINE_NORMAL == 0
+    jr z, .cleanOAM
+    ASSERT ENGINE_SCRIPT == 1
+    dec a
+    jr z, .handleScript
+    ASSERT ENGINE_ROOM_TRANSITION == 2
+    jr .end
+
+.handleScript
+    call HandleScript
+    jr .end
+
 .cleanOAM
     xor a ; ld a, 0
     ld bc, wShadowOAM.end - wShadowOAM
@@ -188,7 +207,7 @@ Main:
 
 SECTION "Plain Tiles", ROMX
 
-; It's more efficient to MemCopy these.
+; It's more efficient to MemCopy these. (Not really)
 PlainTiles:
     ; Light
     db $FF, $00, $FF, $00

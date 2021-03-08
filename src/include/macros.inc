@@ -6,7 +6,7 @@ MACROS_INC SET 1
 ; @ add_r16_a r8, r8
 ; @ 5 bytes
 ; @ 5 cycles
-MACRO add_r16_a
+add_r16_a: MACRO
     add a, \2 ; a = low + old_l
     ld \2, a  ; a = low + old_l = new_l
     adc a, \1 ; a = new_l + old_h + carry
@@ -15,7 +15,7 @@ MACRO add_r16_a
 ENDM
 
 ; Far pointer. Bank, then pointer.
-MACRO far_pointer
+far_pointer: MACRO 
     db BANK(\1)
     dw \1
 ENDM
@@ -24,7 +24,7 @@ ENDM
 ; @ StructSeek r8, r8, Current pointer, Target pointer.
 ; @ 7 bytes
 ; @ 7 cycles
-MACRO StructSeek
+StructSeek: MACRO 
     ld a, \4 - \3
     add_r16_a \1, \2
 ENDM
@@ -33,7 +33,7 @@ ENDM
 ; @ StructSeekUnsafe r8, Current pointer, Target pointer.
 ; @ 4 bytes
 ; @ 4 cycles
-MACRO StructSeekUnsafe
+StructSeekUnsafe: MACRO 
     IF \3 - \2 == 1
         inc \1
         WARN "1 Distance. This should be optimized by hand"
@@ -56,7 +56,7 @@ MACRO StructSeekUnsafe
 ENDM
 
 ; Used to confirm that a hand-optimized seek is valid.
-MACRO SeekAssert
+SeekAssert: MACRO 
     IF \2 - \1 != \3
         WARN "Invalid Seeking"
     ENDC

@@ -41,6 +41,28 @@ MemCopy::
 	jr nz, .loadByte
 	ret
 
+SECTION "Jump Table", ROM0
+
+; Jumps the the `a`th pointer. 128 pointers max.
+; @ a: Jump Offset
+HandleJumpTable::
+	; Restore Pointer to jump table
+	pop hl
+	; a * 2 (pointers are 2 bytes!)
+	add a, a
+	; add hl, a
+    add a, l
+    ld l, a
+    adc a, h
+    sub a, l
+    ld h, a
+	; Load pointer into hl
+	ld a, [hli] ; low byte
+	ld h, [hl] ; high byte
+	ld l, a
+	; Now jump!
+	jp hl
+
 SECTION "Call HL", ROM0
 
 _hl_::

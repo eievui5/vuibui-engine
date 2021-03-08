@@ -1,4 +1,9 @@
 
 Engine:
     ☐ Player Logic
-    ☐ Text
+    ☐ Scripting System
+        ☐ Coroutines
+        ☐ Has to be able to control certain entities + Players
+        ☐ Create text boxes and wait for them to finish
+        ☐ Simultanious movement (at least 3 at a time.)
+        
