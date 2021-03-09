@@ -26,7 +26,7 @@ ENDM
 
     struct Entity
         ; Public - Engine relies on these values.
-        bytes 2, DataPointer    ; Run once per frame by the entity handler.
+        bytes 2, DataPointer    ; Used to look up constant information
         bytes 1, YPos           ; Where is the entity. Used for collision.
         bytes 1, XPos           ; 
         bytes 1, YVel           ; How much should we be moving right now?
@@ -50,7 +50,5 @@ ASSERT sizeof_Entity == 16
 MAX_ENTITIES EQU 20
 
 ENTITY_DEBUG_PLAYER EQU 1
-
-ACTIVE_PLAYER_OCTAVIA EQU 1
 
     ENDC

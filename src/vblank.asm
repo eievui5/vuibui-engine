@@ -3,6 +3,7 @@ include "include/hardware.inc"
 include "include/defines.inc"
 include "include/engine.inc"
 include "include/text.inc"
+INCLUDE "include/players.inc"
 
 SECTION "VBlank Interrupt", ROM0[$40]
     ; Save register state
@@ -62,22 +63,15 @@ VBlank:
     ;ld a, DIRECTION_UP
     ;ld [wRoomTransitionDirection], a
 
-    ;ld a, TEXT_START
-    ;ld [wTextState], a
-    ;ld a, high(DebugGoodbye)
-    ;ld [wTextPointer], a
-    ;ld a, low(DebugGoodbye)
-    ;ld [wTextPointer + 1], a
-
-    ld a, ENGINE_SCRIPT
-    ldh [hEngineState], a
-    ld hl, wActiveScriptPointer
-    ld a, bank(DebugScript)
-    ld [hli], a
-    ld a, low(DebugScript)
-    ld [hli], a
-    ld a, high(DebugScript)
-    ld [hli], a
+    ;ld a, ENGINE_SCRIPT
+    ;ldh [hEngineState], a
+    ;ld hl, wActiveScriptPointer
+    ;ld a, bank(DebugScript)
+    ;ld [hli], a
+    ;ld a, low(DebugScript)
+    ;ld [hli], a
+    ;ld a, high(DebugScript)
+    ;ld [hli], a
 
 .return
 

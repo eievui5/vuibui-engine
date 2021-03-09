@@ -14,6 +14,7 @@ SECTION "Entity Bank", ROMX
 HandleEntities::
 
     call OctaviaPlayerLogic
+    call PoppyPlayerLogic
 
     ; loop through entity array
     ; c: offset of current entity !!! MUST NOT CHANGE C !!!

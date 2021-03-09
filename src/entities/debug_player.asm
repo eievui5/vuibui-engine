@@ -12,7 +12,6 @@ SECTION "Debug Player", ROMX
 ; entities switch to 12.4 bit position vectors.
 DebugPlayer::
     dw DebugPlayerScript
-    ; Metasprites
 
 DebugPlayerScript:
 

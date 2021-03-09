@@ -2,6 +2,7 @@
 INCLUDE "include/entities.inc"
 INCLUDE "include/hardware.inc"
 INCLUDE "include/defines.inc"
+INCLUDE "include/players.inc"
 
 OCTAVIA_DOWN_1 EQU $00
 OCTAVIA_DOWN_2 EQU $02
@@ -239,8 +240,8 @@ SECTION "Player Variables", WRAM0
 
 ; The Character currently being controlled by the player. Used as an offset.
 wActivePlayer::
-    ; 0: Octavia
     ds 1
 
 wPlayerArray::
     dstruct Entity, wOctavia
+    dstruct Entity, wPoppy
