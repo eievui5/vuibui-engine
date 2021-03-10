@@ -146,8 +146,9 @@ Initialize:
     ld a, 1
     ld [wActivePlayer], a
 
+    ; Initiallize Player Array
     ld a, high(PlayerOctavia)
-    ld hl, wPlayerArray
+    ld hl, wOctavia
     ld [hli], a
     ld a, low(PlayerOctavia)
     ld [hl], a
@@ -166,23 +167,6 @@ SECTION "Main Loop", ROM0
 ; Split these up into an engine state jump table. Engine should only call out so that code can be reused.
 Main:
 
-    ; Check engine state
-    ; TODO: make this offset OAM during Scrolling
-    ldh a, [hEngineState]
-    and a, a
-    ASSERT ENGINE_NORMAL == 0
-    jr z, .cleanOAM
-    ASSERT ENGINE_SCRIPT == 1
-    dec a
-    jr z, .handleScript
-    ASSERT ENGINE_ROOM_TRANSITION == 2
-    jr .end
-
-.handleScript
-    ;call RenderEntities
-    call HandleScript
-    jr .end
-
 .cleanOAM
     xor a ; ld a, 0
     ld bc, wShadowOAM.end - wShadowOAM
@@ -190,6 +174,24 @@ Main:
     call MemOver
     ldh [hOAMIndex], a ; Reset the OAM index.
 
+    ; Check engine state
+    ; TODO: make this offset OAM during Scrolling
+    ldh a, [hEngineState]
+    and a, a
+    ASSERT ENGINE_NORMAL == 0
+    jr z, .handleNormal
+    ASSERT ENGINE_SCRIPT == 1
+    dec a
+    jr z, .handleScript
+    ASSERT ENGINE_ROOM_TRANSITION == 2
+    jr .end
+
+.handleScript
+    call RenderEntities
+    call HandleScript
+    jr .end
+
+.handleNormal
 .cyclePlayers
     ldh a, [hNewKeys]
     bit PADB_SELECT, a

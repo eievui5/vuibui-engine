@@ -16,8 +16,7 @@ HandleEntities::
     call OctaviaPlayerLogic
     ; RenderMetasprite has some weird bug where it only works if I put it RIGHT HERE!? 
     ; The stack is getting fucked or something idk. I put too much work into this system to care right now.
-    ld hl, wPlayerArray
-    call RenderMetasprite
+
 
     ; loop through entity array
     ; c: offset of current entity !!! MUST NOT CHANGE C !!!
@@ -64,6 +63,9 @@ HandleEntities::
 
 RenderEntities::
     
+    ld hl, wOctavia
+    call RenderMetasprite
+
     ; loop through entity array
     ; c: offset of current entity !!! MUST NOT CHANGE C !!!
     ; @OPTIMIZE: This needlessly uses a 16-bit index. The entity array should never be so large.
@@ -173,16 +175,10 @@ RenderMetasprite::
     ; At this point:
     ; bc - Position (x, y)
     ; hl - Metasprite pointer
-    push hl 
     ; Find Available Shadow OAM
     ldh a, [hOAMIndex]
-    ld d, 0 
-    ld e, a 
-    ld hl, wShadowOAM
-    add hl, de
-    ld d, h
-    ld e, l
-    pop hl
+    ld de, wShadowOAM
+    add_r16_a d, e
     ; Load and offset Y
     ld a, [hli]
 .pushSprite ; We can skip that load, since a loop will have already done it.

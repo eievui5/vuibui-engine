@@ -57,7 +57,6 @@ Script:
     and a, a
     ret nz
 .textStart
-    ld b, b
     ld a, TEXT_START
     ld [wTextState], a
     load_hl_scriptpointer
