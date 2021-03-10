@@ -10,8 +10,6 @@ SECTION "Debug Player", ROMX
 ; An Entity that can be controlled by inputs to test collision
 ; TODO: When you rewrite the player and finally start working on 
 ; entities switch to 12.4 bit position vectors.
-DebugPlayer::
-    dw DebugPlayerScript
 
 DebugPlayerScript:
 
@@ -73,20 +71,14 @@ DebugPlayerScript:
     ld a, [hld]
     sub a, 72 + 8
     ld d, a
-    call SetScrollBuffer
-    ; Sprite
-    SeekAssert Entity_YPos, Entity_XPos, 1
-    ld a, [hli]
-    ld b, a
-    ld c, [hl]
-    ld hl, OctaviaDown
-    jp RenderMetasprite
+    jp SetScrollBuffer
 
 
 DUMMY_STATE_IDLE EQU 0
 DUMMY_STATE_HURT EQU 1
 
-HitDummy::
+
+HitDummyScript::
     FindEntity Entity_CollisionData
 
 .damageCheck
@@ -120,11 +112,4 @@ HitDummy::
 
 
 .render
-    FindEntity Entity_YPos
-    SeekAssert Entity_YPos, Entity_XPos, 1
-    ld a, [hli]
-    ld c, a
-    ld a, [hl]
-    ld b, a
-    ld hl, OctaviaUp
-    jp RenderMetasprite
+    ret

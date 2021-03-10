@@ -20,15 +20,6 @@ far_pointer: MACRO
     dw \1
 ENDM
 
-; Seek through \1 \2 (r16) from \3 to \4. Slow but 16-bit safe. Avoid using this.
-; @ StructSeek r8, r8, Current pointer, Target pointer.
-; @ 7 bytes
-; @ 7 cycles
-StructSeek: MACRO 
-    ld a, \4 - \3
-    add_r16_a \1, \2
-ENDM
-
 ; Seek through \1 (r8) from \2 to \3. Only 8-bit; prone to overflowing. Will warn about being used stupidly.
 ; @ StructSeekUnsafe r8, Current pointer, Target pointer.
 ; @ 4 bytes

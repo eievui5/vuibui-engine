@@ -17,10 +17,12 @@ STEP_OFFSET EQU 4
 
 SECTION "Player AI", ROMX
 
+
+
 OctaviaPlayerLogic::
     ; Always start by offsetting frame by facing direction
     ld a, [wOctavia_Direction]
-    ldh [hActiveEntityFrame], a
+    ld [wOctavia_Frame], a
 
     ; Is this the active player?
     ld a, [wActivePlayer]
@@ -47,9 +49,9 @@ OctaviaPlayerLogic::
     bit 4, a 
     jr z, .activeMoveDown
     ; ...Offset to step animation
-    ldh a, [hActiveEntityFrame]
+    ld a, [wOctavia_Frame]
     add a, STEP_OFFSET
-    ldh [hActiveEntityFrame], a
+    ld [wOctavia_Frame], a
 .activeMoveDown
     ldh a, [hCurrentKeys]
     bit PADB_DOWN, a
@@ -104,26 +106,21 @@ OctaviaPlayerLogic::
     ld a, [wOctavia_XPos]
     sub a, 72 + 8
     ld d, a
-    call SetScrollBuffer
+    jp SetScrollBuffer
 .render 
-    ldh a, [hActiveEntityFrame] ; Load the active frame offset.
-    ld h, a ; Save a
-    swap a ; a * 16
-    srl a ; a * 8
-    add a, h ; a * 9
-    ; Metasprites are 9 bytes long.
-    ld hl, OctaviaMetasprites
-    add_r16_a h, l
-
-    ld a, [wOctavia_YPos]
-    ld b, a
-    ld a, [wOctavia_XPos]
-    ld c, a
-    call RenderMetasprite
     ret
 
 ; Octavia
-OctaviaMetasprites:
+OctaviaMetasprites::
+.down       dw OctaviaDown
+.up         dw OctaviaUp
+.right      dw OctaviaRight
+.left       dw OctaviaLeft
+.downStep   dw OctaviaDownStep
+.upStep     dw OctaviaUpStep
+.rightStep  dw OctaviaRightStep
+.leftStep   dw OctaviaLeftStep
+
 OctaviaDown::
     db -8 ; y
     db -8 ; x
@@ -242,6 +239,7 @@ SECTION "Player Variables", WRAM0
 wActivePlayer::
     ds 1
 
+SECTION "Player Array", WRAM0, ALIGN[$00]
 wPlayerArray::
     dstruct Entity, wOctavia
     dstruct Entity, wPoppy

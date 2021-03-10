@@ -143,13 +143,21 @@ Initialize:
     ld [rLCDC], a
     ei
 
-    ;ld de, DebugPlayer ; Spawn controllable entity
-    ;ld bc, $6060
-    ;call SpawnEntity
     ld a, 1
     ld [wActivePlayer], a
+
+    ld a, high(PlayerOctavia)
+    ld hl, wPlayerArray
+    ld [hli], a
+    ld a, low(PlayerOctavia)
+    ld [hl], a
+
     ld de, HitDummy
-    ld bc, $8080
+    ld bc, $8020
+    call SpawnEntity
+    ld bc, $6060
+    call SpawnEntity
+    ld bc, $2020
     call SpawnEntity
     jp Main 
 
@@ -171,6 +179,7 @@ Main:
     jr .end
 
 .handleScript
+    ;call RenderEntities
     call HandleScript
     jr .end
 
@@ -204,13 +213,13 @@ Main:
 
 .entities
     call HandleEntities
+    call RenderEntities
 
 .end
     ; When main is unhalted we ensure that it will not loop.
     xor a, a
     ld [wNewFrame], a
     halt
-    nop
     ld a, [wNewFrame]
     and a, a
     jr z, .end

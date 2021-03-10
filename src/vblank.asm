@@ -63,15 +63,15 @@ VBlank:
     ;ld a, DIRECTION_UP
     ;ld [wRoomTransitionDirection], a
 
-    ;ld a, ENGINE_SCRIPT
-    ;ldh [hEngineState], a
-    ;ld hl, wActiveScriptPointer
-    ;ld a, bank(DebugScript)
-    ;ld [hli], a
-    ;ld a, low(DebugScript)
-    ;ld [hli], a
-    ;ld a, high(DebugScript)
-    ;ld [hli], a
+    ld a, ENGINE_SCRIPT
+    ldh [hEngineState], a
+    ld hl, wActiveScriptPointer
+    ld a, bank(DebugScript)
+    ld [hli], a
+    ld a, low(DebugScript)
+    ld [hli], a
+    ld a, high(DebugScript)
+    ld [hli], a
 
 .return
 

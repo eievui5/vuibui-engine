@@ -36,17 +36,18 @@ ENDM
         bytes 1, Health         ; How many hits can I take?
         bytes 1, Flags          ; Flags can be set by the spawning script to slightly vary enemies
         bytes 1, Direction      ; Often used to offset metasprites.
+        bytes 1, Frame          ; What frame are we on? Used by the entity renderer.
         bytes 1, State          ; Have I been knocked back? Killed? Am I attacking? $00 = initiallize.
         bytes 1, Timer          ; Used for various delays and animations
         ; Reserved Private Vars - No suggested use, but required for padding size up to 16
         bytes 1, Priv1          ; 
         bytes 1, Priv2          ; 
         bytes 1, Priv3          ; 
-        bytes 1, Priv4          ; 
         end_struct              ; 16 bytes long. You may not go over or under 16, because entities use StructSeekUnsafe for speed.
 
-ENTITY_DETECTION_SIZE EQU 7 ; (7 * 7) = 14 / (16 - 2)
 ASSERT sizeof_Entity == 16
+
+ENTITY_DETECTION_SIZE EQU 7 ; (7 * 7) = 14 / (16 - 2)
 MAX_ENTITIES EQU 20
 
 ENTITY_DEBUG_PLAYER EQU 1

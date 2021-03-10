@@ -14,7 +14,10 @@ SECTION "Entity Bank", ROMX
 HandleEntities::
 
     call OctaviaPlayerLogic
-    call PoppyPlayerLogic
+    ; RenderMetasprite has some weird bug where it only works if I put it RIGHT HERE!? 
+    ; The stack is getting fucked or something idk. I put too much work into this system to care right now.
+    ld hl, wPlayerArray
+    call RenderMetasprite
 
     ; loop through entity array
     ; c: offset of current entity !!! MUST NOT CHANGE C !!!
@@ -42,23 +45,64 @@ HandleEntities::
     ld hl, wEntityArray
     add hl, bc ; Apply the entity offset
 
+    ; Check for entity
     ld a, [hli] ; Load the first byte of the entity
     cp a, 0 ; If the first byte is 0, skip
     jr z, .loop
-    ld d, a ; Store the first byte for later
-    ld a, [hl]  ; Finish loading the entity script
-    ld h, d ; Restore the Script Pointer
-    ld l, a
+    ; Load entity constants
+    ld l, [hl]  ; Finish loading the entity definition
+    ld h, a ; Restore the Script Pointer
+    ; Load entity Script
+    ld a, [hli] ; Load the first byte of the entity script
+    ld l, [hl]  ; Finish loading the entity script
+    ld h, a
+    ; Run Entity Script Logic
     push bc ; Save the offset
     call _hl_ ; Call the entity's script. It may use `c` to find it's data
     pop bc
     jr .loop
 
+RenderEntities::
+    
+    ; loop through entity array
+    ; c: offset of current entity !!! MUST NOT CHANGE C !!!
+    ; @OPTIMIZE: This needlessly uses a 16-bit index. The entity array should never be so large.
+    ; It previously used c alone, and may be reverted later.
+    ld bc, $0000
+    jr .skip
+.loop
+    ; Increment the array index
+    ld h, b ; Swap over to hl for some math
+    ld l, c
+    ld b, 0
+    ld c, sizeof_Entity
+    add hl, bc
+    ld a, h
+    cp a, high(sizeof_Entity * MAX_ENTITIES)
+    jr nz, .continue ; Skip if there's no match
+    ld a, l
+    cp a, low(sizeof_Entity * MAX_ENTITIES)
+    ret z ; Return if we've reached the end of the array
+.continue
+    ld b, h
+    ld c, l
+.skip
+    ld hl, wEntityArray
+    add hl, bc ; Apply the entity offset
+
+    ; Check for entity
+    ld a, [hl] ; Load the first byte of the entity
+    cp a, 0 ; If the first byte is 0, skip
+    jr z, .loop
+    push bc ; Save the offset
+    call RenderMetasprite
+    pop bc
+    jr .loop
 
 ; Loads a script into wEntityArray at a given location. The Script must initiallize other vars.
 ; @ b:  World X position
 ; @ c:  World Y position
-; @ de: Entity Script
+; @ de: Entity Script (BIG ENDIAN!)
 ; @ Preserves all input, destroys hl and a
 SpawnEntity::
     push bc
@@ -97,10 +141,38 @@ SpawnEntity::
 
 ; Renders a given metasprite at a given location
 ; @ arguments:
-; @ b:  Screen X position
-; @ c:  Screen Y position
-; @ hl: Metasprite
+; @ hl: Entity Structure Origin
 RenderMetasprite::
+    ; Seek to position
+    inc hl
+    inc hl
+    ; Load position
+    ld a, [hli]
+    ld b, a
+    ld c, [hl]
+    StructSeekUnsafe l, Entity_XPos, Entity_Frame
+    ld d, [hl]
+    StructSeekUnsafe l, Entity_Frame, Entity_DataPointer
+    ld a, [hli]
+    ld l, [hl]
+    ld h, a
+    inc hl
+    inc hl
+    inc hl
+    inc hl
+    ld a, [hli]
+    ld h, [hl]
+    ld l, a
+    ld a, d ; Load frame
+    add a, a ; frame * 2
+    add_r16_a h, l
+    ld a, [hli]
+    ld h, [hl]
+    ld l, a
+
+    ; At this point:
+    ; bc - Position (x, y)
+    ; hl - Metasprite pointer
     push hl 
     ; Find Available Shadow OAM
     ldh a, [hOAMIndex]
@@ -385,9 +457,3 @@ SECTION "Entity Array", WRAM0, ALIGN[$00] ; Align with $00 so that we can use un
 wEntityArray::
     ; define an array of `MAX_ENTITIES` Entities, each named wEntityX
     dstructs MAX_ENTITIES, Entity, wEntity
-
-
-SECTION "Entity Buffers", HRAM ; A few common variables for entities. High ram for efficiency.
-; Used to offset the entity's metasprites without adding a certain value each time.
-hActiveEntityFrame::
-    ds 1

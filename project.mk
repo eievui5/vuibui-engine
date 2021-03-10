@@ -10,14 +10,14 @@ PADVALUE := 0xFF
 VERSION := 0
 
 # 4-ASCII letter game ID
-GAMEID := BOIL
+GAMEID := SCLE
 
 # Game title, up to 11 ASCII chars
-TITLE := BOILERPLATE
+TITLE := SCALEOCTVIA
 
 # New licensee, 2 ASCII chars
-# Homebrew games FTW!
-LICENSEE := HB
+# GreenandEievui
+LICENSEE := GE
 # Old licensee, please set to 0x33 (required to get SGB compatibility)
 OLDLIC := 0x33
 
@@ -34,7 +34,7 @@ MBC := 0x00
 SRAMSIZE := 0x00
 
 # ROM name
-ROMNAME := boilerplate
+ROMNAME := scales
 ROMEXT  := gb
 
 
@@ -42,11 +42,11 @@ ROMEXT  := gb
 # "Sensible defaults" are included
 
 # Disable automatic `nop` after `halt`
-ASFLAGS += -h
+# ASFLAGS += -h
 
 # Export all labels
 # This means they must all have unique names, but they will all show up in the .sym and .map files
-# ASFLAGS += -E
+ASFLAGS += -E
 
 # Game Boy Color compatible
 # FIXFLAGS += -c
@@ -57,7 +57,7 @@ ASFLAGS += -h
 # FIXFLAGS += -s
 
 # Game Boy mode
-# LDFLAGS += -d
+LDFLAGS += -d
 
 # No banked WRAM mode
 LDFLAGS += -w
