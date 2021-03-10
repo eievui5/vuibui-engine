@@ -17,8 +17,6 @@ STEP_OFFSET EQU 4
 
 SECTION "Player AI", ROMX
 
-
-
 OctaviaPlayerLogic::
     ; Always start by offsetting frame by facing direction
     ld a, [wOctavia_Direction]

@@ -5,7 +5,40 @@ include "include/macros.inc"
 ; Keep these all in the same bank.
 SECTION "Map Lookup", ROM0
 
-; Returns the active Map (Not World Map) in HL. Destroys a, bc, hl
+UpdateActiveMap::
+    call GetActiveMap
+    push bc ; Save the data pointer
+    ; Copy the map
+    ld bc, MAP_SIZE
+    ld de, wMetatileMap
+    call MemCopy
+    ; Evaluate map data
+    pop hl
+.nextData
+    ld a, [hli]
+    and a, a
+    ret z
+    ASSERT MAPDATA_ENTITY == 1
+    dec a
+    jr z, .mapdataEntity 
+    ret
+.mapdataEntity
+    ; Entity pointers are stored as little-endian, but they're expected to be big.
+    ld a, [hli]
+    ld e, a
+    ld a, [hli]
+    ld d, a
+    ld a, [hli]
+    ld c, a
+    ld a, [hli]
+    ld b, a
+    push hl
+    call SpawnEntity
+    pop hl
+    jr .nextData
+
+; Returns the active Map in `hl`, and its data in `bc`
+; Used to copy map into wMetatileMap and spawn entities/run scripts
 GetActiveMap::
     ld a, [wActiveWorldMap]
     ld b, a
@@ -18,12 +51,13 @@ GetActiveMap::
     ; Switch banks here.
     ld a, [hli] ; Load first pointer byte
     ld b, a
-    ld a, [hl] ; Load second pointer byte
-    ld h, a
+    ld h, [hl] ; Load second pointer byte
     ld l, b ; hl is now the map pointer
 
     ld a, [hli] ; Load and skip the width byte.
     ld c, a
+    ld a, [hli] ; Load and skip the size byte
+    ld d, a
     ld a, [wWorldMapPositionX]
     add a, a ; Pointers are 2 bytes long.
     add_r16_a h, l ; Add X offset.
@@ -38,19 +72,27 @@ GetActiveMap::
     jr nz, .multLoop
 .skipY ; This is dumb
 
-    ; If someone can figure out why this is backwards... you're at this better than me.
+    ld b, h
+    ld c, l
+    ld a, d ; Restore map size
+    add_r16_a b, c ; Offset to find the map data
+    ld a, [bc] ; Load first pointer byte
+    ld d, a
+    inc bc
+    ld a, [bc] ; Load second pointer byte
+    ld c, d
+    ld b, a ; bc is now the map data pointer
+
     ld a, [hli] ; Load first pointer byte
-    ld b, a
-    ld a, [hl] ; Load second pointer byte
-    ld h, a
-    ld l, b ; hl is now the map pointer
-
-
-    ret ; hl now points to the correct map.
+    ld h, [hl] ; Load second pointer byte
+    ld l, a ; hl is now the map pointer
+    ; hl now points to the correct map.
+    ; bc is the map's data.
+    ret 
 
 ; Used to check which World Map we're referencing (Overworld, Dungeon, etc...)
 ; Maximum of 85 Maps, since 85 * 3 = 255
-MapLookup::
+MapLookup:
     ; World Map 0
     far_pointer OverworldMap
 
@@ -58,14 +100,18 @@ MapLookup::
 
 ; Keep associated maps within the same bank
 ; Precede map with a width byte. db (width) * 2. Max width == 128
+; and a size byte. db (width * height) * 2.
 
 SECTION "Overworld Map", ROMX
 
 OverworldMap:
-    db (2) * 2 ; Width
+    db (2) * 2      ; Width
+    db (2 * 2) * 2  ; Size
     dw DebugMap, DebugMap2
     dw DebugMap2, DebugMap
-
+.data
+    dw DebugMap.data, DebugMap2.data
+    dw DebugMap2.data, DebugMap.data
 
 DebugMap: ; Using DebugMetatiles
     db $03, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $03
@@ -84,6 +130,10 @@ DebugMap: ; Using DebugMetatiles
     db $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00
     db $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02
     db $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $03
+.data
+    create_entity HitDummy, $40, $80
+    create_entity HitDummy, $20, $20
+    end_mapdata
 
 DebugMap2: ; Using DebugMetatiles
     db $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02
@@ -102,6 +152,8 @@ DebugMap2: ; Using DebugMetatiles
     db $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00
     db $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02
     db $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00
+.data:
+    end_mapdata
 
 SECTION "Active Map Variables", WRAM0
 

@@ -14,9 +14,6 @@ SECTION "Entity Bank", ROMX
 HandleEntities::
 
     call OctaviaPlayerLogic
-    ; RenderMetasprite has some weird bug where it only works if I put it RIGHT HERE!? 
-    ; The stack is getting fucked or something idk. I put too much work into this system to care right now.
-
 
     ; loop through entity array
     ; c: offset of current entity !!! MUST NOT CHANGE C !!!
@@ -52,11 +49,14 @@ HandleEntities::
     ld l, [hl]  ; Finish loading the entity definition
     ld h, a ; Restore the Script Pointer
     ; Load entity Script
+    ld a, [hli] ; Load bank of script
+    ; Swap banks!
     ld a, [hli] ; Load the first byte of the entity script
-    ld l, [hl]  ; Finish loading the entity script
-    ld h, a
+    ld h, [hl]  ; Finish loading the entity script
+    ld l, a
     ; Run Entity Script Logic
     push bc ; Save the offset
+    ld b, b
     call _hl_ ; Call the entity's script. It may use `c` to find it's data
     pop bc
     jr .loop

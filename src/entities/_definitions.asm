@@ -7,7 +7,7 @@ SECTION "Entity Definitions", ROMX
 /*
 
 EntityName::
-    far_pointer EntityScript ; Run once per fram when hEngineState == 0
+    far_pointer EntityScript ; Run once per frame when hEngineState == 0
     far_pointer EntityMetaspriteLookup ; must be same bank as script
 
 */

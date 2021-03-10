@@ -101,10 +101,7 @@ Initialize:
     call MemCopy
 
     ; Debug Map
-    call GetActiveMap ; map pointer -> hl
-    ld bc, MAP_SIZE
-    ld de, wMetatileMap
-    call MemCopy
+    call UpdateActiveMap
 
     ; Load metatiles onto _SCRN0
     ld de, _SCRN0
@@ -153,13 +150,6 @@ Initialize:
     ld a, low(PlayerOctavia)
     ld [hl], a
 
-    ld de, HitDummy
-    ld bc, $8020
-    call SpawnEntity
-    ld bc, $6060
-    call SpawnEntity
-    ld bc, $2020
-    call SpawnEntity
     jp Main 
 
 SECTION "Main Loop", ROM0

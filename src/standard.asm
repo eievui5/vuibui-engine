@@ -21,7 +21,8 @@ MemOver::
 
 SECTION "Memory Copy", ROM0
 
-; Copies a certain amount of bytes from one location to another
+; Copies a certain amount of bytes from one location to another.
+; Destination and source are both offset by length, incase you want to copy to or from multiple places.
 ; @ arguments:
 ; @ bc: length
 ; @ de: destination
