@@ -12,6 +12,10 @@ EntityName::
 
 */
 
+; I may want to update this from a Metasprite lookup to a rendering script at some point.
+; Seperating logic and animations would be nice, plus it would mean that Entity_Facing actually determines what frame we're on.
+; Not entirely sure if I'll *ever* need this, so I've not implemented it yet.
+
 PlayerOctavia::
     far_pointer OctaviaPlayerLogic
     far_pointer OctaviaMetasprites

@@ -140,7 +140,7 @@ Initialize:
     ld [rLCDC], a
     ei
 
-    ld a, 1
+    xor a
     ld [wActivePlayer], a
 
     ; Initiallize Player Array

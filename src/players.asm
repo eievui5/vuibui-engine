@@ -24,9 +24,9 @@ OctaviaPlayerLogic::
 
     ; Is this the active player?
     ld a, [wActivePlayer]
-    ASSERT ACTIVE_PLAYER_OCTAVIA == 1
-    dec a
-    jr nz, .render ; For now, skip processing if the entity is not active.
+    ASSERT PLAYER_OCTAVIA == 0
+    and a, a
+    ret nz ; For now, skip processing if the entity is not active.
 .activeControl
     ; Check state. Can we move?
 
@@ -39,7 +39,7 @@ OctaviaPlayerLogic::
     ; Are we even moving right now?
     ldh a, [hCurrentKeys]
     and a, $F0
-    jr z, .render ; Let's not do anything if not.
+    ret z ; Let's not do anything if not.
     ; Every 32th tick (~ 1/2 second)...
     ld a, [wOctavia_Timer]
     inc a 
@@ -105,7 +105,6 @@ OctaviaPlayerLogic::
     sub a, 72 + 8
     ld d, a
     jp SetScrollBuffer
-.render 
     ret
 
 ; Octavia

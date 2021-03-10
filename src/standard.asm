@@ -22,24 +22,23 @@ MemOver::
 SECTION "Memory Copy", ROM0
 
 ; Copies a certain amount of bytes from one location to another.
-; Destination and source are both offset by length, incase you want to copy to or from multiple places.
+; Destination and source are both offset by length, in case you want to copy to or from multiple places.
 ; @ arguments:
 ; @ bc: length
 ; @ de: destination
 ; @ hl: source
 MemCopy::
+	dec bc
 	inc b
 	inc c
-	jr .decCounter
-.loadByte
-    ld a, [hli]
-	ld [de], a
-    inc de
-.decCounter
+  .loop:
+	ld a, [hli]
+	ld [de],a
+	inc de
 	dec c
-	jr nz, .loadByte
+	jr nz,.loop
 	dec b
-	jr nz, .loadByte
+	jr nz,.loop
 	ret
 
 SECTION "Jump Table", ROM0

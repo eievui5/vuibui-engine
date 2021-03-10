@@ -56,7 +56,6 @@ HandleEntities::
     ld l, a
     ; Run Entity Script Logic
     push bc ; Save the offset
-    ld b, b
     call _hl_ ; Call the entity's script. It may use `c` to find it's data
     pop bc
     jr .loop

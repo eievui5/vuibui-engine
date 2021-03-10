@@ -1,6 +1,9 @@
 
+INCLUDE "include/defines.inc"
 INCLUDE "include/engine.inc"
+INCLUDE "include/entities.inc"
 INCLUDE "include/macros.inc"
+INCLUDE "include/players.inc"
 INCLUDE "include/scripting.inc"
 INCLUDE "include/text.inc"
 
@@ -29,26 +32,30 @@ HandleScript::
     ld a, [hl]
     call HandleJumpTable
     ASSERT SCRIPT_END == 0
-    dw Script.end
+    dw ScriptEnd
     ASSERT SCRIPT_NULL == 1
-    dw Script.null
+    dw ScriptNull
     ASSERT SCRIPT_TEXT == 2
-    dw Script.text
+    dw ScriptText
+    ASSERT SCRIPT_SETPOS_PLAYER == 3
+    dw ScriptSetposPlayer
+    
 
-Script:
 ; End of script!
-.end
+ScriptEnd:
     ASSERT ENGINE_NORMAL == 0
     xor a, a
     ldh [hEngineState], a
     ret
+
 ; Dummy script
-.null
+ScriptNull:
     load_hl_scriptpointer
     inc hl
     load_scriptpointer_hl
     ret
-.text
+
+ScriptText:
     ld a, [wTextScriptFinished]
     and a, a
     jr nz, .textEnd
@@ -80,13 +87,38 @@ Script:
     load_scriptpointer_hl
     ret
 
+ScriptSetposPlayer:
+    load_hl_scriptpointer
+    inc hl
+    ld de, wPlayerArray + Entity_YPos
+    ld a, [hli] ; Load Player Offset
+    add_r16_a d, e ; Offset to current player
+    ld a, [hli]
+    ld [de], a ; Copy YPos
+    inc e ; this is safe
+    ld a, [hli]
+    ld [de], a ; XPos
+    ld a, Entity_Direction - Entity_XPos
+    add a, e
+    ld e, a
+    ld a, [hli] ; hl is now the next script instruction
+    ld [de], a ; Direction
+    ASSERT Entity_Frame - Entity_Direction == 1
+    inc e
+    ld [de], a ; A bit of a hack, but I wanna set direction *and* frame.
+    load_scriptpointer_hl ; restore and exit
+    ret
+
 
 SECTION "Script", ROMX
 
 DebugScript::
     display_text DebugOh
+    setpos_player PLAYER_OCTAVIA, 20, 20, DIR_OFFSET_RIGHT
     display_text DebugHello
+    setpos_player PLAYER_OCTAVIA, 80, 80, DIR_OFFSET_UP
     display_text DebugGoodbye
+    setpos_player PLAYER_OCTAVIA, 0, 0, DIR_OFFSET_DOWN
     end_script
 
 SECTION "Script Variables", WRAM0
