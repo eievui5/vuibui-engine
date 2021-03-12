@@ -7,7 +7,6 @@ include "include/tiles.inc"
 ; Entities are stored in wEntityArray, which includes a 2-byte pointer to the
 ; entity's data, and then additional info, listed in entities.inc
 
-
 SECTION "Entity Bank", ROMX
 
 ; Loops through the entity array, calling any script it finds

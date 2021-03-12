@@ -21,7 +21,7 @@ kill_entity: MACRO
     add hl, bc
     xor a
     ld bc, sizeof_Entity
-    call MemOver
+    call memset
 ENDM
 
     struct Entity

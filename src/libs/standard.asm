@@ -6,7 +6,7 @@ SECTION "Overwrite Bytes", ROM0
 ; @  a: source (is preserved)
 ; @ bc: length
 ; @ hl: destination
-MemOver::
+memset::
 	inc b
 	inc c
 	jr .decCounter
@@ -27,7 +27,7 @@ SECTION "Memory Copy", ROM0
 ; @ bc: length
 ; @ de: destination
 ; @ hl: source
-MemCopy::
+memcopy::
 	dec bc
 	inc b
 	inc c

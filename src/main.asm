@@ -39,7 +39,7 @@ Initialize:
     ld hl, _VRAM
     ld bc, RAM_LENGTH * 3
     xor a
-    call MemOver
+    call memset
 
 ; Reset Stack to WRAMX
     ld sp, wStackOrigin 
@@ -47,7 +47,7 @@ Initialize:
 ; Clear HRAM
     ld hl, _HRAM
     ld bc, $FFFE - _HRAM
-    call MemOver
+    call memset
 
 ; Load the OAM Routine into HRAM
 	ld hl, OAMDMA
@@ -64,41 +64,41 @@ Initialize:
     ld bc, PlainTiles.end - PlainTiles
     ld de, $97D0
     ld hl, PlainTiles
-    call MemCopy
+    call memcopy
     ; Copy Plain Tiles
     ld bc, PlainTiles.end - PlainTiles
     ld de, $87E0
     ld hl, PlainTiles
-    call MemCopy
+    call memcopy
 ; add a black tile to ram
     ld a, $FF
     ld bc, $0010
     ld hl, $97F0
-    call MemOver
+    call memset
 
 ;Load Tiles
     ; Octavia
     ld bc, GfxOctaviaMain.end - GfxOctaviaMain
     ld hl, GfxOctaviaMain
     ld de, VRAM_TILES_OBJ
-    call MemCopy
+    call memcopy
 
     ; Debug Tiles
     ld bc, DebugTiles.end - DebugTiles
     ld hl, DebugTiles
     ld de, VRAM_TILES_BG
-    call MemCopy
+    call memcopy
     
     ; Debug Metatiles
     ld bc, DebugMetatileDefinitions.end - DebugMetatileDefinitions
     ld hl, DebugMetatileDefinitions
     ld de, wMetatileDefinitions ; Metatiles must be defined
-    call MemCopy
+    call memcopy
 
     ld bc, DebugMetatileData.end - DebugMetatileData
     ld hl, DebugMetatileData
     ld de, wMetatileData ; Metatile data must be defined
-    call MemCopy
+    call memcopy
 
     ; Debug Map
     call UpdateActiveMap
@@ -161,7 +161,7 @@ Main:
     xor a ; ld a, 0
     ld bc, wShadowOAM.end - wShadowOAM
     ld hl, wShadowOAM
-    call MemOver
+    call memset
     ldh [hOAMIndex], a ; Reset the OAM index.
 
     ; Check engine state
@@ -221,7 +221,7 @@ Main:
 
 SECTION "Plain Tiles", ROMX
 
-; It's more efficient to MemCopy these. (Not really)
+; It's more efficient to memcopy these. (Not really)
 PlainTiles:
     ; Light
     db $FF, $00, $FF, $00

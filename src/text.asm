@@ -61,7 +61,7 @@ HandleTextbox::
     add a, c ; a * 20
     add_r16_a h, l
     ld bc, TEXTBOX_WIDTH
-    call MemCopy
+    call memcopy
 
     ld a, [wTextScreenIndex]
     inc a
@@ -86,7 +86,7 @@ HandleTextbox::
     swap a ; a * 16
     add_r16_a h, l ; a * 32
     ld a, $FF
-    call MemOver
+    call memset
 
     ld a, [wTextScreenIndex]
     inc a
@@ -148,7 +148,7 @@ HandleTextbox::
     ld e, a
 
     ld bc, $0010
-    call MemCopy
+    call memcopy
 
     ld a, [wTextScreenIndex]
     inc a

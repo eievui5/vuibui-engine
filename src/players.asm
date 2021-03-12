@@ -12,6 +12,9 @@ OCTAVIA_RIGHT_1 EQU $08
 OCTAVIA_RIGHT_2 EQU $0A
 OCTAVIA_RIGHT_STEP_1 EQU $0C
 OCTAVIA_RIGHT_STEP_2 EQU $0E
+OCTAVIA_DOWN_ACT EQU $10
+OCTAVIA_UP_ACT EQU $12
+OCTAVIA_RIGHT_ACT EQU $14
 
 STEP_OFFSET EQU 4
 
@@ -28,8 +31,8 @@ OctaviaPlayerLogic::
     and a, a
     ret nz ; For now, skip processing if the entity is not active.
 .activeControl
-    ; Check state. Can we move?
-
+    ld a, [wOctavia_State]
+    
     ; TODO: Make modular and place in a fuction.
 .activeMovement ; How to move.
     ; Reset velocity if we have control over movement
@@ -117,6 +120,8 @@ OctaviaMetasprites::
 .upStep     dw OctaviaUpStep
 .rightStep  dw OctaviaRightStep
 .leftStep   dw OctaviaLeftStep
+FRAME_SWING_DOWN_1 EQU 9
+.downSwing  dw OctaviaDownSwing
 
 OctaviaDown::
     db -8 ; y
@@ -227,6 +232,20 @@ OctaviaLeftStep: ; Flipped version of OctaviaRight
     db 0 ; x
     db OCTAVIA_RIGHT_STEP_1 ; Tile ID
     db OAMF_PAL0 | OAMF_BANK0 | OAMF_XFLIP ; Flags
+
+    db METASPRITE_END
+
+
+OctaviaDownSwing: ;
+    db -8 ; y
+    db -8 ; x
+    db OCTAVIA_DOWN_ACT ; Tile ID
+    db OAMF_PAL0 | OAMF_BANK0 ; Flags
+
+    db -8 ; y
+    db 0 ; x
+    db OCTAVIA_DOWN_2 ; Tile ID
+    db OAMF_PAL0 | OAMF_BANK0 ; Flags
 
     db METASPRITE_END
 

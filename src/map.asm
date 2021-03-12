@@ -11,7 +11,7 @@ UpdateActiveMap::
     ; Copy the map
     ld bc, MAP_SIZE
     ld de, wMetatileMap
-    call MemCopy
+    call memcopy
     ; Evaluate map data
     pop hl
 .nextData
@@ -131,8 +131,10 @@ DebugMap: ; Using DebugMetatiles
     db $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02
     db $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $03
 .data
-    create_entity HitDummy, $40, $80
-    create_entity HitDummy, $20, $20
+    ; Create 16 entities for stress-testing!
+    FOR i, 16
+        create_entity HitDummy, i * 16, i * 16
+    ENDR
     end_mapdata
 
 DebugMap2: ; Using DebugMetatiles
