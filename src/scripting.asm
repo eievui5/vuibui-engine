@@ -5,6 +5,7 @@ INCLUDE "include/entities.inc"
 INCLUDE "include/macros.inc"
 INCLUDE "include/players.inc"
 INCLUDE "include/scripting.inc"
+INCLUDE "include/switch.inc"
 INCLUDE "include/text.inc"
 
 MACRO load_hl_scriptpointer
@@ -30,16 +31,12 @@ HandleScript::
     load_hl_scriptpointer
     ; [hl] -> Script Byte
     ld a, [hl]
-    call HandleJumpTable
-    ASSERT SCRIPT_END == 0
-    dw ScriptEnd
-    ASSERT SCRIPT_NULL == 1
-    dw ScriptNull
-    ASSERT SCRIPT_TEXT == 2
-    dw ScriptText
-    ASSERT SCRIPT_SETPOS_PLAYER == 3
-    dw ScriptSetposPlayer
-    
+    switch
+    case SCRIPT_END, ScriptEnd
+    case SCRIPT_NULL, ScriptNull
+    case SCRIPT_TEXT, ScriptText
+    case SCRIPT_SETPOS_PLAYER, ScriptSetposPlayer
+    end_switch
 
 ; End of script!
 ScriptEnd:

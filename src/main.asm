@@ -17,14 +17,13 @@ SECTION "Header", ROM0[$100]
 
 SECTION "Initialize", ROM0
 Initialize:
-    
     ; Wait to turn off the screen
     ld a, 144
     ld hl, rLY
 .waitVBlank
     cp a, [hl]
     jr nz, .waitVBlank
-    xor a ; Turn off the screen
+    xor a, a ; Turn off the screen
     ld [rLCDC], a
 
 ; Enable interrupts
@@ -38,7 +37,7 @@ Initialize:
 ; Clear VRAM, SRAM, and WRAM
     ld hl, _VRAM
     ld bc, RAM_LENGTH * 3
-    xor a
+    xor a, a
     call memset
 
 ; Reset Stack to WRAMX
@@ -63,11 +62,6 @@ Initialize:
     ; Copy Plain Tiles
     ld bc, PlainTiles.end - PlainTiles
     ld de, $97D0
-    ld hl, PlainTiles
-    call memcopy
-    ; Copy Plain Tiles
-    ld bc, PlainTiles.end - PlainTiles
-    ld de, $87E0
     ld hl, PlainTiles
     call memcopy
 ; add a black tile to ram
@@ -110,13 +104,13 @@ Initialize:
     
     call LoadMapData
     
-    ; Place window
+; Place window
     ld a, 7
     ldh [rWX], a
     ld a, 144 - 16
     ldh [rWY], a
 
-    ; Enable audio
+; Enable audio
     ld a, $80
     ld [rAUDENA], a
     ld a, $FF
@@ -135,20 +129,20 @@ Initialize:
     ld hl, rOBP1
     ld [hl], a
 
-; Re-enable the screen
-    ld a, SCREEN_NORMAL
-    ld [rLCDC], a
-    ei
-
-    xor a
-    ld [wActivePlayer], a
-
-    ; Initiallize Player Array
+; Initiallize Player Array
     ld a, high(PlayerOctavia)
     ld hl, wOctavia
     ld [hli], a
     ld a, low(PlayerOctavia)
     ld [hl], a
+
+    ld a, $10
+    ld [wOctaviaEquipped], a
+
+; Re-enable the screen
+    ld a, SCREEN_NORMAL
+    ld [rLCDC], a
+    ei
 
     jp Main 
 

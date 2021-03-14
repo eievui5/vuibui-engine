@@ -53,7 +53,7 @@ VBlank:
 .input
     ; Updating Input should happen last, since it does not rely on VBlank
     call UpdateInput
-    ; Delemt me
+    ; Delete me (debug button)
     ldh a, [hNewKeys]
     bit PADB_START, a
     jr z, .return
@@ -63,15 +63,22 @@ VBlank:
     ;ld a, DIRECTION_UP
     ;ld [wRoomTransitionDirection], a
 
-    ld a, ENGINE_SCRIPT
-    ldh [hEngineState], a
-    ld hl, wActiveScriptPointer
-    ld a, bank(DebugScript)
-    ld [hli], a
-    ld a, low(DebugScript)
-    ld [hli], a
-    ld a, high(DebugScript)
-    ld [hli], a
+    ;ld a, ENGINE_SCRIPT
+    ;ldh [hEngineState], a
+    ;ld hl, wActiveScriptPointer
+    ;ld a, bank(DebugScript)
+    ;ld [hli], a
+    ;ld a, low(DebugScript)
+    ;ld [hli], a
+    ;ld a, high(DebugScript)
+    ;ld [hli], a
+
+    ld a, -2
+    ld [wOctavia_YVel], a
+    ld a, -0
+    ld [wOctavia_XVel], a
+    ld a, $01
+    ld [wOctavia_CollisionData], a
 
 .return
 

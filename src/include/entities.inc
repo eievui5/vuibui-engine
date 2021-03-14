@@ -34,21 +34,22 @@ ENDM
         bytes 1, CollisionData  ; Upper nibble for flags, lower for damage.
         ; Private - 
         bytes 1, Health         ; How many hits can I take?
-        bytes 1, Flags          ; 
         bytes 1, Direction      ; 
         bytes 1, Frame          ; What frame are we on? Used by the entity renderer.
+        bytes 1, Flags          ; 
         bytes 1, State          ; Have I been knocked back? Killed? Am I attacking? $00 = initiallize.
         bytes 1, Timer          ; Used for various delays and animations
+        bytes 1, InvTimer       ; Second timer for invicibility. If bit 2 is set the pallet swaps.
         ; Reserved Private Vars - No suggested use, but required for padding size up to 16
         bytes 1, Priv1          ; 
         bytes 1, Priv2          ; 
-        bytes 1, Priv3          ; 
-        end_struct              ; 16 bytes long. You may not go over or under 16, because entities use StructSeekUnsafe for speed.
+    end_struct              ; 16 bytes long. You may not go over or under 16, because entities use StructSeekUnsafe for speed.
 
 ASSERT sizeof_Entity == 16
 
 ENTITY_DETECTION_SIZE EQU 7 ; (7 * 7) = 14 / (16 - 2)
 MAX_ENTITIES EQU 20
+MAX_PROJECTILES EQU 8
 
 ENTITY_DEBUG_PLAYER EQU 1
 

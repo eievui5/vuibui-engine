@@ -1,6 +1,6 @@
 
 include "include/hardware.inc"
-include "include/defines.inc"
+include "include/graphics.inc"
 
 SECTION "OAM DMA routine", ROM0
 OAMDMA::

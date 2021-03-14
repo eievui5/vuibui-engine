@@ -133,7 +133,7 @@ DebugMap: ; Using DebugMetatiles
 .data
     ; Create 16 entities for stress-testing!
     FOR i, 16
-        create_entity HitDummy, i * 16, i * 16
+        ;create_entity HitDummy, i * 16, i * 16
     ENDR
     end_mapdata
 

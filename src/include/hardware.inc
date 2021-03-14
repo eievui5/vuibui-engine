@@ -70,7 +70,15 @@ OAMF_PAL1       EQU %00010000 ; Palette number; 0,1 (DMG)
 OAMF_BANK0      EQU %00000000 ; Bank number; 0,1 (GBC)
 OAMF_BANK1      EQU %00001000 ; Bank number; 0,1 (GBC)
 
-OAMF_PALMASK    EQU %00000111 ; Palette (GBC)
+; I (GreenAndEievui) added these. Yes, they're just ints.
+OAMF_GBCPAL0    EQU %00000000 ; Palette (GBC)
+OAMF_GBCPAL1    EQU %00000001 ; Palette (GBC)
+OAMF_GBCPAL2    EQU %00000010 ; Palette (GBC)
+OAMF_GBCPAL3    EQU %00000011 ; Palette (GBC)
+OAMF_GBCPAL4    EQU %00000100 ; Palette (GBC)
+OAMF_GBCPAL5    EQU %00000101 ; Palette (GBC)
+OAMF_GBCPAL6    EQU %00000110 ; Palette (GBC)
+OAMF_GBCPAL7    EQU %00000111 ; Palette (GBC)
 
 OAMB_PRI        EQU 7 ; Priority 
 OAMB_YFLIP      EQU 6 ; Y flip 

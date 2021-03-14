@@ -43,7 +43,7 @@ memcopy::
 
 SECTION "Jump Table", ROM0
 
-; Jumps the the `a`th pointer. 128 pointers max.
+; Jumps the the `a`th pointer. 128 pointers max. Place pointers after the call using `dw`
 ; @ a: Jump Offset
 HandleJumpTable::
 	; Restore Pointer to jump table

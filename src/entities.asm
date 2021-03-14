@@ -1,6 +1,7 @@
 include "include/defines.inc"
 include "include/entities.inc"
 include "include/hardware.inc"
+INCLUDE "include/graphics.inc"
 include "include/macros.inc"
 include "include/tiles.inc"
 
@@ -60,7 +61,6 @@ HandleEntities::
     jr .loop
 
 RenderEntities::
-    
     ld hl, wOctavia
     call RenderMetasprite
 
@@ -99,11 +99,11 @@ RenderEntities::
     pop bc
     jr .loop
 
-; Loads a script into wEntityArray at a given location. The Script must initiallize other vars.
+; Loads a script into wEntityArray if space is available. The Script must initiallize other vars.
 ; @ b:  World X position
 ; @ c:  World Y position
 ; @ de: Entity Script (BIG ENDIAN!)
-; @ Preserves all input, destroys hl and a
+; @ Preserves all input, returns Entity_XVel in `hl`
 SpawnEntity::
     push bc
     push de
@@ -152,7 +152,10 @@ RenderMetasprite::
     ld c, [hl]
     StructSeekUnsafe l, Entity_XPos, Entity_Frame
     ld d, [hl]
-    StructSeekUnsafe l, Entity_Frame, Entity_DataPointer
+    StructSeekUnsafe l, Entity_Frame, Entity_InvTimer
+    ld a, [hl]
+    ldh [hRenderByte], a ; Store timer here.
+    StructSeekUnsafe l, Entity_InvTimer, Entity_DataPointer
     ld a, [hli]
     ld l, [hl]
     ld h, a
@@ -202,9 +205,15 @@ RenderMetasprite::
     ld [de], a
     inc de
     ; Load attributes.
-    ld a, [hli]
+    ld a, [hRenderByte]
+    bit 2, a ; Every 8/60 second, set pallet!
+    ld a, [hl]
+    jr z, .skipFlip
+    or a, OAMF_PAL1 
+.skipFlip
     ld [de], a
     inc de
+    inc hl
     ; Update OAM Index
     ldh a, [hOAMIndex]
     add a, 4
@@ -220,12 +229,18 @@ BOUNDING_BOX_X EQU 6 ; A bit smaller than 16*16, because that feel/looks better.
 BOUNDING_BOX_Y EQU 6
 
 ; Move the Entity based on its Velocity. Slide along collision.
-; TODO: This should rely on a pointer to the origin, not XVel (It's also like, really long?)
-; @ hl: pointer to Entity_XVel. Returns Entity_YPos
+; @ hl: pointer to Entity. Returns Entity_YPos
 MoveAndSlide::
 .xMovement
+    ; Seek to X Velocity
+    ld a, Entity_XVel - Entity_DataPointer
+    add a, l
+    ld l, a
     ld c, [hl] ; C contains X Velocity
-    StructSeekUnsafe l, Entity_XVel, Entity_YPos
+    ; Seek to YPosition
+    ld a, Entity_YPos - Entity_XVel
+    add a, l
+    ld l, a
     SeekAssert Entity_YPos, Entity_XPos, 1
     ld a, [hli]
     ld b, a ; Save the Y Pos for later
@@ -441,13 +456,11 @@ DetectEntity::
 .return
     ret
 
-
-
-; #################################################
-; ###                 Entities                  ###
-; #################################################
-
-SECTION "Entity Array", WRAM0, ALIGN[$00] ; Align with $00 so that we can use unsafe struct seeking
+SECTION "Entity Array", WRAM0, ALIGN[$08] ; Align with $00 so that we can use unsafe struct seeking
 wEntityArray::
     ; define an array of `MAX_ENTITIES` Entities, each named wEntityX
     dstructs MAX_ENTITIES, Entity, wEntity
+
+SECTION "Render Byte", HRAM
+hRenderByte: ; currently stores the entity's invtimer to find out if it should blink
+    ds 1

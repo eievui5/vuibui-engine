@@ -20,6 +20,10 @@ PlayerOctavia::
     far_pointer OctaviaPlayerLogic
     far_pointer OctaviaMetasprites
 
+PlayerSpell::
+    far_pointer ProjectileLogic
+    far_pointer OctaviaSpellMetasprites
+
 DebugPlayer::
     far_pointer DebugPlayerScript
     far_pointer OctaviaMetasprites
