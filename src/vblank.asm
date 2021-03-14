@@ -1,6 +1,6 @@
 
+INCLUDE "include/directions.inc"
 include "include/hardware.inc"
-include "include/defines.inc"
 include "include/engine.inc"
 include "include/text.inc"
 INCLUDE "include/players.inc"

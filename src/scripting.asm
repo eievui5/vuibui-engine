@@ -1,5 +1,5 @@
 
-INCLUDE "include/defines.inc"
+INCLUDE "include/directions.inc"
 INCLUDE "include/engine.inc"
 INCLUDE "include/entities.inc"
 INCLUDE "include/macros.inc"
@@ -111,11 +111,11 @@ SECTION "Script", ROMX
 
 DebugScript::
     display_text DebugOh
-    setpos_player PLAYER_OCTAVIA, 20, 20, DIR_OFFSET_RIGHT
+    setpos_player PLAYER_OCTAVIA, 20, 20, DIR_RIGHT
     display_text DebugHello
-    setpos_player PLAYER_OCTAVIA, 80, 80, DIR_OFFSET_UP
+    setpos_player PLAYER_OCTAVIA, 80, 80, DIR_UP
     display_text DebugGoodbye
-    setpos_player PLAYER_OCTAVIA, 0, 0, DIR_OFFSET_DOWN
+    setpos_player PLAYER_OCTAVIA, 0, 0, DIR_DOWN
     end_script
 
 SECTION "Script Variables", WRAM0

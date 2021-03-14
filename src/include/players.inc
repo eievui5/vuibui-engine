@@ -1,9 +1,13 @@
 
+INCLUDE "include/enum.inc"
+
     IF !DEF(PLAYERS_INC)
 PLAYERS_INC SET 1
 
-PLAYER_OCTAVIA EQU 0
-PLAYER_POPPY EQU 1
-PLAYER_TIBER EQU 2
+    start_enum PLAYER
+        enum OCTAVIA
+        enum POPPY
+        enum TIBER
+    end_enum
 
 ENDC

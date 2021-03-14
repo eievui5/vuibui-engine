@@ -1,4 +1,5 @@
-include "include/defines.inc"
+
+INCLUDE "include/directions.inc"
 include "include/entities.inc"
 include "include/hardware.inc"
 INCLUDE "include/graphics.inc"
@@ -351,7 +352,6 @@ MoveAndSlide::
     inc [hl] ; Slide out
     dec l
     ret
-
 
 ; Locates a given position in the map data and returns it in HL. Destroys all registers.
 ; @ b:  Y position

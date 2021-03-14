@@ -2,7 +2,6 @@
 ; Root
 
 include "include/hardware.inc"
-include "include/defines.inc"
 include "include/tiles.inc"
 include "include/map.inc"
 include "include/engine.inc"
@@ -36,7 +35,7 @@ Initialize:
 
 ; Clear VRAM, SRAM, and WRAM
     ld hl, _VRAM
-    ld bc, RAM_LENGTH * 3
+    ld bc, $2000 * 3
     xor a, a
     call memset
 

@@ -27,7 +27,7 @@ MACRO display_text
 ENDM
 
 ; Sets the given player's position and direction. Will not scroll the camera (yet) and thus has weird effects.
-; @ player_setpos OCTAVIA, 0, 0, DIRECTION, DIR_OFFSET_DOWN
+; @ player_setpos OCTAVIA, 0, 0, DIRECTION, DIR_DOWN
 MACRO setpos_player
     IF _NARG != 4
         "Expected at least 4 args"

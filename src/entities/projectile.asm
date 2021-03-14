@@ -1,4 +1,5 @@
 
+INCLUDE "include/enum.inc"
 INCLUDE "include/entities.inc"
 INCLUDE "include/hardware.inc"
 INCLUDE "include/graphics.inc"
@@ -29,12 +30,30 @@ ProjectileLogic::
     push bc
     ld b, d
     ld c, e
+    push de
     call LookupMapData
+    pop de
     pop bc
     ld a, [hl]
     cp a, TILE_COLLISION
-    ret nz
+    jr z, .destroySelf
+    push bc
+    call DetectEntity
+    inc c ; Did we find something?
+    jr z, .popReturn ; No? return...
+    dec c
+    FindEntity Entity_CollisionData
+    ld d, h
+    ld e, l
+    pop bc
+    FindEntity Entity_CollisionData
+    ld a, [hl]
+    ld [de], a
+.destroySelf
     kill_entity
+    ret
+.popReturn
+    pop bc
     ret
 
 ; The player dynamically loads their spell graphics.

@@ -1,9 +1,9 @@
 
+INCLUDE "include/directions.inc"
 INCLUDE "include/engine.inc"
 INCLUDE "include/entities.inc"
 INCLUDE "include/macros.inc"
 include "include/hardware.inc"
-include "include/defines.inc"
 
 SECTION "Debug Player", ROMX
 

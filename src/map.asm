@@ -132,8 +132,8 @@ DebugMap: ; Using DebugMetatiles
     db $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $03
 .data
     ; Create 16 entities for stress-testing!
-    FOR i, 16
-        ;create_entity HitDummy, i * 16, i * 16
+    FOR i, 8
+        create_entity HitDummy, i * 16, i * 16
     ENDR
     end_mapdata
 

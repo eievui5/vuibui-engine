@@ -1,5 +1,5 @@
 
-INCLUDE "include/defines.inc"
+INCLUDE "include/directions.inc"
 include "include/engine.inc"
 include "include/hardware.inc"
 include "include/tiles.inc"
@@ -154,9 +154,9 @@ VBlankScrollLoader::
 
     ld a, [wRoomTransitionDirection]
     ; Up and left must not load the 0 tile until the end.
-    cp a, DIRECTION_UP
+    cp a, DIR_UP
     jr z, .skipFirst
-    cp a, DIRECTION_LEFT
+    cp a, DIR_LEFT
     jr z, .skipFirst
     ld bc, $0000
     ld de, _SCRN0
@@ -169,18 +169,18 @@ VBlankScrollLoader::
     ld b, a
     ld a, [wRoomTransitionDirection]
 
-    ASSERT DIRECTION_DOWN == 1
-    dec a
+    ASSERT DIR_DOWN == 0
+    and a, a
     jr z, .loadDown
-    ASSERT DIRECTION_UP == 2
+    ASSERT DIR_UP == 1
     dec a
     jr z, .loadUp
-    ASSERT DIRECTION_RIGHT == 3
+    ASSERT DIR_RIGHT == 2
     ; Left and Right both need b swapped
     swap b
     dec a
     jr z, .loadRight
-    ASSERT DIRECTION_LEFT == 4
+    ASSERT DIR_LEFT == 3
     ; Logic pertaining to each direction
     ; If carry is set, stop loading.
 .loadLeft
@@ -255,16 +255,16 @@ VBlankScrollLoader::
 
     ; Scrolling logic, then fall through ↓
     ld a, [wRoomTransitionDirection]
-    ASSERT DIRECTION_DOWN == 1
-    dec a
+    ASSERT DIR_DOWN == 0
+    and a, a
     jr z, .scrollDown
-    ASSERT DIRECTION_UP == 2
+    ASSERT DIR_UP == 1
     dec a
     jr z, .scrollUp
-    ASSERT DIRECTION_RIGHT == 3
+    ASSERT DIR_RIGHT == 2
     dec a
     jr z, .scrollRight
-    ASSERT DIRECTION_LEFT == 4
+    ASSERT DIR_LEFT == 3
     jr .scrollLeft
 
 .scrollDown

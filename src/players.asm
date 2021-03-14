@@ -1,5 +1,6 @@
 
-INCLUDE "include/defines.inc"
+INCLUDE "include/directions.inc"
+INCLUDE "include/enum.inc"
 INCLUDE "include/entities.inc"
 INCLUDE "include/graphics.inc"
 INCLUDE "include/hardware.inc"
@@ -8,9 +9,12 @@ INCLUDE "include/players.inc"
 INCLUDE "include/switch.inc"
 
 ; States
-PLAYER_STATE_NORMAL EQU 0
-PLAYER_STATE_HURT EQU 1
-PLAYER_STATE_FIRE_WAND EQU 2
+
+    start_enum PLAYER_STATE
+        enum NORMAL
+        enum HURT
+        enum FIRE_WAND
+    end_enum
 
 ; Timer constants
 KNOCK_FRAMES EQU 20
@@ -98,7 +102,7 @@ OctaviaActiveNormal: ; How to move.
     ld a, 1
     ld [wOctavia_YVel], a
     ; Update facing
-    ASSERT DIR_OFFSET_DOWN == 0
+    ASSERT DIR_DOWN == 0
     xor a, a
     ld [wOctavia_Direction], a
     ; Restore a
@@ -111,7 +115,7 @@ OctaviaActiveNormal: ; How to move.
     ld a, -1
     ld [wOctavia_YVel], a
     ; Update facing
-    ld a, DIR_OFFSET_UP
+    ld a, DIR_UP
     ld [wOctavia_Direction], a
     ; Restore a
     ldh a, [hCurrentKeys] 
@@ -121,7 +125,7 @@ OctaviaActiveNormal: ; How to move.
     ld a, -1
     ld [wOctavia_XVel], a
     ; Update facing
-    ld a, DIR_OFFSET_LEFT
+    ld a, DIR_LEFT
     ld [wOctavia_Direction], a
     ; Don't bother restoring a
     ; Left and Right cannot be pressed, so skip to Render
@@ -131,7 +135,7 @@ OctaviaActiveNormal: ; How to move.
     jr z, .activeMoveAndSlide
     ld a, 1
     ld [wOctavia_XVel], a
-    ld a, DIR_OFFSET_RIGHT
+    ld a, DIR_RIGHT
     ld [wOctavia_Direction], a
     ; Don't bother restoring a
 .activeMoveAndSlide
