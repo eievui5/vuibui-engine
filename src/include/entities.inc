@@ -8,15 +8,19 @@ ENTITIES_INC SET 1
 ; @ bc: Entity Index
 ; @ 3 bytes
 ; @ 5 cycles
-FindEntity: MACRO 
-    ld hl, wEntityArray + \1
+MACRO find_entity
+    IF _NARG > 0
+        ld hl, wEntityArray + \1
+    ELSE
+        ld hl, wEntityArray
+    ENDC 
     add hl, bc
 ENDM
 
  
 ; Clears an entity
 ; @ bc: Entity Index. Will be lost, but shouldn't matter.
-kill_entity: MACRO 
+MACRO kill_entity
     ld hl, wEntityArray
     add hl, bc
     xor a

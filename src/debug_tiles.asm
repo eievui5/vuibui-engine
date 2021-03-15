@@ -22,11 +22,6 @@ DebugTiles::
     db $00, $00, $00, $00
     db $FF, $FF, $FF, $FF
     db $00, $00, $00, $00
-    ; $03
-    db $FF, $00, $00, $FF
-    db $FF, $00, $00, $FF
-    db $FF, $00, $00, $FF
-    db $FF, $00, $00, $FF
 .end::
 
 SECTION "Metatiles", ROMX 
@@ -40,9 +35,6 @@ DebugMetatileDefinitions::
     ; $02
     db ROW_TILE, ROW_TILE
     db ROW_TILE, ROW_TILE
-    ; $03
-    db $02, $02
-    db $02, $02
 .end::
 
 ; Just a lookup table to save from storing 2 maps.
@@ -53,6 +45,4 @@ DebugMetatileData::
     db TILE_COLLISION
     ; $02
     db TILE_CLEAR
-    ; $03
-    db $02
 .end::

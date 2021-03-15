@@ -456,6 +456,49 @@ DetectEntity::
 .return
     ret
 
+; Find the angle to `de` from `hl`. 
+; Returns a normalized (0 or 2) vector in `hl` 
+; (2 is used because it's a more comman value and takes nothing extra to load)
+CalculateKnockback::
+REPT 2
+    srl d
+    srl e
+    srl h
+    srl l
+ENDR
+.checkY
+    ld a, d
+    cp a, h
+    jr z, .yEqu
+    jr c, .yNeg
+    ;jr nc, .yPos (fallthrough)
+.yPos
+    ld a, 2
+    jr .checkX
+.yEqu
+    xor a, a
+    jr .checkX
+.yNeg
+    ld a, -2
+.checkX
+    ld h, a
+    ld a, e
+    cp a, l
+    jr z, .xEqu
+    jr c, .xNeg
+    ;jr nc, .xPos (fallthrough)
+.xPos
+    ld a, 2
+    jr .return
+.xEqu
+    xor a, a
+    jr .return
+.xNeg
+    ld a, -2
+.return
+    ld l, a
+    ret
+
 SECTION "Entity Array", WRAM0, ALIGN[$08] ; Align with $00 so that we can use unsafe struct seeking
 wEntityArray::
     ; define an array of `MAX_ENTITIES` Entities, each named wEntityX

@@ -24,10 +24,6 @@ PlayerSpell::
     far_pointer ProjectileLogic
     far_pointer OctaviaSpellMetasprites
 
-DebugPlayer::
-    far_pointer DebugPlayerScript
-    far_pointer OctaviaMetasprites
-
 HitDummy::
     far_pointer HitDummyScript
     far_pointer OctaviaMetasprites

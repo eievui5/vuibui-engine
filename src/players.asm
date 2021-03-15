@@ -17,8 +17,8 @@ INCLUDE "include/switch.inc"
     end_enum
 
 ; Timer constants
-KNOCK_FRAMES EQU 20
-INVINCIBLE_FRAMES EQU 90
+KNOCK_FRAMES EQU 15
+INVINCIBLE_FRAMES EQU 60
 
 ; Frame Index offsets (distance from start to X)
 STEP_OFFSET EQU 4
@@ -511,13 +511,16 @@ SECTION "Player Variables", WRAM0
 wActivePlayer::
     ds 1
 
-; The currently equipped items
+; The currently equipped items.
 ; Lower Nibble = A, Upper Nibble = B
-; Maximum of 16 items.
 wOctaviaEquipped:: 
     ds 1
+; The currently equipped items.
+; Lower Nibble = A, Upper Nibble = B
 wPoppyEquipped::
     ds 1
+; The currently equipped items.
+; Lower Nibble = A, Upper Nibble = B
 wTiberEquipped::
     ds 1
 

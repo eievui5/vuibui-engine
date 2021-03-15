@@ -1,12 +1,12 @@
 
 ; Root
 
-include "include/hardware.inc"
-include "include/tiles.inc"
-include "include/map.inc"
-include "include/engine.inc"
+INCLUDE "include/hardware.inc"
+INCLUDE "include/tiles.inc"
+INCLUDE "include/map.inc"
+INCLUDE "include/engine.inc"
 
-include "gfx/graphics.asm"
+INCLUDE "gfx/graphics.asm"
 
 SECTION "Header", ROM0[$100]
 	di
@@ -133,9 +133,13 @@ Initialize:
     ld hl, wOctavia
     ld [hli], a
     ld a, low(PlayerOctavia)
-    ld [hl], a
+    ld [hli], a
+    ld a, $80
+    ld [hli], a
+    ld [hli], a
 
-    ld a, $10
+
+    ld a, $11 ; Fire rod in both A and B
     ld [wOctaviaEquipped], a
 
 ; Re-enable the screen
@@ -147,7 +151,8 @@ Initialize:
 
 SECTION "Main Loop", ROM0
 
-; Split these up into an engine state jump table. Engine should only call out so that code can be reused.
+; Split these up into an engine state jump table.
+; Engine should only call out so that code can be reused.
 Main:
 
 .cleanOAM
