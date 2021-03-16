@@ -134,8 +134,9 @@ Initialize:
     ld [hli], a
     ld a, low(PlayerOctavia)
     ld [hli], a
-    ld a, $80
+    ld a, 24 + 16
     ld [hli], a
+    ld a, 16 + 16
     ld [hli], a
 
 
@@ -166,12 +167,17 @@ Main:
     ; TODO: make this offset OAM during Scrolling
     ldh a, [hEngineState]
     and a, a
-    ASSERT ENGINE_NORMAL == 0
+    ASSERT ENGINE_STATE_NORMAL == 0
     jr z, .handleNormal
-    ASSERT ENGINE_SCRIPT == 1
+    ASSERT ENGINE_STATE_SCRIPT == 1
     dec a
     jr z, .handleScript
-    ASSERT ENGINE_ROOM_TRANSITION == 2
+    ASSERT ENGINE_STATE_ROOM_TRANSITION == 2
+
+.handleTransition
+    call RenderEntities
+    call PlayerTransitionMovement
+    call KillOffscreen
     jr .end
 
 .handleScript
@@ -188,9 +194,9 @@ Main:
     ld a, [hl]
     inc a
     and a, 3 ; cp a, 3 + 1 (Since 4 is it's own bit...)
-    jr nz, .skipp
+    jr nz, .cycleSkip
     ld a, 1
-.skipp
+.cycleSkip
     ld [hl], a
 
 .updateMap
@@ -222,15 +228,9 @@ SECTION "Plain Tiles", ROMX
 ; It's more efficient to memcopy these. (Not really)
 PlainTiles:
     ; Light
-    db $FF, $00, $FF, $00
-    db $FF, $00, $FF, $00
-    db $FF, $00, $FF, $00
-    db $FF, $00, $FF, $00
+    ds 16, $FF, $00
     ; Dark
-    db $00, $FF, $00, $FF
-    db $00, $FF, $00, $FF
-    db $00, $FF, $00, $FF
-    db $00, $FF, $00, $FF
+    ds 16, $00, $FF
 .end
 
 SECTION "Main Vars", WRAM0

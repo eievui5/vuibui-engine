@@ -1,8 +1,9 @@
-include "structs.inc"
-include "macros.inc"
 
     IF !DEF(ENTITIES_INC)
 ENTITIES_INC SET 1
+
+include "structs.inc"
+include "macros.inc"
 
 ; Used to find an entity's data at a given offset, storing it in hl. 
 ; @ bc: Entity Index

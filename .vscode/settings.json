@@ -1,6 +1,6 @@
 {
     "rgbdsz80.includePath": [
-        "src/"
+        "src/", "src/include"
     ],
     "rgbdsz80.formatting.capitalization": {
         "language.keyword" : "upper"

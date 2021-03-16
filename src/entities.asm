@@ -1,10 +1,10 @@
 
 INCLUDE "include/directions.inc"
-include "include/entities.inc"
-include "include/hardware.inc"
+INCLUDE "include/entities.inc"
+INCLUDE "include/hardware.inc"
 INCLUDE "include/graphics.inc"
-include "include/macros.inc"
-include "include/tiles.inc"
+INCLUDE "include/macros.inc"
+INCLUDE "include/tiles.inc"
 
 ; Entities are stored in wEntityArray, which includes a 2-byte pointer to the
 ; entity's data, and then additional info, listed in entities.inc
@@ -23,28 +23,21 @@ HandleEntities::
     ld bc, $0000
     jr .skip
 .loop
-    ; Increment the array index
-    ld h, b ; Swap over to hl for some math
-    ld l, c
-    ld b, 0
-    ld c, sizeof_Entity
-    add hl, bc
-    ld a, h
+    ld a, sizeof_Entity
+    add_r16_a b, c
+    ld a, b
     cp a, high(sizeof_Entity * MAX_ENTITIES)
-    jr nz, .continue ; Skip if there's no match
-    ld a, l
+    jr nz, .skip ; Skip if there's no match
+    ld a, c
     cp a, low(sizeof_Entity * MAX_ENTITIES)
     ret z ; Return if we've reached the end of the array
-.continue
-    ld b, h
-    ld c, l
 .skip
     ld hl, wEntityArray
     add hl, bc ; Apply the entity offset
 
     ; Check for entity
     ld a, [hli] ; Load the first byte of the entity
-    cp a, 0 ; If the first byte is 0, skip
+    and a, a ; If the first byte is 0, skip
     jr z, .loop
     ; Load entity constants
     ld l, [hl]  ; Finish loading the entity definition
@@ -57,7 +50,7 @@ HandleEntities::
     ld l, a
     ; Run Entity Script Logic
     push bc ; Save the offset
-    call _hl_ ; Call the entity's script. It may use `c` to find it's data
+    rst _hl_ ; Call the entity's script. It may use `c` to find it's data
     pop bc
     jr .loop
 
@@ -72,28 +65,21 @@ RenderEntities::
     ld bc, $0000
     jr .skip
 .loop
-    ; Increment the array index
-    ld h, b ; Swap over to hl for some math
-    ld l, c
-    ld b, 0
-    ld c, sizeof_Entity
-    add hl, bc
-    ld a, h
+    ld a, sizeof_Entity
+    add_r16_a b, c
+    ld a, b
     cp a, high(sizeof_Entity * MAX_ENTITIES)
-    jr nz, .continue ; Skip if there's no match
-    ld a, l
+    jr nz, .skip ; Skip if there's no match
+    ld a, c
     cp a, low(sizeof_Entity * MAX_ENTITIES)
     ret z ; Return if we've reached the end of the array
-.continue
-    ld b, h
-    ld c, l
 .skip
     ld hl, wEntityArray
     add hl, bc ; Apply the entity offset
 
     ; Check for entity
     ld a, [hl] ; Load the first byte of the entity
-    cp a, 0 ; If the first byte is 0, skip
+    and a, a ; If the first byte is 0, skip
     jr z, .loop
     push bc ; Save the offset
     call RenderMetasprite
@@ -353,7 +339,8 @@ MoveAndSlide::
     dec l
     ret
 
-; Locates a given position in the map data and returns it in HL. Destroys all registers.
+; Locates a given position in the map data and returns it in HL. Destroys all
+; registers.
 ; @ b:  Y position
 ; @ c:  X position
 LookupMapData::
@@ -416,7 +403,7 @@ DetectEntity::
     add hl, bc ; Apply the entity offset
 
     ld a, [hli] ; Load the first byte of the entity
-    cp a, 0 ; If the first byte is 0, skip
+    and a, a ; If the first byte is 0, skip
     jr z, .loop
     ; Lets see if that entity collides with us!
     inc l
@@ -498,6 +485,54 @@ ENDR
 .return
     ld l, a
     ret
+
+; Use during screen transitions to kill offscreen entities
+KillOffscreen::
+    ld de, $0000
+    jr .skip
+.loop
+    ; `de` is used in loop because `memset` relies on `bc`
+    ld a, sizeof_Entity
+    add_r16_a d, e
+    ld a, d
+    cp a, high(sizeof_Entity * MAX_ENTITIES)
+    jr nz, .skip ; Skip if there's no match
+    ld a, e
+    cp a, low(sizeof_Entity * MAX_ENTITIES)
+    ret z ; Return if we've reached the end of the array
+.skip
+    ld hl, wEntityArray + Entity_YPos
+    add hl, de ; Apply the entity offset
+    ; Y handling
+    ld a, [hld]
+    dec l ; Seek back to origin
+    ld b, a
+    ld a, [wSCYBuffer]
+    cp a, b ; if a > b (If the top of the screen is lower than the entity)
+    jr nc, .kill
+    add a, 144 ; Screen height
+    cp a, b ; if a < b (If the bottom of the screen is higher than the entity)
+    jr c, .kill
+    ; X handling
+    inc l ; Data 2
+    inc l ; Y
+    inc l ; X!
+    ld a, [hld]
+    dec l ; Data 2
+    dec l ; Origin
+    ld b, a
+    ld a, [wSCXBuffer]
+    cp a, b ; If the left side of the screen is lower than the entity
+    jr nc, .kill
+    add a, 160 ; Screen Width
+    cp a, b ; If the right side of the screen is higher than the entity
+    jr c, .kill
+    jr .loop
+.kill
+    xor a
+    ld bc, sizeof_Entity
+    call memset
+    jr .loop
 
 SECTION "Entity Array", WRAM0, ALIGN[$08] ; Align with $00 so that we can use unsafe struct seeking
 wEntityArray::

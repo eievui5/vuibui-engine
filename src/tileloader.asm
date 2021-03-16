@@ -148,15 +148,15 @@ VBlankScrollLoader::
     and a, a
     jr nz, .skipFirst
     ; If this is our first pass, tell the Main loop to pause and load tile data.
-    ld a, ENGINE_ROOM_TRANSITION
+    ld a, ENGINE_STATE_ROOM_TRANSITION
     ldh [hEngineState], a
     ld [wUpdateMapDataFlag], a
 
     ld a, [wRoomTransitionDirection]
     ; Up and left must not load the 0 tile until the end.
-    cp a, DIR_UP
+    cp a, TRANSDIR_UP
     jr z, .skipFirst
-    cp a, DIR_LEFT
+    cp a, TRANSDIR_LEFT
     jr z, .skipFirst
     ld bc, $0000
     ld de, _SCRN0
@@ -169,18 +169,18 @@ VBlankScrollLoader::
     ld b, a
     ld a, [wRoomTransitionDirection]
 
-    ASSERT DIR_DOWN == 0
-    and a, a
+    ASSERT TRANSDIR_DOWN == 1
+    dec a
     jr z, .loadDown
-    ASSERT DIR_UP == 1
+    ASSERT TRANSDIR_UP == 2
     dec a
     jr z, .loadUp
-    ASSERT DIR_RIGHT == 2
+    ASSERT TRANSDIR_RIGHT == 3
     ; Left and Right both need b swapped
     swap b
     dec a
     jr z, .loadRight
-    ASSERT DIR_LEFT == 3
+    ASSERT TRANSDIR_LEFT == 4
     ; Logic pertaining to each direction
     ; If carry is set, stop loading.
 .loadLeft
@@ -251,20 +251,18 @@ VBlankScrollLoader::
     cp a, $F0 
     ret z
 
-    ; Update the position of the active player.
-
     ; Scrolling logic, then fall through ↓
     ld a, [wRoomTransitionDirection]
-    ASSERT DIR_DOWN == 0
-    and a, a
+    ASSERT TRANSDIR_DOWN == 1
+    dec a
     jr z, .scrollDown
-    ASSERT DIR_UP == 1
+    ASSERT TRANSDIR_UP == 2
     dec a
     jr z, .scrollUp
-    ASSERT DIR_RIGHT == 2
+    ASSERT TRANSDIR_RIGHT == 3
     dec a
     jr z, .scrollRight
-    ASSERT DIR_LEFT == 3
+    ASSERT TRANSDIR_LEFT == 4
     jr .scrollLeft
 
 .scrollDown
@@ -300,11 +298,15 @@ VBlankScrollLoader::
     inc a
     jr z, .storeX
     inc a
+    jr z, .storeX
+    inc a
     jr .storeX
 .scrollLeft
     ld a, [wSCXBuffer]
     sub a, 256 - 160 ; This might be dumb.
     ret z
+    dec a
+    jr z, .storeLeft
     dec a
     jr z, .storeLeft
     dec a
@@ -340,6 +342,7 @@ SECTION "Scroll Loader Vars", WRAM0
 wVBlankMapLoadPosition:
     ds 1
 
+; Which way to scroll? TRANSDIR is DIR + 1, since 0 means no scroll.
 wRoomTransitionDirection::
     ; 0 == inactive
     ; FACING_ENUMS slide the camera and load the room.

@@ -4,9 +4,9 @@ INCLUDE "include/enum.inc"
 INCLUDE "include/entities.inc"
 INCLUDE "include/graphics.inc"
 INCLUDE "include/hardware.inc"
-INCLUDE "include/items.inc"
 INCLUDE "include/players.inc"
 INCLUDE "include/switch.inc"
+INCLUDE "include/tiles.inc"
 
 ; States
 
@@ -16,13 +16,42 @@ INCLUDE "include/switch.inc"
         enum FIRE_WAND
     end_enum
 
+; Animation Frames
+; These correspond to Octavia's metasprites and should be moved along with them
+
+    start_enum FRAME
+        ; NORMAL
+        enum DOWN
+        enum UP
+        enum RIGHT
+        enum LEFT
+        ; STEP
+        enum DOWN_STEP
+        enum UP_STEP
+        enum RIGHT_STEP
+        enum LEFT_STEP
+        ; SWING
+        enum DOWN_SWING
+        enum UP_SWING
+        enum RIGHT_SWING
+        enum LEFT_SWING
+        ; GRAB
+        enum DOWN_GRAB
+        enum UP_GRAB
+        enum RIGHT_GRAB
+        enum LEFT_GRAB
+    end_enum
+
+    start_enum FRAMEOFF, 0, 4
+        enum NORMAL
+        enum STEP 
+        enum SWING
+        enum GRAB
+    end_enum
+
 ; Timer constants
 KNOCK_FRAMES EQU 15
 INVINCIBLE_FRAMES EQU 60
-
-; Frame Index offsets (distance from start to X)
-STEP_OFFSET EQU 4
-SWING_OFFSET EQU 8
 
 SECTION "Player AI", ROMX
 
@@ -81,10 +110,10 @@ OctaviaActiveNormal: ; How to move.
     xor a, a
     ld [wOctavia_YVel], a
     ld [wOctavia_XVel], a
-    ; Are we even moving right now?
+    ; Are we even pressing the DPad right now?
     ldh a, [hCurrentKeys]
     and a, $F0
-    jr z, .activeMoveAndSlide ; Let's not do anything if not. (Still move though!)
+    jr z, .activeMoveAndSlide ; Let's skip this part if not.
     ; Every 32th tick (~ 1/2 second)...
     ld a, [wOctavia_Timer]
     inc a 
@@ -93,7 +122,7 @@ OctaviaActiveNormal: ; How to move.
     jr z, .activeMoveDown
     ; ...Offset to step animation
     ld a, [wOctavia_Frame]
-    add a, STEP_OFFSET
+    add a, FRAMEOFF_STEP
     ld [wOctavia_Frame], a
 .activeMoveDown
     ldh a, [hCurrentKeys]
@@ -141,6 +170,12 @@ OctaviaActiveNormal: ; How to move.
 .activeMoveAndSlide
     ld hl, wOctavia
     call MoveAndSlide
+.transitionCheck
+    ld a, [wOctavia_YPos]
+    ld b, a
+    ld a, [wOctavia_XPos]
+    ld c, a
+    call ScreenTransitionCheck
 .activeScroll
     ; Scroll
     ld a, [wOctavia_YPos]
@@ -202,7 +237,7 @@ OctaviaFireRod:
     cp a, 4 + 1 ; 4 frame delay...
     ret c
     ld a, [wOctavia_Frame]
-    add a, SWING_OFFSET
+    add a, FRAMEOFF_SWING
     ld [wOctavia_Frame], a
     ld a, [wOctavia_Timer]
     cp a, 8 + 4 + 1 ; 8 frame action!
@@ -277,6 +312,138 @@ UseItemCheck::
     ld [hli], a ; Reset flags so that item states can initiallize.
     ld a, [de] ; Load state based off item ID
     ld [hl], a
+    ret
+
+; Move the player during screen transition.
+PlayerTransitionMovement::
+    ld a, [wActivePlayer]
+    ASSERT sizeof_Entity == 16
+    swap a ; a * 16
+    ld hl, wPlayerArray + Entity_YPos
+    add_r16_a h, l
+    ld a, [wRoomTransitionDirection]
+    ASSERT TRANSDIR_DOWN == 1
+    dec a
+    jr z, .down
+    ASSERT TRANSDIR_UP == 2
+    dec a
+    jr z, .up
+    inc l ; Swap to X
+    ASSERT TRANSDIR_RIGHT == 3
+    dec a
+    jr z, .right
+    ASSERT TRANSDIR_LEFT == 4
+    jr .left
+.down
+    ld a, [hl]
+    cp a, 24 ; 24 is the first tile
+    ret z ; Are we already there?
+    inc [hl] ; No? Then move down
+    bit 4, a ; Let's just use YPos as the animation timer.
+    jr nz, .downStepFrame
+    ld b, FRAME_DOWN
+    jr .verticleStoreFrame
+.downStepFrame
+    ld b, FRAME_DOWN_STEP
+    jr .verticleStoreFrame
+.up
+    ld a, [hl]
+    cp a, 8 ; first tile
+    ret z ; Are we already there?
+    dec [hl] ; No? Then move down
+    bit 4, a ; Let's just use YPos as the animation timer.
+    jr nz, .upStepFrame
+    ld b, FRAME_UP
+    jr .verticleStoreFrame
+.upStepFrame
+    ld b, FRAME_UP_STEP
+.verticleStoreFrame
+    ld a, Entity_Frame - Entity_YPos
+    add a, l
+    ld l, a
+    ld [hl], b
+    ret
+.right
+    ld a, [hl]
+    cp a, 16 ; first tile
+    ret z ; Are we already there?
+    inc [hl] ; No? Then move down
+    bit 4, a ; Let's just use YPos as the animation timer.
+    jr nz, .rightStepFrame
+    ld b, FRAME_RIGHT
+    jr .horizontalStoreFrame
+.rightStepFrame
+    ld b, FRAME_RIGHT_STEP
+    jr .horizontalStoreFrame
+.left
+    ld a, [hl]
+    cp a, 1 ; first tile
+    ret z ; Are we already there?
+    dec [hl] ; No? Then move down
+    bit 4, a ; Let's just use YPos as the animation timer.
+    jr nz, .leftStepFrame
+    ld b, FRAME_LEFT
+    jr .horizontalStoreFrame
+.leftStepFrame
+    ld b, FRAME_LEFT_STEP
+.horizontalStoreFrame
+    ld a, Entity_Frame - Entity_XPos
+    add a, l
+    ld l, a
+    ld [hl], b
+    ret
+
+; Looks up a position to see if it contains a transition tile, and transitions
+; to the next screen if it does.
+; @ b:  Y position
+; @ c:  X position
+ScreenTransitionCheck:
+    call LookupMapData
+    ld a, [hl]
+    ; Check if we are within the transtion tiles.
+    ASSERT TILE_TRANSITION_LEFT - TILE_TRANSITION_DOWN == 3
+    ; We don't *actually* want this to be one lower, but the transition routine 
+    ; expects DIR + 1
+    sub a, TILE_TRANSITION_DOWN - 1 
+    ; And we *do* want this 1 higher, but we need to offset the - we just did.
+    cp a, TILE_TRANSITION_LEFT - TILE_TRANSITION_DOWN + 2
+    jr nc, .clearTransBuffer ; Clear wTransitionBuffer if we're not transitioning now.
+    ld h, a
+    ld a, [wTransitionBuffer]
+    and a, a
+    ret nz ; If the transition buffer is set, do not transition again
+    inc a
+    ; Otherwise, set the buffer so that we don't rapidly switch rooms
+    ld [wTransitionBuffer], a 
+    ld a, h
+    ; If we're standing on a transition tile, queue up a transition
+    ld [wRoomTransitionDirection], a
+    ; Now calculate the new map to load
+    ld hl, wWorldMapPositionY
+.downCheck
+    dec a
+    jr nz, .upCheck
+    inc [hl]
+    jr .update
+.upCheck
+    dec a
+    jr nz, .rightCheck
+    dec [hl]
+    jr .update
+.rightCheck
+    ASSERT wWorldMapPositionY - wWorldMapPositionX == 1
+    dec hl
+    dec a
+    jr nz, .leftCheck
+    inc [hl]
+    jr .update
+.leftCheck
+    dec [hl]
+.update
+    jp UpdateActiveMap
+.clearTransBuffer
+    xor a, a
+    ld [wTransitionBuffer], a
     ret
 
 ; Used to convert the 4-bit item enum into the player states
@@ -511,6 +678,10 @@ SECTION "Player Variables", WRAM0
 wActivePlayer::
     ds 1
 
+; Make sure we only transition upon *entering* a transition tile.
+wTransitionBuffer::
+    ds 1
+
 ; The currently equipped items.
 ; Lower Nibble = A, Upper Nibble = B
 wOctaviaEquipped:: 
@@ -529,5 +700,5 @@ wPlayerArray::
     dstruct Entity, wOctavia
     dstruct Entity, wPoppy
 
-    dstructs 2, Entity, wOctaviaProjectiles
+    dstruct Entity, wOctaviaProjectile
     dstructs 2, Entity, wPoppyProjectiles
