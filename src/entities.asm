@@ -486,7 +486,69 @@ ENDR
     ld l, a
     ret
 
-; Use during screen transitions to kill offscreen entities
+
+; Use during screen transitions to unload offscreen entities, then spawn new
+; ones from wEntitySpawnBuffer.
+EntityLoader::
+    ld a, [wRoomTransitionDirection]
+    ASSERT TRANSDIR_DOWN == 1
+    dec a
+    jr z, .down
+    ASSERT TRANSDIR_UP == 2
+    dec a
+    ;jr z, .up
+    ASSERT TRANSDIR_RIGHT == 3
+    dec a
+    ;jr z, .right
+    ASSERT TRANSDIR_LEFT == 4
+    dec a
+    ;jr z, .left
+    ret
+.down 
+    ld a, [wEntityLoaderIndex]
+    ld b, a
+    ld a, [wSCYBuffer]
+    cp a, b
+    ret z ; Return if wSCY matches the Entity Loader Index.
+    ld de, $0000
+    jr .downSkip
+.downLoop
+    call .indexCallLoop
+.downSkip
+    ld hl, wEntityArray + Entity_YPos
+    add hl, de ; Apply the entity offset
+    ld b, [hl]
+    ld a, [wEntityLoaderIndex]
+    cp a, b
+    jr nz, .downLoop ; If it's not on the current row, play it safe and skip
+    dec l
+    dec l
+    kill_entity
+    jr .downLoop
+
+
+; I made this a call because copy/pasting here seems wasteful. It occurs during
+; a paused screen transition in the main loop, so I'm not worried about losing
+; 10 cycles per pass.
+.indexCallLoop 
+    ; `de` is used in loop because `memset` relies on `bc`
+    ld a, sizeof_Entity
+    add_r16_a d, e
+    ld a, d
+    cp a, high(sizeof_Entity * MAX_ENTITIES)
+    ret nz ; Skip if there's no match
+    ld a, e
+    cp a, low(sizeof_Entity * MAX_ENTITIES)
+    ret nz
+    ld hl, wEntityLoaderIndex
+    inc [hl]
+    pop hl ; Run the function again since we've readed the end of the array.
+    ret z ; If the index overflowed, we're done. Exit.
+    jr EntityLoader
+    
+
+
+; Use during screen transitions to kill offscreen entities. Unused; please delete
 KillOffscreen::
     ld de, $0000
     jr .skip
@@ -538,6 +600,11 @@ SECTION "Entity Array", WRAM0, ALIGN[$08] ; Align with $00 so that we can use un
 wEntityArray::
     ; define an array of `MAX_ENTITIES` Entities, each named wEntityX
     dstructs MAX_ENTITIES, Entity, wEntity
+
+; Used to ensure that the entity (un)loader does not unload new entities during
+; screen transitions by keeping track of processed lines.
+wEntityLoaderIndex:
+    ds 1
 
 SECTION "Render Byte", HRAM
 hRenderByte: ; currently stores the entity's invtimer to find out if it should blink

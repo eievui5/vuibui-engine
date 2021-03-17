@@ -336,7 +336,8 @@ PlayerTransitionMovement::
     jr .left
 .down
     ld a, [hl]
-    cp a, 24 ; 24 is the first tile
+    ; These location checks are slightly off, since sprites are not centered.
+    cp a, 24 ; 24 - stops on the first tile
     ret z ; Are we already there?
     inc [hl] ; No? Then move down
     bit 4, a ; Let's just use YPos as the animation timer.
@@ -348,9 +349,9 @@ PlayerTransitionMovement::
     jr .verticleStoreFrame
 .up
     ld a, [hl]
-    cp a, 8 ; first tile
+    cp a, 8 ; Stop on the first tile
     ret z ; Are we already there?
-    dec [hl] ; No? Then move down
+    dec [hl] ; No? Then move up
     bit 4, a ; Let's just use YPos as the animation timer.
     jr nz, .upStepFrame
     ld b, FRAME_UP
@@ -365,10 +366,10 @@ PlayerTransitionMovement::
     ret
 .right
     ld a, [hl]
-    cp a, 16 ; first tile
+    cp a, 16 ; Stop on the first tile
     ret z ; Are we already there?
-    inc [hl] ; No? Then move down
-    bit 4, a ; Let's just use YPos as the animation timer.
+    inc [hl] ; No? Then move right
+    bit 4, a ; Let's just use XPos as the animation timer.
     jr nz, .rightStepFrame
     ld b, FRAME_RIGHT
     jr .horizontalStoreFrame
@@ -377,10 +378,10 @@ PlayerTransitionMovement::
     jr .horizontalStoreFrame
 .left
     ld a, [hl]
-    cp a, 1 ; first tile
+    cp a, 1 ; Stop on the first tile
     ret z ; Are we already there?
-    dec [hl] ; No? Then move down
-    bit 4, a ; Let's just use YPos as the animation timer.
+    dec [hl] ; No? Then move left
+    bit 4, a ; Let's just use XPos as the animation timer.
     jr nz, .leftStepFrame
     ld b, FRAME_LEFT
     jr .horizontalStoreFrame

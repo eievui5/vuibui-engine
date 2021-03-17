@@ -298,7 +298,7 @@ VBlankScrollLoader::
     inc a
     jr z, .storeX
     inc a
-    jr z, .storeX
+    jr z, .storeX ; Screen is wider, we need an extra step
     inc a
     jr .storeX
 .scrollLeft

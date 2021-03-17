@@ -139,6 +139,10 @@ Initialize:
     ld a, 16 + 16
     ld [hli], a
 
+    ld de, HitDummy
+    ld bc, $8080
+    call SpawnEntity
+
 
     ld a, $11 ; Fire rod in both A and B
     ld [wOctaviaEquipped], a
@@ -177,7 +181,6 @@ Main:
 .handleTransition
     call RenderEntities
     call PlayerTransitionMovement
-    call KillOffscreen
     jr .end
 
 .handleScript

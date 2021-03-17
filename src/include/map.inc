@@ -16,6 +16,7 @@ create_entity: MACRO
     dw \1
     db \2, \3
 ENDM
+sizeof_create_entity EQU 4
 
 ; Macro Data enumerations
 

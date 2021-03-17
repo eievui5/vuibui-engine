@@ -1,4 +1,5 @@
 
+INCLUDE "include/entities.inc"
 include "include/map.inc"
 include "include/macros.inc"
 
@@ -24,18 +25,69 @@ UpdateActiveMap::
     ret
 .mapdataEntity
     ; Entity pointers are stored as little-endian, but they're expected to be big.
+    ld a, [wEntitySpawnBufferIndex]
+    ; Make sure the index has not overflowed
+    cp a, sizeof_create_entity * MAX_ENTITIES
+    jr nz, .skipErrorCheck
+    ld b, b
+    ret
+.skipErrorCheck
+    ld de, wEntitySpawnBuffer
+    add_r16_a d, e
+    ; Unrolled 4-byte memcopy
+REPT 4
+    ld a, [hli]
+    ld [de], a
+    inc de
+ENDR
+    ld a, [wEntitySpawnBufferIndex]
+    add a, 4
+    ld [wEntitySpawnBufferIndex], a
+    jr .nextData
+
+; Spawn an entity if it would appear on screen during a transition. This ensures
+; that new entities do not appear in the old room.
+
+; This should be *combined* with the old entity killer, and go by blocks of
+; lines so that I can better control when entities are spawned/killed
+
+; (currently, this function works perfectly, but they're immediately killed :( )
+
+HandleSpawnBuffer::
+    xor a, a
+    ld d, a
+    jr .skip
+.loop
+    ld a, d
+    cp a, sizeof_create_entity * MAX_ENTITIES
+    ret z
+    add a, sizeof_create_entity
+    ld d, a
+.skip
+    ld hl, wEntitySpawnBuffer
+    add_r16_a h, l
+    ld b, b
+    ld a, [hl]
+    and a, a
+    jr z, .loop ; If there is no data, skip
+    push de
     ld a, [hli]
     ld e, a
     ld a, [hli]
     ld d, a
     ld a, [hli]
     ld c, a
-    ld a, [hli]
+    ld a, [hl]
     ld b, a
-    push hl
+    xor a, a
+    ld [hld], a
+    ld [hld], a
+    ld [hld], a
+    ld [hl], a
     call SpawnEntity
-    pop hl
-    jr .nextData
+    pop de
+    jr .loop
+
 
 ; Returns the active Map in `hl`, and its data in `bc`
 ; Used to copy map into wMetatileMap and spawn entities/run scripts
@@ -175,4 +227,10 @@ wWorldMapPositionX::
 
 wWorldMapPositionY:: 
     ds 1
-    
+
+; Used store the new room's spawning info, so that new entities don't appear in
+; the old room during transtion. Flushed once the transition is complete.
+wEntitySpawnBufferIndex:
+    ds 1
+wEntitySpawnBuffer::
+    ds sizeof_create_entity * MAX_ENTITIES
