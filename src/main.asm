@@ -158,7 +158,7 @@ SECTION "Main Loop", ROM0
 
 ; Split these up into an engine state jump table.
 ; Engine should only call out so that code can be reused.
-Main:
+Main::
 
 .cleanOAM
     xor a ; ld a, 0
@@ -179,7 +179,7 @@ Main:
     ASSERT ENGINE_STATE_ROOM_TRANSITION == 2
 
 .handleTransition
-    call RenderEntities
+    call RenderPlayers
     call PlayerTransitionMovement
     jr .end
 
@@ -206,9 +206,11 @@ Main:
     ld a, [wUpdateMapDataFlag]
     and a, a
     jr z, .entities 
+    call RenderPlayers ; Ensure that players render during this.
     call LoadMapData
     xor a
     ld [wUpdateMapDataFlag], a
+    jr .end ; Don't render the player twice.
 
 .entities
     call HandleEntities

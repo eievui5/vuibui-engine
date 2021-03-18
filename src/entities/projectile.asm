@@ -35,8 +35,9 @@ ProjectileLogic::
     pop de
     pop bc
     ld a, [hl]
-    cp a, TILE_COLLISION
-    jr z, .destroySelf
+    dec a ; Ignore 0
+    cp a, MAX_ENTITY_WALL
+    jr c, .destroySelf
     push bc
     call DetectEntity
     inc c ; Did we find something?

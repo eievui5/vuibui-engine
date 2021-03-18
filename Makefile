@@ -32,7 +32,7 @@ LDFLAGS  = -p $(PADVALUE)
 FIXFLAGS = -p $(PADVALUE) -v -i "$(GAMEID)" -k "$(LICENSEE)" -l $(OLDLIC) -m $(MBC) -n $(VERSION) -r $(SRAMSIZE) -t $(TITLE)
 
 # The list of "root" ASM files that RGBASM will be invoked on
-SRCS = $(wildcard $(SRCDIR)/*.asm) $(wildcard $(SRCDIR)/entities/*.asm) $(wildcard $(SRCDIR)/libs/*.asm)
+SRCS = $(wildcard $(SRCDIR)/*.asm) $(wildcard $(SRCDIR)/entities/*.asm) $(wildcard $(SRCDIR)/metasprites/*.asm) $(wildcard $(SRCDIR)/libs/*.asm)
 
 ## Project-specific configuration
 # Use this to override the above

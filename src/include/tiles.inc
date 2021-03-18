@@ -9,12 +9,18 @@ INCLUDE "enum.inc"
 
     start_enum TILE
         enum CLEAR
+        ; Entity Walls (Entities cannot pass these)
         enum COLLISION
         enum TRANSITION_DOWN
         enum TRANSITION_UP
         enum TRANSITION_RIGHT
         enum TRANSITION_LEFT
+        ; End of entity walls.
     end_enum
+
+; Used to set the carry flag when entities detect collision, because they should
+; not pass through certain objects (Like transition tiles.)
+MAX_ENTITY_WALL EQU TILE_TRANSITION_LEFT
 
 ; Ensure that TRANSITION enums match DIR enums
 ASSERT TILE_TRANSITION_DOWN - TILE_TRANSITION_DOWN == DIR_DOWN

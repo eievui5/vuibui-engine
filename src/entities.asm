@@ -17,9 +17,7 @@ HandleEntities::
     call OctaviaPlayerLogic
 
     ; loop through entity array
-    ; c: offset of current entity !!! MUST NOT CHANGE C !!!
-    ; @OPTIMIZE: This needlessly uses a 16-bit index. The entity array should never be so large.
-    ; It previously used c alone, and may be reverted later.
+    ; bc: offset of current entity
     ld bc, $0000
     jr .skip
 .loop
@@ -54,10 +52,13 @@ HandleEntities::
     pop bc
     jr .loop
 
-RenderEntities::
+; Players can be rendered seperately from normal entities.
+RenderPlayers::
     ld hl, wOctavia
-    call RenderMetasprite
+    jp RenderMetasprite
 
+RenderEntities::
+    call RenderPlayers
     ; loop through entity array
     ; c: offset of current entity !!! MUST NOT CHANGE C !!!
     ; @OPTIMIZE: This needlessly uses a 16-bit index. The entity array should never be so large.
@@ -215,9 +216,10 @@ RenderMetasprite::
 BOUNDING_BOX_X EQU 6 ; A bit smaller than 16*16, because that feel/looks better.
 BOUNDING_BOX_Y EQU 6
 
-; Move the Entity based on its Velocity. Slide along collision.
+; Expanded version of MoveAndSlide which performs corner checks and only
+; collides with TILE_COLLISION, rather than all excluded tiles.
 ; @ hl: pointer to Entity. Returns Entity_YPos
-MoveAndSlide::
+PlayerMoveAndSlide::
 .xMovement
     ; Seek to X Velocity
     ld a, Entity_XVel - Entity_DataPointer
@@ -339,6 +341,83 @@ MoveAndSlide::
     dec l
     ret
 
+; Move the Entity based on its Velocity. Slide along collision.
+; @ hl: pointer to Entity. Returns Entity_YPos
+MoveAndSlide::
+    .xMovement
+        ; Seek to X Velocity
+        ld a, Entity_XVel - Entity_DataPointer
+        add a, l
+        ld l, a
+        ld c, [hl] ; C contains X Velocity
+        ; Seek to YPosition
+        ld a, Entity_YPos - Entity_XVel
+        add a, l
+        ld l, a
+        SeekAssert Entity_YPos, Entity_XPos, 1
+        ld a, [hli]
+        ld b, a ; Save the Y Pos for later
+        ld a, c
+        add a, [hl] ; Add the XPos to the XVel
+        ld d, a
+        bit 7, c ; Check whether c is negative.
+        jr nz, .xNeg
+    .xPos
+        add a, BOUNDING_BOX_X ; offset by the Bounding box
+        jr .xCheckCollision
+    .xNeg
+        add a, -BOUNDING_BOX_X
+    .xCheckCollision
+        ld c, a
+        push de ; Save our target Location (d). Using ram may be better here.
+        push hl ; Save our struct pointer
+        push bc ; And save our test position, incase we need to slide around a corner.
+        call LookupMapData
+        ld a, [hl]
+        dec a ; Skip 0
+        cp a, MAX_ENTITY_WALL
+        pop bc
+        pop hl
+        pop de
+        jr c, .yMovement ; Is there data here? Don't move.
+        ; Handle movement
+        ld a, d
+        ld [hl], a ; Update X Pos. 
+    .yMovement
+        SeekAssert Entity_XPos, Entity_YVel, 1
+        inc l ; Seek to YVel
+        SeekAssert Entity_YVel, Entity_XPos, -1
+        ld a, [hld] ; Seek to XPos
+        ld b, a ; B contains Y Velocity
+        SeekAssert Entity_XPos, Entity_YPos, -1
+        ld a, [hld] ; Seek to YPos
+        ld c, a ; Save the XPos for later
+        ld a, b
+        add a, [hl] ; Add the YPos to the YVel
+        ld d, a
+        bit 7, b ; Check whether b is negative.
+        jr nz, .yNeg
+    .yPos
+        add a, BOUNDING_BOX_Y ; offset by the Bounding box
+        jr .yCheckCollision
+    .yNeg
+        add a, -BOUNDING_BOX_Y
+    .yCheckCollision
+        ld b, a
+        push de ; Save our target Location (d). Using ram may be better here.
+        push hl ; Save our struct pointer
+        push bc
+        call LookupMapData
+        ld a, [hl]
+        dec a ; Skip 0
+        cp a, MAX_ENTITY_WALL
+        pop bc
+        pop hl
+        pop de
+        ret c ; Is there data here? Don't move.
+        ld [hl], d ; Update Y Pos.
+        ret
+
 ; Locates a given position in the map data and returns it in HL. Destroys all
 ; registers.
 ; @ b:  Y position
@@ -413,7 +492,7 @@ DetectEntity::
     ; abs
     bit 7, a
     jr z, .absSkipY
-    cpl
+    cpl 
     inc a
 .absSkipY
     ; let's compare. c is >
@@ -486,116 +565,6 @@ ENDR
     ld l, a
     ret
 
-
-; Use during screen transitions to unload offscreen entities, then spawn new
-; ones from wEntitySpawnBuffer.
-EntityLoader::
-    ld a, [wRoomTransitionDirection]
-    ASSERT TRANSDIR_DOWN == 1
-    dec a
-    jr z, .down
-    ASSERT TRANSDIR_UP == 2
-    dec a
-    ;jr z, .up
-    ASSERT TRANSDIR_RIGHT == 3
-    dec a
-    ;jr z, .right
-    ASSERT TRANSDIR_LEFT == 4
-    dec a
-    ;jr z, .left
-    ret
-.down 
-    ld a, [wEntityLoaderIndex]
-    ld b, a
-    ld a, [wSCYBuffer]
-    cp a, b
-    ret z ; Return if wSCY matches the Entity Loader Index.
-    ld de, $0000
-    jr .downSkip
-.downLoop
-    call .indexCallLoop
-.downSkip
-    ld hl, wEntityArray + Entity_YPos
-    add hl, de ; Apply the entity offset
-    ld b, [hl]
-    ld a, [wEntityLoaderIndex]
-    cp a, b
-    jr nz, .downLoop ; If it's not on the current row, play it safe and skip
-    dec l
-    dec l
-    kill_entity
-    jr .downLoop
-
-
-; I made this a call because copy/pasting here seems wasteful. It occurs during
-; a paused screen transition in the main loop, so I'm not worried about losing
-; 10 cycles per pass.
-.indexCallLoop 
-    ; `de` is used in loop because `memset` relies on `bc`
-    ld a, sizeof_Entity
-    add_r16_a d, e
-    ld a, d
-    cp a, high(sizeof_Entity * MAX_ENTITIES)
-    ret nz ; Skip if there's no match
-    ld a, e
-    cp a, low(sizeof_Entity * MAX_ENTITIES)
-    ret nz
-    ld hl, wEntityLoaderIndex
-    inc [hl]
-    pop hl ; Run the function again since we've readed the end of the array.
-    ret z ; If the index overflowed, we're done. Exit.
-    jr EntityLoader
-    
-
-
-; Use during screen transitions to kill offscreen entities. Unused; please delete
-KillOffscreen::
-    ld de, $0000
-    jr .skip
-.loop
-    ; `de` is used in loop because `memset` relies on `bc`
-    ld a, sizeof_Entity
-    add_r16_a d, e
-    ld a, d
-    cp a, high(sizeof_Entity * MAX_ENTITIES)
-    jr nz, .skip ; Skip if there's no match
-    ld a, e
-    cp a, low(sizeof_Entity * MAX_ENTITIES)
-    ret z ; Return if we've reached the end of the array
-.skip
-    ld hl, wEntityArray + Entity_YPos
-    add hl, de ; Apply the entity offset
-    ; Y handling
-    ld a, [hld]
-    dec l ; Seek back to origin
-    ld b, a
-    ld a, [wSCYBuffer]
-    cp a, b ; if a > b (If the top of the screen is lower than the entity)
-    jr nc, .kill
-    add a, 144 ; Screen height
-    cp a, b ; if a < b (If the bottom of the screen is higher than the entity)
-    jr c, .kill
-    ; X handling
-    inc l ; Data 2
-    inc l ; Y
-    inc l ; X!
-    ld a, [hld]
-    dec l ; Data 2
-    dec l ; Origin
-    ld b, a
-    ld a, [wSCXBuffer]
-    cp a, b ; If the left side of the screen is lower than the entity
-    jr nc, .kill
-    add a, 160 ; Screen Width
-    cp a, b ; If the right side of the screen is higher than the entity
-    jr c, .kill
-    jr .loop
-.kill
-    xor a
-    ld bc, sizeof_Entity
-    call memset
-    jr .loop
-
 SECTION "Entity Array", WRAM0, ALIGN[$08] ; Align with $00 so that we can use unsafe struct seeking
 wEntityArray::
     ; define an array of `MAX_ENTITIES` Entities, each named wEntityX
@@ -604,6 +573,10 @@ wEntityArray::
 ; Used to ensure that the entity (un)loader does not unload new entities during
 ; screen transitions by keeping track of processed lines.
 wEntityLoaderIndex:
+    ds 1
+; The entity loader is very intensive, so we limit it to a few passes per frame
+; so that sprites are still rendered.
+wEntityLoaderPassCount:
     ds 1
 
 SECTION "Render Byte", HRAM

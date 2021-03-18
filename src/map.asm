@@ -7,6 +7,10 @@ include "include/macros.inc"
 SECTION "Map Lookup", ROM0
 
 UpdateActiveMap::
+    xor a, a
+    ld bc, sizeof_Entity * MAX_ENTITIES
+    ld hl, wEntityArray
+    call memset
     call GetActiveMap
     push bc ; Save the data pointer
     ; Copy the map
@@ -24,70 +28,18 @@ UpdateActiveMap::
     jr z, .mapdataEntity 
     ret
 .mapdataEntity
-    ; Entity pointers are stored as little-endian, but they're expected to be big.
-    ld a, [wEntitySpawnBufferIndex]
-    ; Make sure the index has not overflowed
-    cp a, sizeof_create_entity * MAX_ENTITIES
-    jr nz, .skipErrorCheck
-    ld b, b
-    ret
-.skipErrorCheck
-    ld de, wEntitySpawnBuffer
-    add_r16_a d, e
-    ; Unrolled 4-byte memcopy
-REPT 4
-    ld a, [hli]
-    ld [de], a
-    inc de
-ENDR
-    ld a, [wEntitySpawnBufferIndex]
-    add a, 4
-    ld [wEntitySpawnBufferIndex], a
-    jr .nextData
-
-; Spawn an entity if it would appear on screen during a transition. This ensures
-; that new entities do not appear in the old room.
-
-; This should be *combined* with the old entity killer, and go by blocks of
-; lines so that I can better control when entities are spawned/killed
-
-; (currently, this function works perfectly, but they're immediately killed :( )
-
-HandleSpawnBuffer::
-    xor a, a
-    ld d, a
-    jr .skip
-.loop
-    ld a, d
-    cp a, sizeof_create_entity * MAX_ENTITIES
-    ret z
-    add a, sizeof_create_entity
-    ld d, a
-.skip
-    ld hl, wEntitySpawnBuffer
-    add_r16_a h, l
-    ld b, b
-    ld a, [hl]
-    and a, a
-    jr z, .loop ; If there is no data, skip
-    push de
     ld a, [hli]
     ld e, a
     ld a, [hli]
     ld d, a
     ld a, [hli]
     ld c, a
-    ld a, [hl]
+    ld a, [hli]
     ld b, a
-    xor a, a
-    ld [hld], a
-    ld [hld], a
-    ld [hld], a
-    ld [hl], a
+    push hl
     call SpawnEntity
-    pop de
-    jr .loop
-
+    pop hl
+    jr .nextData
 
 ; Returns the active Map in `hl`, and its data in `bc`
 ; Used to copy map into wMetatileMap and spawn entities/run scripts
@@ -193,15 +145,16 @@ DebugMap: ; Using DebugMetatiles
     FOR i, 3
         create_entity HitDummy, 128 + 32, i * 16 + 64
     ENDR
+    create_entity HitDummy, -40, 32
     end_mapdata
 
 DebugMap2: ; Using DebugMetatiles
     db $00, $06, $06, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02
     db $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00
-    db $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01
-    db $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01
-    db $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01
-    db $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01
+    db $01, $02, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01
+    db $01, $00, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01
+    db $01, $02, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01
+    db $01, $00, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01
     db $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02
     db $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00
     db $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02
@@ -213,6 +166,7 @@ DebugMap2: ; Using DebugMetatiles
     db $04, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $05
     db $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00
 .data:
+    create_entity HitDummy, 40, 32
     end_mapdata
 
 SECTION "Active Map Variables", WRAM0
@@ -227,10 +181,3 @@ wWorldMapPositionX::
 
 wWorldMapPositionY:: 
     ds 1
-
-; Used store the new room's spawning info, so that new entities don't appear in
-; the old room during transtion. Flushed once the transition is complete.
-wEntitySpawnBufferIndex:
-    ds 1
-wEntitySpawnBuffer::
-    ds sizeof_create_entity * MAX_ENTITIES
