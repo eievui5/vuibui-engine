@@ -60,9 +60,6 @@ VBlank:
 
     ; debug....
 
-    ;ld a, DIRECTION_UP
-    ;ld [wRoomTransitionDirection], a
-
     ;ld a, ENGINE_SCRIPT
     ;ldh [hEngineState], a
     ;ld hl, wActiveScriptPointer
@@ -75,10 +72,16 @@ VBlank:
 
     ld a, -2
     ld [wOctavia_YVel], a
+    ld [wPoppy_YVel], a
+    ld [wTiber_YVel], a
     ld a, -0
     ld [wOctavia_XVel], a
+    ld [wPoppy_XVel], a
+    ld [wTiber_XVel], a
     ld a, $01
     ld [wOctavia_CollisionData], a
+    ld [wPoppy_CollisionData], a
+    ld [wTiber_CollisionData], a
 
 .return
 

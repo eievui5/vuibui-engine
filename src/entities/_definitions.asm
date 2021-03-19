@@ -20,8 +20,18 @@ EntityName::
 ; seekers treat LOW(Address) == 0 as "no entity".
 DefStart:
 
+ds 2
+
 PlayerOctavia::
     far_pointer OctaviaPlayerLogic
+    far_pointer OctaviaMetasprites
+
+PlayerPoppy::
+    far_pointer PoppyPlayerLogic
+    far_pointer OctaviaMetasprites
+
+PlayerTiber::
+    far_pointer TiberPlayerLogic
     far_pointer OctaviaMetasprites
 
 PlayerSpell::

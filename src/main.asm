@@ -134,14 +134,28 @@ Initialize:
     ld [hli], a
     ld a, low(PlayerOctavia)
     ld [hli], a
-    ld a, 24 + 16
+    ld a, 256/2
     ld [hli], a
-    ld a, 16 + 16
+    ld a, 256/2
     ld [hli], a
-
-    ld de, HitDummy
-    ld bc, $8080
-    call SpawnEntity
+    ld a, high(PlayerPoppy)
+    ld hl, wPoppy
+    ld [hli], a
+    ld a, low(PlayerPoppy)
+    ld [hli], a
+    ld a, 256/2
+    ld [hli], a
+    ld a, 256/2 - 16
+    ld [hli], a
+    ld a, high(PlayerTiber)
+    ld hl, wTiber
+    ld [hli], a
+    ld a, low(PlayerTiber)
+    ld [hli], a
+    ld a, 256/2
+    ld [hli], a
+    ld a, 256/2 + 16
+    ld [hli], a
 
 
     ld a, $11 ; Fire rod in both A and B
@@ -196,9 +210,9 @@ Main::
     ld hl, wActivePlayer ; Using hl is 1 byte & 1 cycle less
     ld a, [hl]
     inc a
-    and a, 3 ; cp a, 3 + 1 (Since 4 is it's own bit...)
+    cp a, 3
     jr nz, .cycleSkip
-    ld a, 1
+    xor a, a
 .cycleSkip
     ld [hl], a
 

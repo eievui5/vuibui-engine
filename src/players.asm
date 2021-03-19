@@ -90,6 +90,34 @@ PlayerInputMovement:
     find_player
     jp PlayerMoveAndSlide
 
+PlayerDamage::
+    find_player Entity_CollisionData
+    ld a, [hl]
+    and a, $0F
+    jr z, .timer ; No damage left? skip...
+    ld d, a
+    xor a, a
+    ld [hli], a ; Sekk to health
+    ld a, [hl]
+    sub a, d
+    jr nc, .storeHealth ; If damage < health, we're not dead!
+    xor a, a
+    ; Death Stuff Here.
+.storeHealth
+    ld [hl], a
+.timer
+    find_player Entity_Timer
+    ld a, [hl]
+    dec a
+    ld [hld], a ; Seek to state
+    jr nz, .knockback
+    ASSERT PLAYER_STATE_NORMAL == 0
+    ; if we're down here, a already = 0
+    ld [hl], a
+.knockback
+    find_player
+    jp PlayerMoveAndSlide
+
 ; Has the player used an item? Which one?
 ; @ b:  Value of wPlayerEquipped
 ; @ hl: Pointer to wPlayerState (preserved)
@@ -292,6 +320,7 @@ SECTION "Player Array", WRAM0, ALIGN[$08]
 wPlayerArray::
     dstruct Entity, wOctavia
     dstruct Entity, wPoppy
+    dstruct Entity, wTiber
 
     dstruct Entity, wOctaviaProjectile
     dstructs 2, Entity, wPoppyProjectiles

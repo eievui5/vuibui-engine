@@ -15,6 +15,8 @@ SECTION "Entity Bank", ROMX
 HandleEntities::
 
     call OctaviaPlayerLogic
+    call PoppyPlayerLogic
+    call TiberPlayerLogic
 
     ; loop through entity array
     ; bc: offset of current entity
@@ -55,6 +57,10 @@ HandleEntities::
 ; Players can be rendered seperately from normal entities.
 RenderPlayers::
     ld hl, wOctavia
+    call RenderMetasprite
+    ld hl, wPoppy
+    call RenderMetasprite
+    ld hl, wTiber
     jp RenderMetasprite
 
 RenderEntities::

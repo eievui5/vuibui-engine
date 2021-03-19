@@ -135,17 +135,6 @@ DebugMap: ; Using DebugMetatiles
     db $04, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $05
     db $01, $03, $03, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01
 .data
-    ; Create entities for stress-testing!
-    FOR i, 3
-        create_entity HitDummy, 128, i * 16 + 64
-    ENDR
-    FOR i, 3
-        create_entity HitDummy, 128 + 16, i * 16 + 64
-    ENDR
-    FOR i, 3
-        create_entity HitDummy, 128 + 32, i * 16 + 64
-    ENDR
-    create_entity HitDummy, -40, 32
     end_mapdata
 
 DebugMap2: ; Using DebugMetatiles
@@ -166,7 +155,6 @@ DebugMap2: ; Using DebugMetatiles
     db $04, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $05
     db $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00
 .data:
-    create_entity HitDummy, 40, 32
     end_mapdata
 
 SECTION "Active Map Variables", WRAM0
