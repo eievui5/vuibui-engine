@@ -59,17 +59,6 @@ VBlank:
     jr z, .return
 
     ; debug....
-
-
-    ld a, ENGINE_STATE_SCRIPT
-    ldh [hEngineState], a
-    ld hl, wActiveScriptPointer
-    ld a, bank(DebugScript)
-    ld [hli], a
-    ld a, low(DebugScript)
-    ld [hli], a
-    ld a, high(DebugScript)
-    ld [hli], a
 /*
     ld a, -2
     ld [wOctavia_YVel], a

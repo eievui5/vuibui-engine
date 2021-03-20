@@ -50,6 +50,9 @@ PoppyActiveNormal: ; How to move.
     dec a
     jr z, .skipAISwitch
 
+    ld a, [wPoppyWaitMode]
+    and a, a
+    ret nz
     ld a, [wAllyLogicMode]
     switch
         case ALLY_MODE_FOLLOW, PoppyAIFollow
@@ -61,6 +64,8 @@ PoppyActiveNormal: ; How to move.
     ld b, a
     ld hl, wPoppy_State
     call UseItemCheck
+    ld hl, wPoppy
+    call InteractionCheck
 .activeMove
     ld bc, PLAYER_POPPY * sizeof_Entity
     call PlayerInputMovement

@@ -158,7 +158,7 @@ Initialize:
     ld [hli], a
 
 
-    ld a, $11 ; Fire rod in both A and B
+    ld a, $10 ; Fire rod in both A and B
     ld [wOctaviaEquipped], a
 
 ; Re-enable the screen
@@ -232,7 +232,7 @@ Main::
 
     call RenderEntities
 
-.end
+.end::
     ; When main is unhalted we ensure that it will not loop.
     xor a, a
     ld [wNewFrame], a

@@ -58,6 +58,9 @@ OctaviaActiveNormal:
     and a, a
     jr z, .skipAISwitch ; For now, skip processing if the entity is not active.
 
+    ld a, [wOctaviaWaitMode]
+    and a, a
+    ret nz
     ld a, [wAllyLogicMode]
     switch
         case ALLY_MODE_FOLLOW, OctaviaAIFollow
@@ -69,6 +72,8 @@ OctaviaActiveNormal:
     ld b, a
     ld hl, wOctavia_State
     call UseItemCheck
+    ld hl, wOctavia
+    call InteractionCheck
 .activeMove
     ld bc, PLAYER_OCTAVIA * sizeof_Entity
     call PlayerInputMovement

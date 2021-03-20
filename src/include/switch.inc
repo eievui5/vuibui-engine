@@ -1,4 +1,7 @@
 
+    IF !DEF(SWITCH_INC)
+SWITCH_INC SET 1
+
 ; Begin a switch statement. This will ultimately return, so please `call` your switch if this is unwanted.
 ; All you need to do is set `a` to the case value. VALUES ABOVE THE MAX CASE WILL NOT WORK!
 MACRO switch
@@ -51,3 +54,5 @@ MACRO end_switch
     ENDC
     PURGE SWITCH_INDEX
 ENDM
+
+    ENDC

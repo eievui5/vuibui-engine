@@ -1,7 +1,8 @@
 
 INCLUDE "include/directions.inc"
-INCLUDE "include/enum.inc"
+INCLUDE "include/engine.inc"
 INCLUDE "include/entities.inc"
+INCLUDE "include/enum.inc"
 INCLUDE "include/hardware.inc"
 INCLUDE "include/macros.inc"
 INCLUDE "include/players.inc"
@@ -287,8 +288,6 @@ UseItemCheck::
     ldh a, [hNewKeys]
     bit PADB_A, a
     jr z, .bCheck
-    ; First check for generic interaction
-    ; Now for items!
     ld a, b
     and a, $0F ; Check if A item exists... (and mask out B)
     jr nz, .loadItemState
@@ -309,6 +308,91 @@ UseItemCheck::
     ld [hli], a ; Reset flags so that item states can initiallize.
     ld a, [de] ; Load state based off item ID
     ld [hl], a
+    ret
+
+; @ `hl`: Pointer to Player
+InteractionCheck::
+    ldh a, [hNewKeys]
+    bit PADB_A, a
+    ret z
+    call GetEntityTargetPosition
+    call CheckAllyCollision
+    cp a, $FF
+    ret z
+    add a, a ; a * 2
+    ld de, PlayerDialogueLookup
+    add_r16_a d, e
+    ld a, [de]
+    ld b, a
+    inc de
+    ld a, [de]
+    ld d, a
+    ld e, b
+    ; `de` is now the dialogue lookup table!
+    ; Load current dialogue mode and add to table
+    ; Load pointer into de
+    ld a, [de]
+    ld b, a
+    inc de
+    ld a, [de]
+    ld d, a
+    ld e, b
+    ld b, b
+
+    ld a, ENGINE_STATE_SCRIPT
+    ldh [hEngineState], a
+    ld hl, wActiveScriptPointer
+    ld a, bank(OctaviaGeneric)
+    ld [hli], a
+    ld a, e
+    ld [hli], a
+    ld a, d
+    ld [hli], a
+    ret
+
+; Returns the entity position offset by their facing direction in `de` (X, Y)
+; @ `hl`: pointer to entity
+GetEntityTargetPosition::
+    ld a, Entity_Direction - Entity_DataPointer
+    add a, l
+    ld l, a
+    ld d, [hl]
+    ld a, Entity_YPos - Entity_Direction
+    add a, l
+    ld l, a
+    ld a, d
+    ASSERT DIR_DOWN == 0
+    and a, a
+    jr z, .down
+    ASSERT DIR_UP == 1
+    dec a
+    jr z, .up
+    inc l
+    ASSERT DIR_RIGHT == 2
+    dec a
+    jr z, .right
+    ASSERT DIR_LEFT == 3
+.left
+    ld a, -16
+    jr .storeX
+.right 
+    ld a, 16
+.storeX
+    add a, [hl]
+    ld e, a
+    dec l
+    ld d, [hl]
+    ret
+.down
+    ld a, 16
+    jr .storeY
+.up 
+    ld a, -16
+.storeY
+    add a, [hl]
+    ld d, a
+    inc l
+    ld e, [hl]
     ret
 
 ; Move the player during screen transition.
@@ -505,7 +589,8 @@ CheckPlayerCollision::
     jp CheckEntityCollision ; We don't need any special checks at the end.
 
 ; Checks if any of the ally players are colliding with `de`. Returns a pointer
-; to the detected ally in `hl`, $0000 if no ally was found.
+; to the detected ally in `hl`. Also returns the ally's index in a (0-2).
+; Returns `$FF` in `a` if nothing was found.
 ; @ de: Check Position (Y, X)
 CheckAllyCollision::
 ;octaviaCheck
@@ -517,9 +602,9 @@ CheckAllyCollision::
     call CheckEntityCollision
     xor a, a
     cp a, h
-    ret nz ; If 0 was not returned, we found a player. Return.
+    jr nz, .retOctavia ; If 0 was not returned, we found a player. Return.
     cp a, l
-    ret nz
+    jr nz, .retOctavia
 .poppyCheck
     ld a, [wActivePlayer]
     ASSERT PLAYER_POPPY == 1
@@ -531,20 +616,36 @@ CheckAllyCollision::
     call CheckEntityCollision
     xor a, a
     cp a, h
-    ret nz ; If 0 was not returned, we found a player. Return.
+    jr nz, .retPoppy ; If 0 was not returned, we found a player. Return.
     cp a, l
-    ret nz
+    jr nz, .retPoppy
     ; Otherwise, keep checking
 .tiberCheck
     ld a, [wActivePlayer]
     cp a, PLAYER_TIBER
-    jr nz, .tiberSkip
-    ; This is the final check, so we need to set hl $0000
-    ld hl, $0000
-    ret
+    jr z, .retNone
 .tiberSkip
     ld hl, wTiber
-    jp CheckEntityCollision ; We don't need any special checks at the end.
+    call CheckEntityCollision ; We don't need any special checks at the end.
+    xor a, a
+    cp a, h
+    jr nz, .retTiber ; If 0 was not returned, we found a player. Return.
+    cp a, l
+    jr nz, .retTiber
+.retNone
+    ld a, $FF
+    ret
+.retOctavia
+    ASSERT PLAYER_OCTAVIA == 0
+    xor a, a
+    ret
+.retPoppy
+    ld a, PLAYER_POPPY
+    ret
+.retTiber
+    ld a, PLAYER_TIBER
+    ret
+    
 
 ; Used to convert the 4-bit item enum into the player states
 ItemStateLoopup::
@@ -552,6 +653,17 @@ ItemStateLoopup::
     ; Eg, Sword state = 2, Wand state = 2
     ASSERT ITEM_FIRE_WAND == 1
     db PLAYER_STATE_FIRE_WAND
+
+; Used to lookup the dialogue corresponding to the current room.
+ASSERT bank(OctaviaGeneric) == bank(PoppyGeneric) && bank(PoppyGeneric) == bank(TiberGeneric)
+PlayerDialogueLookup:
+    dw .octavia, .poppy, .tiber ; faster I guess?
+.octavia
+    dw OctaviaGeneric
+.poppy
+    dw PoppyGeneric
+.tiber
+    dw TiberGeneric
 
 SECTION "Player Variables", WRAM0
 
@@ -565,6 +677,13 @@ wTransitionBuffer::
 
 ; Used to adjust entity logic based on the layout of the current room
 wAllyLogicMode::
+    ds 1
+; Player-specific waiting flags.
+wOctaviaWaitMode::
+    ds 1
+wPoppyWaitMode::
+    ds 1
+wTiberWaitMode::
     ds 1
 
 ; The currently equipped items.

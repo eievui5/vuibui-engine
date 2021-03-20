@@ -36,7 +36,8 @@ HandleScript::
         case SCRIPT_NULL, ScriptNull
         case SCRIPT_TEXT, ScriptText
         case SCRIPT_SETPOS_PLAYER, ScriptSetposPlayer
-        case SCRIPT_QUESTION_BRANCH, ScriptQuestionBranch
+        case SCRIPT_BRANCH, ScriptBranch
+        case SCRIPT_SET_POINTER, ScriptSetPointer
     end_switch
 
 ; End of script!
@@ -107,10 +108,14 @@ ScriptSetposPlayer:
     load_scriptpointer_hl ; restore and exit
     ret
 
-ScriptQuestionBranch:
+ScriptBranch:
     load_hl_scriptpointer
     inc hl
-    ld a, [wTextAnswer]
+    ld a, [hli]
+    ld e, a
+    ld a, [hli]
+    ld d, a
+    ld a, [de]
     and a, a
     jr z, .skipOne
     inc hl
@@ -122,21 +127,17 @@ ScriptQuestionBranch:
     ld [wActiveScriptPointer + 2], a
     ret
 
-SECTION "Script", ROMX
-
-DebugScript::
-    display_text DebugOh
-    display_text DebugHello
-    display_text DebugGoodbye
-    question_branch .notReady, .likeYou
-
-.notReady
-    display_text DebugOh
-    end_script
-
-.likeYou
-    display_text DebugHello
-    end_script
+ScriptSetPointer:
+    load_hl_scriptpointer
+    inc hl
+    ld a, [hli]
+    ld e, a
+    ld a, [hli]
+    ld d, a
+    ld a, [hli]
+    ld [de], a
+    load_scriptpointer_hl ; restore and exit
+    ret
 
 SECTION "Script Variables", WRAM0
 

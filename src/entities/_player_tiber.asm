@@ -49,6 +49,9 @@ TiberActiveNormal: ; How to move.
     cp a, PLAYER_TIBER
     jr z, .skipAISwitch
 
+    ld a, [wTiberWaitMode]
+    and a, a
+    ret nz
     ld a, [wAllyLogicMode]
     switch
         case ALLY_MODE_FOLLOW, TiberAIFollow
@@ -60,6 +63,8 @@ TiberActiveNormal: ; How to move.
     ld b, a
     ld hl, wTiber_State
     call UseItemCheck
+    ld hl, wTiber
+    call InteractionCheck
 .activeMove
     ld bc, PLAYER_TIBER * sizeof_Entity
     call PlayerInputMovement

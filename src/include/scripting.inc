@@ -9,7 +9,8 @@ INCLUDE "include/enum.inc"
         enum NULL
         enum TEXT
         enum SETPOS_PLAYER
-        enum QUESTION_BRANCH
+        enum BRANCH
+        enum SET_POINTER
     end_enum
 
 ; Returns to normal processing
@@ -48,12 +49,29 @@ ENDM
 
     ENDC
 
-; Branches to label 0 if the first response was chosen, and label 1 otherwise
+; Branches to `.label0` if `pointer` is 0, and `.label1` otherwise
+; @ branch pointer, .label0, .label1
+MACRO branch
+    IF _NARG != 3
+        "Expected 3 args"
+    ENDC
+    db SCRIPT_BRANCH
+    dw \1, \2, \3
+ENDM
+
+; Branches to `.label0` if `wTextAnswer` is 0, and `.label1` otherwise
 ; @ question_branch .label0, .label1
 MACRO question_branch
+    branch wTextAnswer, \1, \2
+ENDM
+
+; Sets the reffered `pointer` to `value`
+; @ set_pointer Pointer, Value
+MACRO set_pointer
     IF _NARG != 2
         "Expected 2 args"
     ENDC
-    db SCRIPT_QUESTION_BRANCH
-    dw \1, \2
+    db SCRIPT_SET_POINTER
+    dw \1
+    db \2
 ENDM
