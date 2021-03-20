@@ -48,8 +48,14 @@ PoppyActiveNormal: ; How to move.
     ld a, [wActivePlayer]
     ASSERT PLAYER_POPPY == 1
     dec a
-    ret nz ; For now, skip processing if the entity is not active.
+    jr z, .skipAISwitch
+
+    ld a, [wAllyLogicMode]
+    switch
+        case ALLY_MODE_FOLLOW, PoppyAIFollow
+    end_switch
     
+.skipAISwitch
     ; Attack check
     ld a, [wPoppyEquipped]
     ld b, a
@@ -63,17 +69,7 @@ PoppyActiveNormal: ; How to move.
     ld b, a
     ld a, [wPoppy_XPos]
     ld c, a
-    call ScreenTransitionCheck
-.activeScroll
-    ; Scroll
-    ld a, [wPoppy_YPos]
-    sub a, 80 + 8
-    ld e, a
-    ld a, [wPoppy_XPos]
-    sub a, 72 + 8
-    ld d, a
-    jp SetScrollBuffer
-    ret
+    jp ScreenTransitionCheck
 
 ; Damage should be a function, not a per-player state.
 PoppyDamage:
@@ -136,3 +132,11 @@ PoppyFireRod:
     ld a, 3
     ld [hl], a
     ret
+
+PoppyAIFollow:
+    ld bc, PLAYER_POPPY * sizeof_Entity
+    ld e, POPPY_FOLLOW_DISTANCE
+    call PlayerAIFollow
+    
+    ld hl, wPoppy
+    jp MoveAndSlide

@@ -3,15 +3,42 @@ INCLUDE "include/directions.inc"
 INCLUDE "include/enum.inc"
 INCLUDE "include/entities.inc"
 INCLUDE "include/hardware.inc"
+INCLUDE "include/macros.inc"
 INCLUDE "include/players.inc"
 INCLUDE "include/switch.inc"
 INCLUDE "include/tiles.inc"
+
+/*  players.asm
+
+    Common functions shared by the players.
+
+    PlayerInputMovement
+        - Set the player's velocity based off the DPad input.
+        @ input:
+        - bc: Player offset ( PLAYER enum * sizeof_Entity )
+
+    PlayerDamage
+        - The common Damage state handling for all players. Includes death and 
+        knockback.
+
+    PlayerAIFollow
+        - Generic "Follow the active player state."
+        @ input:
+        - bc: Player offset ( PLAYER enum * sizeof_Entity )
+
+    UseItemCheck
+        - Used to set the players state if they have attempted to use an item.
+        @ input:
+        - b:  Value of w<Player>Equipped
+        - hl: Pointer to w<Player>State
+
+*/
 
 SECTION "Player Functions", ROMX
 
 ; Sets the player's velocity based off the DPad.
 ; @ bc: PLAYER enum * sizeof_Entity
-PlayerInputMovement:
+PlayerInputMovement::
     find_player Entity_YVel
     ; Reset velocity if we have control over movement
     xor a, a
@@ -90,6 +117,7 @@ PlayerInputMovement:
     find_player
     jp PlayerMoveAndSlide
 
+; The common Damage state handling for all players. Includes death and knockback.
 PlayerDamage::
     find_player Entity_CollisionData
     ld a, [hl]
@@ -117,6 +145,139 @@ PlayerDamage::
 .knockback
     find_player
     jp PlayerMoveAndSlide
+
+; Generic "Follow the active player state." Does not move the Ally, only sets
+; velocity and direction.
+; @ bc: Player offset ( PLAYER enum * sizeof_Entity )
+; @ e:  Ally distance
+PlayerAIFollow::
+    push de
+    ld a, [wActivePlayer]
+    ASSERT sizeof_Entity == 16
+    swap a ; a * 16
+    ld de, wPlayerArray + Entity_YPos
+    add_r16_a d, e
+    find_player Entity_YPos
+    ; de: target
+    ; hl: self
+    ; Distance = target - self.
+    ld a, [hli] ; Self Y
+    ld b, a
+    ld a, [de] ; Target Y
+    inc e
+    sub a, b ; Distance Y
+    ld b, a
+
+    ld a, [de] ; Target X
+    ld e, a
+    ld d, b ; Store distance Y in d
+    ld a, [hl] ; Self X
+    ld b, a
+    ld a, e
+    sub a, b ; Distance X
+    ld e, a
+    ; de: distance vector
+    ; hl: self X
+
+    ; First, let's set direction.
+    ; Seek to our direction field
+    ld a, Entity_Direction - Entity_XPos
+    add a, l
+    ld l, a
+
+    ld a, d
+    abs_a
+    ld b, a
+    ld a, e
+    abs_a
+    ; ld c, a (I immediatly need c in a, so this is needless.)
+    ; ba = abs(de)
+
+    cp a, b 
+    jr nc, .xDirGreater
+.yDirGreater
+    bit 7, d ; If d is negative
+    jr z, .posYDir
+    ld a, DIR_UP
+    jr .storeYDir
+.posYDir
+    ASSERT DIR_DOWN == 0
+    xor a, a
+.storeYDir
+    ld [hl], a
+    jr .velocity
+.xDirGreater
+    bit 7, e ; If d is negative
+    jr z, .posXDir
+    ld a, DIR_LEFT
+    jr .storeXDir
+.posXDir
+    ld a, DIR_RIGHT
+.storeXDir
+    ld [hl], a
+
+.velocity
+    ld a, Entity_YVel - Entity_Direction
+    add a, l
+    ld l, a
+    pop bc
+
+.yVel
+    ld a, d
+    abs_a
+    cp a, c
+    jr c, .yVelZero
+    bit 7, d
+    jr z, .yVelPos
+.yVelNeg
+    ld a, -1
+    jr .storeYVel
+.yVelPos
+    ld a, 1
+    jr .storeYVel
+.yVelZero
+    xor a, a
+.storeYVel
+    ld [hli], a
+.xVel
+    ld a, e
+    abs_a
+    cp a, c
+    jr c, .xVelZero
+    bit 7, e
+    jr z, .xVelPos
+.xVelNeg
+    ld a, -1
+    jr .storeXVel
+.xVelPos
+    ld a, 1
+    jr .storeXVel
+.xVelZero
+    xor a, a
+.storeXVel
+    ld [hld], a
+    abs_a
+    ld b, a
+    ld a, [hl]
+    abs_a
+    add a, b
+    ret z
+
+    ; Animation
+    ld a, Entity_Timer - Entity_YVel
+    add a, l
+    ld l, a
+    inc [hl]
+    ld a, [hl]
+    bit 4, a
+    ret z
+    dec l
+    dec l
+    dec l
+    ld a, [hl]
+    add a, FRAMEOFF_STEP
+    ld [hl], a
+    ret
 
 ; Has the player used an item? Which one?
 ; @ b:  Value of wPlayerEquipped
@@ -234,7 +395,7 @@ PlayerTransitionMovement::
 ; to the next screen if it does.
 ; @ b:  Y position
 ; @ c:  X position
-ScreenTransitionCheck:
+ScreenTransitionCheck::
     call LookupMapData
     ld a, [hl]
     ; Check if we are within the transtion tiles.
@@ -286,6 +447,40 @@ ScreenTransitionCheck:
     ld [wTransitionBuffer], a
     ret
 
+PlayerCameraInterpolation::
+    ; Offset to the active player.
+    ld a, [wActivePlayer]
+    ASSERT sizeof_Entity == 16
+    swap a ; a * 16
+    ld hl, wPlayerArray + Entity_YPos
+    add_r16_a h, l
+
+    ; Y Interp
+    ld a, [wSCYBuffer]
+    ld b, a
+    ld a, [hli] ; Seek to X!
+    sub a, 80 + 8
+    sub a, b
+    sra a ; divide by 8, conserve the sign
+    sra a 
+    sra a 
+    add a, b
+    ld e, a
+
+    ; X Interp
+    ld a, [wSCXBuffer]
+    ld b, a
+    ld a, [hl]
+    sub a, 72 + 8
+    sub a, b
+    sra a ; divide by 8, conserve the sign
+    sra a 
+    sra a 
+    add a, b
+    ld d, a
+
+    jp SetScrollBuffer
+
 ; Used to convert the 4-bit item enum into the player states
 ItemStateLoopup::
     ; The first item for each character should correspond to the same state!
@@ -301,6 +496,10 @@ wActivePlayer::
 
 ; Make sure we only transition upon *entering* a transition tile.
 wTransitionBuffer::
+    ds 1
+
+; Used to adjust entity logic based on the layout of the current room
+wAllyLogicMode::
     ds 1
 
 ; The currently equipped items.

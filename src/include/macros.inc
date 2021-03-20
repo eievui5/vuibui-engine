@@ -14,6 +14,14 @@ add_r16_a: MACRO
     ld \1, a
 ENDM
 
+MACRO abs_a
+    bit 7, a
+    jr z, :+
+    cpl
+    inc a
+  :
+ENDM
+
 ; Far pointer. Bank, then pointer.
 far_pointer: MACRO 
     db BANK(\1)

@@ -1,4 +1,6 @@
 
+INCLUDE "include/enum.inc"
+
 MAP_SIZE EQU 16 * 16
 
 ; Ends a mapdata definition
@@ -18,10 +20,22 @@ create_entity: MACRO
 ENDM
 sizeof_create_entity EQU 4
 
-; Macro Data enumerations
+; Sets the Ally logic for the room. Optional, but should rarely go unused.
+; @ ally_logic ALLY_MODE
+MACRO ally_mode
+    IF _NARG != 1
+        FAIL "Exepected 1 arg."
+    ENDC
+    db MAPDATA_ALLY_MODE
+    db \1
+ENDM
 
-MAPDATA_END EQU 0
-MAPDATA_ENTITY EQU 1
+; Macro Data enumerations
+    start_enum MAPDATA
+        enum END
+        enum ENTITY
+        enum ALLY_MODE
+    end_enum
 
 ; Map enumerations
 

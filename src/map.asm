@@ -2,6 +2,7 @@
 INCLUDE "include/entities.inc"
 include "include/map.inc"
 include "include/macros.inc"
+INCLUDE "include/switch.inc"
 
 ; Keep these all in the same bank.
 SECTION "Map Lookup", ROM0
@@ -21,13 +22,13 @@ UpdateActiveMap::
     pop hl
 .nextData
     ld a, [hli]
-    and a, a
-    ret z
-    ASSERT MAPDATA_ENTITY == 1
-    dec a
-    jr z, .mapdataEntity 
-    ret
-.mapdataEntity
+    switch
+        case MAPDATA_END, GetActiveMap.return
+        case MAPDATA_ENTITY, MapdataEntity
+        case MAPDATA_ALLY_MODE, MapdataAllyLogic
+    end_switch
+
+MapdataEntity:
     ld a, [hli]
     ld e, a
     ld a, [hli]
@@ -39,7 +40,13 @@ UpdateActiveMap::
     push hl
     call SpawnEntity
     pop hl
-    jr .nextData
+    jr UpdateActiveMap.nextData
+
+MapdataAllyLogic:
+    ld a, [hli]
+    ld [wAllyLogicMode], a
+    jr UpdateActiveMap.nextData
+
 
 ; Returns the active Map in `hl`, and its data in `bc`
 ; Used to copy map into wMetatileMap and spawn entities/run scripts
@@ -92,6 +99,7 @@ GetActiveMap::
     ld l, a ; hl is now the map pointer
     ; hl now points to the correct map.
     ; bc is the map's data.
+.return: ; Label because I'm reusing it for the prior switch.
     ret 
 
 ; Used to check which World Map we're referencing (Overworld, Dungeon, etc...)

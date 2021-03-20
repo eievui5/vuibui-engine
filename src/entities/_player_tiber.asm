@@ -47,8 +47,14 @@ TiberActiveNormal: ; How to move.
     ; Is this the active player?
     ld a, [wActivePlayer]
     cp a, PLAYER_TIBER
-    ret nz ; For now, skip processing if the entity is not active.
+    jr z, .skipAISwitch
+
+    ld a, [wAllyLogicMode]
+    switch
+        case ALLY_MODE_FOLLOW, TiberAIFollow
+    end_switch
     
+.skipAISwitch
     ; Attack check
     ld a, [wTiberEquipped]
     ld b, a
@@ -62,17 +68,7 @@ TiberActiveNormal: ; How to move.
     ld b, a
     ld a, [wTiber_XPos]
     ld c, a
-    call ScreenTransitionCheck
-.activeScroll
-    ; Scroll
-    ld a, [wTiber_YPos]
-    sub a, 80 + 8
-    ld e, a
-    ld a, [wTiber_XPos]
-    sub a, 72 + 8
-    ld d, a
-    jp SetScrollBuffer
-    ret
+    jp ScreenTransitionCheck
 
 ; Damage should be a function, not a per-player state.
 TiberDamage:
@@ -135,3 +131,11 @@ TiberFireRod:
     ld a, 3
     ld [hl], a
     ret
+
+TiberAIFollow:
+    ld bc, PLAYER_TIBER * sizeof_Entity
+    ld e, TIBER_FOLLOW_DISTANCE
+    call PlayerAIFollow
+    
+    ld hl, wTiber
+    jp MoveAndSlide

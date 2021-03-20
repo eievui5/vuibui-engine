@@ -228,6 +228,8 @@ Main::
 
 .entities
     call HandleEntities
+    call PlayerCameraInterpolation ; Update camera!
+
     call RenderEntities
 
 .end

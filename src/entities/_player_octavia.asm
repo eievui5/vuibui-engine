@@ -4,6 +4,13 @@ INCLUDE "include/entities.inc"
 INCLUDE "include/players.inc"
 INCLUDE "include/switch.inc"
 
+/*  Octavia's functions.
+
+    @ Logic
+    @ States
+    @ AI
+*/
+
 SECTION "Octavia AI", ROMX
 
 OctaviaPlayerLogic::
@@ -43,14 +50,20 @@ OctaviaPlayerLogic::
         case PLAYER_STATE_FIRE_WAND, OctaviaFireRod
     end_switch
 
-OctaviaActiveNormal: ; How to move.
+OctaviaActiveNormal:
 
     ; Is this the active player?
     ld a, [wActivePlayer]
     ASSERT PLAYER_OCTAVIA == 0
     and a, a
-    ret nz ; For now, skip processing if the entity is not active.
-    
+    jr z, .skipAISwitch ; For now, skip processing if the entity is not active.
+
+    ld a, [wAllyLogicMode]
+    switch
+        case ALLY_MODE_FOLLOW, OctaviaAIFollow
+    end_switch
+
+.skipAISwitch
     ; Attack check
     ld a, [wOctaviaEquipped]
     ld b, a
@@ -64,31 +77,12 @@ OctaviaActiveNormal: ; How to move.
     ld b, a
     ld a, [wOctavia_XPos]
     ld c, a
-    call ScreenTransitionCheck
-.activeScroll
-    ; Scroll
-    ld a, [wOctavia_YPos]
-    sub a, 80 + 8
-    ld e, a
-    ld a, [wOctavia_XPos]
-    sub a, 72 + 8
-    ld d, a
-    jp SetScrollBuffer
-    ret
+    jp ScreenTransitionCheck
 
 ; Damage should be a function, not a per-player state.
 OctaviaDamage:
     ld bc, PLAYER_OCTAVIA * sizeof_Entity
-    call PlayerDamage
-.damageScroll
-    ; Scroll
-    ld a, [hli]
-    sub a, 80 + 8
-    ld e, a
-    ld a, [hl]
-    sub a, 72 + 8
-    ld d, a
-    jp SetScrollBuffer
+    jp PlayerDamage
 
 OctaviaFireRod:
     ld a, [wOctavia_Flags]
@@ -146,3 +140,11 @@ OctaviaFireRod:
     ld a, 3
     ld [hl], a
     ret
+
+OctaviaAIFollow:
+    ld bc, PLAYER_OCTAVIA * sizeof_Entity
+    ld e, OCTAVIA_FOLLOW_DISTANCE
+    call PlayerAIFollow
+    
+    ld hl, wOctavia
+    jp MoveAndSlide

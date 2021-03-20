@@ -24,6 +24,11 @@ INVINCIBLE_FRAMES EQU 60
 ; Items
 ITEM_FIRE_WAND EQU 1
 
+; AI constants
+OCTAVIA_FOLLOW_DISTANCE EQU 36 ; Distance at which to stop following the player.
+POPPY_FOLLOW_DISTANCE EQU 18
+TIBER_FOLLOW_DISTANCE EQU 48
+
 ; Animation Frames
     start_enum PLAYER_FRAME
         ; NORMAL
@@ -47,6 +52,8 @@ ITEM_FIRE_WAND EQU 1
         enum RIGHT_GRAB
         enum LEFT_GRAB
     end_enum
+
+; Offset for player metasprites
     start_enum FRAMEOFF, 0, 4
         enum NORMAL
         enum STEP 
@@ -54,12 +61,19 @@ ITEM_FIRE_WAND EQU 1
         enum GRAB
     end_enum
 
+; The state of the 3 players.
     start_enum PLAYER_STATE
         enum NORMAL
         enum HURT
         enum FIRE_WAND
     end_enum
 
+; Which set of entity logic are the Allies using?
+    start_enum ALLY_MODE
+        enum FOLLOW
+    end_enum
+
+; Player IDs
     start_enum PLAYER
         enum OCTAVIA
         enum POPPY
