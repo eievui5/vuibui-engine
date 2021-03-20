@@ -481,6 +481,71 @@ PlayerCameraInterpolation::
 
     jp SetScrollBuffer
 
+; Checks if any of the active players are colliding with `de`. Returns a pointer
+; to the detected player in `hl`, $0000 if no player was found.
+; @ de: Check Position (Y, X)
+CheckPlayerCollision::
+    ld hl, wOctavia
+    call CheckEntityCollision
+    xor a, a
+    cp a, h
+    ret nz ; If 0 was not returned, we found a player. Return.
+    cp a, l
+    ret nz
+    ; Otherwise, keep checking
+    ld hl, wPoppy
+    call CheckEntityCollision
+    xor a, a
+    cp a, h
+    ret nz ; If 0 was not returned, we found a player. Return.
+    cp a, l
+    ret nz
+    ; Otherwise, keep checking
+    ld hl, wTiber
+    jp CheckEntityCollision ; We don't need any special checks at the end.
+
+; Checks if any of the ally players are colliding with `de`. Returns a pointer
+; to the detected ally in `hl`, $0000 if no ally was found.
+; @ de: Check Position (Y, X)
+CheckAllyCollision::
+;octaviaCheck
+    ld a, [wActivePlayer]
+    ASSERT PLAYER_OCTAVIA == 0
+    and a, a
+    jr z, .poppySkip
+    ld hl, wOctavia
+    call CheckEntityCollision
+    xor a, a
+    cp a, h
+    ret nz ; If 0 was not returned, we found a player. Return.
+    cp a, l
+    ret nz
+.poppyCheck
+    ld a, [wActivePlayer]
+    ASSERT PLAYER_POPPY == 1
+    dec a
+    jr z, .tiberSkip
+    ; if we already know octavia is the active player, we don't need to check poppy
+.poppySkip 
+    ld hl, wPoppy
+    call CheckEntityCollision
+    xor a, a
+    cp a, h
+    ret nz ; If 0 was not returned, we found a player. Return.
+    cp a, l
+    ret nz
+    ; Otherwise, keep checking
+.tiberCheck
+    ld a, [wActivePlayer]
+    cp a, PLAYER_TIBER
+    jr nz, .tiberSkip
+    ; This is the final check, so we need to set hl $0000
+    ld hl, $0000
+    ret
+.tiberSkip
+    ld hl, wTiber
+    jp CheckEntityCollision ; We don't need any special checks at the end.
+
 ; Used to convert the 4-bit item enum into the player states
 ItemStateLoopup::
     ; The first item for each character should correspond to the same state!

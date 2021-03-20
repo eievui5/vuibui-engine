@@ -1,8 +1,20 @@
 
-INCLUDE "include/text.inc"
+INCLUDE "include/engine.inc"
 INCLUDE "include/hardware.inc"
 INCLUDE "include/macros.inc"
-INCLUDE "include/engine.inc"
+INCLUDE "include/switch.inc"
+INCLUDE "include/text.inc"
+
+/* text.asm
+
+    Functions related to the handling of the on-screen textbox, including
+    dialogue choices.
+
+    HandleTextbox
+        - Initiallize, render, and close the textbox. Run once per frame from
+        VBlank
+
+*/
 
 SECTION "Text Box", ROM0
 
@@ -16,22 +28,16 @@ HandleTextbox::
     ld a, [wTextState]
     and a, a
     ret z ; No flag state? Return
-    ASSERT TEXT_START == 1
-    dec a
-    jr z, .start
-    ASSERT TEXT_CLEARING == 2
-    dec a
-    jr z, .clearWindow
-    ASSERT TEXT_CLEANING == 3
-    dec a
-    jr z, .cleanTiles
-    ASSERT TEXT_DRAWING == 4
-    dec a
-    jp z, .drawing
-    ASSERT TEXT_WAITING == 5
-    dec a
-    jp z, .waiting
-    ret ; Catch for a screwed up state
+    dec a ; Set the minimum value to 0 for switch
+    switch
+        case TEXT_START - 1, .start
+        case TEXT_CLEARING - 1, .clearWindow
+        case TEXT_CLEANING - 1, .cleanTiles
+        case TEXT_DRAWING - 1, .drawing
+        case TEXT_WAITING -1, .waiting
+        case TEXT_ASK - 1, .ask
+    end_switch
+
 .start
     ; Reset Textbox screen index.
     xor a, a
@@ -44,6 +50,7 @@ HandleTextbox::
     ld a, TEXT_CLEARING
     ld [wTextState], a
     ret
+
 .clearWindow
     ; Map the window to textbox.
     ld d, high(_SCRN1)
@@ -75,6 +82,7 @@ HandleTextbox::
     ld a, TEXT_CLEANING
     ld [wTextState], a
     ret 
+
 .cleanTiles
     ; Clean text tiles
     ld bc, $20
@@ -102,6 +110,7 @@ HandleTextbox::
     ldh [rWY], a
     ldh [rLYC], a
     ret
+
 .drawing
     ; 10 Chars per line, 20 max.
 
@@ -122,10 +131,12 @@ HandleTextbox::
     jr z, .return
     cp a, "\n"
     jr z, .newLine
+    cp a, SPCHAR_QUESTION
+    jr z, .returnAsk
+
     
-    swap a
+    swap a ; a * 16 (In a way, you'll see :) )
     ld e, a ; Save a
-    ; TODO: Use a Charmap
     ld hl, GameFont - ($20 * 16) ; We start on ascii character 32 (space), so we need to subtract 32 * 16 as an offset.
     and a, %11110000
     add_r16_a h, l
@@ -159,6 +170,12 @@ HandleTextbox::
     ld a, TEXT_WAITING
     ld [wTextState], a
     ret
+.returnAsk
+    ld a, TEXT_ASK
+    ld [wTextState], a
+    xor a, a
+    ld [wTextAnswer], a
+    ret
 .newLine
     ld a, [wTextScreenIndex]
     ; If we're past line 1
@@ -190,17 +207,61 @@ HandleTextbox::
     ld a, TEXT_CLEANING
     ld [wTextState], a
     ret
+
 .close
     ; Lower the window. The UI may fix this, so 
     ; TODO: Remove?
     ld a, 144 - 16
     ldh [rWY], a
     ldh [rLYC], a
-    ; Let scripting knpow we're done
+    ; Let scripting know we're done
     ld [wTextScriptFinished], a
     ASSERT TEXT_HIDDEN == 0
     xor a, a
     ld [wTextState], a
+    ret
+
+.ask
+    ; Start by switching answers if needed
+    ld hl, wTextAnswer
+    ldh a, [hNewKeys]
+    and a, $F0 ; All directions will have the same effect, so...
+    jr z, .cursorDraw
+    ld a, [hl]
+    and a, a
+    jr z, .switch1
+    xor a, a
+    ld [hl], a
+    jr .cursorDraw
+.switch1
+    inc [hl]
+.cursorDraw
+    ld a, [hl]
+    and a, a
+    jr nz, .cursorDraw1
+.cursorDraw0
+    ld bc, $0010
+    ld de, vTextTiles + $0100
+    ld hl, GameFont - ($20 * 16) + (" " * 16) ; Copy "-" to the second row.
+    call memcopy
+    ld bc, $0010
+    ld de, vTextTiles
+    ld hl, GameFont - ($20 * 16) + (">" * 16) ; Copy ">" to the first row.
+    call memcopy
+    jr .acceptCheck
+.cursorDraw1
+    ld bc, $0010
+    ld de, vTextTiles
+    ld hl, GameFont - ($20 * 16) + (" " * 16) ; Copy "-" to the first row.
+    call memcopy
+    ld bc, $0010
+    ld de, vTextTiles + $0100
+    ld hl, GameFont - ($20 * 16) + (">" * 16) ; Copy ">" to the second row.
+    call memcopy
+.acceptCheck
+    ldh a, [hNewKeys]
+    bit PADB_A, a
+    jr nz, .close
     ret
 
 
@@ -224,12 +285,15 @@ DebugHello::
     end_text
 
 DebugGoodbye::
-    db "See ya!\n"
-    db " $ $ $ $\n"
+    say "See ya!\n"
+    say " $ $ $ $\n"
     
-    db "... why haven't\n"
-    db "you left yet?"
-    end_text
+    say "... why haven't\n"
+    say "you left yet?\n"
+
+    ask "Not ready\n"
+    ask "I like you :3"
+    end_ask
 
 SECTION "Text Variables", WRAM0
 
@@ -245,4 +309,8 @@ wTextPointer::
 
 ; Where are we on the screen?
 wTextScreenIndex::
+    ds 1
+
+; What's the answer to the current question? (0 or 1)
+wTextAnswer::
     ds 1

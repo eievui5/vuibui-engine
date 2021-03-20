@@ -60,16 +60,17 @@ VBlank:
 
     ; debug....
 
-    ;ld a, ENGINE_SCRIPT
-    ;ldh [hEngineState], a
-    ;ld hl, wActiveScriptPointer
-    ;ld a, bank(DebugScript)
-    ;ld [hli], a
-    ;ld a, low(DebugScript)
-    ;ld [hli], a
-    ;ld a, high(DebugScript)
-    ;ld [hli], a
 
+    ld a, ENGINE_STATE_SCRIPT
+    ldh [hEngineState], a
+    ld hl, wActiveScriptPointer
+    ld a, bank(DebugScript)
+    ld [hli], a
+    ld a, low(DebugScript)
+    ld [hli], a
+    ld a, high(DebugScript)
+    ld [hli], a
+/*
     ld a, -2
     ld [wOctavia_YVel], a
     ld [wPoppy_YVel], a
@@ -82,7 +83,7 @@ VBlank:
     ld [wOctavia_CollisionData], a
     ld [wPoppy_CollisionData], a
     ld [wTiber_CollisionData], a
-
+*/
 .return
 
     ; Let the main loop know a new frame is ready

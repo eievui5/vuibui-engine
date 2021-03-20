@@ -456,6 +456,30 @@ LookupMapData::
     add_r16_a h, l
     ret
 
+; Check if the entity pointed to by `hl` collides with the position `de`.
+; Preserves bc, returns `$0000` in `hl` if no collision is found.
+; @ hl: Target Entity Pointer
+; @ de: Check Position (Y, X)
+CheckEntityCollision::
+    inc l
+    inc l
+    ld a, [hli] ; Load YPos
+    sub a, d ; Find the difference
+    abs_a
+    cp a, ENTITY_DETECTION_SIZE
+    jr nc, .retFail
+    ld a, [hld] ; Load X
+    sub a, e
+    abs_a
+    cp a, ENTITY_DETECTION_SIZE
+    jr nc, .retFail
+    dec l
+    dec l ; Return to origin
+    ret
+.retFail
+    ld hl, $0000
+    ret
+
 ; Returns The index of the first entity to collide with a location in bc. If c == $FF, no entity was found.
 ; @ d:  Y position
 ; @ e:  X position

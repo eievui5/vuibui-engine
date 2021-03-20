@@ -16,10 +16,10 @@ MACRO load_hl_scriptpointer
 ENDM
 
 MACRO load_scriptpointer_hl
-ld a, l
-ld [wActiveScriptPointer + 1], a
-ld a, h
-ld [wActiveScriptPointer + 2], a
+    ld a, l
+    ld [wActiveScriptPointer + 1], a
+    ld a, h
+    ld [wActiveScriptPointer + 2], a
 ENDM
 
 SECTION "Script Handlers", ROM0
@@ -32,10 +32,11 @@ HandleScript::
     ; [hl] -> Script Byte
     ld a, [hl]
     switch
-    case SCRIPT_END, ScriptEnd
-    case SCRIPT_NULL, ScriptNull
-    case SCRIPT_TEXT, ScriptText
-    case SCRIPT_SETPOS_PLAYER, ScriptSetposPlayer
+        case SCRIPT_END, ScriptEnd
+        case SCRIPT_NULL, ScriptNull
+        case SCRIPT_TEXT, ScriptText
+        case SCRIPT_SETPOS_PLAYER, ScriptSetposPlayer
+        case SCRIPT_QUESTION_BRANCH, ScriptQuestionBranch
     end_switch
 
 ; End of script!
@@ -106,16 +107,35 @@ ScriptSetposPlayer:
     load_scriptpointer_hl ; restore and exit
     ret
 
+ScriptQuestionBranch:
+    load_hl_scriptpointer
+    inc hl
+    ld a, [wTextAnswer]
+    and a, a
+    jr z, .skipOne
+    inc hl
+    inc hl
+.skipOne
+    ld a, [hli]
+    ld [wActiveScriptPointer + 1], a
+    ld a, [hl]
+    ld [wActiveScriptPointer + 2], a
+    ret
 
 SECTION "Script", ROMX
 
 DebugScript::
     display_text DebugOh
-    setpos_player PLAYER_OCTAVIA, 20, 20, DIR_RIGHT
     display_text DebugHello
-    setpos_player PLAYER_OCTAVIA, 80, 80, DIR_UP
     display_text DebugGoodbye
-    setpos_player PLAYER_OCTAVIA, 0, 0, DIR_DOWN
+    question_branch .notReady, .likeYou
+
+.notReady
+    display_text DebugOh
+    end_script
+
+.likeYou
+    display_text DebugHello
     end_script
 
 SECTION "Script Variables", WRAM0
