@@ -38,6 +38,8 @@ HandleScript::
         case SCRIPT_SETPOS_PLAYER, ScriptSetposPlayer
         case SCRIPT_BRANCH, ScriptBranch
         case SCRIPT_SET_POINTER, ScriptSetPointer
+        case SCRIPT_FUNCTION, ScriptFunction
+        case SCRIPT_COMPARE, ScriptCompare
     end_switch
 
 ; End of script!
@@ -116,7 +118,8 @@ ScriptBranch:
     ld a, [hli]
     ld d, a
     ld a, [de]
-    and a, a
+    cp a, [hl]
+    inc hl ; Luckily, this touches no flags!
     jr z, .skipOne
     inc hl
     inc hl
@@ -137,6 +140,43 @@ ScriptSetPointer:
     ld a, [hli]
     ld [de], a
     load_scriptpointer_hl ; restore and exit
+    ret
+
+ScriptFunction:
+    load_hl_scriptpointer
+    inc hl
+    ld a, [hli]
+    ld e, a
+    ld a, [hli]
+    ld d, a
+    load_scriptpointer_hl ; restore
+    ld h, d
+    ld l, e
+    jp hl
+
+ScriptCompare:
+    load_hl_scriptpointer
+    inc hl
+    ld a, [hli]
+    ld e, a
+    ld a, [hli]
+    ld d, a
+    ld a, [de]
+    ld b, a
+    ld a, [hli]
+    ld e, a
+    ld a, [hli]
+    ld d, a
+    ld a, [de]
+    cp a, b
+    jr z, .skipOne
+    inc hl
+    inc hl
+.skipOne
+    ld a, [hli]
+    ld [wActiveScriptPointer + 1], a
+    ld a, [hl]
+    ld [wActiveScriptPointer + 2], a
     ret
 
 SECTION "Script Variables", WRAM0

@@ -78,6 +78,11 @@ SECTION "Player Functions", ROMX
 HandlePlayers::
 
 .checkOctavia
+
+    ldh a, [hNewKeys]
+    bit PADB_SELECT, a
+    call nz, CyclePlayers
+
     ld a, PLAYER_OCTAVIA
     call PlayerRoomCheck ; If rooms do not match or player is disabled, skip.
     call z, OctaviaPlayerLogic 
@@ -113,6 +118,40 @@ RenderPlayers::
     call PlayerRoomCheck
     ld hl, wTiber
     jp z, RenderMetasprite
+    ret
+
+CyclePlayers:
+.loop
+    ld hl, wActivePlayer
+    inc [hl]
+    ld a, [hl]
+    cp a, PLAYER_TIBER + 1
+    jr nz, .zSkip
+    xor a, a
+    ld [hl], a
+.zSkip
+    ld hl, wPlayerDisabled
+    add_r16_a h, l
+    ld a, [hl]
+    and a, a
+    jr nz, CyclePlayers
+
+    ld c, 3
+    ld a, [wActivePlayer]
+    ld hl, wPlayerWaitLink
+    add_r16_a h, l
+    ld b, [hl]
+    ld hl, wPlayerWaitLink
+.waitLoop
+    ld a, b
+    cp a, [hl] ; If the old player had a follower, update them to the new player
+    jr nz, .skipSet
+    ld a, [wActivePlayer]
+    ld [hl], a
+.skipSet
+    inc hl
+    dec c
+    jr nz, .waitLoop
     ret
 
 ; returns `z = !(wPlayerDisabled || (wWorldMapPosition == wPlayerRoom))`
@@ -631,6 +670,23 @@ ScreenTransitionCheck::
     ld [wTransitionBuffer], a
     ret
 
+PlayerSetWaitLink:
+.octavia::
+    ld a, PLAYER_OCTAVIA
+    jr .store
+.poppy::
+    ld a, PLAYER_POPPY
+    jr .store
+.tiber::
+    ld a, PLAYER_TIBER
+    jr .store
+.store
+    ld hl, wPlayerWaitLink
+    add_r16_a h, l
+    ld a, [wActivePlayer]
+    ld [hl], a
+    ret
+
 PlayerCameraInterpolation::
     ; Offset to the active player.
     ld a, [wActivePlayer]
@@ -745,7 +801,6 @@ CheckAllyCollision::
 .retTiber
     ld a, PLAYER_TIBER
     ret
-    
 
 ; Used to convert the 4-bit item enum into the player states
 ItemStateLoopup::
@@ -788,14 +843,17 @@ wPlayerDisabled::
 .tiber::
     ds 1
 
-; Player-specific waiting flags.
-wPlayerWaiting::
+; Player waiting and linking. If the value does not match that of the active 
+; player they should wait. This is important because it means switching players
+; will follow each other independantly; switching from an active player to a
+; waiting player will cause the other group to wait.
+wPlayerWaitLink::
 .octavia::
     ds 1
 .poppy::
     ds 1
 .tiber::
-    ds 1
+    ds 1 
 
 ; Player world map Position. Used to keep track of which room an inactive
 ; player is waiting in.

@@ -202,19 +202,6 @@ Main::
     jr .end
 
 .handleNormal
-.cyclePlayers
-    ldh a, [hNewKeys]
-    bit PADB_SELECT, a
-    jr z, .updateMap
-    ld hl, wActivePlayer ; Using hl is 1 byte & 1 cycle less
-    ld a, [hl]
-    inc a
-    cp a, 3
-    jr nz, .cycleSkip
-    xor a, a
-.cycleSkip
-    ld [hl], a
-
 .updateMap
     ld a, [wUpdateMapDataFlag]
     and a, a

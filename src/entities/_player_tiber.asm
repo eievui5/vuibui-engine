@@ -49,8 +49,10 @@ TiberActiveNormal: ; How to move.
     cp a, PLAYER_TIBER
     jr z, .skipAISwitch
 
-    ld a, [wPlayerWaiting.tiber]
-    and a, a
+    ld a, [wActivePlayer]
+    ld b, a
+    ld a, [wPlayerWaitLink.tiber]
+    cp a, b
     ret nz
     ld a, [wAllyLogicMode]
     switch

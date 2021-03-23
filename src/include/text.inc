@@ -12,10 +12,10 @@ MACRO say
 IF _NARG != 1
     FAIL "Expected one string as input!"
 ENDC
-; This makes sure that the line is under 16 Characters, 17 if a newline is present
-IF STRLEN(\1) > 16
-    IF STRSUB(\1, 17, 1) != "\n"
-        FAIL "Line is longer than 16 characters!"
+; This makes sure that the line is under 15 Characters, 16 if a newline is present
+IF STRLEN(\1) > 15
+    IF STRSUB(\1, 16, 1) != "\n"
+        FAIL "Line is longer than 15 characters!"
     ENDC
 ENDC
 db \1
@@ -24,17 +24,16 @@ ENDM
 ; Types an "@" and creates an `.end` label
 MACRO end_text
     db "@"
-.end
 ENDM
 
 MACRO ask
     IF _NARG != 1
         FAIL "Expected one string as input!"
     ENDC
-    ; This makes sure that the line is under 14 Characters, 15 if a newline is present
-    IF STRLEN(\1) > 14 
-        IF STRSUB(\1, 15, 1) != "\n"
-            FAIL "Question is longer than 14 characters!"
+    ; This makes sure that the line is under 13 Characters, 14 if a newline is present
+    IF STRLEN(\1) > 13
+        IF STRSUB(\1, 14, 1) != "\n"
+            FAIL "Question is longer than 13 characters!"
         ENDC
     ENDC
     db "  ", \1
@@ -42,7 +41,6 @@ ENDM
 
 MACRO end_ask
     db SPCHAR_QUESTION
-.end
 ENDM
 
 vTextTiles EQU $8000 + $1500

@@ -25,8 +25,8 @@ INVINCIBLE_FRAMES EQU 60
 ITEM_FIRE_WAND EQU 1
 
 ; AI constants
-OCTAVIA_FOLLOW_DISTANCE EQU 36 ; Distance at which to stop following the player.
-POPPY_FOLLOW_DISTANCE EQU 18
+OCTAVIA_FOLLOW_DISTANCE EQU 32 ; Distance at which to stop following the player.
+POPPY_FOLLOW_DISTANCE EQU 16
 TIBER_FOLLOW_DISTANCE EQU 48
 
 ; Animation Frames

@@ -50,8 +50,10 @@ PoppyActiveNormal: ; How to move.
     dec a
     jr z, .skipAISwitch
 
-    ld a, [wPlayerWaiting.poppy]
-    and a, a
+    ld a, [wActivePlayer]
+    ld b, a
+    ld a, [wPlayerWaitLink.poppy]
+    cp a, b
     ret nz
     ld a, [wAllyLogicMode]
     switch

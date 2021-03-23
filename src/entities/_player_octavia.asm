@@ -58,8 +58,10 @@ OctaviaActiveNormal:
     and a, a
     jr z, .skipAISwitch ; For now, skip processing if the entity is not active.
 
-    ld a, [wPlayerWaiting.octavia]
-    and a, a
+    ld a, [wActivePlayer]
+    ld b, a
+    ld a, [wPlayerWaitLink.octavia]
+    cp a, b
     ret nz
     ld a, [wAllyLogicMode]
     switch
