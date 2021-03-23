@@ -1,4 +1,5 @@
 
+INCLUDE "include/bool.inc"
 INCLUDE "include/directions.inc"
 include "include/hardware.inc"
 include "include/engine.inc"
@@ -76,7 +77,7 @@ VBlank:
 .return
 
     ; Let the main loop know a new frame is ready
-    ld a, 1 
+    ld a, TRUE
     ld [wNewFrame], a
 
     ; Restore register state

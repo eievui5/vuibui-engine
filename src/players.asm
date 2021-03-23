@@ -10,8 +10,13 @@ INCLUDE "include/switch.inc"
 INCLUDE "include/tiles.inc"
 
 /*  players.asm
-
     Common functions shared by the players.
+
+Functions:
+
+    HandlePlayers
+        - Run once per frame, handling player logic and special states such as 
+        the active room. Called from HandleEntities.
 
     PlayerInputMovement
         - Set the player's velocity based off the DPad input.
@@ -33,9 +38,103 @@ INCLUDE "include/tiles.inc"
         - b:  Value of w<Player>Equipped
         - hl: Pointer to w<Player>State
 
+Variables:
+
+    wActivePlayer
+        - The Character currently being controlled by the player. Used as an 
+        offset.
+
+    wTransitionBuffer
+        - Used to make sure we only transition upon entering a transition tile.
+
+    wAllyLogicMode
+        - Used to adjust entity logic based on the layout of the current room.
+
+    wPlayerWaiting
+        - Player waiting boolean
+
+    wPlayerRoom
+        - Player world map Position. Used to keep track of which room an
+        inactive player is waiting in.
+    
+    wPlayerEquipped
+        - The currently equipped items. Lower Nibble = A, Upper Nibble = B
+
+    wPlayerArray
+        - An array of the player's entity data. Important for reusing entity
+        functions
+
+    wOctaviaProjectile
+        - A reserved entity for Octavia's current spell
+
+    wPoppyProjectiles
+        - Two reserved entities for Poppy's arrows.
 */
 
 SECTION "Player Functions", ROMX
+
+; Run once per frame, handling player logic and special states such as the
+; active room. Called from HandleEntities
+HandlePlayers::
+
+.checkOctavia
+    ld a, PLAYER_OCTAVIA
+    call PlayerRoomCheck ; If rooms do not match or player is disabled, skip.
+    call z, OctaviaPlayerLogic 
+
+.checkPoppy
+    ld a, PLAYER_POPPY
+    call PlayerRoomCheck ; If rooms do not match or player is disabled, skip.
+    call z, PoppyPlayerLogic
+
+.checkTiber
+    ld a, PLAYER_TIBER
+    call PlayerRoomCheck; If rooms do not match or player is disabled, skip.
+    ; Update the current room (This needs to move to the room transition function. (Does that function even exist?))
+    jp z, TiberPlayerLogic
+    ret
+
+; Players can be rendered seperately from normal entities.
+RenderPlayers::
+.octavia
+    ld a, PLAYER_OCTAVIA
+    call PlayerRoomCheck
+    ld hl, wOctavia
+    call z, RenderMetasprite
+    
+.poppy
+    ld a, PLAYER_POPPY
+    call PlayerRoomCheck
+    ld hl, wPoppy
+    call z, RenderMetasprite
+    
+.tiber
+    ld a, PLAYER_TIBER
+    call PlayerRoomCheck
+    ld hl, wTiber
+    jp z, RenderMetasprite
+    ret
+
+; returns `z = !(wPlayerDisabled || (wWorldMapPosition == wPlayerRoom))`
+; (z is set if logic and renderer should run)
+; @ a: Player Index
+PlayerRoomCheck:
+    ; Is player enabled?
+    ld hl, wPlayerDisabled
+    add_r16_a h, l
+    ld a, [hl]
+    and a, a
+    ret nz
+    add a, a
+    ld hl, wPlayerRoom
+    add_r16_a h, l
+    ld a, [wWorldMapPositionY]
+    cp a, [hl]
+    ret nz ; If the rooms match, call normally.
+    inc hl
+    ld a, [wWorldMapPositionX]
+    cp a, [hl]
+    ret ; If the rooms match, call normally.
 
 ; Sets the player's velocity based off the DPad.
 ; @ bc: PLAYER enum * sizeof_Entity
@@ -524,8 +623,9 @@ ScreenTransitionCheck::
 .update
     call UpdateActiveMap
     call RenderPlayers
-    pop hl ; Clear call
-    jp Main.end ; Skip main rendering during this frame.
+    ; End the frame early.
+    ld sp, wStackOrigin
+    jp Main.end
 .clearTransBuffer
     xor a, a
     ld [wTransitionBuffer], a
@@ -678,25 +778,43 @@ wTransitionBuffer::
 ; Used to adjust entity logic based on the layout of the current room
 wAllyLogicMode::
     ds 1
+
+; Player disablers
+wPlayerDisabled::
+.octavia::
+    ds 1
+.poppy::
+    ds 1
+.tiber::
+    ds 1
+
 ; Player-specific waiting flags.
-wOctaviaWaitMode::
+wPlayerWaiting::
+.octavia::
     ds 1
-wPoppyWaitMode::
+.poppy::
     ds 1
-wTiberWaitMode::
+.tiber::
     ds 1
+
+; Player world map Position. Used to keep track of which room an inactive
+; player is waiting in.
+wPlayerRoom::
+.octavia::
+    ds 2
+.poppy::
+    ds 2
+.tiber::
+    ds 2
 
 ; The currently equipped items.
 ; Lower Nibble = A, Upper Nibble = B
-wOctaviaEquipped:: 
+wPlayerEquipped::
+.octavia::
     ds 1
-; The currently equipped items.
-; Lower Nibble = A, Upper Nibble = B
-wPoppyEquipped::
+.poppy::
     ds 1
-; The currently equipped items.
-; Lower Nibble = A, Upper Nibble = B
-wTiberEquipped::
+.tiber::
     ds 1
 
 SECTION "Player Array", WRAM0, ALIGN[$08]

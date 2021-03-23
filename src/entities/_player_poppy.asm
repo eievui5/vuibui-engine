@@ -50,7 +50,7 @@ PoppyActiveNormal: ; How to move.
     dec a
     jr z, .skipAISwitch
 
-    ld a, [wPoppyWaitMode]
+    ld a, [wPlayerWaiting.poppy]
     and a, a
     ret nz
     ld a, [wAllyLogicMode]
@@ -60,7 +60,7 @@ PoppyActiveNormal: ; How to move.
     
 .skipAISwitch
     ; Attack check
-    ld a, [wPoppyEquipped]
+    ld a, [wPlayerEquipped.poppy]
     ld b, a
     ld hl, wPoppy_State
     call UseItemCheck

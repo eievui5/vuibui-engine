@@ -1,15 +1,7 @@
 
+INCLUDE "include/bool.inc"
 INCLUDE "include/scripting.inc"
 INCLUDE "include/text.inc"
-
-; Used to finish a conversation with an ally
-MACRO wait
-    display_text TiberWaitText
-    question_branch :+ + 3, :+
-:
-    set_pointer wTiberWaitMode, 1
-    end_script
-ENDM
 
 SECTION "Tiber Dialogue", ROMX
 
@@ -25,4 +17,7 @@ TiberWaitText:
 
 TiberGeneric::
     display_text TiberGenericText
-    wait
+    display_text TiberWaitText
+    question_branch :++, :+
+:   set_pointer wPlayerWaiting.tiber, TRUE
+:    end_script

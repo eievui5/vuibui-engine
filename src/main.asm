@@ -157,9 +157,8 @@ Initialize:
     ld a, 256/2 + 16
     ld [hli], a
 
-
     ld a, $10 ; Fire rod in both A and B
-    ld [wOctaviaEquipped], a
+    ld [wPlayerEquipped.octavia], a
 
 ; Re-enable the screen
     ld a, SCREEN_NORMAL
@@ -270,4 +269,4 @@ hEngineState::
 STACK_SIZE EQU 32 * 2
 SECTION "Stack", WRAMX[$E000 - STACK_SIZE]
     ds STACK_SIZE
-wStackOrigin:
+wStackOrigin::

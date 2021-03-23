@@ -1,0 +1,8 @@
+
+    IF !DEF(BOOL_INC)
+BOOL_INC SET 1
+
+FALSE EQU 0
+TRUE EQU 1
+
+    ENDC

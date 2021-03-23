@@ -1,4 +1,5 @@
 
+INCLUDE "include/bool.inc"
 INCLUDE "include/scripting.inc"
 INCLUDE "include/text.inc"
 
@@ -22,13 +23,13 @@ OctaviaFollowText:
 OctaviaGeneric::
     display_text OctaviaGenericText
     ; TODO: implement a `goto` script function
-    branch wOctaviaWaitMode, :+, :++++
+    branch wPlayerWaiting.octavia, :+, :++++
 :   display_text OctaviaWaitText
     question_branch :++, :+
-:   set_pointer wOctaviaWaitMode, 1
+:   set_pointer wPlayerWaiting.octavia, TRUE
 :   end_script
 
 :    display_text OctaviaFollowText
     question_branch :++, :+
-:   set_pointer wOctaviaWaitMode, 0
+:   set_pointer wPlayerWaiting.octavia, FALSE
 :   end_script

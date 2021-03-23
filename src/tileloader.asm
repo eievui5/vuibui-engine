@@ -131,19 +131,18 @@ LoadMetatileData::
     ret
 
 ; 4 is possible on the DMG, but I think it's cutting it close.
-; Try setting this to 3 if you have issues.
+; Try setting this to 3 if you have issues. (May require recalibrating scrolling)
 TILES_PER_FRAME EQU 4
 
 ; Scrolls the screen and loads tiles during VBlank
 VBlankScrollLoader::
-    ; Load a metatile if needed
-    ld a, [wVBlankMapLoadPosition]
-    ld b, a
     ld a, [wRoomTransitionDirection]
     and a, a
     ret z
 
-    ld a, b
+    ; Load a metatile if needed
+    ld a, [wVBlankMapLoadPosition]
+    ld b, a
     ld b, TILES_PER_FRAME ; Save the index up here so that we can push in the loop
     and a, a
     jr nz, .skipFirst
@@ -316,6 +315,7 @@ VBlankScrollLoader::
     add a, 256 - 160 ; Fix offset
 .storeX
     ld [wSCXBuffer], a
+    ret
 
 SECTION "Metatile Definitions", WRAM0 
 wMetatileDefinitions::

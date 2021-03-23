@@ -49,7 +49,7 @@ TiberActiveNormal: ; How to move.
     cp a, PLAYER_TIBER
     jr z, .skipAISwitch
 
-    ld a, [wTiberWaitMode]
+    ld a, [wPlayerWaiting.tiber]
     and a, a
     ret nz
     ld a, [wAllyLogicMode]
@@ -59,7 +59,7 @@ TiberActiveNormal: ; How to move.
     
 .skipAISwitch
     ; Attack check
-    ld a, [wTiberEquipped]
+    ld a, [wPlayerEquipped.tiber]
     ld b, a
     ld hl, wTiber_State
     call UseItemCheck

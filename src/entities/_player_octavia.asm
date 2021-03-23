@@ -58,7 +58,7 @@ OctaviaActiveNormal:
     and a, a
     jr z, .skipAISwitch ; For now, skip processing if the entity is not active.
 
-    ld a, [wOctaviaWaitMode]
+    ld a, [wPlayerWaiting.octavia]
     and a, a
     ret nz
     ld a, [wAllyLogicMode]
@@ -68,7 +68,7 @@ OctaviaActiveNormal:
 
 .skipAISwitch
     ; Attack check
-    ld a, [wOctaviaEquipped]
+    ld a, [wPlayerEquipped.octavia]
     ld b, a
     ld hl, wOctavia_State
     call UseItemCheck

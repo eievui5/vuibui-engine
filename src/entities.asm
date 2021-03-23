@@ -14,9 +14,7 @@ SECTION "Entity Bank", ROMX
 ; Loops through the entity array, calling any script it finds
 HandleEntities::
 
-    call OctaviaPlayerLogic
-    call PoppyPlayerLogic
-    call TiberPlayerLogic
+    call HandlePlayers
 
     ; loop through entity array
     ; bc: offset of current entity
@@ -53,15 +51,6 @@ HandleEntities::
     rst _hl_ ; Call the entity's script. It may use `c` to find it's data
     pop bc
     jr .loop
-
-; Players can be rendered seperately from normal entities.
-RenderPlayers::
-    ld hl, wOctavia
-    call RenderMetasprite
-    ld hl, wPoppy
-    call RenderMetasprite
-    ld hl, wTiber
-    jp RenderMetasprite
 
 RenderEntities::
     call RenderPlayers

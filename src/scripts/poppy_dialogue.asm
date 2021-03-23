@@ -1,15 +1,7 @@
 
+INCLUDE "include/bool.inc"
 INCLUDE "include/scripting.inc"
 INCLUDE "include/text.inc"
-
-; Used to finish a conversation with an ally
-MACRO wait
-    display_text PoppyWaitText
-    question_branch :+ + 3, :+
-:
-    set_pointer wPoppyWaitMode, 1
-    end_script
-ENDM
 
 SECTION "Poppy Dialogue", ROMX
 
@@ -25,4 +17,7 @@ PoppyWaitText:
 
 PoppyGeneric::
     display_text PoppyGenericText
-    wait
+    display_text PoppyWaitText
+    question_branch :++, :+
+:   set_pointer wPlayerWaiting.poppy, TRUE
+:    end_script
