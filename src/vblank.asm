@@ -1,10 +1,11 @@
 
 INCLUDE "include/bool.inc"
 INCLUDE "include/directions.inc"
-include "include/hardware.inc"
-include "include/engine.inc"
-include "include/text.inc"
+INCLUDE "include/engine.inc"
+INCLUDE "include/hardware.inc"
 INCLUDE "include/players.inc"
+INCLUDE "include/switch.inc"
+INCLUDE "include/text.inc"
 
 SECTION "VBlank Interrupt", ROM0[$40]
     ; Save register state
@@ -34,7 +35,10 @@ VBlank:
     ld a, high(wShadowOAM)
     call hOAMDMA
 
-    ; There is minimal room to load a few tiles here.
+    ld a, [wPaletteState]
+    and a, a
+    call nz, UpdatePalettes
+
 
 .metatileLoading
     call VBlankScrollLoader
@@ -59,23 +63,10 @@ VBlank:
     bit PADB_START, a
     jr z, .return
 
-    ; debug....
-/*
-    ld a, -2
-    ld [wOctavia_YVel], a
-    ld [wPoppy_YVel], a
-    ld [wTiber_YVel], a
-    ld a, -0
-    ld [wOctavia_XVel], a
-    ld [wPoppy_XVel], a
-    ld [wTiber_XVel], a
-    ld a, $01
-    ld [wOctavia_CollisionData], a
-    ld [wPoppy_CollisionData], a
-    ld [wTiber_CollisionData], a
-*/
-.return
+    ld a, PALETTE_STATE_FADE_DARK
+    ld [wPaletteState], a
 
+.return
     ; Let the main loop know a new frame is ready
     ld a, TRUE
     ld [wNewFrame], a
@@ -116,6 +107,48 @@ SetScrollBuffer::
     ld [wSCYBuffer], a
     ret
 
+UpdatePalettes::
+    ld b, a
+    ld a, [wPaletteTimer]
+    inc a
+    ld [wPaletteTimer], a
+    bit 0, a
+    ret z
+    ld a, b
+    dec a
+    switch
+        case PALETTE_STATE_FADE_DARK - 1, .fadeDark
+        case PALETTE_STATE_FADE_LIGHT - 1, .fadeLight
+        case PALETTE_STATE_FADE_IN - 1, .fadeIn
+        case PALETTE_STATE_UPDATE - 1, .update
+    end_switch
+
+.fadeDark
+    ldh a, [rBGP]
+    scf
+    rra
+    scf
+    rra
+    ldh [rBGP], a
+    cp a, $FF
+    ret nz
+    xor a, a
+    ld [wPaletteState], a
+    ret
+.fadeLight
+    ldh a, [rBGP]
+    rla
+    res 0, a
+    rla
+    res 0, a
+    ldh [rBGP], a
+    and a, a
+    ret nz
+    xor a, a
+    ld [wPaletteState], a
+    ret
+.fadeIn
+.update
 
 SECTION "VBlank Vars", WRAM0
 
@@ -123,4 +156,9 @@ wSCXBuffer::
     ds 1
 
 wSCYBuffer::
+    ds 1
+
+wPaletteState::
+    ds 1
+wPaletteTimer:
     ds 1

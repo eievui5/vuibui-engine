@@ -160,6 +160,9 @@ Initialize:
     ld a, $10 ; Fire rod in both A and B
     ld [wPlayerEquipped.octavia], a
 
+    ld a, 2
+    ld [wPlayerWaitLink.tiber], a
+
 ; Re-enable the screen
     ld a, SCREEN_NORMAL
     ld [rLCDC], a

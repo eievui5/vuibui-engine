@@ -120,8 +120,9 @@ RenderPlayers::
     jp z, RenderMetasprite
     ret
 
+; Cycle to the next player, skipping those that are disabled. Update the players'
+; waiting link.
 CyclePlayers:
-.loop
     ld hl, wActivePlayer
     inc [hl]
     ld a, [hl]
@@ -130,10 +131,7 @@ CyclePlayers:
     xor a, a
     ld [hl], a
 .zSkip
-    ld hl, wPlayerDisabled
-    add_r16_a h, l
-    ld a, [hl]
-    and a, a
+    call PlayerRoomCheck
     jr nz, CyclePlayers
 
     ld c, 3
@@ -159,11 +157,13 @@ CyclePlayers:
 ; @ a: Player Index
 PlayerRoomCheck:
     ; Is player enabled?
+    ld b, a
     ld hl, wPlayerDisabled
     add_r16_a h, l
     ld a, [hl]
     and a, a
     ret nz
+    ld a, b
     add a, a
     ld hl, wPlayerRoom
     add_r16_a h, l
@@ -475,7 +475,6 @@ InteractionCheck::
     ld a, [de]
     ld d, a
     ld e, b
-    ld b, b
 
     ld a, ENGINE_STATE_SCRIPT
     ldh [hEngineState], a
@@ -660,6 +659,7 @@ ScreenTransitionCheck::
 .leftCheck
     dec [hl]
 .update
+    call PlayerUpdateMapPosition
     call UpdateActiveMap
     call RenderPlayers
     ; End the frame early.
@@ -669,6 +669,29 @@ ScreenTransitionCheck::
     xor a, a
     ld [wTransitionBuffer], a
     ret
+
+PlayerUpdateMapPosition:
+    ld a, [wActivePlayer]
+    ld b, a ; Save value of active player
+
+    ld hl, wPlayerRoom - 2
+    ld de, wPlayerWaitLink
+    ld c, 3 + 1 
+.waitLoop
+    inc hl
+    inc hl
+.waitLoopShort
+    dec c
+    ret z
+    ld a, [de]
+    inc de
+    cp a, b ; If the values don't match, check the next one.
+    jr nz, .waitLoop
+    ld a, [wWorldMapPositionY]
+    ld [hli], a
+    ld a, [wWorldMapPositionX]
+    ld [hli], a
+    jr .waitLoopShort
 
 PlayerSetWaitLink:
 .octavia::
