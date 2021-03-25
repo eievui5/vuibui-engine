@@ -1,4 +1,5 @@
 
+INCLUDE "include/bool.inc"
 INCLUDE "include/directions.inc"
 INCLUDE "include/engine.inc"
 INCLUDE "include/entities.inc"
@@ -131,7 +132,11 @@ CyclePlayers:
     xor a, a
     ld [hl], a
 .zSkip
-    call PlayerRoomCheck
+    ; Is player enabled?
+    ld hl, wPlayerDisabled
+    add_r16_a h, l
+    ld a, [hl]
+    and a, a
     jr nz, CyclePlayers
 
     ld c, 3
@@ -150,9 +155,25 @@ CyclePlayers:
     inc hl
     dec c
     jr nz, .waitLoop
-    ret
+    ; Are they in a different room? This needs extra handling!
+    call PlayerRoomCheck.skipDisabled
+    ret z
+.swapRoom
+    ld a, [hld]
+    ld [wWorldMapPositionX], a
+    ld a, [hl]
+    ld [wWorldMapPositionY], a
+    ld a, TRANSDIR_NONE ; No scrolling!
+    ld [wRoomTransitionDirection], a
+    ld a, PALETTE_STATE_FADE_LIGHT
+    ld [wPaletteState], a
+    ld a, FALSE
+    call UpdateActiveMap
+    ; End the frame early.
+    ld sp, wStackOrigin
+    jp Main.end
 
-; returns `z = !(wPlayerDisabled || (wWorldMapPosition == wPlayerRoom))`
+; returns `z = !(wPlayerDisabled[a] || (wWorldMapPosition == wPlayerRoom[a]))`
 ; (z is set if logic and renderer should run)
 ; @ a: Player Index
 PlayerRoomCheck:
@@ -163,6 +184,7 @@ PlayerRoomCheck:
     ld a, [hl]
     and a, a
     ret nz
+.skipDisabled
     ld a, b
     add a, a
     ld hl, wPlayerRoom
@@ -551,7 +573,9 @@ PlayerTransitionMovement::
     dec a
     jr z, .right
     ASSERT TRANSDIR_LEFT == 4
-    jr .left
+    dec a
+    jr z, .left
+    ret
 .down
     ld a, [hl]
     ; These location checks are slightly off, since sprites are not centered.
@@ -660,6 +684,7 @@ ScreenTransitionCheck::
     dec [hl]
 .update
     call PlayerUpdateMapPosition
+    ld a, TRUE
     call UpdateActiveMap
     call RenderPlayers
     ; End the frame early.
@@ -669,6 +694,7 @@ ScreenTransitionCheck::
     xor a, a
     ld [wTransitionBuffer], a
     ret
+
 
 PlayerUpdateMapPosition:
     ld a, [wActivePlayer]
@@ -692,6 +718,7 @@ PlayerUpdateMapPosition:
     ld a, [wWorldMapPositionX]
     ld [hli], a
     jr .waitLoopShort
+
 
 PlayerSetWaitLink:
 .octavia::
@@ -887,6 +914,19 @@ wPlayerRoom::
     ds 2
 .tiber::
     ds 2
+
+; Used to check which entity array should be used by the current player, 
+; allowing a room to retain it's state between player swaps. If two players are
+; in the same room, these values must match. That means when a player is left 
+; behind this value must update to an unused room, and when entering a room that
+; a player has occupied, this value must update to that player's.
+wPlayerEntities::
+.octavia::
+    ds 1
+.poppy::
+    ds 1
+.tiber::
+    ds 1 
 
 ; The currently equipped items.
 ; Lower Nibble = A, Upper Nibble = B

@@ -589,15 +589,6 @@ wEntityArray::
     ; define an array of `MAX_ENTITIES` Entities, each named wEntityX
     dstructs MAX_ENTITIES, Entity, wEntity
 
-; Used to ensure that the entity (un)loader does not unload new entities during
-; screen transitions by keeping track of processed lines.
-wEntityLoaderIndex:
-    ds 1
-; The entity loader is very intensive, so we limit it to a few passes per frame
-; so that sprites are still rendered.
-wEntityLoaderPassCount:
-    ds 1
-
-SECTION "Render Byte", HRAM
+SECTION UNION "Volatile", HRAM
 hRenderByte: ; currently stores the entity's invtimer to find out if it should blink
     ds 1

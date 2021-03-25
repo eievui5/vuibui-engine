@@ -25,8 +25,7 @@ SCREEN_WINDOW EQU LCDCF_ON | LCDCF_BGON | LCDCF_WINON | LCDCF_WIN9C00
         enum NONE
         enum FADE_DARK ; Fade all colors to default dark shade
         enum FADE_LIGHT ; Fade all colors to default light shade
-        enum FADE_IN ; Fade color back to the color buffer
-        enum UPDATE ; Set colors to the color buffer
+        enum RESET ; Set colors to the color buffer
     end_enum
 
 STAT_ENABLE_WINDOW EQU 0

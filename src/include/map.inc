@@ -12,7 +12,7 @@ ENDM
 ; @ create_entity EntityPointer, PosY, PosX
 create_entity: MACRO 
     IF _NARG != 3
-        FAIL "Exepected 3 args."
+        FAIL "Expected 3 args."
     ENDC
     db MAPDATA_ENTITY
     dw \1
@@ -24,7 +24,7 @@ sizeof_create_entity EQU 4
 ; @ ally_logic ALLY_MODE
 MACRO ally_mode
     IF _NARG != 1
-        FAIL "Exepected 1 arg."
+        FAIL "Expected 1 arg."
     ENDC
     db MAPDATA_ALLY_MODE
     db \1

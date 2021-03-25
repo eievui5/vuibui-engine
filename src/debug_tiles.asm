@@ -8,20 +8,11 @@ ROW_TILE EQU $02
 SECTION "Tiles", ROMX 
 DebugTiles::
     ; CLEAR_TILE
-    db $00, $00, $00, $00
-    db $00, $00, $00, $00
-    db $00, $00, $00, $00
-    db $00, $00, $00, $00
+    ds 16, $00
     ; BLACK_TILE
-    db $FF, $FF, $FF, $FF
-    db $FF, $FF, $FF, $FF
-    db $FF, $FF, $FF, $FF
-    db $FF, $FF, $FF, $FF
+    ds 16, $FF
     ; $03
-    db $FF, $00, $00, $FF
-    db $FF, $00, $00, $FF
-    db $FF, $00, $00, $FF
-    db $FF, $00, $00, $FF
+    ds 16, $FF, $00, $00, $FF
 .end::
 
 SECTION "Metatiles", ROMX 

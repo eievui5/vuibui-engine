@@ -17,6 +17,7 @@ DIRECTIONS_INC SET 1
         enum UP
         enum RIGHT
         enum LEFT
+        enum NONE
     end_enum
 
     ENDC

@@ -1,6 +1,7 @@
 
 ; Root
 
+INCLUDE "include/bool.inc"
 INCLUDE "include/hardware.inc"
 INCLUDE "include/tiles.inc"
 INCLUDE "include/map.inc"
@@ -94,6 +95,7 @@ Initialize:
     call memcopy
 
     ; Debug Map
+    ld a, TRUE
     call UpdateActiveMap
 
     ; Load metatiles onto _SCRN0
@@ -119,14 +121,14 @@ Initialize:
 
 ; Configure Default Pallet
     ld a, %11100100 ; Black, Dark, Light, White
-    ld hl, rBGP
-    ld [hl], a
+    ldh [rBGP], a
+    ld [wBGP], a
     ld a, %11010000 ; Black, Light, White (Normal)
-    ld hl, rOBP0
-    ld [hl], a
+    ldh [rOBP0], a
+    ld [wOBP0], a
     ld a, %00011100 ; White, Light, Black (Damage)
-    ld hl, rOBP1
-    ld [hl], a
+    ldh [rOBP1], a
+    ld [wOBP1], a
 
 ; Initiallize Player Array
     ld a, high(PlayerOctavia)
@@ -159,9 +161,6 @@ Initialize:
 
     ld a, $10 ; Fire rod in both A and B
     ld [wPlayerEquipped.octavia], a
-
-    ld a, 2
-    ld [wPlayerWaitLink.tiber], a
 
 ; Re-enable the screen
     ld a, SCREEN_NORMAL

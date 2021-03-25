@@ -7,7 +7,11 @@ INCLUDE "include/switch.inc"
 ; Keep these all in the same bank.
 SECTION "Map Lookup", ROM0
 
+; Updates the active map and runs initiallization scripts, such as spawning 
+; entities and updating player logic.
+; @ a: Should we spawn entities? boolean
 UpdateActiveMap::
+    ldh [hRespawnEntitiesFlag], a
     xor a, a
     ld bc, sizeof_Entity * MAX_ENTITIES
     ld hl, wEntityArray
@@ -22,13 +26,19 @@ UpdateActiveMap::
     pop hl
 .nextData
     ld a, [hli]
-    switch
-        case MAPDATA_END, GetActiveMap.return
-        case MAPDATA_ENTITY, MapdataEntity
-        case MAPDATA_ALLY_MODE, MapdataAllyLogic
-    end_switch
+    ASSERT MAPDATA_END == 0
+    and a, a
+    ret z
+    ASSERT MAPDATA_ENTITY == 1
+    dec a
+    jr z, MapdataEntity
+    ASSERT MAPDATA_ALLY_MODE == 2
+    dec a
+    jr z, MapdataAllyLogic
 
 MapdataEntity:
+    ldh a, [hRespawnEntitiesFlag]
+    and a, a
     ld a, [hli]
     ld e, a
     ld a, [hli]
@@ -38,7 +48,7 @@ MapdataEntity:
     ld a, [hli]
     ld b, a
     push hl
-    call SpawnEntity
+    call nz, SpawnEntity
     pop hl
     jr UpdateActiveMap.nextData
 
@@ -46,7 +56,6 @@ MapdataAllyLogic:
     ld a, [hli]
     ld [wAllyLogicMode], a
     jr UpdateActiveMap.nextData
-
 
 ; Returns the active Map in `hl`, and its data in `bc`
 ; Used to copy map into wMetatileMap and spawn entities/run scripts
@@ -143,6 +152,7 @@ DebugMap: ; Using DebugMetatiles
     db $04, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $05
     db $01, $03, $03, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01
 .data
+    create_entity HitDummy, 256/2 + 256/4, 256/2
     end_mapdata
 
 DebugMap2: ; Using DebugMetatiles
@@ -176,4 +186,9 @@ wWorldMapPositionX::
     ds 1
 
 wWorldMapPositionY:: 
+    ds 1
+
+SECTION UNION "Volatile", HRAM
+; Boolean value, set when entities should be respawned
+hRespawnEntitiesFlag::
     ds 1

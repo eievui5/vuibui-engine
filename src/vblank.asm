@@ -62,10 +62,10 @@ VBlank:
     ldh a, [hNewKeys]
     bit PADB_START, a
     jr z, .return
-
+/*
     ld a, PALETTE_STATE_FADE_DARK
     ld [wPaletteState], a
-
+*/
 .return
     ; Let the main loop know a new frame is ready
     ld a, TRUE
@@ -119,11 +119,22 @@ UpdatePalettes::
     switch
         case PALETTE_STATE_FADE_DARK - 1, .fadeDark
         case PALETTE_STATE_FADE_LIGHT - 1, .fadeLight
-        case PALETTE_STATE_FADE_IN - 1, .fadeIn
-        case PALETTE_STATE_UPDATE - 1, .update
+        case PALETTE_STATE_RESET - 1, .reset
     end_switch
 
 .fadeDark
+    ldh a, [rOBP0]
+    scf
+    rra
+    scf
+    rra
+    ldh [rOBP0], a
+    ldh a, [rOBP1]
+    scf
+    rra
+    scf
+    rra
+    ldh [rOBP1], a
     ldh a, [rBGP]
     scf
     rra
@@ -136,6 +147,18 @@ UpdatePalettes::
     ld [wPaletteState], a
     ret
 .fadeLight
+    ldh a, [rOBP0]
+    rla
+    res 0, a
+    rla
+    res 0, a
+    ldh [rOBP0], a
+    ldh a, [rOBP1]
+    rla
+    res 0, a
+    rla
+    res 0, a
+    ldh [rOBP1], a
     ldh a, [rBGP]
     rla
     res 0, a
@@ -147,8 +170,14 @@ UpdatePalettes::
     xor a, a
     ld [wPaletteState], a
     ret
-.fadeIn
-.update
+.reset
+    ld a, [wBGP]
+    ldh [rBGP], a
+    ld a, [wOBP0]
+    ldh [rOBP0], a
+    ld a, [wOBP1]
+    ldh [rOBP1], a
+    ret
 
 SECTION "VBlank Vars", WRAM0
 
@@ -162,3 +191,43 @@ wPaletteState::
     ds 1
 wPaletteTimer:
     ds 1
+wPaletteInterp:
+    ds 1
+
+; Used to restore colors to a set of values after a fade.
+wBGP::
+    ds 1
+wOBP0::
+    ds 1
+wOBP1::
+    ds 1
+
+/*
+wCurrentPalette::
+.cgbBGP
+    ds 8 * 3
+.cgbOBJ
+    ds 8 * 3
+
+; The engine uses a second palette buffer for interpolating into the target color.
+wPaletteTarget::
+.cgbBGP
+    ds 8 * 3
+.cgbOBJ
+    ds 8 * 3
+*/
+/*
+DARK
+
+%11111111
+%11111110
+%11111001
+%11100100
+
+LIGHT
+
+%00000000
+%01000000
+%10010000
+%11100100
+*/

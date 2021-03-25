@@ -134,7 +134,8 @@ LoadMetatileData::
 ; Try setting this to 3 if you have issues. (May require recalibrating scrolling)
 TILES_PER_FRAME EQU 4
 
-; Scrolls the screen and loads tiles during VBlank
+; Scrolls the screen and loads tiles during VBlank. Also handles tilemap updates
+; when the screen is hidden, with disabled scrolling.
 VBlankScrollLoader::
     ld a, [wRoomTransitionDirection]
     and a, a
@@ -179,7 +180,7 @@ VBlankScrollLoader::
     swap b
     dec a
     jr z, .loadRight
-    ASSERT TRANSDIR_LEFT == 4
+    ASSERT (TRANSDIR_LEFT == 4) && (TRANSDIR_NONE == 5) ; No direction re-uses LEFT
     ; Logic pertaining to each direction
     ; If carry is set, stop loading.
 .loadLeft
@@ -212,6 +213,8 @@ VBlankScrollLoader::
 
     xor a, a
     ldh [hEngineState], a ; Reset engine
+    ld a, PALETTE_STATE_RESET
+    ld [wPaletteState], a
     pop bc ; Clean stack
     ret
 
@@ -262,7 +265,10 @@ VBlankScrollLoader::
     dec a
     jr z, .scrollRight
     ASSERT TRANSDIR_LEFT == 4
-    jr .scrollLeft
+    dec a
+    jr z, .scrollLeft
+    ASSERT TRANSDIR_NONE == 5
+    ret
 
 .scrollDown
     ld a, [wSCYBuffer]
