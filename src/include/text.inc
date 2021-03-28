@@ -1,6 +1,6 @@
 
     IF !DEF(TEXT_INC)
-TEXT_INC SET 1
+DEF TEXT_INC SET 1
 
 INCLUDE "include/enum.inc"
 
@@ -43,7 +43,7 @@ MACRO end_ask
     db SPCHAR_QUESTION
 ENDM
 
-vTextTiles EQU $8000 + $1500
+DEF vTextTiles EQU $8000 + $1500
 
     start_enum TEXT
         enum HIDDEN     ; No text

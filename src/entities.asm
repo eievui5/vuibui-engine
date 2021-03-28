@@ -587,7 +587,7 @@ ENDR
 SECTION "Entity Array", WRAM0, ALIGN[$08] ; Align with $00 so that we can use unsafe struct seeking
 wEntityArray::
     ; define an array of `MAX_ENTITIES` Entities, each named wEntityX
-    dstructs MAX_ENTITIES, Entity, wEntity
+    dstructs MAX_ENTITIES * 3, Entity, wEntity
 
 SECTION UNION "Volatile", HRAM
 hRenderByte: ; currently stores the entity's invtimer to find out if it should blink

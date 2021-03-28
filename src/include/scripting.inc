@@ -1,6 +1,6 @@
 
     IF !DEF(SCRIPTING_INC)
-SCRIPTING_INC SET 1
+DEF SCRIPTING_INC SET 1
     
 INCLUDE "include/bool.inc"
 INCLUDE "include/enum.inc"

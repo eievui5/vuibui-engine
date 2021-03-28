@@ -1,6 +1,6 @@
 
     IF !DEF(SWITCH_INC)
-SWITCH_INC SET 1
+DEF SWITCH_INC SET 1
 
 ; Begin a switch statement. This will ultimately return, so please `call` your switch if this is unwanted.
 ; All you need to do is set `a` to the case value. VALUES ABOVE THE MAX CASE WILL NOT WORK!
@@ -9,7 +9,7 @@ MACRO switch
         FAIL "Switch statements must be closed using `end_switch`!"
     ENDC
     call HandleJumpTable
-SWITCH_INDEX = -1
+    DEF SWITCH_INDEX = -1
 ENDM
 
 ; Begin a switch statement with banks enabled
@@ -21,8 +21,8 @@ MACRO far_switch
         FAIL "Switch statements must be closed using `end_switch`!"
     ENDC
     call HandleJumpTableFar
-SWITCH_INDEX = -1
-BANKED = 1
+    DEF SWITCH_INDEX = -1
+    DEF BANKED = 1
 ENDM
 
 ; Add a case to the switch statement. The value must be 1 higher than the previous case.
@@ -41,7 +41,7 @@ MACRO case
         db BANK(\2)
     ENDC
     dw \2
-SWITCH_INDEX = SWITCH_INDEX + 1
+    DEF SWITCH_INDEX = SWITCH_INDEX + 1
 ENDM
 
 ; Cleanup after a switch statement. This is required to use `switch` more than once.

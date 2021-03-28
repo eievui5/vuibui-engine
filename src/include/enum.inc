@@ -1,7 +1,7 @@
 
 
     IF !DEF(ENUM_INC)
-ENUM_INC SET 1
+DEF ENUM_INC SET 1
 
 ; Start a new enumeration.
 ; @ start_enum Name, [start], [step]
@@ -15,7 +15,7 @@ MACRO start_enum
         FAIL "Close enums with `end_enum`"
     ENDC
 
-ENUM_NAME EQUS "\1"
+    DEF ENUM_NAME EQUS "\1"
 
 ; Handle start position
     IF _NARG > 1
@@ -26,9 +26,9 @@ ENUM_NAME EQUS "\1"
 
 ; Handle step amount
     IF _NARG == 3
-ENUM_STEP EQU \3
+        DEF ENUM_STEP EQU \3
     ELSE
-ENUM_STEP EQU 1
+        DEF ENUM_STEP EQU 1
     ENDC
 ENDM
 
@@ -39,7 +39,7 @@ MACRO enum
         FAIL "`enum` missing opening `start_enum`!"
     ENDC
 
-ENUM_FIELD_NAME EQUS "{ENUM_NAME}_\1" 
+    DEF ENUM_FIELD_NAME EQUS "{ENUM_NAME}_\1" 
 ENUM_FIELD_NAME RB ENUM_STEP
 
     PURGE ENUM_FIELD_NAME

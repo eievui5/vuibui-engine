@@ -194,7 +194,7 @@ Main::
     ASSERT ENGINE_STATE_ROOM_TRANSITION == 2
 
 .handleTransition
-    call RenderPlayers
+    call RenderPlayersTransition
     call PlayerTransitionMovement
     jr .end
 
@@ -255,7 +255,7 @@ hEngineState::
     ds 1 
 
 ; Stack Allocation
-STACK_SIZE EQU 32 * 2
+DEF STACK_SIZE EQU 32 * 2
 SECTION "Stack", WRAMX[$E000 - STACK_SIZE]
     ds STACK_SIZE
 wStackOrigin::

@@ -1,6 +1,6 @@
 
     IF !DEF(MACROS_INC)
-MACROS_INC SET 1
+DEF MACROS_INC SET 1
 
 ; Adds a into \1 \2. a will become \2's result.
 ; @ add_r16_a r8, r8

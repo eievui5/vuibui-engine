@@ -85,17 +85,17 @@ HandlePlayers::
     call nz, CyclePlayers
 
     ld a, PLAYER_OCTAVIA
-    call PlayerRoomCheck ; If rooms do not match or player is disabled, skip.
+    call PlayerActivityCheck.disabled ; If rooms do not match or player is disabled, skip.
     call z, OctaviaPlayerLogic 
 
 .checkPoppy
     ld a, PLAYER_POPPY
-    call PlayerRoomCheck ; If rooms do not match or player is disabled, skip.
+    call PlayerActivityCheck.disabled ; If rooms do not match or player is disabled, skip.
     call z, PoppyPlayerLogic
 
 .checkTiber
     ld a, PLAYER_TIBER
-    call PlayerRoomCheck; If rooms do not match or player is disabled, skip.
+    call PlayerActivityCheck.disabled; If rooms do not match or player is disabled, skip.
     ; Update the current room (This needs to move to the room transition function. (Does that function even exist?))
     jp z, TiberPlayerLogic
     ret
@@ -104,19 +104,35 @@ HandlePlayers::
 RenderPlayers::
 .octavia
     ld a, PLAYER_OCTAVIA
-    call PlayerRoomCheck
+    call PlayerActivityCheck.disabled
     ld hl, wOctavia
     call z, RenderMetasprite
-    
 .poppy
     ld a, PLAYER_POPPY
-    call PlayerRoomCheck
+    call PlayerActivityCheck.disabled
     ld hl, wPoppy
     call z, RenderMetasprite
-    
 .tiber
     ld a, PLAYER_TIBER
-    call PlayerRoomCheck
+    call PlayerActivityCheck.disabled
+    ld hl, wTiber
+    jp z, RenderMetasprite
+    ret
+
+RenderPlayersTransition::
+.octavia
+    ld a, PLAYER_OCTAVIA
+    call PlayerActivityCheck.waiting
+    ld hl, wOctavia
+    call z, RenderMetasprite
+.poppy
+    ld a, PLAYER_POPPY
+    call PlayerActivityCheck.waiting
+    ld hl, wPoppy
+    call z, RenderMetasprite
+.tiber
+    ld a, PLAYER_TIBER
+    call PlayerActivityCheck.waiting
     ld hl, wTiber
     jp z, RenderMetasprite
     ret
@@ -156,7 +172,7 @@ CyclePlayers:
     dec c
     jr nz, .waitLoop
     ; Are they in a different room? This needs extra handling!
-    call PlayerRoomCheck.skipDisabled
+    call PlayerActivityCheck.room
     ret z
 .swapRoom
     ld a, [hld]
@@ -173,10 +189,22 @@ CyclePlayers:
     ld sp, wStackOrigin
     jp Main.end
 
-; returns `z = !(wPlayerDisabled[a] || (wWorldMapPosition == wPlayerRoom[a]))`
-; (z is set if logic and renderer should run)
-; @ a: Player Index
-PlayerRoomCheck:
+; Various logic checks to determine the activity of players. Z is set if the 
+; checks all pass. `a: Player Index`
+; @ In order of sensitivity, the different modes are:
+; @ .waiting: `z = !(wPlayerWaitlink[a] == wActivePlayer || wPlayerDisabled[a] || (wWorldMapPosition == wPlayerRoom[a]))`
+; @ .disabled: `z = !(wPlayerDisabled[a] || (wWorldMapPosition == wPlayerRoom[a]))`
+; @ .room: `z = !(wWorldMapPosition == wPlayerRoom[a])`
+PlayerActivityCheck:
+.waiting
+    ld b, a
+    ld hl, wPlayerWaitLink
+    add_r16_a h, l
+    ld a, [wActivePlayer]
+    cp a, [hl]
+    ret nz
+    ld a, b
+.disabled
     ; Is player enabled?
     ld b, a
     ld hl, wPlayerDisabled
@@ -184,8 +212,8 @@ PlayerRoomCheck:
     ld a, [hl]
     and a, a
     ret nz
-.skipDisabled
     ld a, b
+.room
     add a, a
     ld hl, wPlayerRoom
     add_r16_a h, l
@@ -697,6 +725,28 @@ ScreenTransitionCheck::
 
 
 PlayerUpdateMapPosition:
+    ; Find an unreserved entity array.
+    ld hl, wPlayerEntityArrayIndex
+    ld bc, 3
+  .loop
+    ld a, [hli]
+    cp 1
+    adc a
+    or b
+    ld b, a
+    dec c
+    jr nz, .loop
+    ld a, -1
+  .count
+    inc a
+    srl b
+    jr c, .count
+    cp a, 2
+    jr nc, .store
+    ld a, -1 ; if the result is over 2, set the available index to -1
+.store
+    ldh [hAvailableEntityArray], a
+
     ld a, [wActivePlayer]
     ld b, a ; Save value of active player
 
@@ -920,7 +970,7 @@ wPlayerRoom::
 ; in the same room, these values must match. That means when a player is left 
 ; behind this value must update to an unused room, and when entering a room that
 ; a player has occupied, this value must update to that player's.
-wPlayerEntities::
+wPlayerEntityArrayIndex::
 .octavia::
     ds 1
 .poppy::
@@ -946,3 +996,7 @@ wPlayerArray::
 
     dstruct Entity, wOctaviaProjectile
     dstructs 2, Entity, wPoppyProjectiles
+
+SECTION UNION "Volatile", HRAM
+hAvailableEntityArray:
+    ds 1

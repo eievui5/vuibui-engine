@@ -1,2 +1,15 @@
 
-☐ Implement other players
+☐ Clean up entity rendering during screen transitions. Just add a smoke animation
+
+☐ NPCs. These need a script constant in their entity definition, but are otherwise very simple
+
+☐ Player Items! Start with the other spells, since they can re-use old logic. 
+☐ Also, make Octavia and Poppy use their designated spell slots.
+
+☐ An inventory menu
+
+☐ *Map* transtions. Already exist in the form of TRANSDIR_NONE, just add a way for tiles to look up a map/room (will require the mapdata for sure)
+
+☐ A bitfield of flags
+
+☐ Saving! Just save flags + certain player info, not too hard.

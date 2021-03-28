@@ -2,7 +2,7 @@
 INCLUDE "include/enum.inc"
 
     IF !DEF(PLAYERS_INC)
-PLAYERS_INC SET 1
+DEF PLAYERS_INC SET 1
 
 ; Used to find a player's data at a given offset, storing it in hl. 
 ; @ bc: PLAYER enum * sizeof_Entity
@@ -18,16 +18,16 @@ MACRO find_player
 ENDM
 
 ; Timer constants
-KNOCK_FRAMES EQU 15
-INVINCIBLE_FRAMES EQU 60
+DEF KNOCK_FRAMES EQU 15
+DEF INVINCIBLE_FRAMES EQU 60
 
 ; Items
-ITEM_FIRE_WAND EQU 1
+DEF ITEM_FIRE_WAND EQU 1
 
 ; AI constants
-OCTAVIA_FOLLOW_DISTANCE EQU 32 ; Distance at which to stop following the player.
-POPPY_FOLLOW_DISTANCE EQU 16
-TIBER_FOLLOW_DISTANCE EQU 48
+DEF OCTAVIA_FOLLOW_DISTANCE EQU 32 ; Distance at which to stop following the player.
+DEF POPPY_FOLLOW_DISTANCE EQU 16
+DEF TIBER_FOLLOW_DISTANCE EQU 48
 
 ; Animation Frames
     start_enum PLAYER_FRAME
