@@ -75,6 +75,13 @@ DEF TIBER_FOLLOW_DISTANCE EQU 48
         enum SHOCK_WAND
     end_enum
 
+    start_enum SPELL_GFX
+        enum NONE
+        enum FIRE
+        enum ICE
+        enum SHOCK
+    end_enum
+
 ; Which set of entity logic are the Allies using?
     start_enum ALLY_MODE
         enum FOLLOW

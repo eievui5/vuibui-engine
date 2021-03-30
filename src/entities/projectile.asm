@@ -102,14 +102,12 @@ dw .sprite
 .sprite
     db -8 ; y
     db -8 ; x
-    db OCTAVIA_DOWN_1 ; Tile ID
+    db TILE_PLAYER_SPELL ; Tile ID
     db OAMF_PAL0 | OAMF_BANK0 ; Flags
 
     db -8 ; y
     db 0 ; x
-    db OCTAVIA_DOWN_1 ; Tile ID
-    db OAMF_PAL0 | OAMF_BANK0 | OAMB_XFLIP ; Flags
-
-    db METASPRITE_END
+    db TILE_PLAYER_SPELL ; Tile ID
+    db OAMF_PAL0 | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     db METASPRITE_END

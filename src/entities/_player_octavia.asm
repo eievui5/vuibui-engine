@@ -2,6 +2,7 @@
 INCLUDE "include/damage.inc"
 INCLUDE "include/directions.inc"
 INCLUDE "include/entities.inc"
+INCLUDE "include/graphics.inc"
 INCLUDE "include/players.inc"
 INCLUDE "include/switch.inc"
 
@@ -103,14 +104,20 @@ OctaviaRod:
 .fire
     ld a, DAMAGE_EFFECT_FIRE | 1
     ldh [hSpellDamage], a
+    ld a, SPELL_GFX_FIRE
+    ld [wTargetSpellGraphic], a
     jr .shoot
 .ice
     ld a, DAMAGE_EFFECT_ICE | 1
     ldh [hSpellDamage], a
+    ld a, SPELL_GFX_ICE
+    ld [wTargetSpellGraphic], a
     jr .shoot
 .shock
     ld a, DAMAGE_EFFECT_SHOCK | 1
     ldh [hSpellDamage], a
+    ld a, SPELL_GFX_SHOCK
+    ld [wTargetSpellGraphic], a
 .shoot
     ld a, [wOctavia_Flags]
     and a, a
@@ -181,6 +188,30 @@ OctaviaAIFollow:
     
     ld hl, wOctavia
     jp MoveAndSlide
+
+; Updates the current spell graphic during VBlank if needed.
+OctaviaUpdateSpellGraphic::
+    ld a, [wActiveSpellGraphic]
+    ld b, a
+    ld a, [wTargetSpellGraphic]
+    cp a, b
+    ld b, b
+    ret z
+    ld [wActiveSpellGraphic], a
+    dec a
+    add a, a ; a * 2
+    swap a  ; a * 32
+    ld hl, GfxPlayerSpells
+    add_r16_a hl
+    ld bc, 32 ; Size of 2 tiles
+    ld de, VRAM_TILES_OBJ + TILE_PLAYER_SPELL * $10
+    jp memcopy
+
+SECTION "Octavia Vars", WRAM0
+wActiveSpellGraphic:
+    ds 1
+wTargetSpellGraphic:
+    ds 1
 
 SECTION UNION "Volatile", HRAM
 hCurrentTile:

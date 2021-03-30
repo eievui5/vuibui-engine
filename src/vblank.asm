@@ -39,6 +39,8 @@ VBlank:
     and a, a
     call nz, UpdatePalettes
 
+.tileRequests
+    call OctaviaUpdateSpellGraphic
 
 .metatileLoading
     call VBlankScrollLoader
