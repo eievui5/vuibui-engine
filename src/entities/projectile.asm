@@ -5,6 +5,11 @@ INCLUDE "include/hardware.inc"
 INCLUDE "include/graphics.inc"
 include "include/tiles.inc"
 
+/* 
+    A generic projectile entity. Copies its collision data onto the target, 
+    which allows multiple spells, arrows, etc. to share this entity.
+*/
+
 SECTION "Projectile", ROMX 
 
 ProjectileLogic::
@@ -48,7 +53,7 @@ ProjectileLogic::
     ld e, l
     pop bc
     find_entity Entity_CollisionData
-    ld a, $01 ; Load our collision data into the target
+    ld a, [hl] ; Load our collision data into the target
     ld [de], a
     push bc
 

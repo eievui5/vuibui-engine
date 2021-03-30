@@ -72,7 +72,6 @@ MapdataSetWarp:
     ld a, [hli]
     ld c, a
     push hl
-    ld b, b
     ld hl, wMapData
     swap b
     ld a, b

@@ -1,4 +1,5 @@
 
+INCLUDE "include/damage.inc"
 INCLUDE "include/directions.inc"
 INCLUDE "include/entities.inc"
 INCLUDE "include/players.inc"
@@ -47,7 +48,9 @@ OctaviaPlayerLogic::
     switch
         case PLAYER_STATE_NORMAL, OctaviaActiveNormal
         case PLAYER_STATE_HURT, OctaviaDamage
-        case PLAYER_STATE_FIRE_WAND, OctaviaFireRod
+        case PLAYER_STATE_FIRE_WAND, OctaviaRod.fire
+        case PLAYER_STATE_ICE_WAND, OctaviaRod.ice
+        case PLAYER_STATE_SHOCK_WAND, OctaviaRod.shock
     end_switch
 
 OctaviaActiveNormal:
@@ -96,7 +99,19 @@ OctaviaDamage:
     ld bc, PLAYER_OCTAVIA * sizeof_Entity
     jp PlayerDamage
 
-OctaviaFireRod:
+OctaviaRod:
+.fire
+    ld a, DAMAGE_EFFECT_FIRE | 1
+    ldh [hSpellDamage], a
+    jr .shoot
+.ice
+    ld a, DAMAGE_EFFECT_ICE | 1
+    ldh [hSpellDamage], a
+    jr .shoot
+.shock
+    ld a, DAMAGE_EFFECT_SHOCK | 1
+    ldh [hSpellDamage], a
+.shoot
     ld a, [wOctavia_Flags]
     and a, a
     jr nz, .skipInit ; Are the flags == 0? initiallize!
@@ -122,6 +137,12 @@ OctaviaFireRod:
     ld b, a
     ld de, PlayerSpell
     call SpawnEntity
+    inc l
+    inc l
+    ldh a, [hSpellDamage]
+    ld [hl], a ; Set the projectile's damage
+    dec l
+    dec l
     xor a, a
     ld [wOctavia_State], a
     ld a, [wOctavia_Direction]
@@ -163,4 +184,9 @@ OctaviaAIFollow:
 
 SECTION UNION "Volatile", HRAM
 hCurrentTile:
+    ds 1
+; Used to cache damage and frame of the current spell
+hSpellDamage:
+    ds 1
+hSpellFrame:
     ds 1

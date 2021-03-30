@@ -2,10 +2,11 @@
 ; Root
 
 INCLUDE "include/bool.inc"
-INCLUDE "include/hardware.inc"
-INCLUDE "include/tiles.inc"
-INCLUDE "include/map.inc"
 INCLUDE "include/engine.inc"
+INCLUDE "include/hardware.inc"
+INCLUDE "include/map.inc"
+INCLUDE "include/players.inc"
+INCLUDE "include/tiles.inc"
 
 INCLUDE "gfx/graphics.asm"
 
@@ -157,7 +158,7 @@ Initialize:
     ld a, 256/2 + 16
     ld [hli], a
 
-    ld a, $10 ; Fire rod in both A and B
+    ld a, ITEM_FIRE_WAND << 4 | ITEM_ICE_WAND
     ld [wPlayerEquipped.octavia], a
 
 ; Re-enable the screen

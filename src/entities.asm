@@ -86,7 +86,7 @@ RenderEntities::
 ; @ b:  World X position
 ; @ c:  World Y position
 ; @ de: Entity Script (BIG ENDIAN!)
-; @ Preserves all input, returns Entity_XVel in `hl`
+; @ Preserves all input, returns Entity_YVel in `hl`
 SpawnEntity::
     push bc
     push de

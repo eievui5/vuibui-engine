@@ -8,7 +8,7 @@
 
 ☐ An inventory menu
 
-☐ *Map* transtions. Already exist in the form of TRANSDIR_NONE, just add a way for tiles to look up a map/room (will require the mapdata for sure)
+✔ *Map* transtions. Already exist in the form of TRANSDIR_NONE, just add a way for tiles to look up a map/room (will require the mapdata for sure) @done(21-03-29 22:28)
 
 ☐ A bitfield of flags
 

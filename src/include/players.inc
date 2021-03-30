@@ -21,8 +21,6 @@ ENDM
 DEF KNOCK_FRAMES EQU 15
 DEF INVINCIBLE_FRAMES EQU 60
 
-; Items
-DEF ITEM_FIRE_WAND EQU 1
 
 ; AI constants
 DEF OCTAVIA_FOLLOW_DISTANCE EQU 32 ; Distance at which to stop following the player.
@@ -66,6 +64,15 @@ DEF TIBER_FOLLOW_DISTANCE EQU 48
         enum NORMAL
         enum HURT
         enum FIRE_WAND
+        enum ICE_WAND
+        enum SHOCK_WAND
+    end_enum
+
+; Items
+    start_enum ITEM, 1
+        enum FIRE_WAND
+        enum ICE_WAND
+        enum SHOCK_WAND
     end_enum
 
 ; Which set of entity logic are the Allies using?

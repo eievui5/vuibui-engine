@@ -943,8 +943,12 @@ CheckAllyCollision::
 ItemStateLoopup::
     ; The first item for each character should correspond to the same state!
     ; Eg, Sword state = 2, Wand state = 2
-    ASSERT ITEM_FIRE_WAND == 1
+    ASSERT ITEM_FIRE_WAND == 1 
     db PLAYER_STATE_FIRE_WAND
+    ASSERT ITEM_ICE_WAND == 2
+    db PLAYER_STATE_ICE_WAND
+    ASSERT ITEM_SHOCK_WAND == 3
+    db PLAYER_STATE_SHOCK_WAND
 
 ; Used to lookup the dialogue corresponding to the current room.
 ASSERT bank(OctaviaGeneric) == bank(PoppyGeneric) && bank(PoppyGeneric) == bank(TiberGeneric)
