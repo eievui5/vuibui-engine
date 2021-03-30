@@ -2,16 +2,24 @@
     IF !DEF(MACROS_INC)
 DEF MACROS_INC SET 1
 
-; Adds a into \1 \2. a will become \2's result.
-; @ add_r16_a r8, r8
+; Adds a into a 16-bite register.
+; @ add_r16_a r16
 ; @ 5 bytes
 ; @ 5 cycles
 add_r16_a: MACRO
-    add a, \2 ; a = low + old_l
-    ld \2, a  ; a = low + old_l = new_l
-    adc a, \1 ; a = new_l + old_h + carry
-    sub a, \2    ; a = old_h + carry
-    ld \1, a
+    IF _NARG == 1
+        add a, LOW(\1) ; a = low + old_l
+        ld LOW(\1), a  ; a = low + old_l = new_l
+        adc a, HIGH(\1) ; a = new_l + old_h + carry
+        sub a, LOW(\1)    ; a = old_h + carry
+        ld HIGH(\1), a
+    ELSE
+        add a, \2 ; a = low + old_l
+        ld \2, a  ; a = low + old_l = new_l
+        adc a, \1 ; a = new_l + old_h + carry
+        sub a, \2    ; a = old_h + carry
+        ld \1, a
+    ENDC
 ENDM
 
 MACRO abs_a

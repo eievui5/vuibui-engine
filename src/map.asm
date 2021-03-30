@@ -3,12 +3,13 @@ INCLUDE "include/entities.inc"
 include "include/map.inc"
 include "include/macros.inc"
 INCLUDE "include/switch.inc"
+INCLUDE "include/tiles.inc"
 
 ; Keep these all in the same bank.
 SECTION "Map Lookup", ROM0
 
-; Updates the active map and runs initiallization scripts, such as spawning 
-; entities and updating player logic.
+; Updates the active map, loads map data, and runs initiallization scripts, 
+; such as spawning entities and updating player logic.
 ; @ a: Should we spawn entities? boolean
 UpdateActiveMap::
     ldh [hRespawnEntitiesFlag], a
@@ -22,6 +23,7 @@ UpdateActiveMap::
     ld bc, MAP_SIZE
     ld de, wMetatileMap
     call memcopy
+    call LoadMapData
     ; Evaluate map data
     pop hl
 .nextData
@@ -35,6 +37,9 @@ UpdateActiveMap::
     ASSERT MAPDATA_ALLY_MODE == 2
     dec a
     jr z, MapdataAllyLogic
+    ASSERT MAPDATA_SET_WARP == 3
+    dec a
+    jr z, MapdataSetWarp
 
 MapdataEntity:
     ldh a, [hRespawnEntitiesFlag]
@@ -55,6 +60,31 @@ MapdataEntity:
 MapdataAllyLogic:
     ld a, [hli]
     ld [wAllyLogicMode], a
+    jr UpdateActiveMap.nextData
+    
+MapdataSetWarp:
+    ld a, [hli]
+    ldh [hWarpDataIndex], a ; Save the tile index.
+    ld de, wWarpData0
+    add_r16_a de ; Offset to de for the memcopy
+    ld a, [hli]
+    ld b, a
+    ld a, [hli]
+    ld c, a
+    push hl
+    ld b, b
+    ld hl, wMapData
+    swap b
+    ld a, b
+    add_r16_a hl
+    ld a, c
+    add_r16_a hl
+    ldh a, [hWarpDataIndex]
+    add a, TILE_WARPS
+    ld [hl], a
+    pop hl
+    ld bc, sizeof_WarpData
+    call memcopy
     jr UpdateActiveMap.nextData
 
 ; Returns the active Map in `hl`, and its data in `bc`
@@ -153,6 +183,7 @@ DebugMap: ; Using DebugMetatiles
     db $01, $03, $03, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01
 .data
     create_entity HitDummy, 256/2 + 256/4, 256/2
+    set_warp 0, 2, 2, MAP_OVERWORLD, 1, 0, 256/2, 256/2
     end_mapdata
 
 DebugMap2: ; Using DebugMetatiles
@@ -188,7 +219,10 @@ wWorldMapPositionX::
 wWorldMapPositionY:: 
     ds 1
 
+    dstructs 4, WarpData, wWarpData
+
 SECTION UNION "Volatile", HRAM
 ; Boolean value, set when entities should be respawned
 hRespawnEntitiesFlag::
+hWarpDataIndex:
     ds 1

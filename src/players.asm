@@ -665,13 +665,10 @@ PlayerTransitionMovement::
     ret
 
 ; Looks up a position to see if it contains a transition tile, and transitions
-; to the next screen if it does.
-; @ b:  Y position
-; @ c:  X position
+; to the next screen if it does. Changing screens restarts the stack and main!
+; @ a:  Current tile
 ScreenTransitionCheck::
-    call LookupMapData
-    ld a, [hl]
-    ; Check if we are within the transtion tiles.
+    ; Check if we are within the transition tiles.
     ASSERT TILE_TRANSITION_LEFT - TILE_TRANSITION_DOWN == 3
     ; We don't *actually* want this to be one lower, but the transition routine 
     ; expects DIR + 1
@@ -723,6 +720,46 @@ ScreenTransitionCheck::
     ld [wTransitionBuffer], a
     ret
 
+; Checks if the tile in a is a Warp tile, and teleports to it if it is.
+; @ a:  Current tile
+WarpTileCheck::
+    ; Check if we are within the transition tiles.
+    ASSERT TILE_WARP_3 - TILE_WARP_0 == 3
+    sub a, TILE_WARP_0
+    cp a, TILE_WARP_3 - TILE_WARP_0 + 1
+    ret nc
+    ld hl, wWarpData0
+    add_r16_a hl
+    ld a, [hli]
+    ld [wActiveWorldMap], a
+    ld a, [hli]
+    ld [wWorldMapPositionY], a
+    ld [wPlayerRoom.octavia], a
+    ld [wPlayerRoom.poppy], a
+    ld [wPlayerRoom.tiber], a
+    ld a, [hli]
+    ld [wWorldMapPositionX], a
+    ld [wPlayerRoom.octavia + 1], a
+    ld [wPlayerRoom.poppy + 1], a
+    ld [wPlayerRoom.tiber + 1], a
+    ld a, [hli]
+    ld [wOctavia_YPos], a
+    ld [wPoppy_YPos], a
+    ld [wTiber_YPos], a
+    ld a, [hli]
+    ld [wOctavia_XPos], a
+    ld [wPoppy_XPos], a
+    ld [wTiber_XPos], a
+    ld a, TRANSDIR_NONE ; No scrolling!
+    ld [wRoomTransitionDirection], a
+    ld a, PALETTE_STATE_FADE_LIGHT
+    ld [wPaletteState], a
+    ld a, FALSE
+    call UpdateActiveMap
+    ; End the frame early.
+    ld sp, wStackOrigin
+    jp Main.end
+    
 
 PlayerUpdateMapPosition:
     ; Find an unreserved entity array.

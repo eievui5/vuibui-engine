@@ -150,7 +150,6 @@ VBlankScrollLoader::
     ; If this is our first pass, tell the Main loop to pause and load tile data.
     ld a, ENGINE_STATE_ROOM_TRANSITION
     ldh [hEngineState], a
-    ld [wUpdateMapDataFlag], a
 
     ld a, [wRoomTransitionDirection]
     ; Up and left must not load the 0 tile until the end.

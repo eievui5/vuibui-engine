@@ -1,16 +1,17 @@
 
 INCLUDE "include/enum.inc"
+INCLUDE "include/structs.inc"
 
 DEF MAP_SIZE EQU 16 * 16
 
 ; Ends a mapdata definition
-end_mapdata: MACRO 
+MACRO end_mapdata
     db MAPDATA_END
 ENDM
 
 ; Spawns entity when entering a given room
 ; @ create_entity EntityPointer, PosY, PosX
-create_entity: MACRO 
+MACRO create_entity
     IF _NARG != 3
         FAIL "Expected 3 args."
     ENDC
@@ -30,14 +31,38 @@ MACRO ally_mode
     db \1
 ENDM
 
+; Stores a WarpData in ram for the given tile.
+; @ set_warp Index, TilePosY, TilePosX, Map, RoomY, RoomX, ExitY, ExitX
+MACRO set_warp
+    IF _NARG != 8
+        FAIL "Expected 8 args."
+    ELIF \1 > 3
+        FAIL "Warp tile index cannot be greater than 3."
+    ENDC
+    db MAPDATA_SET_WARP
+    db \1 ; Index
+    db \2, \3 ; Tile Position
+    db \4, \5, \6, \7, \8 ; Warp Data
+ENDM
+
 ; Macro Data enumerations
     start_enum MAPDATA
         enum END
         enum ENTITY
         enum ALLY_MODE
+        enum SET_WARP
     end_enum
 
 ; Map enumerations
     start_enum MAP
         enum OVERWORLD
     end_enum
+
+; Used to set up targets for warp tiles.
+    struct WarpData
+        bytes 1, Map
+        bytes 1, YRoom
+        bytes 1, XRoom
+        bytes 1, YPos
+        bytes 1, XPos
+    end_struct

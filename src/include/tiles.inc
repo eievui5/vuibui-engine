@@ -15,10 +15,10 @@ INCLUDE "enum.inc"
         enum TRANSITION_UP
         enum TRANSITION_RIGHT
         enum TRANSITION_LEFT
-        enum WARP_TILE_0 ; 4 Tiles corresponding to up to four warps in a map.
-        enum WARP_TILE_1
-        enum WARP_TILE_2
-        enum WARP_TILE_3, ENTITY_WALL_MAX ; End of entity walls
+        enum WARP_0, WARPS ; 4 Tiles corresponding to up to four warps in a map.
+        enum WARP_1
+        enum WARP_2
+        enum WARP_3, ENTITY_WALL_MAX ; End of entity walls
         ; End of entity walls.
     end_enum
 

@@ -103,8 +103,6 @@ Initialize:
     ld hl, wMetatileDefinitions
     call LoadMetatileMap
     
-    call LoadMapData
-    
 ; Place window
     ld a, 7
     ldh [rWX], a
@@ -204,16 +202,6 @@ Main::
     jr .end
 
 .handleNormal
-.updateMap
-    ld a, [wUpdateMapDataFlag]
-    and a, a
-    jr z, .entities 
-    call RenderPlayers ; Ensure that players render during this.
-    call LoadMapData
-    xor a
-    ld [wUpdateMapDataFlag], a
-    jr .end ; Don't render the player twice.
-
 .entities
     call HandleEntities
     call PlayerCameraInterpolation ; Update camera!
@@ -243,8 +231,6 @@ PlainTiles:
 .end
 
 SECTION "Main Vars", WRAM0
-wUpdateMapDataFlag::
-    ds 1
 
 ; if != 0, restart main loop
 wNewFrame::

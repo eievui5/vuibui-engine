@@ -84,7 +84,12 @@ OctaviaActiveNormal:
     ld b, a
     ld a, [wOctavia_XPos]
     ld c, a
-    jp ScreenTransitionCheck
+    call LookupMapData
+    ld a, [hl]
+    ldh [hCurrentTile], a
+    call ScreenTransitionCheck
+    ldh a, [hCurrentTile]
+    jp WarpTileCheck
 
 ; Damage should be a function, not a per-player state.
 OctaviaDamage:
@@ -155,3 +160,7 @@ OctaviaAIFollow:
     
     ld hl, wOctavia
     jp MoveAndSlide
+
+SECTION UNION "Volatile", HRAM
+hCurrentTile:
+    ds 1
