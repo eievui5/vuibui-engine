@@ -1,4 +1,5 @@
 
+INCLUDE "include/bool.inc"
 INCLUDE "include/damage.inc"
 INCLUDE "include/directions.inc"
 INCLUDE "include/entities.inc"
@@ -11,6 +12,8 @@ INCLUDE "include/switch.inc"
     @ Logic
     @ States
     @ AI
+    @ Rendering
+    
 */
 
 SECTION "Octavia AI", ROMX
@@ -102,23 +105,24 @@ OctaviaDamage:
 
 OctaviaRod:
 .fire
-    ld a, DAMAGE_EFFECT_FIRE | 1
-    ldh [hSpellDamage], a
+    ld d, DAMAGE_EFFECT_FIRE | 1
     ld a, SPELL_GFX_FIRE
     ld [wTargetSpellGraphic], a
     jr .shoot
 .ice
-    ld a, DAMAGE_EFFECT_ICE | 1
-    ldh [hSpellDamage], a
+    ld d, DAMAGE_EFFECT_ICE | 1
     ld a, SPELL_GFX_ICE
     ld [wTargetSpellGraphic], a
     jr .shoot
 .shock
-    ld a, DAMAGE_EFFECT_SHOCK | 1
-    ldh [hSpellDamage], a
+    ld d, DAMAGE_EFFECT_SHOCK | 1
     ld a, SPELL_GFX_SHOCK
     ld [wTargetSpellGraphic], a
 .shoot
+    ld a, [wOctaviaSpellActive]
+    and a, a
+    jr nz, .forceExit
+
     ld a, [wOctavia_Flags]
     and a, a
     jr nz, .skipInit ; Are the flags == 0? initiallize!
@@ -137,19 +141,21 @@ OctaviaRod:
     ld a, [wOctavia_Timer]
     cp a, 8 + 4 + 1 ; 8 frame action!
     ret c
-    ASSERT PLAYER_STATE_NORMAL == 0
+    ld a, TRUE
+    ld [wOctaviaSpellActive], a
+    ld hl, wOctaviaSpell
+    ld a, HIGH(OctaviaSpell)
+    ld [hli], a
+    ld a, LOW(OctaviaSpell)
+    ld [hli], a
     ld a, [wOctavia_YPos]
-    ld c, a
+    ld [hli], a
     ld a, [wOctavia_XPos]
-    ld b, a
-    ld de, PlayerSpell
-    call SpawnEntity
-    inc l
-    inc l
+    ld [hli], a
     ldh a, [hSpellDamage]
-    ld [hl], a ; Set the projectile's damage
-    dec l
-    dec l
+    ld a, d
+    ld [wOctaviaSpell_CollisionData], a ; Set the projectile's damage
+    ASSERT PLAYER_STATE_NORMAL == 0
     xor a, a
     ld [wOctavia_State], a
     ld a, [wOctavia_Direction]
@@ -180,6 +186,11 @@ OctaviaRod:
     ld a, 3
     ld [hl], a
     ret
+.forceExit
+    ASSERT PLAYER_STATE_NORMAL == 0
+    xor a, a
+    ld [wOctavia_State], a
+    ret
 
 OctaviaAIFollow:
     ld bc, PLAYER_OCTAVIA * sizeof_Entity
@@ -195,7 +206,6 @@ OctaviaUpdateSpellGraphic::
     ld b, a
     ld a, [wTargetSpellGraphic]
     cp a, b
-    ld b, b
     ret z
     ld [wActiveSpellGraphic], a
     dec a
@@ -211,6 +221,9 @@ SECTION "Octavia Vars", WRAM0
 wActiveSpellGraphic:
     ds 1
 wTargetSpellGraphic:
+    ds 1
+
+wOctaviaSpellActive::
     ds 1
 
 SECTION UNION "Volatile", HRAM

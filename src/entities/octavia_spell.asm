@@ -6,20 +6,16 @@ INCLUDE "include/graphics.inc"
 include "include/tiles.inc"
 
 /* 
-    A generic projectile entity. Copies its collision data onto the target, 
-    which allows multiple spells, arrows, etc. to share this entity.
+    A generic spell entity. Copies its collision data onto the target, 
+    which allows multiple spells to share this entity.
 */
 
-SECTION "Projectile", ROMX 
+SECTION "Octavia Spell", ROMX 
 
-ProjectileLogic::
-    find_entity Entity_InvTimer
-    ld a, [hl]
-    inc a
-    ld [hl], a
-    ld a, Entity_XVel - Entity_InvTimer
-    add a, l
-    ld l, a
+OctaviaSpellLogic::
+    ld hl, wOctaviaSpell_InvTimer
+    inc [hl]
+    ld hl, wOctaviaSpell_XVel
     ld a, [hld]
     ld e, a ; Store Xvel in e
     ld a, [hld]
@@ -52,16 +48,13 @@ ProjectileLogic::
     ld d, h
     ld e, l
     pop bc
-    find_entity Entity_CollisionData
-    ld a, [hl] ; Load our collision data into the target
+    ld a, [wOctaviaSpell_CollisionData] ; Load our collision data into the target
     ld [de], a
     push bc
 
     push de
     ; Seek to both Entity_YPos
-    ld a, Entity_YPos - Entity_CollisionData 
-    add a, l
-    ld l, a
+    ld hl, wOctaviaSpell_YPos
     ld a, Entity_YPos - Entity_CollisionData 
     add a, e
     ld e, a
@@ -90,7 +83,11 @@ ProjectileLogic::
 
     pop bc
 .destroySelf
-    kill_entity
+    ld hl, wOctaviaSpell
+    xor a, a
+    ld [hli], a
+    ld [hl], a
+    ld [wOctaviaSpellActive], a
     ret
 .popReturn
     pop bc

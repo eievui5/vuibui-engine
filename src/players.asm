@@ -86,7 +86,11 @@ HandlePlayers::
 
     ld a, PLAYER_OCTAVIA
     call PlayerActivityCheck.disabled ; If rooms do not match or player is disabled, skip.
-    call z, OctaviaPlayerLogic 
+    jr nz, .checkPoppy
+    call OctaviaPlayerLogic 
+    ld a, [wOctaviaSpellActive]
+    and a, a
+    call nz, OctaviaSpellLogic
 
 .checkPoppy
     ld a, PLAYER_POPPY
@@ -105,8 +109,15 @@ RenderPlayers::
 .octavia
     ld a, PLAYER_OCTAVIA
     call PlayerActivityCheck.disabled
+    jr nz, .poppy
     ld hl, wOctavia
-    call z, RenderMetasprite
+    call RenderMetasprite
+    ld a, [wOctaviaSpellActive]
+    and a, a
+    jr z, .poppy
+    ld b, b
+    ld hl, wOctaviaSpell
+    call RenderMetasprite
 .poppy
     ld a, PLAYER_POPPY
     call PlayerActivityCheck.disabled
@@ -1035,8 +1046,8 @@ wPlayerArray::
     dstruct Entity, wPoppy
     dstruct Entity, wTiber
 
-    dstruct Entity, wOctaviaProjectile
-    dstructs 2, Entity, wPoppyProjectiles
+    dstruct Entity, wOctaviaSpell
+    dstructs 2, Entity, wPoppyArrows
 
 SECTION UNION "Volatile", HRAM
 hAvailableEntityArray:

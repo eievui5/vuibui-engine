@@ -32,8 +32,8 @@ PlayerTiber::
     far_pointer TiberPlayerLogic
     far_pointer OctaviaMetasprites
 
-PlayerSpell::
-    far_pointer ProjectileLogic
+OctaviaSpell::
+    far_pointer OctaviaSpellLogic
     far_pointer OctaviaSpellMetasprites
 
 HitDummy::

@@ -39,7 +39,6 @@ PoppyPlayerLogic::
     switch
         case PLAYER_STATE_NORMAL, PoppyActiveNormal
         case PLAYER_STATE_HURT, PoppyDamage
-        case PLAYER_STATE_FIRE_WAND, PoppyFireRod
     end_switch
 
 PoppyActiveNormal: ; How to move.
@@ -82,63 +81,6 @@ PoppyActiveNormal: ; How to move.
 PoppyDamage:
     ld bc, PLAYER_POPPY * sizeof_Entity
     jp PlayerDamage
-
-PoppyFireRod:
-    ld a, [wPoppy_Flags]
-    and a, a
-    jr nz, .skipInit ; Are the flags == 0? initiallize!
-    ld [wPoppy_Timer], a
-    inc a
-    ld [wPoppy_Flags], a
-.skipInit
-    ld a, [wPoppy_Timer]
-    inc a
-    ld [wPoppy_Timer], a
-    cp a, 4 + 1 ; 4 frame delay...
-    ret c
-    ld a, [wPoppy_Frame]
-    add a, FRAMEOFF_SWING
-    ld [wPoppy_Frame], a
-    ld a, [wPoppy_Timer]
-    cp a, 8 + 4 + 1 ; 8 frame action!
-    ret c
-    ASSERT PLAYER_STATE_NORMAL == 0
-    ld a, [wPoppy_YPos]
-    ld c, a
-    ld a, [wPoppy_XPos]
-    ld b, a
-    ld de, PlayerSpell
-    call SpawnEntity
-    xor a, a
-    ld [wPoppy_State], a
-    ld a, [wPoppy_Direction]
-    ASSERT DIR_DOWN == 0
-    and a, a
-    jr z, .down
-    ASSERT DIR_UP == 1
-    dec a
-    jr z, .up
-    ASSERT DIR_RIGHT == 2
-    inc l
-    dec a
-    jr z, .right
-    ASSERT DIR_LEFT == 3
-.left
-    ld a, -3
-    ld [hl], a
-    ret
-.down
-    ld a, 3
-    ld [hl], a ; Copy/pasting this is faster and smaller than jr.
-    ret
-.up
-    ld a, -3
-    ld [hl], a
-    ret
-.right
-    ld a, 3
-    ld [hl], a
-    ret
 
 PoppyAIFollow:
     ld bc, PLAYER_POPPY * sizeof_Entity

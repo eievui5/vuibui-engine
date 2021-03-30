@@ -39,7 +39,6 @@ TiberPlayerLogic::
     switch
         case PLAYER_STATE_NORMAL, TiberActiveNormal
         case PLAYER_STATE_HURT, TiberDamage
-        case PLAYER_STATE_FIRE_WAND, TiberFireRod
     end_switch
 
 TiberActiveNormal: ; How to move.
@@ -81,63 +80,6 @@ TiberActiveNormal: ; How to move.
 TiberDamage:
     ld bc, PLAYER_TIBER * sizeof_Entity
     jp PlayerDamage
-
-TiberFireRod:
-    ld a, [wTiber_Flags]
-    and a, a
-    jr nz, .skipInit ; Are the flags == 0? initiallize!
-    ld [wTiber_Timer], a
-    inc a
-    ld [wTiber_Flags], a
-.skipInit
-    ld a, [wTiber_Timer]
-    inc a
-    ld [wTiber_Timer], a
-    cp a, 4 + 1 ; 4 frame delay...
-    ret c
-    ld a, [wTiber_Frame]
-    add a, FRAMEOFF_SWING
-    ld [wTiber_Frame], a
-    ld a, [wTiber_Timer]
-    cp a, 8 + 4 + 1 ; 8 frame action!
-    ret c
-    ASSERT PLAYER_STATE_NORMAL == 0
-    ld a, [wTiber_YPos]
-    ld c, a
-    ld a, [wTiber_XPos]
-    ld b, a
-    ld de, PlayerSpell
-    call SpawnEntity
-    xor a, a
-    ld [wTiber_State], a
-    ld a, [wTiber_Direction]
-    ASSERT DIR_DOWN == 0
-    and a, a
-    jr z, .down
-    ASSERT DIR_UP == 1
-    dec a
-    jr z, .up
-    ASSERT DIR_RIGHT == 2
-    inc l
-    dec a
-    jr z, .right
-    ASSERT DIR_LEFT == 3
-.left
-    ld a, -3
-    ld [hl], a
-    ret
-.down
-    ld a, 3
-    ld [hl], a ; Copy/pasting this is faster and smaller than jr.
-    ret
-.up
-    ld a, -3
-    ld [hl], a
-    ret
-.right
-    ld a, 3
-    ld [hl], a
-    ret
 
 TiberAIFollow:
     ld bc, PLAYER_TIBER * sizeof_Entity
