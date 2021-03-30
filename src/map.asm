@@ -9,11 +9,20 @@ INCLUDE "include/tiles.inc"
 SECTION "Map Lookup", ROM0
 
 ; Updates the active map, loads map data, and runs initiallization scripts, 
-; such as spawning entities and updating player logic.
+; such as spawning entities and updating player logic. Also clears player
+; projectiles.
 ; @ a: Should we spawn entities? boolean
 UpdateActiveMap::
     ldh [hRespawnEntitiesFlag], a
+
+    ; Clear player spell
+    ld hl, wOctaviaSpell
+    ld bc, sizeof_Entity
     xor a, a
+    call memset
+    ld [wOctaviaSpellActive], a
+    
+    ; Clear entity array
     ld bc, sizeof_Entity * MAX_ENTITIES
     ld hl, wEntityArray
     call memset

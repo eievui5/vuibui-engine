@@ -115,7 +115,6 @@ RenderPlayers::
     ld a, [wOctaviaSpellActive]
     and a, a
     jr z, .poppy
-    ld b, b
     ld hl, wOctaviaSpell
     call RenderMetasprite
 .poppy

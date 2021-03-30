@@ -84,9 +84,9 @@ OctaviaSpellLogic::
     pop bc
 .destroySelf
     ld hl, wOctaviaSpell
+    ld bc, sizeof_Entity
     xor a, a
-    ld [hli], a
-    ld [hl], a
+    call memset
     ld [wOctaviaSpellActive], a
     ret
 .popReturn
