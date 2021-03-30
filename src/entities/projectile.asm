@@ -36,7 +36,7 @@ ProjectileLogic::
     pop bc
     ld a, [hl]
     dec a ; Ignore 0
-    cp a, MAX_ENTITY_WALL
+    cp a, TILE_ENTITY_WALL_MAX
     jr c, .destroySelf
     push bc
     call DetectEntity

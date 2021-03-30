@@ -38,5 +38,6 @@ ENDM
     end_enum
 
 ; Map enumerations
-
-DEF WORLD_MAP EQU 0
+    start_enum MAP
+        enum OVERWORLD
+    end_enum

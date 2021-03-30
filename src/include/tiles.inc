@@ -10,17 +10,17 @@ INCLUDE "enum.inc"
     start_enum TILE
         enum CLEAR
         ; Entity Walls (Entities cannot pass these)
-        enum COLLISION
-        enum TRANSITION_DOWN
+        enum COLLISION 
+        enum TRANSITION_DOWN, TRANSITIONS ; Tiles to determine screen transitions.
         enum TRANSITION_UP
         enum TRANSITION_RIGHT
         enum TRANSITION_LEFT
+        enum WARP_TILE_0 ; 4 Tiles corresponding to up to four warps in a map.
+        enum WARP_TILE_1
+        enum WARP_TILE_2
+        enum WARP_TILE_3, ENTITY_WALL_MAX ; End of entity walls
         ; End of entity walls.
     end_enum
-
-; Used to set the carry flag when entities detect collision, because they should
-; not pass through certain objects (Like transition tiles.)
-DEF MAX_ENTITY_WALL EQU TILE_TRANSITION_LEFT
 
 ; Ensure that TRANSITION enums match DIR enums
 ASSERT TILE_TRANSITION_DOWN - TILE_TRANSITION_DOWN == DIR_DOWN

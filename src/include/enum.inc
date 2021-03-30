@@ -32,17 +32,23 @@ MACRO start_enum
     ENDC
 ENDM
 
-; Add a new value to the enumeration, one higher than the last. Will result in the constant "Name_Value"
-; @ enum Value
+; Add new values to the enumeration, one higher than the last. 
+; Will result in the constant "Name_Value"
+; @ enum Value, [Value]...
 MACRO enum
     IF !DEF(ENUM_NAME)
         FAIL "`enum` missing opening `start_enum`!"
     ENDC
-
-    DEF ENUM_FIELD_NAME EQUS "{ENUM_NAME}_\1" 
+    FOR i, _NARG
+        DEF ENUM_FIELD_NAME EQUS "{ENUM_NAME}_\1" 
+        IF i != 0
+            RSSET _RS - ENUM_STEP
+        ENDC
 ENUM_FIELD_NAME RB ENUM_STEP
+        PURGE ENUM_FIELD_NAME
+        SHIFT
+    ENDR
 
-    PURGE ENUM_FIELD_NAME
 ENDM
 
 ; End an enumeration and clean up

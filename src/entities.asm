@@ -370,7 +370,7 @@ MoveAndSlide::
         call LookupMapData
         ld a, [hl]
         dec a ; Skip 0
-        cp a, MAX_ENTITY_WALL
+        cp a, TILE_ENTITY_WALL_MAX
         pop bc
         pop hl
         pop de
@@ -405,7 +405,7 @@ MoveAndSlide::
         call LookupMapData
         ld a, [hl]
         dec a ; Skip 0
-        cp a, MAX_ENTITY_WALL
+        cp a, TILE_ENTITY_WALL_MAX
         pop bc
         pop hl
         pop de
