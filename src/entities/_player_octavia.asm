@@ -13,7 +13,7 @@ INCLUDE "include/switch.inc"
     @ States
     @ AI
     @ Rendering
-    
+
 */
 
 SECTION "Octavia AI", ROMX
@@ -55,6 +55,7 @@ OctaviaPlayerLogic::
         case PLAYER_STATE_FIRE_WAND, OctaviaRod.fire
         case PLAYER_STATE_ICE_WAND, OctaviaRod.ice
         case PLAYER_STATE_SHOCK_WAND, OctaviaRod.shock
+        case PLAYER_STATE_HEAL_WAND, OctaviaRod.heal
     end_switch
 
 OctaviaActiveNormal:
@@ -104,24 +105,30 @@ OctaviaDamage:
     jp PlayerDamage
 
 OctaviaRod:
+.heal
+    ld d, 1
+    ld e, SPELL_GFX_HEAL
+    ld b, TRUE ; b is true if the spell should heal players.
+    jr .shootHeal
 .fire
     ld d, DAMAGE_EFFECT_FIRE | 1
-    ld a, SPELL_GFX_FIRE
-    ld [wTargetSpellGraphic], a
+    ld e, SPELL_GFX_FIRE
     jr .shoot
 .ice
     ld d, DAMAGE_EFFECT_ICE | 1
-    ld a, SPELL_GFX_ICE
-    ld [wTargetSpellGraphic], a
+    ld e, SPELL_GFX_ICE
     jr .shoot
 .shock
     ld d, DAMAGE_EFFECT_SHOCK | 1
-    ld a, SPELL_GFX_SHOCK
-    ld [wTargetSpellGraphic], a
+    ld e, SPELL_GFX_SHOCK
 .shoot
+    ld b, FALSE ; b is false if the spell should hurt enemies.
+.shootHeal
     ld a, [wOctaviaSpellActive]
     and a, a
     jr nz, .forceExit
+    ld a, e
+    ld [wTargetSpellGraphic], a
 
     ld a, [wOctavia_Flags]
     and a, a
@@ -152,9 +159,10 @@ OctaviaRod:
     ld [hli], a
     ld a, [wOctavia_XPos]
     ld [hli], a
-    ldh a, [hSpellDamage]
     ld a, d
     ld [wOctaviaSpell_CollisionData], a ; Set the projectile's damage
+    ld a, b
+    ld [wOctaviaSpell_Flags], a
     ASSERT PLAYER_STATE_NORMAL == 0
     xor a, a
     ld [wOctavia_State], a

@@ -66,6 +66,7 @@ DEF TIBER_FOLLOW_DISTANCE EQU 48
         enum FIRE_WAND
         enum ICE_WAND
         enum SHOCK_WAND
+        enum HEAL_WAND
     end_enum
 
 ; Items
@@ -73,6 +74,7 @@ DEF TIBER_FOLLOW_DISTANCE EQU 48
         enum FIRE_WAND
         enum ICE_WAND
         enum SHOCK_WAND
+        enum HEAL_WAND
     end_enum
 
     start_enum SPELL_GFX
@@ -80,6 +82,7 @@ DEF TIBER_FOLLOW_DISTANCE EQU 48
         enum FIRE
         enum ICE
         enum SHOCK
+        enum HEAL
     end_enum
 
 ; Which set of entity logic are the Allies using?

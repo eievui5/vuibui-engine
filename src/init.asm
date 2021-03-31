@@ -153,7 +153,7 @@ Initialize::
     ld a, 256/2 + 16
     ld [hli], a
 
-    ld a, ITEM_FIRE_WAND << 4 | ITEM_ICE_WAND
+    ld a, ITEM_HEAL_WAND << 4 | ITEM_FIRE_WAND
     ld [wPlayerEquipped.octavia], a
 
 ; Re-enable the screen

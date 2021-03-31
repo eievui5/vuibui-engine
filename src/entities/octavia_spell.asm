@@ -28,29 +28,27 @@ OctaviaSpellLogic::
     add a, d ; Move Y
     ld d, a
     ld [hl], a
-    push bc
     ld b, d
     ld c, e
     push de
     call LookupMapData
     pop de
-    pop bc
     ld a, [hl]
     dec a ; Ignore 0
     cp a, TILE_ENTITY_WALL_MAX
     jr c, .destroySelf
-    push bc
+    ld a, [wOctaviaSpell_Flags]
+    and a, a
+    jr nz, .heal
     call DetectEntity
     inc c ; Did we find something?
-    jr z, .popReturn ; No? return...
+    ret z ; No? return...
     dec c
     find_entity Entity_CollisionData
     ld d, h
     ld e, l
-    pop bc
     ld a, [wOctaviaSpell_CollisionData] ; Load our collision data into the target
     ld [de], a
-    push bc
 
     push de
     ; Seek to both Entity_YPos
@@ -81,7 +79,6 @@ OctaviaSpellLogic::
     ld a, l
     ld [de], a ; Load X knockback
 
-    pop bc
 .destroySelf
     ld hl, wOctaviaSpell
     ld bc, sizeof_Entity
@@ -89,9 +86,24 @@ OctaviaSpellLogic::
     call memset
     ld [wOctaviaSpellActive], a
     ret
-.popReturn
-    pop bc
-    ret
+
+.heal
+    call CheckAllyCollision
+    inc a
+    ret z ; If a == $FF, exit!
+    ld a, Entity_Health - Entity_DataPointer
+    add a, l
+    ld l, a
+    ld a, [wOctaviaSpell_CollisionData]
+    add a, [hl] ; TODO: This need to check the player's max health
+    ld [hl], a
+    ld a, Entity_InvTimer - Entity_Health
+    add a, l
+    ld l, a
+    ld a, 15 ; just a few frames!
+    ld [hl], a
+    jr .destroySelf
+
 
 ; The player dynamically loads their spell graphics.
 OctaviaSpellMetasprites::

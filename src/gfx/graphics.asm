@@ -16,6 +16,14 @@ GfxPlayerSpells::
 .ice::
     INCBIN "gfx/spells/ice.2bpp"
 .iceEnd::
+.shock::
+    ASSERT SPELL_GFX_SHOCK == 3
+    INCBIN "gfx/spells/shock.2bpp"
+.shockEnd::
+.heal::
+    ASSERT SPELL_GFX_HEAL == 4
+    INCBIN "gfx/spells/heal.2bpp"
+.healEnd::
 
 SECTION "Font", ROMX
 GameFont::
