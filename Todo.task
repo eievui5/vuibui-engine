@@ -10,6 +10,11 @@
 ✔ Also, make Octavia and Poppy use their designated spell slots. @done(21-03-30 19:01)
 
 ☐ Draw the rest of the player graphics and implement them!
+☐ After that, I think it's time for colour support
+    ☐ Static R, G, B, and inverted/hurt graphics
+    ☐ Load all other palettes along with the tileset
+    ☐ CGB fade
+    ☐ Color fade in general, maybe using map data?
 
 ☐ An inventory menu
 

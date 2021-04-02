@@ -30,6 +30,7 @@ RGBDS   :=
 RGBASM  := $(RGBDS)rgbasm
 RGBLINK := $(RGBDS)rgblink
 RGBFIX  := $(RGBDS)rgbfix
+RGBGFX  := $(RGBDS)rgbgfx
 
 ROM = $(BINDIR)/$(ROMNAME).$(ROMEXT)
 
@@ -43,10 +44,11 @@ FIXFLAGS = -p $(PADVALUE) -v -i "$(GAMEID)" -k "$(LICENSEE)" -l $(OLDLIC) -m $(M
 # The list of "root" ASM files that RGBASM will be invoked on
 SRCS = $(wildcard $(SRCDIR)/*.asm) \
 	$(wildcard $(SRCDIR)/entities/*.asm) \
-	$(wildcard $(SRCDIR)/metasprites/*.asm) \
+	$(wildcard $(SRCDIR)/res/metasprites/*.asm) \
 	$(wildcard $(SRCDIR)/libs/*.asm) \
 	$(wildcard $(SRCDIR)/scripts/*.asm) \
-	$(wildcard $(SRCDIR)/gfx/*.asm)
+	$(wildcard $(SRCDIR)/res/gfx/*.asm)
+
 ## Project-specific configuration
 # Use this to override the above
 include project.mk
@@ -116,9 +118,24 @@ VPATH := $(SRCDIR)
 
 # Define how to compress files using the PackBits16 codec
 # Compressor script requires Python 3
-$(RESDIR)/%.pb16: $(SRCDIR)/tools/pb16.py $(RESDIR)/%
+$(RESDIR)/%.pb16: $(SRCDIR)/tools/pb16.py $(RESDIR)/%.2bpp
 	@$(MKDIR_P) $(@D)
 	$^ $@
+
+# Convert .png files into .2bpp files
+$(RESDIR)/%.2bpp: $(RESDIR)/%.png
+	@$(MKDIR_P) $(@D)
+	$(RGBGFX) -o $@ $^
+
+# Convert .png files into .h.2bpp files (-h flag)
+$(RESDIR)/%.h.2bpp: $(RESDIR)/%.png
+	@$(MKDIR_P) $(@D)
+	$(RGBGFX) -h -o $@ $^
+
+# Convert .png files into .pal files
+$(RESDIR)/%.pal: $(RESDIR)/%.png
+	@$(MKDIR_P) $(@D)
+	$(RGBGFX) -h -p $@ $^
 
 # Catch non-existent files
 # KEEP THIS LAST!!
