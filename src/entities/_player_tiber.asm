@@ -74,7 +74,12 @@ TiberActiveNormal: ; How to move.
     ld b, a
     ld a, [wTiber_XPos]
     ld c, a
-    jp ScreenTransitionCheck
+    call LookupMapData
+    ld a, [hl]
+    ldh [hCurrentTile], a
+    call ScreenTransitionCheck
+    ldh a, [hCurrentTile]
+    jp WarpTileCheck
 
 ; Damage should be a function, not a per-player state.
 TiberDamage:
@@ -88,3 +93,7 @@ TiberAIFollow:
     
     ld hl, wTiber
     jp MoveAndSlide
+
+SECTION UNION "Volatile", HRAM
+hCurrentTile:
+    ds 1

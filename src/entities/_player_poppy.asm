@@ -76,7 +76,12 @@ PoppyActiveNormal: ; How to move.
     ld b, a
     ld a, [wPoppy_XPos]
     ld c, a
-    jp ScreenTransitionCheck
+    call LookupMapData
+    ld a, [hl]
+    ldh [hCurrentTile], a
+    call ScreenTransitionCheck
+    ldh a, [hCurrentTile]
+    jp WarpTileCheck
 
 ; Damage should be a function, not a per-player state.
 PoppyDamage:
@@ -185,4 +190,8 @@ PoppyAIFollow:
 SECTION "Poppy Vars", WRAM0
 ; Used to keep track of how many arrows are active at a time.
 wPoppyActiveArrows::
+    ds 1
+
+SECTION UNION "Volatile", HRAM
+hCurrentTile:
     ds 1

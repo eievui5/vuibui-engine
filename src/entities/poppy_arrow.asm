@@ -105,14 +105,14 @@ ArrowMetasprites::
         db -8 ; y
         db -4 ; x
         db TILE_ARROW_DOWN ; Tile ID
-        db OAMF_PAL0 | OAMF_BANK0 ; Flags
+        db OAMF_PAL0 | OAMF_BANK0 | OAMF_YFLIP ; Flags
         
         db METASPRITE_END
     .up
         db -8 ; y
         db -4 ; x
         db TILE_ARROW_DOWN ; Tile ID
-        db OAMF_PAL0 | OAMF_BANK0 | OAMF_YFLIP ; Flags
+        db OAMF_PAL0 | OAMF_BANK0 ; Flags
 
         db METASPRITE_END
     .right

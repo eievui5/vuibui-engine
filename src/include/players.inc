@@ -68,8 +68,8 @@ DEF POPPY_ARROW_DAMAGE EQU 1
 ; The state of the 3 players.
     start_enum PLAYER_STATE
         enum NORMAL
-        enum HURT
-        enum FIRE_WAND, BOW
+        enum HURT, ITEM_START ; Used to convert items to states
+        enum FIRE_WAND, BOW, SWORD
         enum ICE_WAND
         enum SHOCK_WAND
         enum HEAL_WAND
@@ -77,11 +77,10 @@ DEF POPPY_ARROW_DAMAGE EQU 1
 
 ; Items
     start_enum ITEM, 1
-        enum FIRE_WAND
+        enum FIRE_WAND, BOW, SWORD
         enum ICE_WAND
         enum SHOCK_WAND
         enum HEAL_WAND
-        enum BOW
     end_enum
 
     start_enum SPELL_GFX

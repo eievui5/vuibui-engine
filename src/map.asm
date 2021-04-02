@@ -17,7 +17,8 @@ UpdateActiveMap::
 
     ; Clear player spell
     ld hl, wOctaviaSpell
-    ld bc, sizeof_Entity
+    ASSERT wOctaviaSpell + sizeof_Entity == wPoppyArrow0
+    ld bc, sizeof_Entity * 3
     xor a, a
     call memset
     ld [wOctaviaSpellActive], a

@@ -167,7 +167,7 @@ Initialize::
     ld [hli], a
 
     ld de, _VRAM + (TILE_ARROW_DOWN * $10)
-    ld hl, GfxPlayerSpells.fire
+    ld hl, GfxArrow
     ld bc, $0060
     call memcopy
 

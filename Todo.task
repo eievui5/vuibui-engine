@@ -5,7 +5,7 @@
 ☐ An entity death handler. This could be a function that runs when the entity handler see that health is negative.
 
 ✔ Player Items! Start with the other spells, since they can re-use old logic. @done(21-03-30 22:27)
-☐ Next up, do poppy's arrows
+✔ Next up, do poppy's arrows @done(21-04-02 10:28)
 ☐ Then the sword
 ✔ Also, make Octavia and Poppy use their designated spell slots. @done(21-03-30 19:01)
 

@@ -536,13 +536,12 @@ UseItemCheck::
     and a, $0F ; Check if B item exists... (and mask out A)
     ret z ; Nothing there? get out of here!
 .loadItemState ; Queue up the item state to run next frame
-    ld de, ItemStateLoopup - 1
-    add_r16_a d, e
-    dec l
+    add a, PLAYER_STATE_ITEM_START ; Offset items to states
+    ld b, a
     xor a, a
+    dec l
     ld [hli], a ; Reset flags so that item states can initiallize.
-    ld a, [de] ; Load state based off item ID
-    ld [hl], a
+    ld [hl], b
     ret
 
 ; @ `hl`: Pointer to Player
@@ -985,16 +984,6 @@ CheckAllyCollision::
 .retTiber
     ld a, PLAYER_TIBER
     ret
-
-; Used to convert the 4-bit item enum into the player states
-ItemStateLoopup::
-    ; Octavia
-    db PLAYER_STATE_FIRE_WAND
-    db PLAYER_STATE_ICE_WAND
-    db PLAYER_STATE_SHOCK_WAND
-    db PLAYER_STATE_HEAL_WAND
-    ; Poppy
-    db PLAYER_STATE_BOW
 
 ; Used to lookup the dialogue corresponding to the current room.
 ASSERT bank(OctaviaGeneric) == bank(PoppyGeneric) && bank(PoppyGeneric) == bank(TiberGeneric)
