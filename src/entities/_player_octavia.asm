@@ -111,15 +111,15 @@ OctaviaRod:
     ld b, TRUE ; b is true if the spell should heal players.
     jr .shootHeal
 .fire
-    ld d, DAMAGE_EFFECT_FIRE | 1
+    ld d, DAMAGE_EFFECT_FIRE | OCTAVIA_FIRE_DAMAGE
     ld e, SPELL_GFX_FIRE
     jr .shoot
 .ice
-    ld d, DAMAGE_EFFECT_ICE | 1
+    ld d, DAMAGE_EFFECT_ICE | OCTAVIA_ICE_DAMAGE
     ld e, SPELL_GFX_ICE
     jr .shoot
 .shock
-    ld d, DAMAGE_EFFECT_SHOCK | 1
+    ld d, DAMAGE_EFFECT_SHOCK | OCTAVIA_SHOCK_DAMAGE
     ld e, SPELL_GFX_SHOCK
 .shoot
     ld b, FALSE ; b is false if the spell should hurt enemies.

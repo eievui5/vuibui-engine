@@ -36,6 +36,10 @@ OctaviaSpell::
     far_pointer OctaviaSpellLogic
     far_pointer OctaviaSpellMetasprites
 
+PoppyArrow::
+    far_pointer PoppyArrowLogic
+    far_pointer ArrowMetasprites
+
 HitDummy::
     far_pointer HitDummyScript
     far_pointer OctaviaMetasprites

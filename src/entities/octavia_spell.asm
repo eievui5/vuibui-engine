@@ -1,5 +1,4 @@
 
-INCLUDE "include/enum.inc"
 INCLUDE "include/entities.inc"
 INCLUDE "include/hardware.inc"
 INCLUDE "include/graphics.inc"
@@ -17,29 +16,30 @@ OctaviaSpellLogic::
     inc [hl]
     ld hl, wOctaviaSpell_XVel
     ld a, [hld]
-    ld e, a ; Store Xvel in e
+    ld c, a ; Store Xvel in c
     ld a, [hld]
-    ld d, a ; Store Yvel in d
+    ld b, a ; Store Yvel in b
     ld a, [hl]
-    add a, e ; Move X
-    ld e, a
+    add a, c ; Move X
+    ld c, a
     ld [hld], a
     ld a, [hl]
-    add a, d ; Move Y
-    ld d, a
+    add a, b ; Move Y
+    ld b, a
     ld [hl], a
-    ld b, d
-    ld c, e
-    push de
+    push bc
     call LookupMapData
-    pop de
+    pop bc
     ld a, [hl]
     dec a ; Ignore 0
     cp a, TILE_ENTITY_WALL_MAX
     jr c, .destroySelf
     ld a, [wOctaviaSpell_Flags]
     and a, a
+    ld d, b
+    ld e, c
     jr nz, .heal
+    ld bc, 1 ; We don't want to ignore any entities, set to an invalid value.
     call DetectEntity
     inc c ; Did we find something?
     ret z ; No? return...

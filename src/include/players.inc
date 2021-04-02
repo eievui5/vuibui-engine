@@ -21,11 +21,17 @@ ENDM
 DEF KNOCK_FRAMES EQU 15
 DEF INVINCIBLE_FRAMES EQU 60
 
-
 ; AI constants
 DEF OCTAVIA_FOLLOW_DISTANCE EQU 32 ; Distance at which to stop following the player.
 DEF POPPY_FOLLOW_DISTANCE EQU 16
 DEF TIBER_FOLLOW_DISTANCE EQU 48
+
+DEF OCTAVIA_FIRE_DAMAGE EQU 2
+DEF OCTAVIA_ICE_DAMAGE EQU 3
+DEF OCTAVIA_SHOCK_DAMAGE EQU 3
+DEF OCTAVIA_HEAL_AMOUNT EQU 1
+
+DEF POPPY_ARROW_DAMAGE EQU 1
 
 ; Animation Frames
     start_enum PLAYER_FRAME
@@ -63,7 +69,7 @@ DEF TIBER_FOLLOW_DISTANCE EQU 48
     start_enum PLAYER_STATE
         enum NORMAL
         enum HURT
-        enum FIRE_WAND
+        enum FIRE_WAND, BOW
         enum ICE_WAND
         enum SHOCK_WAND
         enum HEAL_WAND
@@ -75,6 +81,7 @@ DEF TIBER_FOLLOW_DISTANCE EQU 48
         enum ICE_WAND
         enum SHOCK_WAND
         enum HEAL_WAND
+        enum BOW
     end_enum
 
     start_enum SPELL_GFX

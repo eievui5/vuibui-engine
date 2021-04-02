@@ -2,9 +2,14 @@
 ☐ Clean up entity rendering during screen transitions. Just add a smoke animation
 
 ☐ NPCs. These need a script constant in their entity definition, but are otherwise very simple
+☐ An entity death handler. This could be a function that runs when the entity handler see that health is negative.
 
-☐ Player Items! Start with the other spells, since they can re-use old logic. 
+✔ Player Items! Start with the other spells, since they can re-use old logic. @done(21-03-30 22:27)
+☐ Next up, do poppy's arrows
+☐ Then the sword
 ✔ Also, make Octavia and Poppy use their designated spell slots. @done(21-03-30 19:01)
+
+☐ Draw the rest of the player graphics and implement them!
 
 ☐ An inventory menu
 
@@ -12,4 +17,6 @@
 
 ☐ A bitfield of flags (functions and macros) for scripting and such
 
-☐ Saving! Just save flags + certain player info, not too hard.
+☐ Saving! Just save flags + certain player info; not too hard.
+
+☐ Switch LookupMapData to use `de` rather than `bc`. There are a few places that will need some heavy refactoring.

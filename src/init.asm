@@ -56,11 +56,24 @@ Initialize::
 	jr nz, .copyOAMDMA
 
     ; Copy Plain Tiles
-    ld bc, PlainTiles.end - PlainTiles
-    ld de, $97D0
-    ld hl, PlainTiles
-    call memcopy
-; add a black tile to ram
+    ld hl, vPlainTiles
+    ; Light
+    ld b, 8
+:   ld a, $FF
+    ld [hli], a
+    xor a, a
+    ld [hli], a
+    dec b
+    jr nz, :-
+    ; Dark
+    ld b, 8
+:   xor a, a
+    ld [hli], a
+    ld a, $FF
+    ld [hli], a
+    dec b
+    jr nz, :-
+    ; Black
     ld a, $FF
     ld bc, $0010
     ld hl, $97F0
@@ -153,22 +166,19 @@ Initialize::
     ld a, 256/2 + 16
     ld [hli], a
 
+    ld de, _VRAM + (TILE_ARROW_DOWN * $10)
+    ld hl, GfxPlayerSpells.fire
+    ld bc, $0060
+    call memcopy
+
     ld a, ITEM_HEAL_WAND << 4 | ITEM_FIRE_WAND
     ld [wPlayerEquipped.octavia], a
+    ld a, ITEM_BOW << 4
+    ld [wPlayerEquipped.poppy], a
 
 ; Re-enable the screen
     ld a, SCREEN_NORMAL
     ld [rLCDC], a
     ei
 
-    jp Main 
-    
-SECTION "Plain Tiles", ROMX
-
-; It's more efficient to memcopy these. (Not really)
-PlainTiles:
-    ; Light
-    ds 16, $FF, $00
-    ; Dark
-    ds 16, $00, $FF
-.end
+    jp Main

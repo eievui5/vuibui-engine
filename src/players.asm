@@ -95,7 +95,28 @@ HandlePlayers::
 .checkPoppy
     ld a, PLAYER_POPPY
     call PlayerActivityCheck.disabled ; If rooms do not match or player is disabled, skip.
-    call z, PoppyPlayerLogic
+    jr nz, .checkTiber
+    call PoppyPlayerLogic
+    ld a, [wPoppyActiveArrows]
+    and a, a
+    jr z, .checkTiber
+    ; Just an unrolled entity handler for arrows...
+.poppyArrow0
+    ld hl, wPoppyArrow0
+    ASSERT HIGH(PoppyArrow) != $00
+    ld a, [hl]
+    and a, a
+    jr z, .poppyArrow1
+    ld bc, sizeof_Entity * 0
+    call PoppyArrowLogic
+.poppyArrow1
+    ld hl, wPoppyArrow1
+    ASSERT HIGH(PoppyArrow) != $00
+    ld a, [hl]
+    and a, a
+    jr z, .checkTiber
+    ld bc, sizeof_Entity * 1
+    call PoppyArrowLogic
 
 .checkTiber
     ld a, PLAYER_TIBER
@@ -117,11 +138,27 @@ RenderPlayers::
     jr z, .poppy
     ld hl, wOctaviaSpell
     call RenderMetasprite
+
 .poppy
     ld a, PLAYER_POPPY
     call PlayerActivityCheck.disabled
+    jr nz, .tiber
     ld hl, wPoppy
-    call z, RenderMetasprite
+    call RenderMetasprite
+    ; Just an unrolled entity handler for arrows...
+.poppyArrow0
+    ld hl, wPoppyArrow0
+    ASSERT HIGH(PoppyArrow) != $00
+    ld a, [hl]
+    and a, a
+    call nz, RenderMetasprite
+.poppyArrow1
+    ld hl, wPoppyArrow1
+    ASSERT HIGH(PoppyArrow) != $00
+    ld a, [hl]
+    and a, a
+    call nz, RenderMetasprite
+
 .tiber
     ld a, PLAYER_TIBER
     call PlayerActivityCheck.disabled
@@ -951,12 +988,13 @@ CheckAllyCollision::
 
 ; Used to convert the 4-bit item enum into the player states
 ItemStateLoopup::
-    ; The first item for each character should correspond to the same state!
-    ; Eg, Sword state = 2, Wand state = 2
+    ; Octavia
     db PLAYER_STATE_FIRE_WAND
     db PLAYER_STATE_ICE_WAND
     db PLAYER_STATE_SHOCK_WAND
     db PLAYER_STATE_HEAL_WAND
+    ; Poppy
+    db PLAYER_STATE_BOW
 
 ; Used to lookup the dialogue corresponding to the current room.
 ASSERT bank(OctaviaGeneric) == bank(PoppyGeneric) && bank(PoppyGeneric) == bank(TiberGeneric)
@@ -1044,7 +1082,7 @@ wPlayerArray::
     dstruct Entity, wTiber
 
     dstruct Entity, wOctaviaSpell
-    dstructs 2, Entity, wPoppyArrows
+    dstructs 2, Entity, wPoppyArrow
 
 SECTION UNION "Volatile", HRAM
 hAvailableEntityArray:

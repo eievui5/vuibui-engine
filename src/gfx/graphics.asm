@@ -27,4 +27,4 @@ GfxPlayerSpells::
 
 SECTION "Font", ROMX
 GameFont::
-    INCBIN "gfx/font.2bpp"
+    INCBIN "gfx/misc/font.2bpp"
