@@ -1,4 +1,5 @@
 
+INCLUDE "include/bool.inc"
 INCLUDE "include/directions.inc"
 INCLUDE "include/entities.inc"
 INCLUDE "include/hardware.inc"
@@ -469,7 +470,8 @@ CheckEntityCollision::
     ld hl, $0000
     ret
 
-; Returns The index of the first entity to collide with a location in bc. If c == $FF, no entity was found.
+; Returns The index of the first entity to collide with a location in bc. 
+; If a returns FALSE, no entity was found.
 ; @ d:  Y position
 ; @ e:  X position
 ; @ bc: Source entity Index
@@ -491,7 +493,7 @@ DetectEntity::
     cp a, low(sizeof_Entity * MAX_ENTITIES)
     jr nz, .continue ; Return if we've reached the end of the array 
     pop bc ; throw away source index.
-    ld c, $FF
+    xor a, a ; ld a, FALSE
     ret 
 .continue
     ld b, h
@@ -539,6 +541,7 @@ DetectEntity::
     push bc
     jr .loop
 .return
+    ld a, TRUE
     ret
 
 ; Find the angle to `de` from `hl`. 

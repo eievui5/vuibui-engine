@@ -31,6 +31,30 @@ DEF vPlainTiles EQU $97D0
         enum OCTAVIA_DOWN_ACT
         enum OCTAVIA_UP_ACT
         enum OCTAVIA_RIGHT_ACT
+        ; Player Poppy
+        enum POPPY_DOWN_1
+        enum POPPY_DOWN_2
+        enum POPPY_UP_1
+        enum POPPY_UP_2
+        enum POPPY_RIGHT_1
+        enum POPPY_RIGHT_2
+        enum POPPY_RIGHT_STEP_1
+        enum POPPY_RIGHT_STEP_2
+        enum POPPY_DOWN_ACT
+        enum POPPY_UP_ACT
+        enum POPPY_RIGHT_ACT
+        ; Player Tiber
+        enum TIBER_DOWN_1
+        enum TIBER_DOWN_2
+        enum TIBER_UP_1
+        enum TIBER_UP_2
+        enum TIBER_RIGHT_1
+        enum TIBER_RIGHT_2
+        enum TIBER_RIGHT_STEP_1
+        enum TIBER_RIGHT_STEP_2
+        enum TIBER_DOWN_ACT
+        enum TIBER_UP_ACT
+        enum TIBER_RIGHT_ACT
 
         enum PLAYER_SPELL
         enum ARROW_DOWN

@@ -86,9 +86,16 @@ TiberDamage:
     ld bc, PLAYER_TIBER * sizeof_Entity
     jp PlayerDamage
 
+TiberSword:
+    ld hl, wTiber
+    call GetEntityTargetPosition
+    ld c, 1 ; Load an invalid value into c, so that no entity is ignored.
+    call DetectEntity
+    inc c
+
 TiberAIFollow:
     ld bc, PLAYER_TIBER * sizeof_Entity
-    ld e, TIBER_FOLLOW_DISTANCE
+    ld e, FOLLOW_FAR ; Tiber should always be far.
     call PlayerAIFollow
     
     ld hl, wTiber

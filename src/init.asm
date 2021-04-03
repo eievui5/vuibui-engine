@@ -83,7 +83,7 @@ Initialize::
     ; Octavia
     ld hl, GfxOctavia
     ld de, VRAM_TILES_OBJ + TILE_OCTAVIA_DOWN_1 * $10
-    ld bc, (GfxOctavia.end - GfxOctavia)
+    ld bc, (GfxOctavia.end - GfxOctavia) * 3
     call memcopy
 
     ; Debug Tiles
@@ -168,7 +168,7 @@ Initialize::
 
     ld hl, _VRAM + (TILE_ARROW_DOWN * $10)
     ld de, pb16_GfxArrow
-    ld b, (pb16_GfxArrow.end - pb16_GfxArrow) / 16
+    ld b, 6
     call pb16_unpack_block
 
     ld a, ITEM_HEAL_WAND << 4 | ITEM_FIRE_WAND

@@ -2,10 +2,16 @@
 INCLUDE "include/players.inc"
 
 SECTION "Player Graphics", ROMX
-; Octavia's Frames
 GfxOctavia:: 
-    INCBIN "res/gfx/chars/octavia.2bpp"
+    INCBIN "res/gfx/chars/octavia.h.2bpp"
 .end::
+GfxPoppy::
+    INCBIN "res/gfx/chars/poppy.h.2bpp"
+.end::
+GfxTiber::
+    INCBIN "res/gfx/chars/tiber.h.2bpp"
+.end::
+    
 
 GfxPlayerSpells::
     ASSERT SPELL_GFX_FIRE == 1
@@ -18,7 +24,7 @@ GfxPlayerSpells::
     INCBIN "res/gfx/misc/heal.2bpp"
 
 pb16_GfxArrow::
-    INCBIN "res/gfx/misc/arrow.pb16"
+    INCBIN "res/gfx/misc/arrow.h.pb16"
 .end::
 
 SECTION "Font", ROMX

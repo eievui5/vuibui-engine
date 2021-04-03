@@ -201,8 +201,13 @@ OctaviaRod:
     ret
 
 OctaviaAIFollow:
+    ld a, [wActivePlayer]
+    cp a, PLAYER_POPPY
+    ld e, FOLLOW_CLOSE ; Octavia should be close when Poppy is active
+    jr z, .follow
+    ld e, FOLLOW_FAR ; And far when Tiber is active.
+.follow
     ld bc, PLAYER_OCTAVIA * sizeof_Entity
-    ld e, OCTAVIA_FOLLOW_DISTANCE
     call PlayerAIFollow
     
     ld hl, wOctavia

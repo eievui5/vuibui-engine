@@ -122,7 +122,7 @@ $(RESDIR)/%.pb16: $(SRCDIR)/tools/pb16.py $(RESDIR)/%.2bpp
 	@$(MKDIR_P) $(@D)
 	$^ $@
 
-# Convert .png files into .2bpp files
+# Convert .png files into .2bpp files.
 $(RESDIR)/%.2bpp: $(RESDIR)/%.png
 	@$(MKDIR_P) $(@D)
 	$(RGBGFX) -o $@ $^
@@ -135,7 +135,7 @@ $(RESDIR)/%.h.2bpp: $(RESDIR)/%.png
 # Convert .png files into .pal files
 $(RESDIR)/%.pal: $(RESDIR)/%.png
 	@$(MKDIR_P) $(@D)
-	$(RGBGFX) -h -p $@ $^
+	$(RGBGFX) -p $@ $^
 
 # Catch non-existent files
 # KEEP THIS LAST!!

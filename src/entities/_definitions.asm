@@ -26,11 +26,11 @@ PlayerOctavia::
 
 PlayerPoppy::
     far_pointer PoppyPlayerLogic
-    far_pointer OctaviaMetasprites
+    far_pointer PoppyMetasprites
 
 PlayerTiber::
     far_pointer TiberPlayerLogic
-    far_pointer OctaviaMetasprites
+    far_pointer TiberMetasprites
 
 OctaviaSpell::
     far_pointer OctaviaSpellLogic
