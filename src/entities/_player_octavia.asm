@@ -109,18 +109,22 @@ OctaviaRod:
     ld d, 1
     ld e, SPELL_GFX_HEAL
     ld b, TRUE ; b is true if the spell should heal players.
+    ld c, 1
     jr .shootHeal
 .fire
     ld d, DAMAGE_EFFECT_FIRE | OCTAVIA_FIRE_DAMAGE
     ld e, SPELL_GFX_FIRE
+    ld c, 0
     jr .shoot
 .ice
     ld d, DAMAGE_EFFECT_ICE | OCTAVIA_ICE_DAMAGE
     ld e, SPELL_GFX_ICE
+    ld c, 2
     jr .shoot
 .shock
     ld d, DAMAGE_EFFECT_SHOCK | OCTAVIA_SHOCK_DAMAGE
     ld e, SPELL_GFX_SHOCK
+    ld c, 1
 .shoot
     ld b, FALSE ; b is false if the spell should hurt enemies.
 .shootHeal
@@ -163,6 +167,8 @@ OctaviaRod:
     ld [wOctaviaSpell_CollisionData], a ; Set the projectile's damage
     ld a, b
     ld [wOctaviaSpell_Flags], a
+    ld a, c
+    ld [wOctaviaSpell_Frame], a
     ASSERT PLAYER_STATE_NORMAL == 0
     xor a, a
     ld [wOctavia_State], a

@@ -30,7 +30,7 @@ memcopy::
 	dec bc
 	inc b
 	inc c
-  .loop:
+.loop:
 	ld a, [hli]
 	ld [de], a
 	inc de
@@ -38,6 +38,23 @@ memcopy::
 	jr nz, .loop
 	dec b
 	jr nz, .loop
+	ret
+
+SECTION "Rst $18", ROM0[$18]
+
+; A slightly faster version of memcopy that requires less setup but can only do
+; up to 256 bytes. Fits into `rst $18` and thus can be written as 
+; `rst memcopy_small`. Destination and source are both offset by length, in case 
+; you want to copy to or from multiple places
+; @ c: length
+; @ de: destination
+; @ hl: source
+memcopy_small::
+	ld a, [hli]
+	ld [de], a
+	inc de
+	dec c
+	jr nz, memcopy_small
 	ret
 
 SECTION "Jump Table", ROM0

@@ -28,6 +28,12 @@ DEF SCREEN_WINDOW EQU LCDCF_ON | LCDCF_BGON | LCDCF_WINON | LCDCF_WIN9C00
         enum RESET ; Set colors to the color buffer
     end_enum
 
+    start_enum SYSTEM
+        enum DMG
+        enum CGB
+        enum AGB
+    end_enum
+
 DEF STAT_ENABLE_WINDOW EQU 0
 DEF STAT_DISABLE_WINDOW EQU 1
 

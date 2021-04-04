@@ -49,7 +49,7 @@ ROMEXT  := gb
 # ASFLAGS += -E
 
 # Game Boy Color compatible
-# FIXFLAGS += -c
+FIXFLAGS += -c
 # Game Boy Color required
 # FIXFLAGS += -C
 

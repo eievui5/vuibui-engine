@@ -29,12 +29,12 @@ TiberMetasprites::
     db -8 ; y
     db -8 ; x
     db TILE_TIBER_DOWN_1 ; Tile ID
-    db OAMF_PAL0 | OAMF_BANK0 ; Flags
+    db OAMF_PAL0 | DEFAULT_RED | OAMF_BANK0 ; Flags
 
     db -8 ; y
     db 0 ; x
     db TILE_TIBER_DOWN_2 ; Tile ID
-    db OAMF_PAL0 | OAMF_BANK0 ; Flags
+    db OAMF_PAL0 | DEFAULT_RED | OAMF_BANK0 ; Flags
 
     db METASPRITE_END
 
@@ -43,12 +43,12 @@ TiberMetasprites::
     db -8 ; y
     db -8 ; x
     db TILE_TIBER_UP_1 ; Tile ID
-    db OAMF_PAL0 | OAMF_BANK0 ; Flags
+    db OAMF_PAL0 | DEFAULT_RED | OAMF_BANK0 ; Flags
 
     db -8 ; y
     db 0 ; x
     db TILE_TIBER_UP_2 ; Tile ID
-    db OAMF_PAL0 | OAMF_BANK0 ; Flags
+    db OAMF_PAL0 | DEFAULT_RED | OAMF_BANK0 ; Flags
 
     db METASPRITE_END
 
@@ -57,12 +57,12 @@ TiberMetasprites::
     db -8 ; y
     db -8 ; x
     db TILE_TIBER_RIGHT_1 ; Tile ID
-    db OAMF_PAL0 | OAMF_BANK0 ; Flags
+    db OAMF_PAL0 | DEFAULT_RED | OAMF_BANK0 ; Flags
 
     db -8 ; y
     db 0 ; x
     db TILE_TIBER_RIGHT_2 ; Tile ID
-    db OAMF_PAL0 | OAMF_BANK0 ; Flags
+    db OAMF_PAL0 | DEFAULT_RED | OAMF_BANK0 ; Flags
 
     db METASPRITE_END
 
@@ -71,12 +71,12 @@ TiberMetasprites::
     db -8 ; y
     db -8 ; x
     db TILE_TIBER_RIGHT_2 ; Tile ID
-    db OAMF_PAL0 | OAMF_BANK0 | OAMF_XFLIP ; Flags
+    db OAMF_PAL0 | DEFAULT_RED | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     db -8 ; y
     db 0 ; x
     db TILE_TIBER_RIGHT_1 ; Tile ID
-    db OAMF_PAL0 | OAMF_BANK0 | OAMF_XFLIP ; Flags
+    db OAMF_PAL0 | DEFAULT_RED | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     db METASPRITE_END
 
@@ -86,12 +86,12 @@ TiberMetasprites::
     db -8 ; y
     db -8 ; x
     db TILE_TIBER_DOWN_2 ; Tile ID
-    db OAMF_PAL0 | OAMF_BANK0 | OAMF_XFLIP ; Flags
+    db OAMF_PAL0 | DEFAULT_RED | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     db -8 ; y
     db 0 ; x
     db TILE_TIBER_DOWN_1 ; Tile ID
-    db OAMF_PAL0 | OAMF_BANK0 | OAMF_XFLIP ; Flags
+    db OAMF_PAL0 | DEFAULT_RED | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     db METASPRITE_END
 
@@ -100,12 +100,12 @@ TiberMetasprites::
     db -8 ; y
     db -8 ; x
     db TILE_TIBER_UP_2 ; Tile ID
-    db OAMF_PAL0 | OAMF_BANK0 | OAMF_XFLIP ; Flags
+    db OAMF_PAL0 | DEFAULT_RED | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     db -8 ; y
     db 0 ; x
     db TILE_TIBER_UP_1 ; Tile ID
-    db OAMF_PAL0 | OAMF_BANK0 | OAMF_XFLIP ; Flags
+    db OAMF_PAL0 | DEFAULT_RED | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     db METASPRITE_END
 
@@ -114,12 +114,12 @@ TiberMetasprites::
     db -8 ; y
     db -8 ; x
     db TILE_TIBER_RIGHT_STEP_1 ; Tile ID
-    db OAMF_PAL0 | OAMF_BANK0 ; Flags
+    db OAMF_PAL0 | DEFAULT_RED | OAMF_BANK0 ; Flags
 
     db -8 ; y
     db 0 ; x
     db TILE_TIBER_RIGHT_STEP_2 ; Tile ID
-    db OAMF_PAL0 | OAMF_BANK0 ; Flags
+    db OAMF_PAL0 | DEFAULT_RED | OAMF_BANK0 ; Flags
 
     db METASPRITE_END
 
@@ -128,12 +128,12 @@ TiberMetasprites::
     db -8 ; y
     db -8 ; x
     db TILE_TIBER_RIGHT_STEP_2 ; Tile ID
-    db OAMF_PAL0 | OAMF_BANK0 | OAMF_XFLIP ; Flags
+    db OAMF_PAL0 | DEFAULT_RED | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     db -8 ; y
     db 0 ; x
     db TILE_TIBER_RIGHT_STEP_1 ; Tile ID
-    db OAMF_PAL0 | OAMF_BANK0 | OAMF_XFLIP ; Flags
+    db OAMF_PAL0 | DEFAULT_RED | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     db METASPRITE_END
 
@@ -143,12 +143,12 @@ TiberMetasprites::
     db -8 ; y
     db -8 ; x
     db TILE_TIBER_DOWN_ACT ; Tile ID
-    db OAMF_PAL0 | OAMF_BANK0 ; Flags
+    db OAMF_PAL0 | DEFAULT_RED | OAMF_BANK0 ; Flags
 
     db -8 ; y
     db 0 ; x
     db TILE_TIBER_DOWN_2 ; Tile ID
-    db OAMF_PAL0 | OAMF_BANK0 ; Flags
+    db OAMF_PAL0 | DEFAULT_RED | OAMF_BANK0 ; Flags
 
     db METASPRITE_END
 
@@ -156,12 +156,12 @@ TiberMetasprites::
     db -8 ; y
     db -8 ; x
     db TILE_TIBER_UP_1 ; Tile ID
-    db OAMF_PAL0 | OAMF_BANK0 ; Flags
+    db OAMF_PAL0 | DEFAULT_RED | OAMF_BANK0 ; Flags
 
     db -8 ; y
     db 0 ; x
     db TILE_TIBER_UP_ACT ; Tile ID
-    db OAMF_PAL0 | OAMF_BANK0 ; Flags
+    db OAMF_PAL0 | DEFAULT_RED | OAMF_BANK0 ; Flags
 
     db METASPRITE_END
 
@@ -170,12 +170,12 @@ TiberMetasprites::
     db -8 ; y
     db -8 ; x
     db TILE_TIBER_RIGHT_1 ; Tile ID
-    db OAMF_PAL0 | OAMF_BANK0 ; Flags
+    db OAMF_PAL0 | DEFAULT_RED | OAMF_BANK0 ; Flags
 
     db -8 ; y
     db 0 ; x
     db TILE_TIBER_RIGHT_ACT ; Tile ID
-    db OAMF_PAL0 | OAMF_BANK0 ; Flags
+    db OAMF_PAL0 | DEFAULT_RED | OAMF_BANK0 ; Flags
 
     db METASPRITE_END
 
@@ -184,12 +184,12 @@ TiberMetasprites::
     db -8 ; y
     db -8 ; x
     db TILE_TIBER_RIGHT_ACT ; Tile ID
-    db OAMF_PAL0 | OAMF_BANK0 | OAMF_XFLIP ; Flags
+    db OAMF_PAL0 | DEFAULT_RED | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     db -8 ; y
     db 0 ; x
     db TILE_TIBER_RIGHT_1 ; Tile ID
-    db OAMF_PAL0 | OAMF_BANK0 | OAMF_XFLIP ; Flags
+    db OAMF_PAL0 | DEFAULT_RED | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     db METASPRITE_END
 
@@ -197,12 +197,12 @@ TiberMetasprites::
     db -8 ; y
     db -8 ; x
     db TILE_TIBER_DOWN_ACT ; Tile ID
-    db OAMF_PAL0 | OAMF_BANK0 ; Flags
+    db OAMF_PAL0 | DEFAULT_RED | OAMF_BANK0 ; Flags
 
     db -8 ; y
     db 0 ; x
     db TILE_TIBER_DOWN_ACT ; Tile ID
-    db OAMF_PAL0 | OAMF_BANK0 | OAMF_XFLIP ; Flags
+    db OAMF_PAL0 | DEFAULT_RED | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     db METASPRITE_END
 
@@ -210,11 +210,11 @@ TiberMetasprites::
     db -8 ; y
     db -8 ; x
     db TILE_TIBER_UP_ACT ; Tile ID
-    db OAMF_PAL0 | OAMF_BANK0 | OAMF_XFLIP ; Flags
+    db OAMF_PAL0 | DEFAULT_RED | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     db -8 ; y
     db 0 ; x
     db TILE_TIBER_UP_ACT ; Tile ID
-    db OAMF_PAL0 | OAMF_BANK0 ; Flags
+    db OAMF_PAL0 | DEFAULT_RED | OAMF_BANK0 ; Flags
 
     db METASPRITE_END

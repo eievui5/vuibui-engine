@@ -161,6 +161,19 @@ VBlankScrollLoader::
     ld de, _SCRN0
     ld hl, wMetatileDefinitions
     call LoadMetatile
+    ld a, [hSystem]
+    and a, a
+    jr z, :+
+    ; If not on DMG, load attributes
+    ld a, 1 ; Swap banks
+    ldh [rVBK], a
+    ld bc, $0000
+    ld de, _SCRN0
+    ld hl, wMetatileAttributes
+    call LoadMetatile
+    xor a, a ; Return to bank 0
+    ldh [rVBK], a
+:
     ld b, TILES_PER_FRAME - 1 ; Keep track of the extra tile so that we're not overloaded.
 .skipFirst
     push bc ; Save that index...
@@ -209,6 +222,19 @@ VBlankScrollLoader::
     ld de, _SCRN0
     ld hl, wMetatileDefinitions
     call LoadMetatile    
+    ldh a, [hSystem]
+    and a, a
+    jr z, :+
+    ; If not on DMG, load attributes
+    ld a, 1 ; Swap banks
+    ldh [rVBK], a
+    ld bc, $0000
+    ld de, _SCRN0
+    ld hl, wMetatileAttributes
+    call LoadMetatile
+    xor a, a ; Return to bank 0
+    ldh [rVBK], a
+:  
 
     xor a, a
     ldh [hEngineState], a ; Reset engine
@@ -237,14 +263,29 @@ VBlankScrollLoader::
     ; Load tiles onto _SCRN0 from the wMetatileDefinitions.
     ld de, _SCRN0
     ld hl, wMetatileDefinitions
+    push bc
     call LoadMetatile
+    pop bc
+    ld b, b
+    ldh a, [hSystem]
+    and a, a
+    jr z, :+
+    ; If not on DMG, load attributes
+    ld a, 1 ; Swap banks
+    ldh [rVBK], a
+    ld de, _SCRN0
+    ld hl, wMetatileAttributes
+    call LoadMetatile
+    xor a, a ; Return to bank 0
+    ldh [rVBK], a
+:
 
     ; pop bc and swap VRAM Banks for color.
 
     ; We can load more than one tile, so lets see how many are left.
     pop bc ; Remember the tile index? 
     dec b
-    jr nz, .skipFirst ; Still more? Keep going!
+    jp nz, .skipFirst ; Still more? Keep going!
     ld a, [wVBlankMapLoadPosition]
     ; Only move the player/screen after the first row is done.
     and a, %11110000

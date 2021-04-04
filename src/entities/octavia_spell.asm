@@ -41,9 +41,8 @@ OctaviaSpellLogic::
     jr nz, .heal
     ld bc, 1 ; We don't want to ignore any entities, set to an invalid value.
     call DetectEntity
-    inc c ; Did we find something?
+    and a, a
     ret z ; No? return...
-    dec c
     find_entity Entity_CollisionData
     ld d, h
     ld e, l
@@ -107,16 +106,42 @@ OctaviaSpellLogic::
 
 ; The player dynamically loads their spell graphics.
 OctaviaSpellMetasprites::
-dw .sprite
-.sprite
+dw .red
+dw .green
+dw .blue
+.red
     db -8 ; y
     db -8 ; x
     db TILE_PLAYER_SPELL ; Tile ID
-    db OAMF_PAL0 | OAMF_BANK0 ; Flags
+    db OAMF_PAL0 | OAMF_GBCPAL2 | OAMF_BANK0 ; Flags
 
     db -8 ; y
     db 0 ; x
     db TILE_PLAYER_SPELL ; Tile ID
-    db OAMF_PAL0 | OAMF_BANK0 | OAMF_XFLIP ; Flags
+    db OAMF_PAL0 | OAMF_GBCPAL2 | OAMF_BANK0 | OAMF_XFLIP ; Flags
+
+    db METASPRITE_END
+.green
+    db -8 ; y
+    db -8 ; x
+    db TILE_PLAYER_SPELL ; Tile ID
+    db OAMF_PAL0 | OAMF_GBCPAL1 | OAMF_BANK0 ; Flags
+
+    db -8 ; y
+    db 0 ; x
+    db TILE_PLAYER_SPELL ; Tile ID
+    db OAMF_PAL0 | OAMF_GBCPAL1 | OAMF_BANK0 | OAMF_XFLIP ; Flags
+
+    db METASPRITE_END
+.blue
+    db -8 ; y
+    db -8 ; x
+    db TILE_PLAYER_SPELL ; Tile ID
+    db OAMF_PAL0 | OAMF_GBCPAL0 | OAMF_BANK0 ; Flags
+
+    db -8 ; y
+    db 0 ; x
+    db TILE_PLAYER_SPELL ; Tile ID
+    db OAMF_PAL0 | OAMF_GBCPAL0 | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     db METASPRITE_END

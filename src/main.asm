@@ -3,7 +3,7 @@ INCLUDE "include/engine.inc"
 
 SECTION "Header", ROM0[$100]
 	di
-	jp Initialize
+	jp InitializeSystem
 	ds $150 - $104, 0
 
 SECTION "Main Loop", ROM0
@@ -67,6 +67,13 @@ wNewFrame::
 SECTION "Engine Flags", HRAM
 hEngineState::
     ds 1 
+
+; The system we're running on. See engine.inc for constants.
+; @ 0: DMG
+; @ 1: CGB
+; @ 2: AGB
+hSystem::
+    ds 1
 
 ; Stack Allocation
 DEF STACK_SIZE EQU 32 * 2

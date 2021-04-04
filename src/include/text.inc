@@ -9,16 +9,16 @@ INCLUDE "include/enum.inc"
     end_enum
 
 MACRO say
-IF _NARG != 1
-    FAIL "Expected one string as input!"
-ENDC
-; This makes sure that the line is under 15 Characters, 16 if a newline is present
-IF STRLEN(\1) > 15
-    IF STRSUB(\1, 16, 1) != "\n"
-        FAIL "Line is longer than 15 characters!"
+    IF _NARG != 1
+        FAIL "Expected one string as input!"
     ENDC
-ENDC
-db \1
+    ; This makes sure that the line is under 15 Characters, 16 if a newline is present
+    IF STRLEN(\1) > 15
+        IF STRSUB(\1, 16, 1) != "\n"
+            FAIL "Line is longer than 15 characters!"
+        ENDC
+    ENDC
+    db \1
 ENDM
 
 ; Types an "@" and creates an `.end` label

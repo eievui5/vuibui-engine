@@ -40,6 +40,30 @@ DebugMetatileDefinitions::
     db CLEAR_TILE, CLEAR_TILE
 .end::
 
+DebugMetatileAttributes::
+    ; $00
+    db 0, 0
+    db 0, 0
+    ; $01
+    db 0, 0
+    db 0, 0
+    ; $02
+    db 1, 0
+    db 0, 1
+    ; $03
+    db 0, 0
+    db 0, 0
+    ; $04
+    db 0, 0
+    db 0, 0
+    ; $05
+    db 0, 0
+    db 0, 0
+    ; $06
+    db 0, 0
+    db 0, 0
+.end::
+
 ; Just a lookup table to save from storing 2 maps.
 DebugMetatileData:: 
     ; $00

@@ -3,6 +3,7 @@
 DEF GRAPHICS_INC SET 1
 
 INCLUDE "enum.inc"
+INCLUDE "hardware.inc"
 
 ; Max number of sprites
 DEF MAXIMUM_SPRITES EQU 40 
@@ -15,6 +16,23 @@ DEF VRAM_TILES_SHARED EQU $8800
 DEF VRAM_TILES_BG EQU $9000
 
 DEF vPlainTiles EQU $97D0
+
+DEF sizeof_PALETTE EQU 8
+
+DEF DEFAULT_BLUE EQU OAMF_GBCPAL0
+DEF DEFAULT_GREEN EQU OAMF_GBCPAL1
+DEF DEFAULT_RED EQU OAMF_GBCPAL2
+DEF DEFAULT_INV EQU OAMF_GBCPAL3
+
+MACRO rgb
+    IF _NARG != 3
+        FAIL "Expected 3 args!"
+    ENDC
+    IF \1 > 31 || \2 > 31 || \3 > 31
+        FAIL "Colors must be between 0 and 31"
+    ENDC
+    dw (\1) | (\2) << 5 | (\3) << 10
+ENDM
 
 ; Tile constants
 

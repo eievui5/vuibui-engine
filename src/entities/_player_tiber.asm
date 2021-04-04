@@ -94,8 +94,18 @@ TiberSword:
     inc c
 
 TiberAIFollow:
-    ld bc, PLAYER_TIBER * sizeof_Entity
     ld e, FOLLOW_FAR ; Tiber should always be far.
+    ld hl, wActivePlayer
+    ld a, [wPlayerWaitLink.octavia]
+    cp a, [hl]
+    jr nz, .forceClose
+    ld a, [wPlayerWaitLink.poppy]
+    cp a, [hl]
+    jr z, .follow
+.forceClose
+    ld e, FOLLOW_CLOSE ; Unless one of the allies is waiting
+.follow
+    ld bc, PLAYER_TIBER * sizeof_Entity
     call PlayerAIFollow
     
     ld hl, wTiber

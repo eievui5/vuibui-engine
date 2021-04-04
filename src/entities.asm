@@ -193,7 +193,8 @@ RenderMetasprite::
     bit 2, a ; Every 8/60 second, set pallet!
     ld a, [hl]
     jr z, .skipFlip
-    or a, OAMF_PAL1 
+    and a, %11101000 ; Mask out all palettes
+    or a, OAMF_PAL1 | DEFAULT_INV
 .skipFlip
     ld [de], a
     inc de

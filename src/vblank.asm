@@ -4,7 +4,6 @@ INCLUDE "include/directions.inc"
 INCLUDE "include/engine.inc"
 INCLUDE "include/hardware.inc"
 INCLUDE "include/players.inc"
-INCLUDE "include/switch.inc"
 INCLUDE "include/text.inc"
 
 SECTION "VBlank Interrupt", ROM0[$40]
@@ -35,6 +34,7 @@ VBlank:
     ld a, high(wShadowOAM)
     call hOAMDMA
 
+.pals
     ld a, [wPaletteState]
     and a, a
     call nz, UpdatePalettes
@@ -109,77 +109,7 @@ SetScrollBuffer::
     ld [wSCYBuffer], a
     ret
 
-UpdatePalettes::
-    ld b, a
-    ld a, [wPaletteTimer]
-    inc a
-    ld [wPaletteTimer], a
-    bit 0, a
-    ret z
-    ld a, b
-    dec a
-    switch
-        case PALETTE_STATE_FADE_DARK - 1, .fadeDark
-        case PALETTE_STATE_FADE_LIGHT - 1, .fadeLight
-        case PALETTE_STATE_RESET - 1, .reset
-    end_switch
 
-.fadeDark
-    ldh a, [rOBP0]
-    scf
-    rra
-    scf
-    rra
-    ldh [rOBP0], a
-    ldh a, [rOBP1]
-    scf
-    rra
-    scf
-    rra
-    ldh [rOBP1], a
-    ldh a, [rBGP]
-    scf
-    rra
-    scf
-    rra
-    ldh [rBGP], a
-    cp a, $FF
-    ret nz
-    xor a, a
-    ld [wPaletteState], a
-    ret
-.fadeLight
-    ldh a, [rOBP0]
-    rla
-    res 0, a
-    rla
-    res 0, a
-    ldh [rOBP0], a
-    ldh a, [rOBP1]
-    rla
-    res 0, a
-    rla
-    res 0, a
-    ldh [rOBP1], a
-    ldh a, [rBGP]
-    rla
-    res 0, a
-    rla
-    res 0, a
-    ldh [rBGP], a
-    and a, a
-    ret nz
-    xor a, a
-    ld [wPaletteState], a
-    ret
-.reset
-    ld a, [wBGP]
-    ldh [rBGP], a
-    ld a, [wOBP0]
-    ldh [rOBP0], a
-    ld a, [wOBP1]
-    ldh [rOBP1], a
-    ret
 
 SECTION "VBlank Vars", WRAM0
 
@@ -188,48 +118,3 @@ wSCXBuffer::
 
 wSCYBuffer::
     ds 1
-
-wPaletteState::
-    ds 1
-wPaletteTimer:
-    ds 1
-wPaletteInterp:
-    ds 1
-
-; Used to restore colors to a set of values after a fade.
-wBGP::
-    ds 1
-wOBP0::
-    ds 1
-wOBP1::
-    ds 1
-
-/*
-wCurrentPalette::
-.cgbBGP
-    ds 8 * 3
-.cgbOBJ
-    ds 8 * 3
-
-; The engine uses a second palette buffer for interpolating into the target color.
-wPaletteTarget::
-.cgbBGP
-    ds 8 * 3
-.cgbOBJ
-    ds 8 * 3
-*/
-/*
-DARK
-
-%11111111
-%11111110
-%11111001
-%11100100
-
-LIGHT
-
-%00000000
-%01000000
-%10010000
-%11100100
-*/

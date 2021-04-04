@@ -43,9 +43,8 @@ PoppyArrowLogic::
     push bc
     ld bc, 1 ; We don't want to ignore any entities, set to an invalid value.
     call DetectEntity
-    inc c ; Did we find something?
+    and a, a
     jr z, .popRet ; No? return...
-    dec c
     find_entity Entity_CollisionData
     ld d, h
     ld e, l
