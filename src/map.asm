@@ -92,8 +92,8 @@ MapdataSetWarp:
     add a, TILE_WARPS
     ld [hl], a
     pop hl
-    ld bc, sizeof_WarpData
-    call memcopy
+    ld c, sizeof_WarpData
+    rst memcopy_small
     jr UpdateActiveMap.nextData
 
 ; Returns the active Map in `hl`, and its data in `bc`

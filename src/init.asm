@@ -253,6 +253,8 @@ Initialize::
     ld [wPlayerEquipped.octavia], a
     ld a, ITEM_BOW << 4
     ld [wPlayerEquipped.poppy], a
+    ld a, ITEM_SWORD
+    ld [wPlayerEquipped.tiber], a
 
 ; Re-enable the screen
     ld a, SCREEN_NORMAL

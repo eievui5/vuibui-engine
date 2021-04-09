@@ -67,8 +67,8 @@ HandleTextbox::
     add a, c ; a * 19
     add a, c ; a * 20
     add_r16_a h, l
-    ld bc, TEXTBOX_WIDTH
-    call memcopy
+    ld c, TEXTBOX_WIDTH
+    rst memcopy_small
 
     ld a, [wTextScreenIndex]
     inc a
@@ -158,8 +158,8 @@ HandleTextbox::
     ; add a, LOW(vTextTiles)
     ld e, a
 
-    ld bc, $0010
-    call memcopy
+    ld c, $10
+    rst memcopy_small
 
     ld a, [wTextScreenIndex]
     inc a
@@ -240,24 +240,24 @@ HandleTextbox::
     and a, a
     jr nz, .cursorDraw1
 .cursorDraw0
-    ld bc, $0010
+    ld c, $10
     ld de, vTextTiles + $0100
     ld hl, GameFont - ($20 * 16) + (" " * 16) ; Copy "-" to the second row.
-    call memcopy
-    ld bc, $0010
+    rst memcopy_small
+    ld c, $10
     ld de, vTextTiles
     ld hl, GameFont - ($20 * 16) + (">" * 16) ; Copy ">" to the first row.
-    call memcopy
+    rst memcopy_small
     jr .acceptCheck
 .cursorDraw1
-    ld bc, $0010
+    ld c, $10
     ld de, vTextTiles
     ld hl, GameFont - ($20 * 16) + (" " * 16) ; Copy "-" to the first row.
-    call memcopy
-    ld bc, $0010
+    rst memcopy_small
+    ld c, $10
     ld de, vTextTiles + $0100
     ld hl, GameFont - ($20 * 16) + (">" * 16) ; Copy ">" to the second row.
-    call memcopy
+    rst memcopy_small
 .acceptCheck
     ldh a, [hNewKeys]
     bit PADB_A, a

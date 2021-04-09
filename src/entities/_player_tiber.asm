@@ -39,6 +39,7 @@ TiberPlayerLogic::
     switch
         case PLAYER_STATE_NORMAL, TiberActiveNormal
         case PLAYER_STATE_HURT, TiberDamage
+        case PLAYER_STATE_SWORD, TiberSword
     end_switch
 
 TiberActiveNormal: ; How to move.
@@ -91,7 +92,14 @@ TiberSword:
     call GetEntityTargetPosition
     ld c, 1 ; Load an invalid value into c, so that no entity is ignored.
     call DetectEntity
-    inc c
+    and a, a
+    jr z, .exit
+    ld b, b
+.exit
+    ASSERT PLAYER_STATE_NORMAL == 0
+    xor a, a ; ld a, PLAYER_STATE_NORMAL
+    ld [wTiber_State], a
+    ret
 
 TiberAIFollow:
     ld e, FOLLOW_FAR ; Tiber should always be far.

@@ -19,14 +19,14 @@ ifneq ($(OS),Windows_NT)
     # POSIX OSes
     RM_RF := rm -rf
     MKDIR_P := mkdir -p
+	RGBDS   := 
 else
     # Windows
-    RM_RF := -del /q
-    MKDIR_P := -mkdir
+    RM_RF := -rm -rf
+    MKDIR_P := -mkdir -p
+	RGBDS   := rgbds/windows/
 endif
 
-# Shortcut if you want to use a local copy of RGBDS
-RGBDS   :=
 RGBASM  := $(RGBDS)rgbasm
 RGBLINK := $(RGBDS)rgblink
 RGBFIX  := $(RGBDS)rgbfix
@@ -61,7 +61,11 @@ include project.mk
 
 # `all` (Default target): build the ROM
 all: $(ROM)
+ifneq ($(OS),Windows_NT)
 	./tools/romusage $(BINDIR)/$(ROMNAME).map -g
+else
+	./tools/romusage.exe $(BINDIR)/$(ROMNAME).map -g
+endif
 .PHONY: all
 
 # `clean`: Clean temp and bin files
