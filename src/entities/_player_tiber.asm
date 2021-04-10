@@ -5,9 +5,9 @@ INCLUDE "include/players.inc"
 INCLUDE "include/switch.inc"
 
 DEF SWORD_WINDUP_TIME = 2 + 1
-DEF SWORD_DRAW_TIME = 2
-DEF SWORD_OUTDEL_TIME = 2
-DEF SWORD_DAMAGE_TIME = 12
+DEF SWORD_DRAW_TIME   = 2 + 3
+DEF SWORD_OUTDEL_TIME = 2 + 5
+DEF SWORD_DAMAGE_TIME = 12 + 7
 
 SECTION "Tiber AI", ROMX
 
@@ -109,10 +109,10 @@ TiberSword:
     add a, FRAMEOFF_SWING
     ld [wTiber_Frame], a
     ld a, [wTiber_Timer]
-    cp a, SWORD_DRAW_TIME + SWORD_WINDUP_TIME ; 2 frame draw
+    cp a, SWORD_DRAW_TIME ; 2 frame draw
     ret c
     ; add [wTiber_Frame], FRAMEOFF_SWORD - FRAMEOFF_SWING
-    cp a, SWORD_OUTDEL_TIME + SWORD_DRAW_TIME +SWORD_WINDUP_TIME ; start damage after 6 frames
+    cp a, SWORD_OUTDEL_TIME ; start damage after 6 frames
     ret c
 
     ld hl, wTiber
@@ -120,7 +120,7 @@ TiberSword:
     ld c, 1 ; Load an invalid value into c, so that no entity is ignored.
     call DetectEntity
     and a, a
-    jr z, .doneCheck
+    jr z, .exit
     ld hl, wEntityArray + Entity_YPos
     add hl, bc
     ld b, h
@@ -146,13 +146,12 @@ TiberSword:
     ld [bc], a
 .exit
     ld a, [wTiber_Timer]
-    cp a, SWORD_DAMAGE_TIME + SWORD_OUTDEL_TIME + SWORD_DRAW_TIME +SWORD_WINDUP_TIME ; You can only swing for 24 frames.
+    cp a, SWORD_DAMAGE_TIME ; You can only swing for X frames.
     ret c
     ASSERT PLAYER_STATE_NORMAL == 0
     xor a, a ; ld a, PLAYER_STATE_NORMAL
     ld [wTiber_State], a
     ret
-.doneCheck
 
 TiberAIFollow:
     ld e, FOLLOW_FAR ; Tiber should always be far.
