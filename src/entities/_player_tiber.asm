@@ -4,6 +4,11 @@ INCLUDE "include/entities.inc"
 INCLUDE "include/players.inc"
 INCLUDE "include/switch.inc"
 
+DEF SWORD_WINDUP_TIME = 2 + 1
+DEF SWORD_DRAW_TIME = 2
+DEF SWORD_OUTDEL_TIME = 2
+DEF SWORD_DAMAGE_TIME = 12
+
 SECTION "Tiber AI", ROMX
 
 TiberPlayerLogic::
@@ -87,19 +92,67 @@ TiberDamage:
     ld bc, PLAYER_TIBER * sizeof_Entity
     jp PlayerDamage
 
-TiberSword:
+TiberSword:    
+    ld a, [wTiber_Flags]
+    and a, a
+    jr nz, .skipInit ; Are the flags == 0? initiallize!
+    ld [wTiber_Timer], a
+    inc a
+    ld [wTiber_Flags], a
+.skipInit
+    ld a, [wTiber_Timer]
+    inc a
+    ld [wTiber_Timer], a
+    cp a, SWORD_WINDUP_TIME ; 2 frame windup
+    ret c
+    ld a, [wTiber_Frame]
+    add a, FRAMEOFF_SWING
+    ld [wTiber_Frame], a
+    ld a, [wTiber_Timer]
+    cp a, SWORD_DRAW_TIME + SWORD_WINDUP_TIME ; 2 frame draw
+    ret c
+    ; add [wTiber_Frame], FRAMEOFF_SWORD - FRAMEOFF_SWING
+    cp a, SWORD_OUTDEL_TIME + SWORD_DRAW_TIME +SWORD_WINDUP_TIME ; start damage after 6 frames
+    ret c
+
     ld hl, wTiber
     call GetEntityTargetPosition
     ld c, 1 ; Load an invalid value into c, so that no entity is ignored.
     call DetectEntity
     and a, a
-    jr z, .exit
-    ld b, b
+    jr z, .doneCheck
+    ld hl, wEntityArray + Entity_YPos
+    add hl, bc
+    ld b, h
+    ld c, l
+    ld a, [hli]
+    ld d, a
+    ld e, [hl]
+    ld hl, wTiber_YPos
+    ld a, [hli]
+    ld l, [hl]
+    ld h, a
+    call CalculateKnockback
+    ASSERT Entity_YVel - Entity_YPos == 2
+    inc c
+    inc c
+    ld a, h
+    ld [bc], a
+    inc c
+    ld a, l
+    ld [bc], a
+    inc c
+    ld a, 2
+    ld [bc], a
 .exit
+    ld a, [wTiber_Timer]
+    cp a, SWORD_DAMAGE_TIME + SWORD_OUTDEL_TIME + SWORD_DRAW_TIME +SWORD_WINDUP_TIME ; You can only swing for 24 frames.
+    ret c
     ASSERT PLAYER_STATE_NORMAL == 0
     xor a, a ; ld a, PLAYER_STATE_NORMAL
     ld [wTiber_State], a
     ret
+.doneCheck
 
 TiberAIFollow:
     ld e, FOLLOW_FAR ; Tiber should always be far.

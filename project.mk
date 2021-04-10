@@ -13,7 +13,7 @@ VERSION := 0
 GAMEID := SCLE
 
 # Game title, up to 11 ASCII chars
-TITLE := SCALEOCTVIA
+TITLE := SCALES
 
 # New licensee, 2 ASCII chars
 # GreenandEievui
