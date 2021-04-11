@@ -1,8 +1,8 @@
-
+INCLUDE "include/banks.inc"
 INCLUDE "include/macros.inc"
 INCLUDE "include/entities.inc"
 
-SECTION "Entity Definitions", ROMX
+SECTION "Entity Definitions", ROM0
 
 /*
 

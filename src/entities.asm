@@ -1,4 +1,5 @@
 
+INCLUDE "include/banks.inc"
 INCLUDE "include/bool.inc"
 INCLUDE "include/directions.inc"
 INCLUDE "include/entities.inc"
@@ -10,7 +11,7 @@ INCLUDE "include/tiles.inc"
 ; Entities are stored in wEntityArray, which includes a 2-byte pointer to the
 ; entity's data, and then additional info, listed in entities.inc
 
-SECTION "Entity Bank", ROMX
+SECTION "Entity Bank", ROM0
 
 ; Loops through the entity array, calling any script it finds
 HandleEntities::
@@ -43,7 +44,7 @@ HandleEntities::
     ld h, a ; Restore the Script Pointer
     ; Load entity Script
     ld a, [hli] ; Load bank of script
-    ; Swap banks!
+    swap_bank
     ld a, [hli] ; Load the first byte of the entity script
     ld h, [hl]  ; Finish loading the entity script
     ld l, a
@@ -134,21 +135,33 @@ RenderMetasprite::
     ld a, [hli]
     ld b, a
     ld c, [hl]
-    StructSeekUnsafe l, Entity_XPos, Entity_Frame
+    ; Seek from XPos to Frame and store it for later.
+    ld a, Entity_Frame - Entity_XPos
+    add a, l
+    ld l, a
     ld d, [hl]
-    StructSeekUnsafe l, Entity_Frame, Entity_InvTimer
+    ; Seek to the timer from the frame and store it for later.
+    ld a, Entity_InvTimer - Entity_Frame
+    add a, l
+    ld l, a
     ld a, [hl]
     ldh [hRenderByte], a ; Store timer here.
-    StructSeekUnsafe l, Entity_InvTimer, Entity_DataPointer
+    ; Seek from the Invincibility Timer back to the Data Pointer.
+    ld a, Entity_DataPointer - Entity_InvTimer
+    add a, l
+    ld l, a
     ld a, [hli]
     ld l, [hl]
     ld h, a
-    inc hl
-    inc hl
-    inc hl
-    inc hl
-    ld a, [hli]
-    ld h, [hl]
+    ; Seek to Entity data.
+    inc hl ; Skip logic bank
+    inc hl ; skip logic low
+    inc hl ; skip logic high
+    ; Load the metasprite pointer.
+    ld a, [hli] ; Swap to the metasprites' bank
+    swap_bank
+    ld a, [hli] ; Load low
+    ld h, [hl] ; load high
     ld l, a
     ld a, d ; Load frame
     add a, a ; frame * 2

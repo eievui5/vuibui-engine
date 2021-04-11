@@ -35,6 +35,7 @@ Main::
     jr .end
 
 .handleScript
+    ld b, b
     call RenderEntities
     call HandleScript
     jr .end
@@ -73,6 +74,9 @@ hEngineState::
 ; @ 1: CGB
 ; @ 2: AGB
 hSystem::
+    ds 1
+
+hCurrentBank::
     ds 1
 
 ; Stack Allocation

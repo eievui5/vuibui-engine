@@ -30,12 +30,6 @@ MACRO abs_a
   :
 ENDM
 
-; Far pointer. Bank, then pointer.
-far_pointer: MACRO 
-    db BANK(\1)
-    dw \1
-ENDM
-
 ; Seek through \1 (r8) from \2 to \3. Only 8-bit; prone to overflowing. Will warn about being used stupidly.
 ; @ StructSeekUnsafe r8, Current pointer, Target pointer.
 ; @ 4 bytes

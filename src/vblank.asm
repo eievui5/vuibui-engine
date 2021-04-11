@@ -1,4 +1,4 @@
-
+INCLUDE "include/banks.inc"
 INCLUDE "include/bool.inc"
 INCLUDE "include/directions.inc"
 INCLUDE "include/engine.inc"
@@ -25,6 +25,9 @@ SECTION "Stat Interrupt", ROM0[$48]
 SECTION "VBlank", ROM0
 ; Verticle Screen Blanking
 VBlank:
+    ; Save old bank so that we can restore it.
+    ldh a, [hCurrentBank]
+    ld [wVBlankBankBuffer], a
 
     ld a, SCREEN_NORMAL
     ldh [rLCDC], a
@@ -40,6 +43,8 @@ VBlank:
     call nz, UpdatePalettes
 
 .tileRequests
+    ld a, BANK(OctaviaUpdateSpellGraphic)
+    swap_bank
     call OctaviaUpdateSpellGraphic
 
 .metatileLoading
@@ -74,6 +79,8 @@ VBlank:
     ld [wNewFrame], a
 
     ; Restore register state
+    ld a, [wVBlankBankBuffer]
+    swap_bank
     pop hl
     pop de
     pop bc
@@ -86,7 +93,7 @@ Stat:
     ld a, SCREEN_WINDOW
     ldh [rLCDC], a
 
-    ; Restore register state
+    ; Restore register and bank state
     pop hl
     pop de
     pop bc
@@ -117,4 +124,7 @@ wSCXBuffer::
     ds 1
 
 wSCYBuffer::
+    ds 1
+
+wVBlankBankBuffer::
     ds 1

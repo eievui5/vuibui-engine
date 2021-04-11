@@ -1,3 +1,5 @@
+INCLUDE "include/banks.inc"
+
 SECTION "Overwrite Bytes", ROM0
 
 ; Overwrites a certain amount of bytes with a single byte. Destination is offset
@@ -40,22 +42,7 @@ memcopy::
 	jr nz, .loop
 	ret
 
-SECTION "Rst $18", ROM0[$18]
 
-; A slightly faster version of memcopy that requires less setup but can only do
-; up to 256 bytes. Fits into `rst $18` and thus can be written as 
-; `rst memcopy_small`. Destination and source are both offset by length, in case 
-; you want to copy to or from multiple places
-; @ c: length
-; @ de: destination
-; @ hl: source
-memcopy_small::
-	ld a, [hli]
-	ld [de], a
-	inc de
-	dec c
-	jr nz, memcopy_small
-	ret
 
 SECTION "Jump Table", ROM0
 
@@ -91,6 +78,23 @@ SECTION "Call HL", ROM0[$0008]
 ; Used to call the address pointed to by `hl`. Mapped to `rst $08` or `rst _hl_`
 _hl_::
     jp hl
+
+SECTION "Memcopy Small", ROM0[$0018]
+
+; A slightly faster version of memcopy that requires less setup but can only do
+; up to 256 bytes. Fits into `rst $18` and thus can be written as 
+; `rst memcopy_small`. Destination and source are both offset by length, in case 
+; you want to copy to or from multiple places
+; @ c: length
+; @ de: destination
+; @ hl: source
+memcopy_small::
+	ld a, [hli]
+	ld [de], a
+	inc de
+	dec c
+	jr nz, memcopy_small
+	ret
 
 SECTION "Crash Handler", ROM0[$0038]
 crash:

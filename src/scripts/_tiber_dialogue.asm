@@ -3,7 +3,8 @@ INCLUDE "include/players.inc"
 INCLUDE "include/scripting.inc"
 INCLUDE "include/text.inc"
 
-SECTION "Tiber Dialogue", ROMX
+; TODO: Remove this hard-coded bank test.
+SECTION "Tiber Dialogue", ROMX, BANK[2]
 
 TiberGeneric::
     compare wPlayerWaitLink.tiber, wActivePlayer, :+, :++++

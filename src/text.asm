@@ -1,4 +1,4 @@
-
+INCLUDE "include/banks.inc"
 INCLUDE "include/engine.inc"
 INCLUDE "include/hardware.inc"
 INCLUDE "include/macros.inc"
@@ -114,6 +114,11 @@ HandleTextbox::
 .drawing
     ; 10 Chars per line, 20 max.
 
+    ld a, [wTextBank]
+    swap_bank
+
+    ld b, b
+
     ; This is messy and dumb, I know. But it's only a few (2) extra cycles to save 2 bytes of ram
     ld a, [wTextPointer]
     ld h, a
@@ -143,8 +148,11 @@ HandleTextbox::
     ld a, e
     and a, %00001111
     add a, h
-    ld h, a ; I think this multiplies the offset by 16?
+    ld h, a ; This multiplies the offset by 16
     ; hl now points to the tile we need to copy.
+
+    ld a, BANK(GameFont)
+    swap_bank
 
     ld a, [wTextScreenIndex]
     swap a
@@ -188,10 +196,15 @@ HandleTextbox::
     ld a, 16
     ld [wTextScreenIndex], a
     ret
+
 .waiting 
     ldh a, [hNewKeys]
     bit PADB_A, a
     ret z ; No input? Keep waiting...
+
+    ld a, [wTextBank]
+    swap_bank
+
     ld a, [wTextPointer]
     ld h, a
     ld a, [wTextPointer + 1]
@@ -209,8 +222,7 @@ HandleTextbox::
     ret
 
 .close
-    ; Lower the window. The UI may fix this, so 
-    ; TODO: Remove?
+    ; TODO: Lower the window. The UI may fix this, so remove this if that happens
     ld a, 144 - 16
     ldh [rWY], a
     ldh [rLYC], a

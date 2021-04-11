@@ -1,4 +1,4 @@
-
+INCLUDE "include/banks.inc"
 INCLUDE "include/directions.inc"
 INCLUDE "include/engine.inc"
 INCLUDE "include/entities.inc"
@@ -25,9 +25,9 @@ ENDM
 SECTION "Script Handlers", ROM0
 
 HandleScript::
-
-    ; Change bank here
-
+    ld a, [wActiveScriptPointer]
+    swap_bank
+.nextByte
     load_hl_scriptpointer
     ; [hl] -> Script Byte
     ld a, [hl]

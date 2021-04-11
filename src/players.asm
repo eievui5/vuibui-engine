@@ -1,4 +1,4 @@
-
+INCLUDE "include/banks.inc"
 INCLUDE "include/bool.inc"
 INCLUDE "include/directions.inc"
 INCLUDE "include/engine.inc"
@@ -72,7 +72,7 @@ Variables:
         - Two reserved entities for Poppy's arrows.
 */
 
-SECTION "Player Functions", ROMX
+SECTION "Player Functions", ROM0
 
 ; Run once per frame, handling player logic and special states such as the
 ; active room. Called from HandleEntities
@@ -87,20 +87,28 @@ HandlePlayers::
     ld a, PLAYER_OCTAVIA
     call PlayerActivityCheck.disabled ; If rooms do not match or player is disabled, skip.
     jr nz, .checkPoppy
+    ld a, BANK(OctaviaPlayerLogic)
+    swap_bank
     call OctaviaPlayerLogic 
     ld a, [wOctaviaSpellActive]
     and a, a
+    ld a, BANK(OctaviaSpellLogic)
+    swap_bank
     call nz, OctaviaSpellLogic
 
 .checkPoppy
     ld a, PLAYER_POPPY
     call PlayerActivityCheck.disabled ; If rooms do not match or player is disabled, skip.
-    jr nz, .checkTiber
+    jr nz, .checkTiber    
+    ld a, BANK(PoppyPlayerLogic)
+    swap_bank
     call PoppyPlayerLogic
     ld a, [wPoppyActiveArrows]
     and a, a
     jr z, .checkTiber
     ; Just an unrolled entity handler for arrows...
+    ld a, BANK(PoppyArrowLogic)
+    swap_bank
 .poppyArrow0
     ld hl, wPoppyArrow0
     ASSERT HIGH(PoppyArrow) != $00
@@ -121,9 +129,10 @@ HandlePlayers::
 .checkTiber
     ld a, PLAYER_TIBER
     call PlayerActivityCheck.disabled; If rooms do not match or player is disabled, skip.
-    ; Update the current room (This needs to move to the room transition function. (Does that function even exist?))
-    jp z, TiberPlayerLogic
-    ret
+    ret nz
+    ld a, BANK(TiberPlayerLogic)
+    swap_bank
+    jp TiberPlayerLogic
 
 ; Players can be rendered seperately from normal entities.
 RenderPlayers::
@@ -553,34 +562,22 @@ InteractionCheck::
     call CheckAllyCollision
     cp a, $FF
     ret z
-    add a, a ; a * 2
-    ld de, PlayerDialogueLookup
-    add_r16_a d, e
-    ld a, [de]
-    ld b, a
-    inc de
-    ld a, [de]
-    ld d, a
-    ld e, b
-    ; `de` is now the dialogue lookup table!
+    add a, a ; a * 2 (Pointer)
+    ld hl, PlayerDialogueLookup
+    add_r16_a hl
+    ld a, [hli]
+    ld h, [hl]
+    ld l, a
+    ; `hl` is now the target player's dialogue lookup table
+
     ; Load current dialogue mode and add to table
-    ; Load pointer into de
-    ld a, [de]
-    ld b, a
-    inc de
-    ld a, [de]
-    ld d, a
-    ld e, b
+
+    ld c, 3 ; bank + pointer
+    ld de, wActiveScriptPointer
+    rst memcopy_small
 
     ld a, ENGINE_STATE_SCRIPT
     ldh [hEngineState], a
-    ld hl, wActiveScriptPointer
-    ld a, bank(OctaviaGeneric)
-    ld [hli], a
-    ld a, e
-    ld [hli], a
-    ld a, d
-    ld [hli], a
     ret
 
 ; Returns the entity position offset by their facing direction in `de` (X, Y)
@@ -986,15 +983,14 @@ CheckAllyCollision::
     ret
 
 ; Used to lookup the dialogue corresponding to the current room.
-ASSERT bank(OctaviaGeneric) == bank(PoppyGeneric) && bank(PoppyGeneric) == bank(TiberGeneric)
 PlayerDialogueLookup:
     dw .octavia, .poppy, .tiber ; faster I guess?
 .octavia
-    dw OctaviaGeneric
+    far_pointer OctaviaGeneric
 .poppy
-    dw PoppyGeneric
+    far_pointer PoppyGeneric
 .tiber
-    dw TiberGeneric
+    far_pointer TiberGeneric
 
 SECTION "Player Variables", WRAM0
 

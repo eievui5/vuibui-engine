@@ -56,14 +56,19 @@ Initialize::
 .waitSkip
 
 ; Enable interrupts
+    ; Clear queued interrupts
     xor a, a
-    ldh [rIF], a ; Clear queued interrupts (always gonna be VBlank)
+    ldh [rIF], a
+    ; Set Interrupts
     ld a, IEF_VBLANK | IEF_LCDC
     ldh [rIE], a
+    ; Configure STAT
     ld a, STATF_LYC
     ldh [rSTAT], a
     ld a, 144 - 16
     ldh [rLYC], a
+    ; And enable!
+    ei
 
 ; Clear VRAM
     ld hl, _VRAM
@@ -259,6 +264,5 @@ Initialize::
 ; Re-enable the screen
     ld a, SCREEN_NORMAL
     ld [rLCDC], a
-    ei
 
     jp Main

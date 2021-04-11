@@ -1,4 +1,4 @@
-
+INCLUDE "include/banks.inc"
 INCLUDE "include/entities.inc"
 include "include/map.inc"
 include "include/macros.inc"
@@ -106,8 +106,8 @@ GetActiveMap::
     ld hl, MapLookup
     add_r16_a h, l
 
-    ld a, [hli] ; Load target bank. Unused.
-    ; Switch banks here.
+    ld a, [hli] ; Load target bank. 
+    swap_bank
     ld a, [hli] ; Load first pointer byte
     ld b, a
     ld h, [hl] ; Load second pointer byte
