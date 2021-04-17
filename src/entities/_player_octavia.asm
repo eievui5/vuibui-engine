@@ -1,4 +1,4 @@
-
+INCLUDE "include/banks.inc"
 INCLUDE "include/bool.inc"
 INCLUDE "include/damage.inc"
 INCLUDE "include/directions.inc"
@@ -232,6 +232,8 @@ OctaviaUpdateSpellGraphic::
     swap a  ; a * 32
     ld hl, GfxPlayerSpells
     add_r16_a hl
+    ld a, BANK(GfxPlayerSpells)
+    swap_bank
     ld bc, 32 ; Size of 2 tiles
     ld de, VRAM_TILES_OBJ + TILE_PLAYER_SPELL * $10
     jp memcopy

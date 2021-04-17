@@ -1,10 +1,11 @@
-
+INCLUDE "include/banks.inc"
 INCLUDE "include/bool.inc"
 INCLUDE "include/engine.inc"
 INCLUDE "include/graphics.inc"
 INCLUDE "include/hardware.inc"
 INCLUDE "include/map.inc"
 INCLUDE "include/players.inc"
+INCLUDE "include/text.inc"
 INCLUDE "include/tiles.inc"
 
 SECTION "Initialize", ROM0
@@ -126,15 +127,30 @@ Initialize::
     ; Black
     ld a, $FF
     ld bc, $0010
-    ld hl, $97F0
     call memset
 
+    ld a, BANK(pb16_Heart)
+    swap_bank
+
+    ; load button hints
+    ld de, pb16_Heart
+    ld hl, VRAM_TILES_BG + TILE_HEART * 16
+    ld b, 3 ; 2 tiles
+    call pb16_unpack_block
+
+    ld a, BANK(GameFont)
+    swap_bank
+
+    get_character "A"
+    ld de, VRAM_TILES_BG + TILE_A_CHAR * 16
+    ld c, 8 * 2
+    call Unpack1bpp
+
+
 ;Load Tiles
-    ; Octavia
-    ld hl, GfxOctavia
-    ld de, VRAM_TILES_OBJ + TILE_OCTAVIA_DOWN_1 * $10
-    ld bc, (GfxOctavia.end - GfxOctavia) * 3
-    call memcopy
+
+    ld a, BANK(DebugTiles)
+    swap_bank
 
     ; Debug Tiles
     ld c, DebugTiles.end - DebugTiles
@@ -142,6 +158,9 @@ Initialize::
     ld de, VRAM_TILES_BG
     rst memcopy_small
     
+    ld a, BANK(DebugMetatileDefinitions)
+    swap_bank
+
     ; Debug Metatiles
     ld c, DebugMetatileDefinitions.end - DebugMetatileDefinitions
     ld hl, DebugMetatileDefinitions
@@ -204,6 +223,10 @@ Initialize::
     ld [wOBP1], a
     jr .palReset
 .cgbPal
+
+    ld a, BANK(PalOctavia)
+    swap_bank
+
     ld hl, PalOctavia
     ld c, sizeof_PALETTE
     ld de, wBCPD
@@ -249,17 +272,36 @@ Initialize::
     ld a, 256/2 + 16
     ld [hli], a
 
+    ld a, BANK(GfxOctavia)
+    swap_bank
+
+    ; Octavia
+    ld hl, GfxOctavia
+    ld de, VRAM_TILES_OBJ + TILE_OCTAVIA_DOWN_1 * $10
+    ld bc, (GfxOctavia.end - GfxOctavia) * 3
+    call memcopy
+    
+    ld a, BANK(pb16_GfxArrow)
+    swap_bank
     ld hl, _VRAM + (TILE_ARROW_DOWN * $10)
     ld de, pb16_GfxArrow
     ld b, 6
     call pb16_unpack_block
 
-    ld a, ITEM_HEAL_WAND << 4 | ITEM_FIRE_WAND
+    ;ld a, ITEM_HEAL_WAND << 4 | ITEM_FIRE_WAND
+    ld a, ITEM_ICE_WAND << 4 | ITEM_SHOCK_WAND
     ld [wPlayerEquipped.octavia], a
     ld a, ITEM_BOW << 4
     ld [wPlayerEquipped.poppy], a
     ld a, ITEM_SWORD
     ld [wPlayerEquipped.tiber], a
+
+    call ResetHUD
+    ld a, 25
+    ld [wOctavia_Health], a
+    ld a, 42
+    ld [wPlayerMaxHealth.octavia], a
+    call UpdateHUD
 
 ; Re-enable the screen
     ld a, SCREEN_NORMAL

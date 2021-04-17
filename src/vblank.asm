@@ -14,14 +14,6 @@ SECTION "VBlank Interrupt", ROM0[$40]
     push hl
     jp VBlank
 
-SECTION "Stat Interrupt", ROM0[$48]
-    ; Save register state
-    push af
-    push bc
-    push de
-    push hl
-    jp Stat
-
 SECTION "VBlank", ROM0
 ; Verticle Screen Blanking
 VBlank:
@@ -81,19 +73,6 @@ VBlank:
     ; Restore register state
     ld a, [wVBlankBankBuffer]
     swap_bank
-    pop hl
-    pop de
-    pop bc
-    pop af
-    reti
-
-
-Stat:
-
-    ld a, SCREEN_WINDOW
-    ldh [rLCDC], a
-
-    ; Restore register and bank state
     pop hl
     pop de
     pop bc

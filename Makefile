@@ -131,6 +131,11 @@ $(RESDIR)/%.2bpp: $(RESDIR)/%.png
 	@$(MKDIR_P) $(@D)
 	$(RGBGFX) -o $@ $^
 
+# Convert .png files into .1bpp files.
+$(RESDIR)/%.1bpp: $(RESDIR)/%.png
+	@$(MKDIR_P) $(@D)
+	$(RGBGFX) -d 1 -o $@ $^
+
 # Convert .png files into .h.2bpp files (-h flag)
 $(RESDIR)/%.h.2bpp: $(RESDIR)/%.png
 	@$(MKDIR_P) $(@D)

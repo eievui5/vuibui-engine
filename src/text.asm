@@ -53,7 +53,7 @@ HandleTextbox::
 
 .clearWindow
     ; Map the window to textbox.
-    ld d, high(_SCRN1)
+    ld d, high(_SCRN1) + 3
     ld a, [wTextScreenIndex]
     swap a ; a * 16
     add a, a ; a * 32
@@ -117,8 +117,6 @@ HandleTextbox::
     ld a, [wTextBank]
     swap_bank
 
-    ld b, b
-
     ; This is messy and dumb, I know. But it's only a few (2) extra cycles to save 2 bytes of ram
     ld a, [wTextPointer]
     ld h, a
@@ -139,16 +137,13 @@ HandleTextbox::
     cp a, SPCHAR_QUESTION
     jr z, .returnAsk
 
-    
-    swap a ; a * 16 (In a way, you'll see :) )
-    ld e, a ; Save a
-    ld hl, GameFont - ($20 * 16) ; We start on ascii character 32 (space), so we need to subtract 32 * 16 as an offset.
-    and a, %11110000
-    add_r16_a h, l
-    ld a, e
-    and a, %00001111
-    add a, h
-    ld h, a ; This multiplies the offset by 16
+    ld h, 0
+    ld l, a
+    ld bc, GameFont - ($20 * 8) ; We start on ascii character 32 (space), so we need to subtract 32 * 8 as an offset.
+    add hl, hl ; a * 2
+    add hl, hl ; a * 4
+    add hl, hl ; a * 8
+    add hl, bc
     ; hl now points to the tile we need to copy.
 
     ld a, BANK(GameFont)
@@ -166,8 +161,8 @@ HandleTextbox::
     ; add a, LOW(vTextTiles)
     ld e, a
 
-    ld c, $10
-    rst memcopy_small
+    ld c, $10/2
+    call Complement1bpp
 
     ld a, [wTextScreenIndex]
     inc a
@@ -222,10 +217,7 @@ HandleTextbox::
     ret
 
 .close
-    ; TODO: Lower the window. The UI may fix this, so remove this if that happens
-    ld a, 144 - 16
-    ldh [rWY], a
-    ldh [rLYC], a
+    call ResetHUD
     ; Let scripting know we're done
     ld [wTextScriptFinished], a
     ASSERT TEXT_HIDDEN == 0
@@ -252,24 +244,24 @@ HandleTextbox::
     and a, a
     jr nz, .cursorDraw1
 .cursorDraw0
-    ld c, $10
+    ld c, 8
     ld de, vTextTiles + $0100
-    ld hl, GameFont - ($20 * 16) + (" " * 16) ; Copy "-" to the second row.
-    rst memcopy_small
-    ld c, $10
+    get_character " "
+    call Complement1bpp
+    ld c, 8
     ld de, vTextTiles
-    ld hl, GameFont - ($20 * 16) + (">" * 16) ; Copy ">" to the first row.
-    rst memcopy_small
+    get_character ">"
+    call Complement1bpp
     jr .acceptCheck
 .cursorDraw1
-    ld c, $10
+    ld c, 8
     ld de, vTextTiles
-    ld hl, GameFont - ($20 * 16) + (" " * 16) ; Copy "-" to the first row.
-    rst memcopy_small
-    ld c, $10
+    get_character " "
+    call Complement1bpp
+    ld c, 8
     ld de, vTextTiles + $0100
-    ld hl, GameFont - ($20 * 16) + (">" * 16) ; Copy ">" to the second row.
-    rst memcopy_small
+    get_character ">"
+    call Complement1bpp
 .acceptCheck
     ldh a, [hNewKeys]
     bit PADB_A, a

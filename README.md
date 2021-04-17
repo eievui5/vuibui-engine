@@ -14,7 +14,7 @@ Naming Conventions:
   - Prefix `h`: High RAM
 
 - Compressed data is prefixed with the type of compression it uses.
-  - Example: `pb16_GfxArrow`, `7zip_Archive`, `lz_OtherCompression`
+  - Example: `pb16_GfxArrow`, `zip_Archive`, `lz_OtherCompression`
 
 - Constants are in `ALL_CAPS`
 - Macros are in `snake_case`

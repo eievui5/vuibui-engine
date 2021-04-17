@@ -22,6 +22,20 @@ INCLUDE "enum.inc"
         ; End of entity walls.
     end_enum
 
+DEF vPlainTiles EQU $97D0
+
+    start_enum TILE, $80 - 9
+        enum HEART
+        enum HEART_HALF
+        enum HEART_EMPTY
+        enum A_CHAR
+        enum B_CHAR
+        enum WHITE
+        enum LIGHT
+        enum DARK
+        enum BLACK
+    end_enum
+
 ; Ensure that TRANSITION enums match DIR enums
 ASSERT TILE_TRANSITION_DOWN - TILE_TRANSITION_DOWN == DIR_DOWN
 ASSERT TILE_TRANSITION_UP - TILE_TRANSITION_DOWN == DIR_UP

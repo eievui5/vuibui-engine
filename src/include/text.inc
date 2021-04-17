@@ -43,6 +43,16 @@ MACRO end_ask
     db SPCHAR_QUESTION
 ENDM
 
+; Loads a font character into `hl`
+MACRO get_character
+    IF _NARG != 1
+        FAIL "Expected 1 character as input!"
+    ELIF STRLEN(\1) != 1
+        FAIL "Expected 1 character as input!"
+    ENDC
+    ld hl, GameFont - ($20 * 8) + (\1 * 8)
+ENDM
+
 DEF vTextTiles EQU $8000 + $1500
 
     start_enum TEXT

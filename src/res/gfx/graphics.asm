@@ -12,7 +12,7 @@ GfxPoppy::
 GfxTiber::
     INCBIN "res/gfx/chars/tiber.h.2bpp"
 .end::
-    
+
 
 GfxPlayerSpells::
     ASSERT SPELL_GFX_FIRE == 1
@@ -26,6 +26,12 @@ GfxPlayerSpells::
 
 pb16_GfxArrow::
     INCBIN "res/gfx/misc/arrow.h.pb16"
+.end::
+
+SECTION "User Interface", ROMX
+
+pb16_Heart::
+    INCBIN "res/gfx/ui_heart.pb16"
 .end::
 
 SECTION "Color Palettes", ROMX
@@ -58,4 +64,4 @@ PalGrey::
 
 SECTION "Font", ROMX
 GameFont::
-    INCBIN "res/gfx/font/font.2bpp"
+    INCBIN "res/gfx/font/font.1bpp"

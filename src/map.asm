@@ -148,7 +148,13 @@ GetActiveMap::
     ; hl now points to the correct map.
     ; bc is the map's data.
 .return: ; Label because I'm reusing it for the prior switch.
-    ret 
+    ret
+
+VBlankMapSwapper::
+    ld a, [wSwapWorldMapFlag]
+    and a, a
+    ret z
+
 
 ; Used to check which World Map we're referencing (Overworld, Dungeon, etc...)
 ; Maximum of 85 Maps, since 85 * 3 = 255
@@ -162,11 +168,15 @@ MapLookup:
 ; Precede map with a width byte. db (width) * 2. Max width == 128
 ; and a size byte. db (width * height) * 2.
 
-SECTION "Overworld Map", ROMX
+; TODO: Remove hard-coded bank test
+SECTION "Overworld Map", ROMX, BANK[3]
 
 OverworldMap:
     db (2) * 2      ; Width
     db (2 * 2) * 2  ; Size
+
+    ; dw pb16_Tileset
+
     dw DebugMap, DebugMap2
     dw DebugMap2, DebugMap
 .data
@@ -215,10 +225,32 @@ DebugMap2: ; Using DebugMetatiles
 .data:
     end_mapdata
 
+SECTION "Underworld Map", ROMX, BANK[3]
+
+UnderworldMap:
+    db (2) * 2      ; Width
+    db (2 * 2) * 2  ; Size
+
+    ; dw pb16_Tileset
+
+    dw DebugMap, DebugMap2
+    dw DebugMap2, DebugMap
+.data
+    dw DebugMap.data, DebugMap2.data
+    dw DebugMap2.data, DebugMap.data
+
 SECTION "Active Map Variables", WRAM0
 
 ; Which map are we on?
 wActiveWorldMap:: 
+    ds 1
+
+; Set to change the active world
+wSwapWorldMapFlag::
+    ds 1
+
+; How many tiles have been loaded so far?
+wTileLoadingProgress::
     ds 1
 
 ; Which room are we in?

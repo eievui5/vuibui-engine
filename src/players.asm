@@ -1006,36 +1006,45 @@ wTransitionBuffer::
 wAllyLogicMode::
     ds 1
 
+; Player Max Health
+wPlayerMaxHealth::
+    .octavia::
+        ds 1
+    .poppy::
+        ds 1
+    .tiber::
+        ds 1
+
 ; Player disablers
 wPlayerDisabled::
-.octavia::
-    ds 1
-.poppy::
-    ds 1
-.tiber::
-    ds 1
+    .octavia::
+        ds 1
+    .poppy::
+        ds 1
+    .tiber::
+        ds 1
 
 ; Player waiting and linking. If the value does not match that of the active 
 ; player they should wait. This is important because it means switching players
 ; will follow each other independantly; switching from an active player to a
 ; waiting player will cause the other group to wait.
 wPlayerWaitLink::
-.octavia::
-    ds 1
-.poppy::
-    ds 1
-.tiber::
-    ds 1 
+    .octavia::
+        ds 1
+    .poppy::
+        ds 1
+    .tiber::
+        ds 1 
 
 ; Player world map Position. Used to keep track of which room an inactive
 ; player is waiting in.
 wPlayerRoom::
-.octavia::
-    ds 2
-.poppy::
-    ds 2
-.tiber::
-    ds 2
+    .octavia::
+        ds 2
+    .poppy::
+        ds 2
+    .tiber::
+        ds 2
 
 ; Used to check which entity array should be used by the current player, 
 ; allowing a room to retain it's state between player swaps. If two players are
@@ -1043,22 +1052,22 @@ wPlayerRoom::
 ; behind this value must update to an unused room, and when entering a room that
 ; a player has occupied, this value must update to that player's.
 wPlayerEntityArrayIndex::
-.octavia::
-    ds 1
-.poppy::
-    ds 1
-.tiber::
-    ds 1 
+    .octavia::
+        ds 1
+    .poppy::
+        ds 1
+    .tiber::
+        ds 1 
 
 ; The currently equipped items.
 ; Lower Nibble = A, Upper Nibble = B
 wPlayerEquipped::
-.octavia::
-    ds 1
-.poppy::
-    ds 1
-.tiber::
-    ds 1
+    .octavia::
+        ds 1
+    .poppy::
+        ds 1
+    .tiber::
+        ds 1
 
 SECTION "Player Array", WRAM0, ALIGN[$08]
 wPlayerArray::

@@ -258,15 +258,12 @@ VBlankScrollLoader::
     and a, %00001111
     ld b, a
 
-    ; push bc here for GBC map.
-
     ; Load tiles onto _SCRN0 from the wMetatileDefinitions.
     ld de, _SCRN0
     ld hl, wMetatileDefinitions
     push bc
     call LoadMetatile
     pop bc
-    ld b, b
     ldh a, [hSystem]
     and a, a
     jr z, :+
@@ -279,8 +276,6 @@ VBlankScrollLoader::
     xor a, a ; Return to bank 0
     ldh [rVBK], a
 :
-
-    ; pop bc and swap VRAM Banks for color.
 
     ; We can load more than one tile, so lets see how many are left.
     pop bc ; Remember the tile index? 

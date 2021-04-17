@@ -35,7 +35,6 @@ Main::
     jr .end
 
 .handleScript
-    ld b, b
     call RenderEntities
     call HandleScript
     jr .end
