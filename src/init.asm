@@ -5,6 +5,7 @@ INCLUDE "include/graphics.inc"
 INCLUDE "include/hardware.inc"
 INCLUDE "include/map.inc"
 INCLUDE "include/players.inc"
+INCLUDE "include/stat.inc"
 INCLUDE "include/text.inc"
 INCLUDE "include/tiles.inc"
 
@@ -66,7 +67,7 @@ Initialize::
     ; Configure STAT
     ld a, STATF_LYC
     ldh [rSTAT], a
-    ld a, 144 - 16
+    ld a, 1
     ldh [rLYC], a
     ; And enable!
     ei
@@ -77,7 +78,7 @@ Initialize::
     xor a, a
     call memset
     ld hl, $C000
-    ld bc, $2000
+    ld bc, $1000
     call memset
 
 
@@ -106,7 +107,7 @@ Initialize::
 	dec b
 	jr nz, .copyOAMDMA
 
-    ; Copy Plain Tiles
+; Copy Plain Tiles
     ld hl, vPlainTiles
     ; Light
     ld b, 8
@@ -132,7 +133,7 @@ Initialize::
     ld a, BANK(pb16_Heart)
     swap_bank
 
-    ; load button hints
+; load button hints
     ld de, pb16_Heart
     ld hl, VRAM_TILES_BG + TILE_HEART * 16
     ld b, 3 ; 2 tiles
@@ -147,7 +148,7 @@ Initialize::
     call Unpack1bpp
 
 
-;Load Tiles
+;Load Tiles (remove!)
 
     ld a, BANK(DebugTiles)
     swap_bank
@@ -177,11 +178,11 @@ Initialize::
     ld de, wMetatileData ; Metatile data must be defined
     rst memcopy_small
 
-    ; Debug Map
+; Debug Map
     ld a, TRUE
     call UpdateActiveMap
 
-    ; Load metatiles onto _SCRN0
+; Load metatiles onto _SCRN0
     ld de, _SCRN0
     ld hl, wMetatileDefinitions
     call LoadMetatileMap
@@ -196,11 +197,6 @@ Initialize::
     xor a, a
     ldh [rVBK], a
 :    
-; Place window
-    ld a, 7
-    ldh [rWX], a
-    ld a, 144 - 16
-    ldh [rWY], a
 
 ; Enable audio
     ld a, $80
@@ -296,7 +292,8 @@ Initialize::
     ld a, ITEM_SWORD
     ld [wPlayerEquipped.tiber], a
 
-    call ResetHUD
+    ld a, TRUE
+    ld [wHUDReset], a
     ld a, 17
     ld [wOctavia_Health], a
     ld a, 23
@@ -311,6 +308,15 @@ Initialize::
     ld [hli], a
     ld a, 40
     ld [hli], a
+
+; Configure STAT FX
+    xor a, a
+    ld hl, wRasterFX
+    ld bc, 80
+    call memset
+
+    ld a, STATIC_FX_SHOW_HUD
+    ld [wStaticFX], a
 
 ; Re-enable the screen
     ld a, SCREEN_NORMAL

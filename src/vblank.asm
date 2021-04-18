@@ -22,7 +22,7 @@ VBlank:
     ld [wVBlankBankBuffer], a
 
     ld a, SCREEN_NORMAL
-    ;ldh [rLCDC], a
+    ldh [rLCDC], a
 
 .dma
     ; push wShadowOAM to OAM though DMA
@@ -47,6 +47,7 @@ VBlank:
 
 .hudUpdate
     call UpdateHUD
+    call UpdatePrint
 
 .scrolling
     ; Update screen scrolling here to avoid tearing. 
@@ -65,22 +66,9 @@ VBlank:
     bit PADB_START, a
     jr z, .return
 
-    ld hl, wOctavia_Health
-    ld a, [hl]
-    add a, 5
-    cp a, 40 + 1
-    jr c, :+
-    ld a, 40
-:   ld [hl], a
-
-    ld hl, wPoppy_Health
-    ld a, [hl]
-    sub a, 5
-    bit 7, a
-    jr z, :+
-    xor a, a
-:   ld [hl], a
-
+    ld a, BANK(TestPrintString)
+    ld hl, TestPrintString
+    call PrintNotification
 
 .return
 

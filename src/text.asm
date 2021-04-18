@@ -1,5 +1,6 @@
 INCLUDE "include/banks.inc"
 INCLUDE "include/engine.inc"
+INCLUDE "include/graphics.inc"
 INCLUDE "include/hardware.inc"
 INCLUDE "include/macros.inc"
 INCLUDE "include/switch.inc"
@@ -42,9 +43,8 @@ HandleTextbox::
     ; Reset Textbox screen index.
     xor a, a
     ld [wTextScreenIndex], a
-    ; Hide Window
+    ; Hide HUD
     ld a, 143
-    ldh [rWY], a
     ldh [rLYC], a
     ; Update wTextState
     ld a, TEXT_CLEARING
@@ -52,6 +52,10 @@ HandleTextbox::
     ret
 
 .clearWindow
+
+    ld a, BANK(TextboxMap)
+    swap_bank
+
     ; Map the window to textbox.
     ld d, high(_SCRN1) + 3
     ld a, [wTextScreenIndex]
@@ -107,7 +111,6 @@ HandleTextbox::
     ld a, TEXT_DRAWING
     ld [wTextState], a
     ld a, 144 - 40
-    ldh [rWY], a
     ldh [rLYC], a
     ret
 
@@ -130,7 +133,7 @@ HandleTextbox::
     dec hl
     ; hl now points to next ascii character to print.
     ld a, [hl]
-    cp a, "@"
+    and a, a
     jr z, .return
     cp a, "\n"
     jr z, .newLine
@@ -206,7 +209,8 @@ HandleTextbox::
     ld l, a
     dec hl ; Check what character got us here.
     ld a, [hl]
-    cp a, "@"
+    ASSERT SPCHAR_TERMINATE == 0
+    and a, a ; cp a, SPCHAR_TERMINATE
     jr z, .close
     ; If it wasn't an "@", we must be waiting for the next line!
     ; Reset screen index and switch to cleaning state
@@ -217,7 +221,8 @@ HandleTextbox::
     ret
 
 .close
-    call ResetHUD
+    ld a, 1
+    ld [wHUDReset], a
     ; Let scripting know we're done
     ld [wTextScriptFinished], a
     ASSERT TEXT_HIDDEN == 0
@@ -226,6 +231,10 @@ HandleTextbox::
     ret
 
 .ask
+
+    ld a, BANK(GameFont)
+    swap_bank
+
     ; Start by switching answers if needed
     ld hl, wTextAnswer
     ldh a, [hNewKeys]
@@ -278,26 +287,6 @@ TextboxMap::
     db $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F
     db $7F, $7F, $60, $61, $62, $63, $64, $65, $66, $67, $68, $69, $6A, $6B, $6C, $6D, $6E, $6F, $7F, $7F
     db $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F
-
-DebugOh::
-    db "Oh?"
-    end_text
-
-DebugHello::
-    db "Hello. How're\n"
-    db "you?"
-    end_text
-
-DebugGoodbye::
-    say "See ya!\n"
-    say " $ $ $ $\n"
-    
-    say "... why haven't\n"
-    say "you left yet?\n"
-
-    ask "Not ready\n"
-    ask "I like you :3"
-    end_ask
 
 SECTION "Text Variables", WRAM0
 

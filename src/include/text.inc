@@ -5,6 +5,7 @@ DEF TEXT_INC SET 1
 INCLUDE "include/enum.inc"
 
     start_enum SPCHAR
+        enum TERMINATE
         enum QUESTION
     end_enum
 
@@ -21,9 +22,9 @@ MACRO say
     db \1
 ENDM
 
-; Types an "@" and creates an `.end` label
+; Types an "@"
 MACRO end_text
-    db "@"
+    db SPCHAR_TERMINATE
 ENDM
 
 MACRO ask
@@ -52,8 +53,6 @@ MACRO get_character
     ENDC
     ld hl, GameFont - ($20 * 8) + (\1 * 8)
 ENDM
-
-DEF vTextTiles EQU $8000 + $1500
 
     start_enum TEXT
         enum HIDDEN     ; No text

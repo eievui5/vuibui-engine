@@ -78,6 +78,9 @@ ENDM
         enum ARROW_RIGHT_POINT
     end_enum
 
+DEF vTextTiles EQU $9500
+DEF TILE_TEXT_START EQU $50
+
 DEF vPlainTiles EQU $97D0
 
     start_enum TILE, $80 - 9
