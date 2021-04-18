@@ -32,7 +32,7 @@ OctaviaSpellLogic::
     pop bc
     ld a, [hl]
     dec a ; Ignore 0
-    cp a, TILE_ENTITY_WALL_MAX
+    cp a, TILEDATA_ENTITY_WALL_MAX
     jr c, .destroySelf
     ld a, [wOctaviaSpell_Flags]
     and a, a

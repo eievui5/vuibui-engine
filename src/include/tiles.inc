@@ -7,7 +7,7 @@ INCLUDE "enum.inc"
 
 ; Tile Constants
 
-    start_enum TILE
+    start_enum TILEDATA
         enum CLEAR
         ; Entity Walls (Entities cannot pass these)
         enum COLLISION 
@@ -22,25 +22,12 @@ INCLUDE "enum.inc"
         ; End of entity walls.
     end_enum
 
-DEF vPlainTiles EQU $97D0
-
-    start_enum TILE, $80 - 9
-        enum HEART
-        enum HEART_HALF
-        enum HEART_EMPTY
-        enum A_CHAR
-        enum B_CHAR
-        enum WHITE
-        enum LIGHT
-        enum DARK
-        enum BLACK
-    end_enum
 
 ; Ensure that TRANSITION enums match DIR enums
-ASSERT TILE_TRANSITION_DOWN - TILE_TRANSITION_DOWN == DIR_DOWN
-ASSERT TILE_TRANSITION_UP - TILE_TRANSITION_DOWN == DIR_UP
-ASSERT TILE_TRANSITION_RIGHT - TILE_TRANSITION_DOWN == DIR_RIGHT
-ASSERT TILE_TRANSITION_LEFT - TILE_TRANSITION_DOWN == DIR_LEFT
+ASSERT TILEDATA_TRANSITION_DOWN - TILEDATA_TRANSITION_DOWN == DIR_DOWN
+ASSERT TILEDATA_TRANSITION_UP - TILEDATA_TRANSITION_DOWN == DIR_UP
+ASSERT TILEDATA_TRANSITION_RIGHT - TILEDATA_TRANSITION_DOWN == DIR_RIGHT
+ASSERT TILEDATA_TRANSITION_LEFT - TILEDATA_TRANSITION_DOWN == DIR_LEFT
 
 DEF MAX_METATILES EQU 64
 

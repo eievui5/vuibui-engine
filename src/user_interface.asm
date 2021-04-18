@@ -143,8 +143,6 @@ UpdateHUD::
 
 .redraw
 
-    ld b, b
-
     ; Clear the HUD
     ld a, TILE_WHITE
     ld bc, 10
@@ -217,7 +215,7 @@ UpdateHUD::
     ; We need to clear carry before `rra`
     scf
     ccf
-    
+
     rra ; This will set carry if A is odd, so we can draw a half-heart
     ld c, a
     jr nc, .setUp ; No half heart? run normally
@@ -263,10 +261,10 @@ UpdateHUD::
     ld a, [wActivePlayer]
     ld [wHUDActivePlayerBuffer], a
 
-    ld b, b
-
     ret
 
+; Used to update and manage the printing function.
+UpdatePrint::
 
 Stat:
 

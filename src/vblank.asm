@@ -22,7 +22,7 @@ VBlank:
     ld [wVBlankBankBuffer], a
 
     ld a, SCREEN_NORMAL
-    ldh [rLCDC], a
+    ;ldh [rLCDC], a
 
 .dma
     ; push wShadowOAM to OAM though DMA

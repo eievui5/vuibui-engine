@@ -78,4 +78,20 @@ ENDM
         enum ARROW_RIGHT_POINT
     end_enum
 
+DEF vPlainTiles EQU $97D0
+
+    start_enum TILE, $80 - 9
+        enum HEART, UI_START
+        enum HEART_HALF
+        enum HEART_EMPTY
+        enum A_CHAR
+        enum B_CHAR
+        enum WHITE
+        enum LIGHT
+        enum DARK
+        enum BLACK
+    end_enum
+
+
+
     ENDC

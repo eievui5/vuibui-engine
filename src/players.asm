@@ -712,12 +712,12 @@ PlayerTransitionMovement::
 ; @ a:  Current tile
 ScreenTransitionCheck::
     ; Check if we are within the transition tiles.
-    ASSERT TILE_TRANSITION_LEFT - TILE_TRANSITION_DOWN == 3
+    ASSERT TILEDATA_TRANSITION_LEFT - TILEDATA_TRANSITION_DOWN == 3
     ; We don't *actually* want this to be one lower, but the transition routine 
     ; expects DIR + 1
-    sub a, TILE_TRANSITION_DOWN - 1 
+    sub a, TILEDATA_TRANSITION_DOWN - 1 
     ; And we *do* want this 1 higher, but we need to offset the - we just did.
-    cp a, TILE_TRANSITION_LEFT - TILE_TRANSITION_DOWN + 2
+    cp a, TILEDATA_TRANSITION_LEFT - TILEDATA_TRANSITION_DOWN + 2
     jr nc, .clearTransBuffer ; Clear wTransitionBuffer if we're not transitioning now.
     ld h, a
     ld a, [wTransitionBuffer]
@@ -767,9 +767,9 @@ ScreenTransitionCheck::
 ; @ a:  Current tile
 WarpTileCheck::
     ; Check if we are within the transition tiles.
-    ASSERT TILE_WARP_3 - TILE_WARP_0 == 3
-    sub a, TILE_WARP_0
-    cp a, TILE_WARP_3 - TILE_WARP_0 + 1
+    ASSERT TILEDATA_WARP_3 - TILEDATA_WARP_0 == 3
+    sub a, TILEDATA_WARP_0
+    cp a, TILEDATA_WARP_3 - TILEDATA_WARP_0 + 1
     ret nc
     ld hl, wWarpData0
     add_r16_a hl

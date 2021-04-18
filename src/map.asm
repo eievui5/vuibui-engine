@@ -89,7 +89,7 @@ MapdataSetWarp:
     ld a, c
     add_r16_a hl
     ldh a, [hWarpDataIndex]
-    add a, TILE_WARPS
+    add a, TILEDATA_WARPS
     ld [hl], a
     pop hl
     ld c, sizeof_WarpData

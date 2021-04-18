@@ -67,17 +67,17 @@ DebugMetatileAttributes::
 ; Just a lookup table to save from storing 2 maps.
 DebugMetatileData:: 
     ; $00
-    db TILE_CLEAR
+    db TILEDATA_CLEAR
     ; $01
-    db TILE_COLLISION
+    db TILEDATA_COLLISION
     ; $02
-    db TILE_CLEAR
+    db TILEDATA_CLEAR
     ; $03
-    db TILE_TRANSITION_DOWN
+    db TILEDATA_TRANSITION_DOWN
     ; $04
-    db TILE_TRANSITION_LEFT
+    db TILEDATA_TRANSITION_LEFT
     ; $05
-    db TILE_TRANSITION_RIGHT
+    db TILEDATA_TRANSITION_RIGHT
     ; $06
-    db TILE_TRANSITION_UP
+    db TILEDATA_TRANSITION_UP
 .end::

@@ -227,7 +227,7 @@ BOUNDING_BOX_X EQU 6 ; A bit smaller than 16*16, because that feel/looks better.
 BOUNDING_BOX_Y EQU 6
 
 ; Expanded version of MoveAndSlide which performs corner checks and only
-; collides with TILE_COLLISION, rather than all excluded tiles.
+; collides with TILEDATA_COLLISION, rather than all excluded tiles.
 ; @ hl: pointer to Entity. Returns Entity_YPos
 PlayerMoveAndSlide::
 .xMovement
@@ -260,7 +260,7 @@ PlayerMoveAndSlide::
     push bc ; And save our test position, incase we need to slide around a corner.
     call LookupMapData
     ld a, [hl]
-    cp a, TILE_COLLISION
+    cp a, TILEDATA_COLLISION
     pop bc
     pop hl
     pop de
@@ -281,7 +281,7 @@ PlayerMoveAndSlide::
     ld a, [hl]
     pop bc
     pop hl
-    cp a, TILE_COLLISION; Is there a wall on the corner?
+    cp a, TILEDATA_COLLISION; Is there a wall on the corner?
     jr nz, .xBottomCornerCheck 
     inc l
     dec [hl] ; Slide out
@@ -295,7 +295,7 @@ PlayerMoveAndSlide::
     call LookupMapData
     ld a, [hl]
     pop hl
-    cp a, TILE_COLLISION; Is there a wall on the corner?
+    cp a, TILEDATA_COLLISION; Is there a wall on the corner?
     jr nz, .yMovement
     inc l
     inc [hl] ; Slide out
@@ -328,7 +328,7 @@ PlayerMoveAndSlide::
     push bc
     call LookupMapData
     ld a, [hl]
-    cp a, TILE_COLLISION
+    cp a, TILEDATA_COLLISION
     pop bc
     pop hl
     pop de
@@ -344,7 +344,7 @@ PlayerMoveAndSlide::
     call LookupMapData
     ld a, [hl]
     pop hl
-    cp a, TILE_COLLISION; Is there a wall on the corner?
+    cp a, TILEDATA_COLLISION; Is there a wall on the corner?
     ret nz
     inc l
     inc [hl] ; Slide out
@@ -385,7 +385,7 @@ MoveAndSlide::
         call LookupMapData
         ld a, [hl]
         dec a ; Skip 0
-        cp a, TILE_ENTITY_WALL_MAX
+        cp a, TILEDATA_ENTITY_WALL_MAX
         pop bc
         pop hl
         pop de
@@ -420,7 +420,7 @@ MoveAndSlide::
         call LookupMapData
         ld a, [hl]
         dec a ; Skip 0
-        cp a, TILE_ENTITY_WALL_MAX
+        cp a, TILEDATA_ENTITY_WALL_MAX
         pop bc
         pop hl
         pop de

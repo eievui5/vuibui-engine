@@ -38,7 +38,7 @@ PoppyArrowLogic::
     pop bc
     ld a, [hl]
     dec a ; Ignore 0
-    cp a, TILE_ENTITY_WALL_MAX
+    cp a, TILEDATA_ENTITY_WALL_MAX
     jr c, .destroySelf
     push bc
     ld bc, 1 ; We don't want to ignore any entities, set to an invalid value.
