@@ -18,8 +18,8 @@ EntityName::
 
 ; This ensures that the low byte will never fall on $00, since entity array
 ; seekers treat LOW(Address) == 0 as "no entity".
+ds 1
 DefStart:
-
 PlayerOctavia::
     far_pointer OctaviaPlayerLogic
     far_pointer OctaviaMetasprites

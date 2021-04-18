@@ -288,8 +288,8 @@ Initialize::
     ld b, 6
     call pb16_unpack_block
 
-    ;ld a, ITEM_HEAL_WAND << 4 | ITEM_FIRE_WAND
-    ld a, ITEM_ICE_WAND << 4 | ITEM_SHOCK_WAND
+    ld a, ITEM_HEAL_WAND << 4 | ITEM_FIRE_WAND
+    ;ld a, ITEM_ICE_WAND << 4 | ITEM_SHOCK_WAND
     ld [wPlayerEquipped.octavia], a
     ld a, ITEM_BOW << 4
     ld [wPlayerEquipped.poppy], a
@@ -297,11 +297,20 @@ Initialize::
     ld [wPlayerEquipped.tiber], a
 
     call ResetHUD
-    ld a, 25
+    ld a, 17
     ld [wOctavia_Health], a
-    ld a, 42
-    ld [wPlayerMaxHealth.octavia], a
-    call UpdateHUD
+    ld a, 23
+    ld [wPoppy_Health], a
+    ld a, 40
+    ld [wTiber_Health], a
+
+    ld a, 40
+    ld hl, wPlayerMaxHealth
+    ld [hli], a
+    ld a, 40
+    ld [hli], a
+    ld a, 40
+    ld [hli], a
 
 ; Re-enable the screen
     ld a, SCREEN_NORMAL

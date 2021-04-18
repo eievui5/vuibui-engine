@@ -34,16 +34,19 @@ VBlank:
     and a, a
     call nz, UpdatePalettes
 
-.tileRequests
-    ld a, BANK(OctaviaUpdateSpellGraphic)
-    swap_bank
-    call OctaviaUpdateSpellGraphic
-
 .metatileLoading
     call VBlankScrollLoader
 
 .textbox
     call HandleTextbox
+
+.tileRequests
+    ld a, BANK(OctaviaUpdateSpellGraphic)
+    swap_bank
+    call OctaviaUpdateSpellGraphic
+
+.hudUpdate
+    call UpdateHUD
 
 .scrolling
     ; Update screen scrolling here to avoid tearing. 
@@ -61,11 +64,30 @@ VBlank:
     ldh a, [hNewKeys]
     bit PADB_START, a
     jr z, .return
-/*
-    ld a, PALETTE_STATE_FADE_DARK
-    ld [wPaletteState], a
-*/
+
+    ld hl, wOctavia_Health
+    ld a, [hl]
+    add a, 5
+    cp a, 40 + 1
+    jr c, :+
+    ld a, 40
+:   ld [hl], a
+
+    ld hl, wPoppy_Health
+    ld a, [hl]
+    sub a, 5
+    bit 7, a
+    jr z, :+
+    xor a, a
+:   ld [hl], a
+
+
 .return
+
+    ; Increment the global frame timer
+    ld hl, wFrameTimer
+    inc [hl]
+
     ; Let the main loop know a new frame is ready
     ld a, TRUE
     ld [wNewFrame], a
@@ -106,4 +128,9 @@ wSCYBuffer::
     ds 1
 
 wVBlankBankBuffer::
+    ds 1
+
+; Just a global frame timer
+; Could be used for delays such as the health bar or for tracking playtime
+wFrameTimer::
     ds 1

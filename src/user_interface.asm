@@ -5,6 +5,7 @@
 
 INCLUDE "include/engine.inc"
 INCLUDE "include/entities.inc"
+INCLUDE "include/graphics.inc"
 INCLUDE "include/hardware.inc"
 INCLUDE "include/macros.inc"
 INCLUDE "include/text.inc"
@@ -22,13 +23,27 @@ SECTION "Stat Interrupt", ROM0[$48]
 
 SECTION "Heads Up Display", ROM0
 
-ResetHUD::    
+ResetHUD::
+
+    ld a, 1
+    ldh [rVBK], a
+    ld a, OAMF_GBCPAL7
+    ; Color the HUD
+    ld bc, 20
+    ld hl, vHUD
+    call memset
+    ld bc, 20
+    ld hl, vHUD + 32
+    call memset
+    xor a, a
+    ldh [rVBK], a
+
     ld a, 144 - 16
     ldh [rWY], a
     ldh [rLYC], a
-    ld a, TILE_WHITE
 
     ; Clear the HUD
+    ld a, TILE_WHITE
     ld bc, 20
     ld hl, vHUD
     call memset
@@ -60,19 +75,107 @@ ResetHUD::
 
 UpdateHUD::
     ld a, [wActivePlayer]
+
     ld hl, wHUDActivePlayerBuffer
     cp a, [hl]
     jr nz, .redraw ; If the active player has changed, just redraw everything.
-    ld b, b
+
+    ; Only animate healthbar every 4th frame
+    ld a, [wFrameTimer]
+    bit 0, a
+    ret z
+    bit 1, a
+    ret z
+
+    ld a, [wActivePlayer]
+    ; Get the active player's health
     ld hl, wPlayerArray + Entity_Health
     ASSERT sizeof_Entity == 16
     swap a ; a * 16
     add_r16_a hl
+    ld b, [hl]
+    ; Get the last value we checked for health
+    ld a, [wActivePlayer]
+    ld hl, wHUDPlayerHealthBuffer
+    add_r16_a hl
     ld a, [hl]
+    cp a, b ; Compare last value to current value
+    ret z ; return if no change is needed
+
+    jr c, .heartIncrement
+.heartDecrement
+    ld b, TILE_HEART_EMPTY ; When hurting, hearts empty
+    dec a
+    jr .updateHeart
+.heartIncrement
+    ld b, TILE_HEART ; When healing, hearts get full
+    inc a
+.updateHeart
+    ld [hl], a ; `hl` should still contin the health we want to reference, so restore that here.
+
+    ; We need to clear carry before `rra`
+    scf
+    ccf
+
+    rra
+    jr nc, .skipHalf
+    inc a ; Half hearts need to draw one off (basically, round up!)
+    ld b, TILE_HEART_HALF
+.skipHalf
+    ld c , a
+    ld a, TILE_HEART_EMPTY
+    cp a, b
+    ld a, c
+    jr nz, :+
+    inc a
+:
+    cp a, 10 + 1
+    ; These `-1`s are weird but they work so /shrug ?
+    ld hl, vHeartBar - 1
+    jr c, .skipBottom
+    sub a, 10 
+    ld hl, vHeartBar + 32 - 1
+.skipBottom
+    add_r16_a hl
+    ld [hl], b
+    ret
+
 
 .redraw
-    ld e, a ; save active player
+
     ld b, b
+
+    ; Clear the HUD
+    ld a, TILE_WHITE
+    ld bc, 10
+    ld hl, vHeartBar
+    call memset
+    ld bc, 10
+    ld hl, vHeartBar + 32
+    call memset
+
+    ldh a, [hSystem]
+    and a, a
+    jr z, .skipColor
+    ld hl, PalOctavia
+    ASSERT PalOctavia + sizeof_PALETTE == PalPoppy && PalPoppy + sizeof_PALETTE == PalTiber
+    ASSERT sizeof_PALETTE == 8
+    ld a, [wActivePlayer]
+    add a, a ; a * 2
+    add a, a ; a * 4
+    add a, a ; a * 8
+    add_r16_a hl
+    ld de, wBCPD + sizeof_PALETTE * 7
+    ld c, sizeof_PALETTE
+    call memcopy_small
+    ld a, PALETTE_STATE_RESET
+    ld [wPaletteState], a
+
+.skipColor
+
+    ld a, [wActivePlayer]
+    ld e, a ; save for later!
+
     ; Reset Health Bar (max health)
     ld b, 10
     ld hl, wPlayerMaxHealth
@@ -103,12 +206,22 @@ UpdateHUD::
     swap a ; a * 16
     ld hl, wPlayerArray + Entity_Health
     add_r16_a hl
-    ld a, [hl]
+    ld b, [hl] ; save health for just a bit
+
+    ld a, e ; make sure to store in the correct buffer
+    ld hl, wHUDPlayerHealthBuffer
+    add_r16_a hl
+    ld [hl], b ; set health buffer to the current player's health
+    ld a, b
+
+    ; We need to clear carry before `rra`
+    scf
+    ccf
+    
     rra ; This will set carry if A is odd, so we can draw a half-heart
     ld c, a
     jr nc, .setUp ; No half heart? run normally
     inc a ; since the half heart will be one tile further, we inc a
-    ld b,b 
     cp a, 10
     ; These `-1`s are weird but they work so /shrug ?
     ld hl, vHeartBar - 1
@@ -120,15 +233,19 @@ UpdateHUD::
     ld [hld], a ; We already did a set up, so skip the regular one
     jr .bottomSetUp
 .setUp
+    ld hl, vHeartBar - 1
     add_r16_a hl
 .bottomSetUp
-    ld b, b
     ld a, c
+    and a, a
+    jr z, .exit
     cp a, 10
     jr z, .heartTopReset ; If a == 10, reset pointer.
     jr c, .heartTopLoop ; If a < 10, only draw top row.
     sub a, 10
     ld b, a
+    ld hl, vHeartBar + 32 - 1
+    add_r16_a hl
     ld a, TILE_HEART
 .heartBottomLoop
     ld [hld], a
@@ -142,8 +259,12 @@ UpdateHUD::
     ld [hld], a
     dec c
     jr nz, .heartTopLoop
+.exit
     ld a, [wActivePlayer]
     ld [wHUDActivePlayerBuffer], a
+
+    ld b, b
+
     ret
 
 
