@@ -217,7 +217,7 @@ OctaviaAIFollow:
     call PlayerAIFollow
     
     ld hl, wOctavia
-    jp MoveAndSlide
+    jp PlayerMoveAndSlide
 
 ; Updates the current spell graphic during VBlank if needed.
 OctaviaUpdateSpellGraphic::

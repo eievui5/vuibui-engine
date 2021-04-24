@@ -401,7 +401,7 @@ PlayerAIFollow::
     ASSERT sizeof_Entity == 16
     swap a ; a * 16
     ld de, wPlayerArray + Entity_YPos
-    add_r16_a d, e
+    add_r16_a de
     find_player Entity_YPos
     ; de: target
     ; hl: self
@@ -465,7 +465,7 @@ PlayerAIFollow::
     ld a, Entity_YVel - Entity_Direction
     add a, l
     ld l, a
-    pop bc
+    pop bc ; Pop the input `e` into `c`
 
 .yVel
     ld a, d
@@ -520,7 +520,7 @@ PlayerAIFollow::
     dec l
     dec l
     ld a, [hl]
-    add a, FRAMEOFF_STEP
+    ;add a, FRAMEOFF_STEP
     ld [hl], a
     ret
 
@@ -631,7 +631,7 @@ PlayerTransitionMovement::
     ASSERT sizeof_Entity == 16
     swap a ; a * 16
     ld hl, wPlayerArray + Entity_YPos
-    add_r16_a h, l
+    add_r16_a hl
     ld a, [wRoomTransitionDirection]
     ASSERT TRANSDIR_DOWN == 1
     dec a
@@ -651,7 +651,7 @@ PlayerTransitionMovement::
     ld a, [hl]
     ; These location checks are slightly off, since sprites are not centered.
     cp a, 24 ; 24 - stops on the first tile
-    ret z ; Are we already there?
+    jr z, .updateAllyPositions ; Are we already there?
     inc [hl] ; No? Then move down
     bit 4, a ; Let's just use YPos as the animation timer.
     jr nz, .downStepFrame
@@ -663,7 +663,7 @@ PlayerTransitionMovement::
 .up
     ld a, [hl]
     cp a, 8 ; Stop on the first tile
-    ret z ; Are we already there?
+    jr z, .updateAllyPositions ; Are we already there?
     dec [hl] ; No? Then move up
     bit 4, a ; Let's just use YPos as the animation timer.
     jr nz, .upStepFrame
@@ -676,11 +676,11 @@ PlayerTransitionMovement::
     add a, l
     ld l, a
     ld [hl], b
-    ret
+    jr z, .updateAllyPositions
 .right
     ld a, [hl]
     cp a, 16 ; Stop on the first tile
-    ret z ; Are we already there?
+    jr z, .updateAllyPositions ; Are we already there?
     inc [hl] ; No? Then move right
     bit 4, a ; Let's just use XPos as the animation timer.
     jr nz, .rightStepFrame
@@ -692,7 +692,7 @@ PlayerTransitionMovement::
 .left
     ld a, [hl]
     cp a, 1 ; Stop on the first tile
-    ret z ; Are we already there?
+    jr z, .updateAllyPositions ; Are we already there?
     dec [hl] ; No? Then move left
     bit 4, a ; Let's just use XPos as the animation timer.
     jr nz, .leftStepFrame
@@ -705,6 +705,54 @@ PlayerTransitionMovement::
     add a, l
     ld l, a
     ld [hl], b
+    ; fallthrough
+
+.updateAllyPositions
+    ld a, [wActivePlayer]
+    ASSERT sizeof_Entity == 16
+    swap a ; a * 16
+    ld hl, wPlayerArray + Entity_YPos
+    add_r16_a hl
+    ld d, [hl] ; Store active Y
+    inc l
+    ld e, [hl] ; Store active X
+
+    ld c, PLAYER_OCTAVIA
+.updateAllyPositionsLoop
+    ld a, [wActivePlayer]
+    cp a, c ; Skip the active player
+    jr z, .updateAllyPositionsDecrement
+    call PlayerActivityCheck.waiting
+    jr nz, .updateAllyPositionsDecrement ; Skip if the player is fully inactive
+
+    push bc
+
+    ld a, c
+    add a, a ; a * 2
+    inc a
+    ld e, a ; distance is (ID*2 + 1) (max of 5, min of 1)
+    ld a, c
+    ASSERT sizeof_Entity == 16
+    swap a ; a * 16
+    ld c, a
+    ld b, 0
+    ld b, b
+    call PlayerAIFollow
+
+    pop bc
+
+    ld a, c
+    ASSERT sizeof_Entity == 16
+    swap a ; a * 16
+    ld hl, wPlayerArray
+    add_r16_a hl
+    call MoveNoClip
+
+.updateAllyPositionsDecrement
+    inc c
+    ld a, PLAYER_TIBER + 1
+    cp a, c
+    jr nz, .updateAllyPositionsLoop
     ret
 
 ; Looks up a position to see if it contains a transition tile, and transitions

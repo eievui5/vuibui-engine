@@ -169,7 +169,7 @@ TiberAIFollow:
     call PlayerAIFollow
     
     ld hl, wTiber
-    jp MoveAndSlide
+    jp PlayerMoveAndSlide
 
 SECTION UNION "Volatile", HRAM
 hCurrentTile:

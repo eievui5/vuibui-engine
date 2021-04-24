@@ -529,7 +529,8 @@ PrintNotification::
 
 TestPrintString::
     db "Hello World! --- "
-    db "These messages can be arbitrarily long! ( As long as they fit in a single bank :P ) "
+    db "These messages can be arbitrarily long! "
+    db "( As long as they fit in a single bank :P ) "
     db 0
 
 SECTION "HUD Variables", WRAM0

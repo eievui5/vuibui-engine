@@ -50,5 +50,4 @@ DefEnd:
 ; Ensure that neither entity data pointer byte will equal $00.
 FOR i, 0, (DefEnd-DefStart), 6
     ASSERT HIGH(DefStart + i) != $00
-    ASSERT LOW(DefStart + i) != $00
 ENDR

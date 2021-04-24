@@ -24,6 +24,12 @@ VBlank:
     ld a, SCREEN_NORMAL
     ldh [rLCDC], a
 
+; Correct scrolling
+    ld a, [wSCXBuffer]
+    ldh [rSCX], a
+    ld a, [wSCYBuffer]
+    ldh [rSCY], a
+
 .dma
     ; push wShadowOAM to OAM though DMA
     ld a, high(wShadowOAM)
@@ -48,15 +54,6 @@ VBlank:
 .hudUpdate
     call UpdateHUD
     call UpdatePrint
-
-.scrolling
-    ; Update screen scrolling here to avoid tearing. 
-    ; This is low priority, but should happen at a point where the screen will not be torn.
-    ; Smooth the screen scrolling, so that jumping between players is not jarring.
-    ld a, [wSCXBuffer]
-    ldh [rSCX], a
-    ld a, [wSCYBuffer]
-    ldh [rSCY], a
 
 .input
     ; Updating Input should happen last, since it does not rely on VBlank

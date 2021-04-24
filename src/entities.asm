@@ -428,6 +428,25 @@ MoveAndSlide::
         ld [hl], d ; Update Y Pos.
         ret
 
+; Move the Entity based on its Velocity. Ignore Collision
+; @ hl: pointer to Entity. Returns Entity_YPos
+MoveNoClip::
+    ld a, Entity_XVel
+    add a, l
+    ld l, a
+    ld a, [hld] ; store XVel
+    ld e, a
+    ld a, [hld] ; Store YVel
+    ld d, a
+    ld a, [hl] ; Load and offset XPos
+    add a, e
+    ld [hld], a
+    ld a, [hl] ; Load and offset YPos
+    add a, d
+    ld [hl], a
+    ret
+
+
 ; Locates a given position in the map data and returns it in HL. Destroys all
 ; registers.
 ; @ b:  Y position
