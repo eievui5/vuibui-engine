@@ -122,7 +122,7 @@ VPATH := $(SRCDIR)
 
 # Define how to compress files using the PackBits16 codec
 # Compressor script requires Python 3
-$(RESDIR)/%.pb16: $(SRCDIR)/tools/pb16.py $(RESDIR)/%.2bpp
+$(RESDIR)/%.pb16: ./tools/pb16.py $(RESDIR)/%.2bpp
 	@$(MKDIR_P) $(@D)
 	$^ $@
 

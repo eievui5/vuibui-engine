@@ -19,8 +19,7 @@ INCLUDE "include/switch.inc"
 SECTION "Octavia AI", ROMX
 
 OctaviaPlayerLogic::
-    ; Always start by offsetting frame by facing direction
-    ld a, [wOctavia_Direction]
+    xor a, a
     ld [wOctavia_Frame], a
 
     ; Check for damage
@@ -146,8 +145,7 @@ OctaviaRod:
     ld [wOctavia_Timer], a
     cp a, 4 + 1 ; 4 frame delay...
     ret c
-    ld a, [wOctavia_Frame]
-    add a, FRAMEOFF_SWING
+    ld a, FRAMEOFF_SWING
     ld [wOctavia_Frame], a
     ld a, [wOctavia_Timer]
     cp a, 8 + 4 + 1 ; 8 frame action!

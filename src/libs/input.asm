@@ -1,7 +1,6 @@
 
-; Consider this my compliance with Restriction 2:
-; This version of input.asm has been modified to fit 
-; my naming conventions. (ex: hCurKeys rather than cur_keys)
+; This version of input.asm has been modified by Eievui to fit VuiBui's
+; naming conventions. (ex: hCurKeys rather than cur_keys)
 
 ;
 ; Controller reading for Game Boy and Super Game Boy
@@ -24,7 +23,7 @@
 ;    misrepresented as being the original software.
 ; 3. This notice may not be removed or altered from any source distribution.
 ;
-include "include/hardware.inc"
+INCLUDE "include/hardware.inc"
 
 DAS_DELAY equ 15
 DAS_SPEED equ 3

@@ -24,10 +24,7 @@ HandleEntities::
     jr .skip
 .loop
     ld a, sizeof_Entity
-    add_r16_a b, c
-    ld a, b
-    cp a, high(sizeof_Entity * MAX_ENTITIES)
-    jr nz, .skip ; Skip if there's no match
+    add_r16_a bc
     ld a, c
     cp a, low(sizeof_Entity * MAX_ENTITIES)
     ret z ; Return if we've reached the end of the array
@@ -36,12 +33,19 @@ HandleEntities::
     add hl, bc ; Apply the entity offset
 
     ; Check for entity
-    ld a, [hli] ; Load the first byte of the entity
-    and a, a ; If the first byte is 0, skip
-    jr z, .loop
-    ; Load entity constants
-    ld l, [hl]  ; Finish loading the entity definition
-    ld h, a ; Restore the Script Pointer
+    ld a, [hl] ; Load the first byte of the entity
+    and a, a ; If the first byte is not 0, skip the next check
+    jr nz, .loadPointer
+    inc l
+    ld a, [hld]
+    and a, a
+    jr z, .loop ; if the value is *still* 0, loop.
+
+.loadPointer
+    ld a, [hli]
+    ld l, [hl]
+    ld h, a
+
     ; Load entity Script
     ld a, [hli] ; Load bank of script
     swap_bank
@@ -57,17 +61,14 @@ HandleEntities::
 RenderEntities::
     call RenderPlayers
     ; loop through entity array
-    ; c: offset of current entity !!! MUST NOT CHANGE C !!!
-    ; @OPTIMIZE: This needlessly uses a 16-bit index. The entity array should never be so large.
-    ; It previously used c alone, and may be reverted later.
+    ; bc: offset of current entity !!! MUST NOT CHANGE C !!!
+    ; loop through entity array
+    ; bc: offset of current entity
     ld bc, $0000
     jr .skip
 .loop
     ld a, sizeof_Entity
-    add_r16_a b, c
-    ld a, b
-    cp a, high(sizeof_Entity * MAX_ENTITIES)
-    jr nz, .skip ; Skip if there's no match
+    add_r16_a bc
     ld a, c
     cp a, low(sizeof_Entity * MAX_ENTITIES)
     ret z ; Return if we've reached the end of the array
@@ -77,10 +78,31 @@ RenderEntities::
 
     ; Check for entity
     ld a, [hl] ; Load the first byte of the entity
-    and a, a ; If the first byte is 0, skip
-    jr z, .loop
+    and a, a ; If the first byte is not 0, skip the next check
+    jr nz, .loadPointer
+    inc l
+    ld a, [hld]
+    and a, a
+    jr z, .loop ; if the value is *still* 0, loop.
+
+.loadPointer
+    ld a, [hli]
+    ld l, [hl]
+    ld h, a
+
+    ASSERT EntityDefinition_Logic + 6 == EntityDefinition_Render
+    ld a, EntityDefinition_Render - EntityDefinition_Logic
+    add_r16_a hl
+
+    ; Load entity Script
+    ld a, [hli] ; Load bank of script
+    swap_bank
+    ld a, [hli] ; Load the first byte of the entity script
+    ld h, [hl]  ; Finish loading the entity script
+    ld l, a
+    ; Run Entity Script Logic
     push bc ; Save the offset
-    call RenderMetasprite
+    rst _hl_ ; Call the entity's script. It may use `c` to find it's data
     pop bc
     jr .loop
 
@@ -122,105 +144,6 @@ SpawnEntity::
     ; Since spawning scripts may want to overwrite some stats, we let them know
     ; if the spawn failed using hl.
     ld hl, $0000 
-    ret
-
-; Renders a given metasprite at a given location
-; @ arguments:
-; @ hl: Entity Structure Origin
-RenderMetasprite::
-    ; Seek to position
-    inc hl
-    inc hl
-    ; Load position
-    ld a, [hli]
-    ld b, a
-    ld c, [hl]
-    ; Seek from XPos to Frame and store it for later.
-    ld a, Entity_Frame - Entity_XPos
-    add a, l
-    ld l, a
-    ld d, [hl]
-    ; Seek to the timer from the frame and store it for later.
-    ld a, Entity_InvTimer - Entity_Frame
-    add a, l
-    ld l, a
-    ld a, [hl]
-    ldh [hRenderByte], a ; Store timer here.
-    ; Seek from the Invincibility Timer back to the Data Pointer.
-    ld a, Entity_DataPointer - Entity_InvTimer
-    add a, l
-    ld l, a
-    ld a, [hli]
-    ld l, [hl]
-    ld h, a
-    ; Seek to Entity data.
-    inc hl ; Skip logic bank
-    inc hl ; skip logic low
-    inc hl ; skip logic high
-    ; Load the metasprite pointer.
-    ld a, [hli] ; Swap to the metasprites' bank
-    swap_bank
-    ld a, [hli] ; Load low
-    ld h, [hl] ; load high
-    ld l, a
-    ld a, d ; Load frame
-    add a, a ; frame * 2
-    add_r16_a h, l
-    ld a, [hli]
-    ld h, [hl]
-    ld l, a
-
-    ; At this point:
-    ; bc - Position (x, y)
-    ; hl - Metasprite pointer
-    ; Find Available Shadow OAM
-    ldh a, [hOAMIndex]
-    ld de, wShadowOAM
-    add_r16_a d, e
-    ; Load and offset Y
-    ld a, [hli]
-.pushSprite ; We can skip that load, since a loop will have already done it.
-    push bc
-    add a, b
-    ld b, a
-    ld a, [wSCYBuffer]
-    cpl
-    add a, b
-    ld [de], a
-    inc de
-    ; Load and offset X
-    ld a, [hli]
-    add a, c
-    ld c, a
-    ld a, [wSCXBuffer]
-    cpl
-    add a, c
-    ld [de], a
-    inc de
-    ; Load tile
-    ld a, [hli]
-    ld [de], a
-    inc de
-    ; Load attributes.
-    ld a, [hRenderByte]
-    bit 2, a ; Every 8/60 second, set pallet!
-    ld a, [hl]
-    jr z, .skipFlip
-    and a, %11101000 ; Mask out all palettes
-    or a, OAMF_PAL1 | DEFAULT_INV
-.skipFlip
-    ld [de], a
-    inc de
-    inc hl
-    ; Update OAM Index
-    ldh a, [hOAMIndex]
-    add a, 4
-    ldh [hOAMIndex], a
-    ; Check for End byte
-    pop bc
-    ld a, [hli]
-    cp a, METASPRITE_END
-    jr nz, .pushSprite
     ret
 
 BOUNDING_BOX_X EQU 6 ; A bit smaller than 16*16, because that feel/looks better.
@@ -354,79 +277,79 @@ PlayerMoveAndSlide::
 ; Move the Entity based on its Velocity. Slide along collision.
 ; @ hl: pointer to Entity. Returns Entity_YPos
 MoveAndSlide::
-    .xMovement
-        ; Seek to X Velocity
-        ld a, Entity_XVel - Entity_DataPointer
-        add a, l
-        ld l, a
-        ld c, [hl] ; C contains X Velocity
-        ; Seek to YPosition
-        ld a, Entity_YPos - Entity_XVel
-        add a, l
-        ld l, a
-        SeekAssert Entity_YPos, Entity_XPos, 1
-        ld a, [hli]
-        ld b, a ; Save the Y Pos for later
-        ld a, c
-        add a, [hl] ; Add the XPos to the XVel
-        ld d, a
-        bit 7, c ; Check whether c is negative.
-        jr nz, .xNeg
-    .xPos
-        add a, BOUNDING_BOX_X ; offset by the Bounding box
-        jr .xCheckCollision
-    .xNeg
-        add a, -BOUNDING_BOX_X
-    .xCheckCollision
-        ld c, a
-        push de ; Save our target Location (d). Using ram may be better here.
-        push hl ; Save our struct pointer
-        push bc ; And save our test position, incase we need to slide around a corner.
-        call LookupMapData
-        ld a, [hl]
-        dec a ; Skip 0
-        cp a, TILEDATA_ENTITY_WALL_MAX
-        pop bc
-        pop hl
-        pop de
-        jr c, .yMovement ; Is there data here? Don't move.
-        ; Handle movement
-        ld a, d
-        ld [hl], a ; Update X Pos. 
-    .yMovement
-        SeekAssert Entity_XPos, Entity_YVel, 1
-        inc l ; Seek to YVel
-        SeekAssert Entity_YVel, Entity_XPos, -1
-        ld a, [hld] ; Seek to XPos
-        ld b, a ; B contains Y Velocity
-        SeekAssert Entity_XPos, Entity_YPos, -1
-        ld a, [hld] ; Seek to YPos
-        ld c, a ; Save the XPos for later
-        ld a, b
-        add a, [hl] ; Add the YPos to the YVel
-        ld d, a
-        bit 7, b ; Check whether b is negative.
-        jr nz, .yNeg
-    .yPos
-        add a, BOUNDING_BOX_Y ; offset by the Bounding box
-        jr .yCheckCollision
-    .yNeg
-        add a, -BOUNDING_BOX_Y
-    .yCheckCollision
-        ld b, a
-        push de ; Save our target Location (d). Using ram may be better here.
-        push hl ; Save our struct pointer
-        push bc
-        call LookupMapData
-        ld a, [hl]
-        dec a ; Skip 0
-        cp a, TILEDATA_ENTITY_WALL_MAX
-        pop bc
-        pop hl
-        pop de
-        ret c ; Is there data here? Don't move.
-        ld [hl], d ; Update Y Pos.
-        ret
+.xMovement
+    ; Seek to X Velocity
+    ld a, Entity_XVel - Entity_DataPointer
+    add a, l
+    ld l, a
+    ld c, [hl] ; C contains X Velocity
+    ; Seek to YPosition
+    ld a, Entity_YPos - Entity_XVel
+    add a, l
+    ld l, a
+    SeekAssert Entity_YPos, Entity_XPos, 1
+    ld a, [hli]
+    ld b, a ; Save the Y Pos for later
+    ld a, c
+    add a, [hl] ; Add the XPos to the XVel
+    ld d, a
+    bit 7, c ; Check whether c is negative.
+    jr nz, .xNeg
+.xPos
+    add a, BOUNDING_BOX_X ; offset by the Bounding box
+    jr .xCheckCollision
+.xNeg
+    add a, -BOUNDING_BOX_X
+.xCheckCollision
+    ld c, a
+    push de ; Save our target Location (d). Using ram may be better here.
+    push hl ; Save our struct pointer
+    push bc ; And save our test position, incase we need to slide around a corner.
+    call LookupMapData
+    ld a, [hl]
+    dec a ; Skip 0
+    cp a, TILEDATA_ENTITY_WALL_MAX
+    pop bc
+    pop hl
+    pop de
+    jr c, .yMovement ; Is there data here? Don't move.
+    ; Handle movement
+    ld a, d
+    ld [hl], a ; Update X Pos. 
+.yMovement
+    SeekAssert Entity_XPos, Entity_YVel, 1
+    inc l ; Seek to YVel
+    SeekAssert Entity_YVel, Entity_XPos, -1
+    ld a, [hld] ; Seek to XPos
+    ld b, a ; B contains Y Velocity
+    SeekAssert Entity_XPos, Entity_YPos, -1
+    ld a, [hld] ; Seek to YPos
+    ld c, a ; Save the XPos for later
+    ld a, b
+    add a, [hl] ; Add the YPos to the YVel
+    ld d, a
+    bit 7, b ; Check whether b is negative.
+    jr nz, .yNeg
+.yPos
+    add a, BOUNDING_BOX_Y ; offset by the Bounding box
+    jr .yCheckCollision
+.yNeg
+    add a, -BOUNDING_BOX_Y
+.yCheckCollision
+    ld b, a
+    push de ; Save our target Location (d). Using ram may be better here.
+    push hl ; Save our struct pointer
+    push bc
+    call LookupMapData
+    ld a, [hl]
+    dec a ; Skip 0
+    cp a, TILEDATA_ENTITY_WALL_MAX
+    pop bc
+    pop hl
+    pop de
+    ret c ; Is there data here? Don't move.
+    ld [hl], d ; Update Y Pos.
+    ret
 
 ; Move the Entity based on its Velocity. Ignore Collision
 ; @ hl: pointer to Entity. Returns Entity_YPos
@@ -536,8 +459,17 @@ DetectEntity::
     add hl, bc ; Apply the entity offset
 
     ld a, [hli] ; Load the first byte of the entity
-    and a, a ; If the first byte is 0, skip
-    jr z, .loop
+
+    ; Check for entity
+    ld a, [hl] ; Load the first byte of the entity
+    and a, a ; If the first byte is not 0, skip the next check
+    jr nz, .check
+    inc l
+    ld a, [hld]
+    and a, a
+    jr z, .loop ; if the value is *still* 0, loop.
+.check
+
     ; Lets see if that entity collides with us!
     inc l
     ; Y time

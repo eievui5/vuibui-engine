@@ -2,23 +2,36 @@ INCLUDE "include/banks.inc"
 INCLUDE "include/macros.inc"
 INCLUDE "include/entities.inc"
 
-SECTION "Entity Definitions", ROM0
-
-/*
-
+/* Entity Class format
 EntityName::
-    far_pointer EntityScript ; Run once per frame when hEngineState == 0
-    far_pointer EntityMetaspriteLookup ; must be same bank as script
+    far_pointer EntityScript
+        ; Run once per frame when hEngineState == 0
 
+    far_pointer EntityMetaspriteLookup
+
+    far_pointer EntityRenderingLogic 
+        ; Must be in ROM0 or the same bank as EntityMetaspriteLookup
+
+    ; Any extra constant data can go at the end :)
 */
 
-; I may want to update this from a Metasprite lookup to a rendering script at some point.
-; Seperating logic and animations would be nice, plus it would mean that Entity_Facing actually determines what frame we're on.
-; Not entirely sure if I'll *ever* need this, so I've not implemented it yet.
+; Defines an entity class
+MACRO define_entity
+    IF _NARG != 4
+        FAIL "Expected 4 Arguments!"
+    ENDC
+    \1::
+        db BANK(\2)
+        dw \2
+        db BANK(\3)
+        dw \3
+        db BANK(\4)
+        dw \4
+ENDM
 
-; This ensures that the low byte will never fall on $00, since entity array
-; seekers treat LOW(Address) == 0 as "no entity".
-DefStart:
+SECTION "Entity Definitions", ROM0
+
+
 PlayerOctavia::
     far_pointer OctaviaPlayerLogic
     far_pointer OctaviaMetasprites
@@ -42,12 +55,4 @@ PoppyArrow::
 HitDummy::
     far_pointer HitDummyScript
     far_pointer OctaviaMetasprites
-
-
-    
-DefEnd: 
-
-; Ensure that neither entity data pointer byte will equal $00.
-FOR i, 0, (DefEnd-DefStart), 6
-    ASSERT HIGH(DefStart + i) != $00
-ENDR
+    far_pointer RenderMetasprite.native

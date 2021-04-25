@@ -141,38 +141,38 @@ RenderPlayers::
     call PlayerActivityCheck.disabled
     jr nz, .poppy
     ld hl, wOctavia
-    call RenderMetasprite
+    call RenderMetaspriteDirection.foreign
     ld a, [wOctaviaSpellActive]
     and a, a
     jr z, .poppy
     ld hl, wOctaviaSpell
-    call RenderMetasprite
+    call RenderMetasprite.foreign
 
 .poppy
     ld a, PLAYER_POPPY
     call PlayerActivityCheck.disabled
     jr nz, .tiber
     ld hl, wPoppy
-    call RenderMetasprite
+    call RenderMetaspriteDirection.foreign
     ; Just an unrolled entity handler for arrows...
 .poppyArrow0
     ld hl, wPoppyArrow0
     ASSERT HIGH(PoppyArrow) != $00
     ld a, [hl]
     and a, a
-    call nz, RenderMetasprite
+    call nz, RenderMetasprite.foreign
 .poppyArrow1
     ld hl, wPoppyArrow1
     ASSERT HIGH(PoppyArrow) != $00
     ld a, [hl]
     and a, a
-    call nz, RenderMetasprite
+    call nz, RenderMetasprite.foreign
 
 .tiber
     ld a, PLAYER_TIBER
     call PlayerActivityCheck.disabled
     ld hl, wTiber
-    jp z, RenderMetasprite
+    jp z, RenderMetaspriteDirection.foreign
     ret
 
 RenderPlayersTransition::
@@ -180,17 +180,17 @@ RenderPlayersTransition::
     ld a, PLAYER_OCTAVIA
     call PlayerActivityCheck.waiting
     ld hl, wOctavia
-    call z, RenderMetasprite
+    call z, RenderMetaspriteDirection.foreign
 .poppy
     ld a, PLAYER_POPPY
     call PlayerActivityCheck.waiting
     ld hl, wPoppy
-    call z, RenderMetasprite
+    call z, RenderMetaspriteDirection.foreign
 .tiber
     ld a, PLAYER_TIBER
     call PlayerActivityCheck.waiting
     ld hl, wTiber
-    jp z, RenderMetasprite
+    jp z, RenderMetaspriteDirection.foreign
     ret
 
 ; Cycle to the next player, skipping those that are disabled. Update the players'
@@ -304,8 +304,7 @@ PlayerInputMovement::
     dec l
     dec l ; Frame!
     ; ...Offset to step animation
-    ld a, [hl]
-    add a, FRAMEOFF_STEP
+    ld a, FRAMEOFF_STEP
     ld [hl], a
 .activeMoveDown
     find_player Entity_YVel
@@ -519,8 +518,7 @@ PlayerAIFollow::
     dec l
     dec l
     dec l
-    ld a, [hl]
-    ;add a, FRAMEOFF_STEP
+    ld a, FRAMEOFF_STEP
     ld [hl], a
     ret
 

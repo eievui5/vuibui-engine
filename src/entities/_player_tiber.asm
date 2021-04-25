@@ -12,8 +12,7 @@ DEF SWORD_DAMAGE_TIME = 12 + 7
 SECTION "Tiber AI", ROMX
 
 TiberPlayerLogic::
-    ; Always start by offsetting frame by facing direction
-    ld a, [wTiber_Direction]
+    xor a, a
     ld [wTiber_Frame], a
 
     ; Check for damage
@@ -105,13 +104,12 @@ TiberSword:
     ld [wTiber_Timer], a
     cp a, SWORD_WINDUP_TIME ; 2 frame windup
     ret c
-    ld a, [wTiber_Frame]
-    add a, FRAMEOFF_SWING
+    ld a, FRAMEOFF_SWING
     ld [wTiber_Frame], a
     ld a, [wTiber_Timer]
     cp a, SWORD_DRAW_TIME ; 2 frame draw
     ret c
-    ; add [wTiber_Frame], FRAMEOFF_SWORD - FRAMEOFF_SWING
+    ; ld [wTiber_Frame], FRAMEOFF_SWORD
     cp a, SWORD_OUTDEL_TIME ; start damage after 6 frames
     ret c
 

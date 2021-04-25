@@ -50,6 +50,18 @@ ENDM
         bytes 1, Priv2          ; 
     end_struct              ; 16 bytes long. You may not go over or under 16, because entities use StructSeekUnsafe for speed.
 
+    struct EntityDefinition
+        dunion   Logic
+        bytes 1, LogicBank
+        words 1, LogicPointer
+        dunion   Metasprites
+        bytes 1, MetaspritesBank
+        words 1, MetaspritesPointer
+        dunion   Render
+        bytes 1, RenderBank
+        words 1, RenderPointer
+    end_struct
+
 ASSERT sizeof_Entity == 16
 
 DEF ENTITY_DETECTION_SIZE EQU 7 ; (7 * 7) = 14 / (16 - 2)

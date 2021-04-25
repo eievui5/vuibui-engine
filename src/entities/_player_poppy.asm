@@ -7,8 +7,7 @@ INCLUDE "include/switch.inc"
 SECTION "Poppy AI", ROMX
 
 PoppyPlayerLogic::
-    ; Always start by offsetting frame by facing direction
-    ld a, [wPoppy_Direction]
+    xor a, a
     ld [wPoppy_Frame], a
 
     ; Check for damage
@@ -105,8 +104,7 @@ PoppyBow:
     ld [wPoppy_Timer], a
     cp a, 2 + 1 ; 2 frame delay...
     ret c
-    ld a, [wPoppy_Frame]
-    add a, FRAMEOFF_SWING
+    ld a, FRAMEOFF_SWING
     ld [wPoppy_Frame], a
     ld a, [wPoppy_Timer]
     cp a, 16 + 2 + 1 ; 16 frame action!
