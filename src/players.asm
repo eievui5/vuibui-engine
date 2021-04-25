@@ -650,60 +650,37 @@ PlayerTransitionMovement::
     ; These location checks are slightly off, since sprites are not centered.
     cp a, 24 ; 24 - stops on the first tile
     jr z, .updateAllyPositions ; Are we already there?
-    inc [hl] ; No? Then move down
-    bit 4, a ; Let's just use YPos as the animation timer.
-    jr nz, .downStepFrame
-    ld b, PLAYER_FRAME_DOWN
-    jr .verticleStoreFrame
-.downStepFrame
-    ld b, PLAYER_FRAME_DOWN_STEP
-    jr .verticleStoreFrame
+    inc [hl] ; No? Then move down    
+    jr .animatePlayerY
 .up
     ld a, [hl]
     cp a, 8 ; Stop on the first tile
     jr z, .updateAllyPositions ; Are we already there?
     dec [hl] ; No? Then move up
-    bit 4, a ; Let's just use YPos as the animation timer.
-    jr nz, .upStepFrame
-    ld b, PLAYER_FRAME_UP
-    jr .verticleStoreFrame
-.upStepFrame
-    ld b, PLAYER_FRAME_UP_STEP
-.verticleStoreFrame
-    ld a, Entity_Frame - Entity_YPos
-    add a, l
-    ld l, a
-    ld [hl], b
-    jr z, .updateAllyPositions
+    jr .animatePlayerY
 .right
     ld a, [hl]
     cp a, 16 ; Stop on the first tile
     jr z, .updateAllyPositions ; Are we already there?
     inc [hl] ; No? Then move right
-    bit 4, a ; Let's just use XPos as the animation timer.
-    jr nz, .rightStepFrame
-    ld b, PLAYER_FRAME_RIGHT
-    jr .horizontalStoreFrame
-.rightStepFrame
-    ld b, PLAYER_FRAME_RIGHT_STEP
-    jr .horizontalStoreFrame
+    jr .animatePlayerX
 .left
     ld a, [hl]
     cp a, 1 ; Stop on the first tile
     jr z, .updateAllyPositions ; Are we already there?
     dec [hl] ; No? Then move left
-    bit 4, a ; Let's just use XPos as the animation timer.
-    jr nz, .leftStepFrame
-    ld b, PLAYER_FRAME_LEFT
-    jr .horizontalStoreFrame
-.leftStepFrame
-    ld b, PLAYER_FRAME_LEFT_STEP
-.horizontalStoreFrame
-    ld a, Entity_Frame - Entity_XPos
+.animatePlayerX
+    dec l ; Return to YPos
+.animatePlayerY
+    ld b, FRAMEOFF_NORMAL
+    bit 4, a
+    jr z, :+
+        ld b, FRAMEOFF_STEP
+:   ld a, Entity_Frame - Entity_YPos
     add a, l
     ld l, a
     ld [hl], b
-    ; fallthrough
+
 
 .updateAllyPositions
     ld a, [wActivePlayer]
