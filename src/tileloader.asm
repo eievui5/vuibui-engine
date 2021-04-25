@@ -2,7 +2,7 @@
 INCLUDE "include/directions.inc"
 include "include/engine.inc"
 include "include/hardware.inc"
-include "include/tiles.inc"
+INCLUDE "include/tiledata.inc"
 include "include/macros.inc"
 
 SECTION "Tileloader", ROM0 

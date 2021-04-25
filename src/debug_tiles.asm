@@ -1,5 +1,5 @@
 
-include "include/tiles.inc"
+INCLUDE "include/tiledata.inc"
 
 CLEAR_TILE EQU $00
 BLACK_TILE EQU $01

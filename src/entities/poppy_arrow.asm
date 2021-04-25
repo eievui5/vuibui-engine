@@ -2,7 +2,7 @@
 INCLUDE "include/entities.inc"
 INCLUDE "include/hardware.inc"
 INCLUDE "include/graphics.inc"
-include "include/tiles.inc"
+INCLUDE "include/tiledata.inc"
 
 MACRO find_arrow
     IF _NARG > 0

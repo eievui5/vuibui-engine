@@ -7,7 +7,7 @@ INCLUDE "include/map.inc"
 INCLUDE "include/players.inc"
 INCLUDE "include/stat.inc"
 INCLUDE "include/text.inc"
-INCLUDE "include/tiles.inc"
+INCLUDE "include/tiledata.inc"
 
 SECTION "Initialize", ROM0
 ; Inits system value based off `a` and `b`. Do not jump to this!

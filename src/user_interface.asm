@@ -11,7 +11,7 @@ INCLUDE "include/hardware.inc"
 INCLUDE "include/macros.inc"
 INCLUDE "include/stat.inc"
 INCLUDE "include/text.inc"
-INCLUDE "include/tiles.inc"
+INCLUDE "include/tiledata.inc"
 
 DEF vPrintBar EQU $9F40
 DEF vHUD EQU $9F60

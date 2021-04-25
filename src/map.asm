@@ -1,9 +1,9 @@
 INCLUDE "include/banks.inc"
 INCLUDE "include/entities.inc"
-include "include/map.inc"
-include "include/macros.inc"
+INCLUDE "include/map.inc"
+INCLUDE "include/macros.inc"
 INCLUDE "include/switch.inc"
-INCLUDE "include/tiles.inc"
+INCLUDE "include/tiledata.inc"
 
 ; Keep these all in the same bank.
 SECTION "Map Lookup", ROM0

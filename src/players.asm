@@ -8,7 +8,7 @@ INCLUDE "include/hardware.inc"
 INCLUDE "include/macros.inc"
 INCLUDE "include/players.inc"
 INCLUDE "include/switch.inc"
-INCLUDE "include/tiles.inc"
+INCLUDE "include/tiledata.inc"
 
 /*  players.asm
     Common functions shared by the players.
