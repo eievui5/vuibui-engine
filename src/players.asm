@@ -6,6 +6,7 @@ INCLUDE "include/entities.inc"
 INCLUDE "include/enum.inc"
 INCLUDE "include/hardware.inc"
 INCLUDE "include/macros.inc"
+INCLUDE "include/map.inc"
 INCLUDE "include/players.inc"
 INCLUDE "include/switch.inc"
 INCLUDE "include/tiledata.inc"
@@ -239,7 +240,7 @@ CyclePlayers:
     ld [wRoomTransitionDirection], a
     ld a, PALETTE_STATE_FADE_LIGHT
     ld [wPaletteState], a
-    ld a, FALSE
+    ld a, UPDATE_TILEMAP
     call UpdateActiveMap
     ; End the frame early.
     ld sp, wStackOrigin
@@ -711,7 +712,6 @@ PlayerTransitionMovement::
     swap a ; a * 16
     ld c, a
     ld b, 0
-    ld b, b
     call PlayerAIFollow
 
     pop bc
@@ -775,7 +775,7 @@ ScreenTransitionCheck::
     dec [hl]
 .update
     call PlayerUpdateMapPosition
-    ld a, TRUE
+    ld a, SPAWN_ENTITIES
     call UpdateActiveMap
     call RenderPlayers
     ; End the frame early.
@@ -820,7 +820,7 @@ WarpTileCheck::
     ld [wRoomTransitionDirection], a
     ld a, PALETTE_STATE_FADE_LIGHT
     ld [wPaletteState], a
-    ld a, FALSE
+    ld a, UPDATE_TILEMAP
     call UpdateActiveMap
     ; End the frame early.
     ld sp, wStackOrigin

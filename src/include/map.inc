@@ -4,6 +4,13 @@ INCLUDE "include/structs.inc"
 
 DEF MAP_SIZE EQU 16 * 16
 
+; UpdateActiveMapFlags
+DEF SPAWN_ENTITIES EQU 1
+DEF UPDATE_TILEMAP EQU 2
+
+DEF SPAWN_ENTITIES_B EQU 0
+DEF UPDATE_TILEMAP_B EQU 1
+
 ; Ends a mapdata definition
 MACRO end_mapdata
     db MAPDATA_END
@@ -57,6 +64,23 @@ ENDM
     start_enum MAP
         enum OVERWORLD
     end_enum
+
+    struct MapData
+        bytes 1, Width
+        bytes 1, Size
+
+        bytes 1, TilesetSize ; How many tiles?
+        bytes 1, TilesetBank
+        words 1, Tileset
+
+        bytes 1, MetatileSize ; How large are the metatiles? Data will be /4
+        bytes 1, MetatileBank
+        words 1, MetatileDefinitions
+        words 1, MetatileAttributes
+        words 1, MetatileData
+
+        dunion Layout
+    end_struct
 
 ; Used to set up targets for warp tiles.
     struct WarpData

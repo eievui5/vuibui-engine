@@ -1,18 +1,14 @@
 
+INCLUDE "include/enum.inc"
 INCLUDE "include/tiledata.inc"
 
-CLEAR_TILE EQU $00
-BLACK_TILE EQU $01
-ROW_TILE EQU $02
+CLEAR_TILE EQU $80
+BLACK_TILE EQU $81
+ROW_TILE EQU $82
 
 SECTION "Tiles", ROMX 
-DebugTiles::
-    ; CLEAR_TILE
-    ds 16, $00
-    ; BLACK_TILE
-    ds 16, $FF
-    ; $03
-    ds 16, $FF, $00, $00, $FF
+pb16_OverworldTiles::
+    INCBIN "res/tilesets/overworld.pb16"
 .end::
 
 SECTION "Metatiles", ROMX 

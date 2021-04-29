@@ -80,6 +80,13 @@ ShowHUD:
     jr ExitStat
 
 PrintScroll:
+    ; Calculate Scroll (scroll by 2 every other frame)
+    ld a, [wHUDPrintScroll]
+    bit 0, a
+    jr z, :+
+    dec a
+:   ld b, a
+
     ; Wait for safe VRAM access
 :   ld a, [rSTAT]
     and a, STATF_BUSY
@@ -89,7 +96,7 @@ PrintScroll:
     ldh [rLCDC], a
     ld a, 256 - (3*8) - 144
     ldh [rSCY], a
-    ld a, [wHUDPrintScroll]
+    ld a, b
     ldh [rSCX], a
 
     ; Schedule another interrupt to undo this effect once needed

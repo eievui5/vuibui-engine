@@ -33,13 +33,12 @@ InitializeSystem::
     jr z, Initialize
 
     ; Wait to turn off the screen, because speed switch can be finicky.
-    ld a, 144
-    ld hl, rLY
 .waitVBlank
-    cp a, [hl]
-    jr nz, .waitVBlank
-    xor a, a ; Turn off the screen
-    ld [rLCDC], a
+	ldh a, [rLY]
+	cp a, 144
+	jr c, .waitVBlank
+	xor a, a
+	ldh [rLCDC], a
 
     ld a, 1
     ld [rKEY1], a
@@ -47,14 +46,12 @@ InitializeSystem::
     jr Initialize.waitSkip
 
 Initialize::
-    ; Wait to turn off the screen
-    ld a, 144
-    ld hl, rLY
 .waitVBlank
-    cp a, [hl]
-    jr nz, .waitVBlank
-    xor a, a ; Turn off the screen
-    ld [rLCDC], a
+	ldh a, [rLY]
+	cp a, 144
+	jr c, .waitVBlank
+	xor a, a
+	ldh [rLCDC], a
 .waitSkip
 
 ; Enable interrupts
@@ -147,39 +144,8 @@ Initialize::
     ld c, 8 * 2
     call Unpack1bpp
 
-
-;Load Tiles (remove!)
-
-    ld a, BANK(DebugTiles)
-    swap_bank
-
-    ; Debug Tiles
-    ld c, DebugTiles.end - DebugTiles
-    ld hl, DebugTiles
-    ld de, VRAM_TILES_BG
-    rst memcopy_small
-    
-    ld a, BANK(DebugMetatileDefinitions)
-    swap_bank
-
-    ; Debug Metatiles
-    ld c, DebugMetatileDefinitions.end - DebugMetatileDefinitions
-    ld hl, DebugMetatileDefinitions
-    ld de, wMetatileDefinitions ; Metatiles must be defined
-    rst memcopy_small
-
-    ld c, DebugMetatileAttributes.end - DebugMetatileAttributes
-    ld hl, DebugMetatileAttributes
-    ld de, wMetatileAttributes ; Metatile attributes must be defined
-    rst memcopy_small
-
-    ld c, DebugMetatileData.end - DebugMetatileData
-    ld hl, DebugMetatileData
-    ld de, wMetatileData ; Metatile data must be defined
-    rst memcopy_small
-
 ; Debug Map
-    ld a, TRUE
+    ld a, SPAWN_ENTITIES; | UPDATE_TILEMAP
     call UpdateActiveMap
 
 ; Load metatiles onto _SCRN0
