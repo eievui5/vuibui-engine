@@ -4,12 +4,50 @@ INCLUDE "include/structs.inc"
 
 DEF MAP_SIZE EQU 16 * 16
 
+DEF MAP_BKG_PALS EQU 6
+DEF MAP_OBJ_PALS EQU 4
+
 ; UpdateActiveMapFlags
 DEF SPAWN_ENTITIES EQU 1
 DEF UPDATE_TILEMAP EQU 2
 
 DEF SPAWN_ENTITIES_B EQU 0
 DEF UPDATE_TILEMAP_B EQU 1
+
+; Defines a new map struct, leaving room at the bottom for the layout and data
+; @ define_map width, height, tile_amount, pb16_tileset, metatiles
+MACRO define_map
+    ; MapData_Width
+.width
+    db (2) * \1
+    ; MapData_Size
+.size
+    db (2 * \1) * \2
+    ; MapData_TilesetSize
+.tilesetSize
+    db \3
+    ; MapData_TilesetBank, MapData_Tileset
+.tileset
+    far_pointer \4
+    ; MapData_PalettesBank, MapData_Palettes
+.palettes
+    far_pointer \5
+    ; MapData_MetatileSize
+.metatileSize
+    db \6.end - \6
+    ; MapData_MetatileBank
+.metatileBank
+    db BANK(\6)
+    ; MapData_MetatileDefinitions
+.metatileDefinitions
+    dw \6.definitions
+    ; MapData_MetatileAttributes
+.metatileAttributes
+    dw \6.attributes
+    ; MapData_MetatileData
+.metatileData
+    dw \6.data
+ENDM
 
 ; Ends a mapdata definition
 MACRO end_mapdata
@@ -72,6 +110,9 @@ ENDM
         bytes 1, TilesetSize ; How many tiles?
         bytes 1, TilesetBank
         words 1, Tileset
+
+        bytes 1, PalettesBank
+        words 1, Palettes
 
         bytes 1, MetatileSize ; How large are the metatiles? Data will be /4
         bytes 1, MetatileBank

@@ -206,10 +206,7 @@ CyclePlayers:
     ld [hl], a
 .zSkip
     ; Is player enabled?
-    ld hl, wPlayerDisabled
-    add_r16_a h, l
-    ld a, [hl]
-    and a, a
+    call PlayerActivityCheck.disabled
     jr nz, CyclePlayers
 
     ld c, 3
@@ -228,23 +225,7 @@ CyclePlayers:
     inc hl
     dec c
     jr nz, .waitLoop
-    ; Are they in a different room? This needs extra handling!
-    call PlayerActivityCheck.room
-    ret z
-.swapRoom
-    ld a, [hld]
-    ld [wWorldMapPositionX], a
-    ld a, [hl]
-    ld [wWorldMapPositionY], a
-    ld a, TRANSDIR_NONE ; No scrolling!
-    ld [wRoomTransitionDirection], a
-    ld a, PALETTE_STATE_FADE_LIGHT
-    ld [wPaletteState], a
-    ld a, UPDATE_TILEMAP
-    call UpdateActiveMap
-    ; End the frame early.
-    ld sp, wStackOrigin
-    jp Main.end
+    ret
 
 ; Various logic checks to determine the activity of players. Z is set if the 
 ; checks all pass. `a: Player Index`
@@ -252,8 +233,8 @@ CyclePlayers:
 ; @ .waiting: `z = !(wPlayerWaitlink[a] == wActivePlayer || wPlayerDisabled[a] || (wWorldMapPosition == wPlayerRoom[a]))`
 ; @ .disabled: `z = !(wPlayerDisabled[a] || (wWorldMapPosition == wPlayerRoom[a]))`
 ; @ .room: `z = !(wWorldMapPosition == wPlayerRoom[a])`
-PlayerActivityCheck:
-.waiting
+PlayerActivityCheck::
+.waiting::
     ld b, a
     ld hl, wPlayerWaitLink
     add_r16_a h, l
@@ -261,7 +242,7 @@ PlayerActivityCheck:
     cp a, [hl]
     ret nz
     ld a, b
-.disabled
+.disabled::
     ; Is player enabled?
     ld b, a
     ld hl, wPlayerDisabled
@@ -270,7 +251,7 @@ PlayerActivityCheck:
     and a, a
     ret nz
     ld a, b
-.room
+.room::
     add a, a
     ld hl, wPlayerRoom
     add_r16_a h, l
@@ -698,6 +679,7 @@ PlayerTransitionMovement::
     ld a, [wActivePlayer]
     cp a, c ; Skip the active player
     jr z, .updateAllyPositionsDecrement
+    ld a, c
     call PlayerActivityCheck.waiting
     jr nz, .updateAllyPositionsDecrement ; Skip if the player is fully inactive
 
@@ -746,9 +728,7 @@ ScreenTransitionCheck::
     ld a, [wTransitionBuffer]
     and a, a
     ret nz ; If the transition buffer is set, do not transition again
-    inc a
-    ; Otherwise, set the buffer so that we don't rapidly switch rooms
-    ld [wTransitionBuffer], a 
+    ; UpdateActiveMap will set the transition buffer so that we don't rapidly switch rooms.
     ld a, h
     ; If we're standing on a transition tile, queue up a transition
     ld [wRoomTransitionDirection], a

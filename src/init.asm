@@ -145,7 +145,7 @@ Initialize::
     call Unpack1bpp
 
 ; Debug Map
-    ld a, SPAWN_ENTITIES; | UPDATE_TILEMAP
+    ld a, SPAWN_ENTITIES | UPDATE_TILEMAP
     call UpdateActiveMap
 
 ; Load metatiles onto _SCRN0
@@ -189,13 +189,7 @@ Initialize::
     ld a, BANK(PalOctavia)
     swap_bank
 
-    ld hl, PalOctavia
-    ld c, sizeof_PALETTE
-    ld de, wBCPD
-    rst memcopy_small
-    ld hl, PalTiber
-    ld c, sizeof_PALETTE
-    rst memcopy_small
+    ; Copy the four default object palettes
     ld hl, PalOctavia
     ld c, sizeof_PALETTE * 4
     ld de, wOCPD
@@ -233,6 +227,9 @@ Initialize::
     ld [hli], a
     ld a, 256/2 + 16
     ld [hli], a
+
+    ld a, TRUE
+    ;ld [wPlayerDisabled.poppy], a
 
     ld a, BANK(GfxOctavia)
     swap_bank

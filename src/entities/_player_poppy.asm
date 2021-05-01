@@ -179,7 +179,7 @@ PoppyBow:
 
 PoppyAIFollow:
     ld bc, PLAYER_POPPY * sizeof_Entity
-    ld e, FOLLOW_CLOSE ; Tiber should always be close.
+    ld e, FOLLOW_CLOSE ; Poppy should always be close.
     call PlayerAIFollow
     
     ld hl, wPoppy

@@ -1,18 +1,36 @@
 
 INCLUDE "include/enum.inc"
+INCLUDE "include/graphics.inc"
 INCLUDE "include/tiledata.inc"
 
 CLEAR_TILE EQU $80
 BLACK_TILE EQU $81
 ROW_TILE EQU $82
 
-SECTION "Tiles", ROMX 
+SECTION "Overworld Tiles", ROMX 
 pb16_OverworldTiles::
     INCBIN "res/tilesets/overworld.pb16"
 .end::
 
+SECTION "Overworld Palettes", ROMX
+OverworldPalettes::
+.bcpd
+    pal_blank
+    pal_blank
+    pal_blank
+    pal_blank
+    pal_blank
+    pal_blank
+.ocpd
+    pal_blank
+    pal_blank
+    pal_blank
+    pal_blank
+    pal_blank
+
 SECTION "Metatiles", ROMX 
-DebugMetatileDefinitions::
+DebugMetatiles::
+.definitions::
     ; $00
     db CLEAR_TILE, CLEAR_TILE
     db CLEAR_TILE, CLEAR_TILE
@@ -36,7 +54,7 @@ DebugMetatileDefinitions::
     db CLEAR_TILE, CLEAR_TILE
 .end::
 
-DebugMetatileAttributes::
+.attributes::
     ; $00
     db 0, 0
     db 0, 0
@@ -58,10 +76,8 @@ DebugMetatileAttributes::
     ; $06
     db 0, 0
     db 0, 0
-.end::
 
-; Just a lookup table to save from storing 2 maps.
-DebugMetatileData:: 
+.data::
     ; $00
     db TILEDATA_CLEAR
     ; $01
@@ -76,4 +92,3 @@ DebugMetatileData::
     db TILEDATA_TRANSITION_RIGHT
     ; $06
     db TILEDATA_TRANSITION_UP
-.end::

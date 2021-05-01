@@ -143,11 +143,8 @@ SpawnEntity::
     pop bc
     ; Since spawning scripts may want to overwrite some stats, we let them know
     ; if the spawn failed using hl.
-    ld hl, $0000 
+    ld hl, null 
     ret
-
-BOUNDING_BOX_X EQU 6 ; A bit smaller than 16*16, because that feel/looks better.
-BOUNDING_BOX_Y EQU 6
 
 ; Expanded version of MoveAndSlide which performs corner checks and only
 ; collides with TILEDATA_COLLISION, rather than all excluded tiles.
@@ -554,8 +551,8 @@ ENDR
 
 SECTION "Entity Array", WRAM0, ALIGN[$08] ; Align with $00 so that we can use unsafe struct seeking
 wEntityArray::
-    ; define an array of `MAX_ENTITIES` Entities, each named wEntityX
-    dstructs MAX_ENTITIES * 3, Entity, wEntity
+    ; define an array of `MAX_ENTITIES` Entities, each named wEntityXX
+    dstructs MAX_ENTITIES, Entity, wEntity
 
 SECTION UNION "Volatile", HRAM
 hRenderByte: ; currently stores the entity's invtimer to find out if it should blink

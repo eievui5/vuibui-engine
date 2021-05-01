@@ -1,3 +1,4 @@
+
 INCLUDE "include/banks.inc"
 INCLUDE "include/map.inc"
 
@@ -5,18 +6,9 @@ INCLUDE "include/map.inc"
 SECTION "Overworld Map", ROMX, BANK[3]
 
 OverworldMap::
-    db (2) * 2      ; Width
-    db (2 * 2) * 2  ; Size
-
-    db 3
-    far_pointer pb16_OverworldTiles
-
-    db DebugMetatileDefinitions.end - DebugMetatileDefinitions
-    db BANK(DebugMetatileDefinitions)
-    dw DebugMetatileDefinitions
-    dw DebugMetatileAttributes
-    dw DebugMetatileData
-
+    define_map \
+    2, 2, \ ; Size
+    3, pb16_OverworldTiles, OverworldPalettes, DebugMetatiles ; Tileset
 .map
     dw DebugMap, DebugMap2
     dw DebugMap2, DebugMap
@@ -42,7 +34,11 @@ DebugMap: ; Using DebugMetatiles
     db $04, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $05
     db $01, $03, $03, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01
 .data
-    create_entity HitDummy, 256/2 + 256/4, 256/2
+    FOR y, 3
+        FOR x, 8
+            create_entity HitDummy, (x * 16) + (256/2), (y * 16) + (256/2)
+        ENDR
+    ENDR
     set_warp 0, 2, 2, MAP_OVERWORLD, 0, 1, 256/2, 256/2
     end_mapdata
 

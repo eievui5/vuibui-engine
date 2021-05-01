@@ -71,7 +71,7 @@ HandleJumpTable::
 SECTION "Null", ROM0[$0000]
 ; null is equal to $0000. This should be used as a missing pointer value, and if
 ; called it will crash.
-null:
+null::
 	nop
 	nop
 	rst crash

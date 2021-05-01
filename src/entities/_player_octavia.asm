@@ -209,6 +209,10 @@ OctaviaAIFollow:
     cp a, PLAYER_POPPY
     ld e, FOLLOW_CLOSE ; Octavia should be close when Poppy is active
     jr z, .follow
+    ; If tiber is active, check if poppy is waiting
+    ld a, PLAYER_POPPY
+    call PlayerActivityCheck.waiting
+    jr nz, .follow
     ld e, FOLLOW_FAR ; And far when Tiber is active.
 .follow
     ld bc, PLAYER_OCTAVIA * sizeof_Entity

@@ -32,6 +32,23 @@ MACRO rgb
     dw (\1) | (\2) << 5 | (\3) << 10
 ENDM
 
+MACRO pal
+    IF _NARG != 12
+        FAIL "Expected 12 args!"
+    ENDC
+    REPT 4
+        rgb \1, \2, \3
+        SHIFT 3
+    ENDR
+ENDM
+
+MACRO pal_blank
+    pal 31, 31, 31, \
+        20, 20, 20, \
+        10, 10, 10, \
+        0,  0,  0
+ENDM
+
 ; Tile constants
 
     start_enum TILE, 0, 2

@@ -1,5 +1,6 @@
 INCLUDE "include/banks.inc"
 INCLUDE "include/bool.inc"
+INCLUDE "include/engine.inc"
 INCLUDE "include/entities.inc"
 INCLUDE "include/graphics.inc"
 INCLUDE "include/map.inc"
@@ -18,9 +19,12 @@ SECTION "Map Lookup", ROM0
 UpdateActiveMap::
 	ld d, a ; Save inputs in `d` for a bit
 
+    ld a, TRUE
+    ld [wTransitionBuffer], a
+
 	bit SPAWN_ENTITIES_B, d
 	jr z, :+
-	ld a, TRUE
+	; ld a, TRUE
     ldh [hRespawnEntitiesFlag], a ; Any non-zero value is enough
 :
     ; Clear player spell
@@ -96,6 +100,40 @@ UpdateActiveMap::
 		swap_bank
 		call pb16_unpack_block
 	pop hl
+
+    ld a, [hSystem]
+    and a, a
+    jr z, .palSkip
+
+	ldh a, [hMapBankBuffer]
+	swap_bank
+
+        ld a, [hli] ; Load Palette Bank
+        ld b, a
+        ld a, [hli] ; Load Palette pointer low...
+    push hl
+        ld h, [hl]
+        ld l, a
+
+        ld a, b
+        swap_bank
+
+        ld c, MAP_BKG_PALS * sizeof_PALETTE
+        ld de, wBCPD
+        rst memcopy_small
+        ld c, MAP_OBJ_PALS * sizeof_PALETTE
+        ld de, wOCPD + (sizeof_PALETTE * (8 - MAP_OBJ_PALS)) ; Skip the players' reserved palettes
+        rst memcopy_small
+    pop hl
+    ld a, PALETTE_STATE_RESET
+    ld [wPaletteState], a
+    jr .palFinish
+
+.palSkip
+    inc hl
+    inc hl
+.palFinish
+    inc hl ; The last read did not include a post-inc
 
 	ldh a, [hMapBankBuffer]
 	swap_bank

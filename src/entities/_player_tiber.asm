@@ -154,11 +154,12 @@ TiberSword:
 TiberAIFollow:
     ld e, FOLLOW_FAR ; Tiber should always be far.
     ld hl, wActivePlayer
-    ld a, [wPlayerWaitLink.octavia]
-    cp a, [hl]
+    ASSERT PLAYER_OCTAVIA == 0
+    xor a, a ; ld a, PLAYER_OCTAVIA
+    call PlayerActivityCheck.waiting
     jr nz, .forceClose
-    ld a, [wPlayerWaitLink.poppy]
-    cp a, [hl]
+    ld a, PLAYER_POPPY
+    call PlayerActivityCheck.waiting
     jr z, .follow
 .forceClose
     ld e, FOLLOW_CLOSE ; Unless one of the allies is waiting

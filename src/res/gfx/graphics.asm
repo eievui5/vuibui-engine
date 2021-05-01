@@ -36,10 +36,10 @@ pb16_Heart::
 
 SECTION "Color Palettes", ROMX
 PalOctavia::
-    rgb 31, 31, 31
-    rgb 18, 26, 24
-    rgb  5,  7, 16
-    rgb  0,  0,  0
+    pal 31, 31, 31, \
+        18, 26, 24, \
+         5,  7, 16, \
+         0,  0,  0
 PalPoppy::
     rgb 31, 31, 31
     rgb 19, 26, 18
