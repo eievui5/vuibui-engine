@@ -155,7 +155,7 @@ Initialize::
     ldh a, [hSystem]
     and a, a
     jr z, :+
-    ld a, 1
+    ld a, TRUE
     ldh [rVBK], a
     ld de, _SCRN0
     ld hl, wMetatileAttributes

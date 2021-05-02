@@ -187,8 +187,39 @@ UpdateActiveMap::
 	swap_bank
 	rst memcopy_small
 
+    ld b, b
+    
+    call GetActiveMap
+	push bc ; Save the data pointer
+		; Copy the map data
+		ld bc, MAP_SIZE
+		ld de, wMetatileMap
+		call memcopy
+		call LoadMapData
+
+    ld a, TRUE
+    ldh [rVBK], a
+
+    ld de, _SCRN0
+    ld hl, wMetatileAttributes
+    call LoadMetatileMap
+
+    xor a, a
+    ldh [rVBK], a
+    
+    ld de, _SCRN0
+    ld hl, wMetatileDefinitions
+    call LoadMetatileMap
+
+    call LoadMapData
+
+    ld a, PALETTE_STATE_RESET
+    ld [wPaletteState], a
+
 	ld a, [hLCDCBuffer]
 	ldh [rLCDC], a
+    
+    jr .skipDoubleLoad
 
 .skipNewTileMap
 
@@ -200,6 +231,7 @@ UpdateActiveMap::
 		ld de, wMetatileMap
 		call memcopy
 		call LoadMapData
+.skipDoubleLoad
     pop hl
 	ldh a, [hMapBankBuffer]
 	swap_bank

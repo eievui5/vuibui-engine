@@ -63,6 +63,9 @@ VBlank:
     bit PADB_START, a
     jr z, .return
 
+    ld a, PALETTE_STATE_FADE_LIGHT
+    ld [wPaletteState], a
+
     ld a, BANK(TestPrintString)
     ld hl, TestPrintString
     call PrintNotification

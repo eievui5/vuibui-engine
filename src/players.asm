@@ -796,8 +796,6 @@ WarpTileCheck::
     ld [wOctavia_XPos], a
     ld [wPoppy_XPos], a
     ld [wTiber_XPos], a
-    ld a, TRANSDIR_NONE ; No scrolling!
-    ld [wRoomTransitionDirection], a
     ld a, PALETTE_STATE_FADE_LIGHT
     ld [wPaletteState], a
     ld a, UPDATE_TILEMAP

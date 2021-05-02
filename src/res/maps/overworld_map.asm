@@ -34,11 +34,7 @@ DebugMap: ; Using DebugMetatiles
     db $04, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $05
     db $01, $03, $03, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01
 .data
-    FOR y, 3
-        FOR x, 8
-            create_entity HitDummy, (x * 16) + (256/2), (y * 16) + (256/2)
-        ENDR
-    ENDR
+    create_entity HitDummy, (256/2) + 32, (256/2)
     set_warp 0, 2, 2, MAP_OVERWORLD, 0, 1, 256/2, 256/2
     end_mapdata
 
