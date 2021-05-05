@@ -19,7 +19,7 @@ SECTION "VBlank", ROM0
 VBlank:
     ; Save old bank so that we can restore it.
     ldh a, [hCurrentBank]
-    ld [wVBlankBankBuffer], a
+    ld [wInterruptBankBuffer], a
 
     ld a, SCREEN_NORMAL
     ldh [rLCDC], a
@@ -63,9 +63,6 @@ VBlank:
     bit PADB_START, a
     jr z, .return
 
-    ld a, PALETTE_STATE_FADE_LIGHT
-    ld [wPaletteState], a
-
     ld a, BANK(TestPrintString)
     ld hl, TestPrintString
     call PrintNotification
@@ -81,7 +78,7 @@ VBlank:
     ld [wNewFrame], a
 
     ; Restore register state
-    ld a, [wVBlankBankBuffer]
+    ld a, [wInterruptBankBuffer]
     swap_bank
     pop hl
     pop de
@@ -115,7 +112,7 @@ wSCXBuffer::
 wSCYBuffer::
     ds 1
 
-wVBlankBankBuffer::
+wInterruptBankBuffer::
     ds 1
 
 ; Just a global frame timer

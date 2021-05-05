@@ -8,7 +8,8 @@ DEF mBankSelect EQU $2000
 ;DEF mBankSelectHigh EQU $3000 ; Used for the upper 4 megabytes (not needed)
 ;DEF mSRAMBankSelect EQU $4000 
 
-; Sets `mBankSelect` and `hCurrentBank` to `a`
+; Sets `mBankSelect` and `hCurrentBank` to `a`.
+; This macro ins't great, but it'll be useful if bank swapping ever changes.
 MACRO swap_bank
     ld [mBankSelect], a
     ldh [hCurrentBank], a

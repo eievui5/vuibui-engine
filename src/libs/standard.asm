@@ -8,17 +8,17 @@ SECTION "Overwrite Bytes", ROM0
 ; @ bc: length
 ; @ hl: destination
 memset::
-	inc b
-	inc c
-	jr .decCounter
+    inc b
+    inc c
+    jr .decCounter
 .loadByte
-	ld [hli],a
+    ld [hli],a
 .decCounter
-	dec c
-	jr nz, .loadByte
-	dec b
-	jr nz, .loadByte
-	ret
+    dec c
+    jr nz, .loadByte
+    dec b
+    jr nz, .loadByte
+    ret
 
 SECTION "Memory Copy", ROM0
 
@@ -29,18 +29,18 @@ SECTION "Memory Copy", ROM0
 ; @ de: destination
 ; @ hl: source
 memcopy::
-	dec bc
-	inc b
-	inc c
+    dec bc
+    inc b
+    inc c
 .loop:
-	ld a, [hli]
-	ld [de], a
-	inc de
-	dec c
-	jr nz, .loop
-	dec b
-	jr nz, .loop
-	ret
+    ld a, [hli]
+    ld [de], a
+    inc de
+    dec c
+    jr nz, .loop
+    dec b
+    jr nz, .loop
+    ret
 
 
 
@@ -51,30 +51,30 @@ SECTION "Jump Table", ROM0
 ; more destinations, and is always smaller.
 ; @ a: Jump Offset
 HandleJumpTable::
-	; Restore Pointer to jump table
-	pop hl
-	; a * 2 (pointers are 2 bytes!)
-	add a, a
-	; add hl, a
+    ; Restore Pointer to jump table
+    pop hl
+    ; a * 2 (pointers are 2 bytes!)
+    add a, a
+    ; add hl, a
     add a, l
     ld l, a
     adc a, h
     sub a, l
     ld h, a
-	; Load pointer into hl
-	ld a, [hli] ; low byte
-	ld h, [hl] ; high byte
-	ld l, a
-	; Now jump!
-	jp hl
+    ; Load pointer into hl
+    ld a, [hli] ; low byte
+    ld h, [hl] ; high byte
+    ld l, a
+    ; Now jump!
+    jp hl
 
 SECTION "Null", ROM0[$0000]
 ; null is equal to $0000. This should be used as a missing pointer value, and if
 ; called it will crash.
 null::
-	nop
-	nop
-	rst crash
+    nop
+    nop
+    rst crash
 
 SECTION "Call HL", ROM0[$0008]
 ; Used to call the address pointed to by `hl`. Mapped to `rst $08` or `rst _hl_`
@@ -91,16 +91,36 @@ SECTION "Memcopy Small", ROM0[$0018]
 ; @ de: destination
 ; @ hl: source
 memcopy_small::
-	ld a, [hli]
-	ld [de], a
-	inc de
-	dec c
-	jr nz, memcopy_small
-	ret
+    ld a, [hli]
+    ld [de], a
+    inc de
+    dec c
+    jr nz, memcopy_small
+    ret
+
+SECTION "Farcall", ROM0[$0020]
+
+; Call a function from the bank stored in `a`. 
+; Far calls cannot return `a` or any flags.
+farcall::
+    ldh [hInputBank], a
+    ldh a, [hCurrentBank]
+    push af
+    ldh a, [hInputBank]
+    swap_bank
+    rst _hl_
+    pop af
+    swap_bank
+    ret
 
 SECTION "Crash Handler", ROM0[$0038]
 crash:
-	ld d, d
-	ld b, b
-	di
-	halt
+    ld d, d
+    ld b, b
+    di
+    halt
+
+SECTION "Farcall Bank Storage", HRAM
+
+hInputBank:
+    ds 1

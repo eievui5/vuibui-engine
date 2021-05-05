@@ -1,4 +1,5 @@
 
+INCLUDE "include/graphics.inc"
 INCLUDE "include/players.inc"
 INCLUDE "include/scripting.inc"
 INCLUDE "include/text.inc"
@@ -33,3 +34,11 @@ TiberGeneric::
     ask "Not yet.\n"
     ask "Follow me."
     end_ask
+
+TiberDialoguePalette::
+    FOR i, 10
+        rgb 31, 10-i, 10-i
+    ENDR
+    FOR i, 10
+        rgb 31, i, i
+    ENDR

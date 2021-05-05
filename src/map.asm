@@ -186,8 +186,6 @@ UpdateActiveMap::
 	ldh a, [hMetatileBankBuffer]
 	swap_bank
 	rst memcopy_small
-
-    ld b, b
     
     call GetActiveMap
 	push bc ; Save the data pointer

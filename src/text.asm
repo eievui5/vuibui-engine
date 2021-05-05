@@ -3,6 +3,7 @@ INCLUDE "include/engine.inc"
 INCLUDE "include/graphics.inc"
 INCLUDE "include/hardware.inc"
 INCLUDE "include/macros.inc"
+INCLUDE "include/stat.inc"
 INCLUDE "include/switch.inc"
 INCLUDE "include/text.inc"
 
@@ -74,6 +75,28 @@ HandleTextbox::
     ld c, TEXTBOX_WIDTH
     rst memcopy_small
 
+    ldh a, [hSystem]
+    and a, a
+    jr z, .cgbSkip
+
+    ld a, 1
+    ldh [rVBK], a
+
+    ; Reset Textbox palettes
+    ld h, high(_SCRN1) + 3
+    ld a, [wTextScreenIndex]
+    swap a ; a * 16
+    add a, a ; a * 32
+    ld l, a ; Destination
+    ld a, HUD_MAIN_PAL
+    ld bc, TEXTBOX_WIDTH
+    call memset
+
+    xor a, a
+    ldh [rVBK], a
+
+.cgbSkip
+
     ld a, [wTextScreenIndex]
     inc a
     ld [wTextScreenIndex], a
@@ -112,6 +135,8 @@ HandleTextbox::
     ld [wTextState], a
     ld a, 144 - 40
     ldh [rLYC], a
+    ld a, STATIC_FX_TEXTBOX_PALETTE
+    ld [wStaticFX], a
     ret
 
 .drawing

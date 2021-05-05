@@ -228,8 +228,12 @@ Initialize::
     ld a, 256/2 + 16
     ld [hli], a
 
-    ld a, TRUE
-    ;ld [wPlayerDisabled.poppy], a
+    ld a, BANK(TiberDialoguePalette)
+    ld [wTextboxPalsBank], a
+    ld a, HIGH(TiberDialoguePalette)
+    ld [wTextboxPalettes], a
+    ld a, LOW(TiberDialoguePalette)
+    ld [wTextboxPalettes + 1], a
 
     ld a, BANK(GfxOctavia)
     swap_bank
