@@ -9,10 +9,9 @@ DEF mBankSelect EQU $2000
 ;DEF mSRAMBankSelect EQU $4000 
 
 ; Sets `mBankSelect` and `hCurrentBank` to `a`.
-; This macro ins't great, but it'll be useful if bank swapping ever changes.
+; This macro isn't great, but it'll be useful if bank swapping ever changes.
 MACRO swap_bank
-    ld [mBankSelect], a
-    ldh [hCurrentBank], a
+    rst SwapBank
 ENDM
 
 ; Far pointer. Bank, then pointer.

@@ -81,13 +81,13 @@ SECTION "Call HL", ROM0[$0008]
 _hl_::
     jp hl
 
-SECTION "Memcopy Small", ROM0[$0018]
+SECTION "Memcopy Small", ROM0[$0010]
 
 ; A slightly faster version of memcopy that requires less setup but can only do
 ; up to 256 bytes. Fits into `rst $18` and thus can be written as 
 ; `rst memcopy_small`. Destination and source are both offset by length, in case 
 ; you want to copy to or from multiple places
-; @ c: length
+; @ c:  length
 ; @ de: destination
 ; @ hl: source
 memcopy_small::
@@ -98,19 +98,12 @@ memcopy_small::
     jr nz, memcopy_small
     ret
 
-SECTION "Farcall", ROM0[$0020]
-
-; Call a function from the bank stored in `a`. 
-; Far calls cannot return `a` or any flags.
-farcall::
-    ldh [hInputBank], a
-    ldh a, [hCurrentBank]
-    push af
-    ldh a, [hInputBank]
-    swap_bank
-    rst _hl_
-    pop af
-    swap_bank
+SECTION "Swap Bank", ROM0[$0018]
+; Sets mBankSelect and hCurrentBank to `a`
+; @ a: Bank
+SwapBank::
+    ld [mBankSelect], a
+    ldh [hCurrentBank], a
     ret
 
 SECTION "Crash Handler", ROM0[$0038]
@@ -120,7 +113,7 @@ crash:
     di
     halt
 
-SECTION "Farcall Bank Storage", HRAM
-
-hInputBank:
-    ds 1
+SECTION "Call de", ROM0
+_de_::
+    push de
+    ret

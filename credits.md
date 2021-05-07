@@ -7,7 +7,4 @@
 
 - Eldred "ISSOtm" Habert
   - RGBDS Structs (structs.inc)
-
-- RGBDS Contributors
-
-- GBDev
+  - Menu Library (menu.asm)

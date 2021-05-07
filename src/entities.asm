@@ -391,12 +391,11 @@ LookupMapData::
     ld a, c
     swap a ; a / 16 (sort of...)
     and a, %00001111 ; Mask out the upper bits
-    add a, l
-    ld l, a ; Offset map data by X. Lower byte is safe to use.
+    add_r16_a hl; Offset map data by X. Lower byte is safe to use.
     ; Y translation (255 -> 16 * 16 or 256 ! )
     ld a, b
     and a, %11110000 ; We do need to mask out a bit...s
-    add_r16_a h, l
+    add_r16_a hl
     ret
 
 ; Check if the entity pointed to by `hl` collides with the position `de`.
