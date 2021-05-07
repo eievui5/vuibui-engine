@@ -79,10 +79,10 @@ OctaviaActiveNormal:
     ; Attack check
     ld a, [wPlayerEquipped.octavia]
     ld b, a
-    ld hl, wOctavia_State
-    call UseItemCheck
     ld hl, wOctavia
     call InteractionCheck
+    ld hl, wOctavia_State
+    call UseItemCheck
 .activeMove
     ld bc, PLAYER_OCTAVIA * sizeof_Entity
     call PlayerInputMovement

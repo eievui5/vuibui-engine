@@ -306,7 +306,7 @@ VBlankScrollLoader::
     ret
 
 .scrollDown
-    ld a, [wSCYBuffer]
+    ldh a, [hSCYBuffer]
     and a, a
     ret z
     inc a
@@ -316,7 +316,7 @@ VBlankScrollLoader::
     inc a
     jr .storeY
 .scrollUp
-    ld a, [wSCYBuffer]
+    ldh a, [hSCYBuffer]
     sub a, 256 - 144 + 16 ; This might be dumb.
     ret z
     dec a
@@ -327,10 +327,10 @@ VBlankScrollLoader::
 .storeDown
     add a, 256 - 144 + 16 ; Fix offset
 .storeY
-    ld [wSCYBuffer], a
+    ldh [hSCYBuffer], a
     ret
 .scrollRight
-    ld a, [wSCXBuffer]
+    ldh a, [hSCXBuffer]
     and a, a
     ret z
     inc a
@@ -342,7 +342,7 @@ VBlankScrollLoader::
     inc a
     jr .storeX
 .scrollLeft
-    ld a, [wSCXBuffer]
+    ldh a, [hSCXBuffer]
     sub a, 256 - 160 ; This might be dumb.
     ret z
     dec a
@@ -355,7 +355,7 @@ VBlankScrollLoader::
 .storeLeft
     add a, 256 - 160 ; Fix offset
 .storeX
-    ld [wSCXBuffer], a
+    ldh [hSCXBuffer], a
     ret
 
 SECTION "Metatile Definitions", WRAM0 
@@ -374,7 +374,12 @@ wMetatileMap::
     ds 16 * 16
 
 SECTION "Map Data", WRAM0 
-wMapData:: ; Like the tile map, but for data. Collision, pits, water.
+
+; Like the tile map, but for data. Collision, pits, water. 
+; Storing this (redundant) map isn't great, but it allows me to update collision 
+; manually without doing something weird to the tilemap. If I ever need RAM, 
+; this is an easy 256 bytes.
+wMapData:: 
     ds 16 * 16
 
 SECTION "Scroll Loader Vars", WRAM0

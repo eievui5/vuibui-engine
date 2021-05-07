@@ -24,10 +24,10 @@ VBlank:
     ld a, SCREEN_NORMAL
     ldh [rLCDC], a
 
-; Correct scrolling
-    ld a, [wSCXBuffer]
+; Scroll
+    ldh a, [hSCXBuffer]
     ldh [rSCX], a
-    ld a, [wSCYBuffer]
+    ldh a, [hSCYBuffer]
     ldh [rSCY], a
 
 .dma
@@ -94,23 +94,17 @@ SetScrollBuffer::
     ld a, d
     cp a, 256 - 160 + 1 ; Is A past the screen bounds?
     jr nc, .storeY
-    ld [wSCXBuffer], a
+    ldh [hSCXBuffer], a
 .storeY
     ld a, e
     cp a, 256 - 144 + 16 + 1 ; Is A past the screen bounds?
     ret nc
-    ld [wSCYBuffer], a
+    ldh [hSCYBuffer], a
     ret
 
 
 
 SECTION "VBlank Vars", WRAM0
-
-wSCXBuffer::
-    ds 1
-
-wSCYBuffer::
-    ds 1
 
 wInterruptBankBuffer::
     ds 1
@@ -118,4 +112,12 @@ wInterruptBankBuffer::
 ; Just a global frame timer
 ; Could be used for delays such as the health bar or for tracking playtime
 wFrameTimer::
+    ds 1
+
+SECTION "Register Buffers", HRAM
+
+hSCXBuffer::
+    ds 1
+
+hSCYBuffer::
     ds 1

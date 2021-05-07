@@ -78,7 +78,7 @@ RenderMetasprite::
     push bc
     add a, b
     ld b, a
-    ld a, [wSCYBuffer]
+    ldh a, [hSCYBuffer]
     cpl
     add a, b
     ld [de], a
@@ -87,7 +87,7 @@ RenderMetasprite::
     ld a, [hli]
     add a, c
     ld c, a
-    ld a, [wSCXBuffer]
+    ldh a, [hSCXBuffer]
     cpl
     add a, c
     ld [de], a

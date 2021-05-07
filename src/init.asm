@@ -231,7 +231,7 @@ Initialize::
     ld a, BANK(GfxOctavia)
     swap_bank
 
-    ; Octavia
+    ; Load player graphics
     ld hl, GfxOctavia
     ld de, VRAM_TILES_OBJ + TILE_OCTAVIA_DOWN_1 * $10
     ld bc, (GfxOctavia.end - GfxOctavia) * 3
@@ -264,9 +264,7 @@ Initialize::
     ld a, 40
     ld hl, wPlayerMaxHealth
     ld [hli], a
-    ld a, 40
     ld [hli], a
-    ld a, 40
     ld [hli], a
 
 ; Configure STAT FX
@@ -277,6 +275,11 @@ Initialize::
 
     ld a, STATIC_FX_SHOW_HUD
     ld [wStaticFX], a
+
+; Set screen position
+    xor a, a
+    ldh [hSCXBuffer], a
+    ldh [hSCYBuffer], a
 
 ; Re-enable the screen
     ld a, SCREEN_NORMAL

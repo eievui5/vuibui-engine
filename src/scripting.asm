@@ -25,13 +25,12 @@ ENDM
 SECTION "Script Handlers", ROM0
 
 HandleScript::
-    ld b,b 
     ld a, [wActiveScriptPointer]
     swap_bank
 .nextByte
     load_hl_scriptpointer
     ; [hl] -> Script Byte
-    ld a, [hli]
+    ld a, [hl]
     call HandleJumpTable
         ASSERT SCRIPT_END == 0
         dw ScriptEnd

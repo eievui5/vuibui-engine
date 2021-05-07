@@ -533,7 +533,9 @@ UseItemCheck::
     ld [hl], b
     ret
 
-; @ `hl`: Pointer to Player
+; Check if the players are trying to talk. If this succeeds a super return is 
+; performed, and player logic will end.
+; @ `hl`: Pointer to Player. 
 InteractionCheck::
     ldh a, [hNewKeys]
     bit PADB_A, a
@@ -558,6 +560,7 @@ InteractionCheck::
 
     ld a, ENGINE_STATE_SCRIPT
     ldh [hEngineState], a
+    pop hl ; Super ret!
     ret
 
 ; Returns the entity position offset by their facing direction in `de` (X, Y)
@@ -877,7 +880,7 @@ PlayerCameraInterpolation::
     add_r16_a h, l
 
     ; Y Interp
-    ld a, [wSCYBuffer]
+    ldh a, [hSCYBuffer]
     ld b, a
     ld a, [hli] ; Seek to X!
     sub a, 80 + 8
@@ -889,7 +892,7 @@ PlayerCameraInterpolation::
     ld e, a
 
     ; X Interp
-    ld a, [wSCXBuffer]
+    ldh a, [hSCXBuffer]
     ld b, a
     ld a, [hl]
     sub a, 72 + 8

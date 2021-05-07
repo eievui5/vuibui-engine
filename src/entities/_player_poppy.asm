@@ -63,10 +63,10 @@ PoppyActiveNormal: ; How to move.
     ; Attack check
     ld a, [wPlayerEquipped.poppy]
     ld b, a
-    ld hl, wPoppy_State
-    call UseItemCheck
     ld hl, wPoppy
     call InteractionCheck
+    ld hl, wPoppy_State
+    call UseItemCheck
 .activeMove
     ld bc, PLAYER_POPPY * sizeof_Entity
     call PlayerInputMovement
