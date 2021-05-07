@@ -47,6 +47,7 @@ SRCS =  $(wildcard $(SRCDIR)/*.asm) \
 	$(wildcard $(SRCDIR)/res/metasprites/*.asm) \
 	$(wildcard $(SRCDIR)/libs/*.asm) \
 	$(wildcard $(SRCDIR)/scripts/*.asm) \
+	$(wildcard $(SRCDIR)/res/*.asm) \
 	$(wildcard $(SRCDIR)/res/gfx/*.asm) \
 	$(wildcard $(SRCDIR)/res/tilesets/*.asm) \
 	$(wildcard $(SRCDIR)/res/maps/*.asm)
@@ -89,8 +90,7 @@ rebuild:
 # How to build a ROM
 $(BINDIR)/%.$(ROMEXT) $(BINDIR)/%.sym $(BINDIR)/%.map: $(patsubst $(SRCDIR)/%.asm,$(OBJDIR)/%.o,$(SRCS))
 	@$(MKDIR_P) $(@D)
-	$(RGBASM) $(ASFLAGS) -o $(OBJDIR)/build_date.o $(SRCDIR)/res/build_date.asm
-	$(RGBLINK) $(LDFLAGS) -m $(BINDIR)/$*.map -n $(BINDIR)/$*.sym -o $(BINDIR)/$*.$(ROMEXT) $^ $(OBJDIR)/build_date.o \
+	$(RGBLINK) $(LDFLAGS) -m $(BINDIR)/$*.map -n $(BINDIR)/$*.sym -o $(BINDIR)/$*.$(ROMEXT) $^ \
 	&& $(RGBFIX) -v $(FIXFLAGS) $(BINDIR)/$*.$(ROMEXT)
 ifneq ($(OS),Windows_NT)
 	./tools/romusage $(BINDIR)/$(ROMNAME).map -g

@@ -14,6 +14,7 @@ INCLUDE "include/enum.inc"
         enum SET_POINTER
         enum FUNCTION
         enum COMPARE
+        enum SET_TEXT_GRADIENT
     end_enum
 
 ; Returns to normal processing
@@ -68,12 +69,6 @@ MACRO branch
     dw \3, \4
 ENDM
 
-; Branches to `.label0` if the first option was chosen, and `.label1` otherwise
-; @ question_branch .label0, .label1
-MACRO question_branch
-    branch wTextAnswer, FALSE, \1, \2
-ENDM
-
 ; Sets the reffered `pointer` to `value`
 ; @ set_pointer Pointer, Value
 MACRO set_pointer
@@ -107,4 +102,39 @@ MACRO compare
     ENDC
     db SCRIPT_COMPARE
     dw \1, \2, \3, \4
+ENDM
+
+; Update text box gradient.
+; @ text_color Gradient
+MACRO text_color
+    IF _NARG != 1
+        FAIL "Expected 1 arg"
+    ENDC
+    db SCRIPT_SET_TEXT_GRADIENT
+    db BANK(\1)
+    dw \1
+ENDM
+
+
+; ################# Pseudo-Scripts
+
+; Branches to `.label0` if the first option was chosen, and `.label1` otherwise
+; @ question_branch .label0, .label1
+MACRO question_branch
+    branch wTextAnswer, FALSE, \1, \2
+ENDM
+
+MACRO octavia_text
+    text_color GradientBlue
+    display_text \1
+ENDM
+
+MACRO poppy_text
+    text_color GradientGreen
+    display_text \1
+ENDM
+
+MACRO tiber_text
+    text_color GradientRed
+    display_text \1
 ENDM

@@ -2,5 +2,5 @@
 /obj/
 /dep/
 /res/
-.task
+*.task
 /.vscode/

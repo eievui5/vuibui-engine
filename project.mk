@@ -10,10 +10,10 @@ PADVALUE := 0xFF
 VERSION := 0
 
 # 4-ASCII letter game ID
-GAMEID := SCLE
+GAMEID := VUIB
 
 # Game title, up to 11 ASCII chars
-TITLE := SCALES
+TITLE := VUIBUI
 
 # New licensee, 2 ASCII chars
 # GreenandEievui
@@ -36,7 +36,7 @@ SRAMSIZE := 0x02
 # 0x02 is one bank of SRAM
 
 # ROM name
-ROMNAME := scales
+ROMNAME := vuibui
 ROMEXT  := gb
 
 

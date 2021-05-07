@@ -7,12 +7,12 @@ SECTION "Poppy Dialogue", ROMX
 
 PoppyGeneric::
     compare wPlayerWaitLink.poppy, wActivePlayer, :+, :++++
-:   display_text .waitText
+:   poppy_text .waitText
     question_branch :++, :+
 :   set_pointer wPlayerWaitLink.poppy, PLAYER_POPPY
 :   end_script
 
-:   display_text .followText
+:   poppy_text .followText
     question_branch :++, :+
 :   call_function PlayerSetWaitLink.poppy
 :   end_script

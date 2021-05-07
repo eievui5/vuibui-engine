@@ -7,12 +7,12 @@ SECTION "Octavia Dialogue", ROMX
 
 OctaviaGeneric::
     compare wPlayerWaitLink.octavia, wActivePlayer, :+, :++++
-:   display_text .waitText
+:   octavia_text .waitText
     question_branch :++, :+
 :   set_pointer wPlayerWaitLink.octavia, PLAYER_OCTAVIA
 :   end_script
 
-:   display_text .followText
+:   octavia_text .followText
     question_branch :++, :+
 :   call_function PlayerSetWaitLink.octavia
 :   end_script
