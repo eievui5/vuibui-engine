@@ -247,7 +247,7 @@ HandleTextbox::
 
 .close
     ld a, 1
-    ld [wHUDReset], a
+    ld [wResetHUD], a
     ; Let scripting know we're done
     ld [wTextScriptFinished], a
     ASSERT TEXT_HIDDEN == 0
@@ -301,6 +301,30 @@ HandleTextbox::
     bit PADB_A, a
     jr nz, .close
     ret
+
+SECTION "Load Characters", ROM0
+
+; Loads and unpacks a String. Useful for saving space in UI init. Expects string
+; to be 0-terminated.
+; @ hl: String
+; @ de: destination
+LoadCharacters::
+    ld a, [hli]
+    and a, a
+    ret z
+    push hl
+        ; Offset to needed tile
+        ld h, 0
+        ld l, a
+        ld bc, GameFont - ($20 * 8) ; We start on ascii character 32 (space), so we need to subtract 32 * 8 as an offset.
+        add hl, hl ; a * 2
+        add hl, hl ; a * 4
+        add hl, hl ; a * 8
+        add hl, bc
+        ld c, 8 ; Load 8 bytes
+        call Unpack1bpp
+    pop hl
+    jr LoadCharacters
 
 
 SECTION "Dialogue", ROMX

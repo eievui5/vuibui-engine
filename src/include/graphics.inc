@@ -16,6 +16,8 @@ DEF VRAM_TILES_SHARED EQU $8800
 DEF VRAM_TILES_BG EQU $9000
 
 DEF sizeof_PALETTE EQU 8
+DEF sizeof_TILE EQU 16
+DEF sizeof_1BPP EQU 8
 
 DEF DEFAULT_BLUE EQU 0
 DEF DEFAULT_GREEN EQU 1
@@ -23,6 +25,38 @@ DEF DEFAULT_RED EQU 2
 DEF DEFAULT_INV EQU 3
 
 DEF HUD_MAIN_PAL EQU 7
+
+; get_tilemap r16, _SCRN0, X, Y
+MACRO get_tilemap
+    IF _NARG != 4
+        FAIL "Expected 4 args!"
+    ENDC
+    ld \1, \2 + \3 + (32 * \4)
+ENDM
+
+; get_tile r16, ID
+MACRO get_tile
+    IF _NARG != 2
+        FAIL "Expected 2 args!"
+    ENDC
+    IF \2 < $80
+        ld \1, VRAM_TILES_BG + (\2 * sizeof_TILE)
+    ELSE
+        ld \1, VRAM_TILES_SHARED + ((\2 - $80) * sizeof_TILE)
+    ENDC
+ENDM
+
+; get_object r16, ID
+MACRO get_object
+    IF _NARG != 2
+        FAIL "Expected 2 args!"
+    ENDC
+    IF \2 < $80
+        ld \1, VRAM_TILES_OBJ + (\2 * sizeof_TILE)
+    ELSE
+        ld \1, VRAM_TILES_SHARED + (\2 * sizeof_TILE)
+    ENDC
+ENDM
 
 MACRO rgb
     IF _NARG != 3

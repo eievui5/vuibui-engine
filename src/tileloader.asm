@@ -361,7 +361,7 @@ VBlankScrollLoader::
 ; Used to load a full map of 20*14 regular tiles
 ; @ hl: Pointer to upper-left tile
 ; @ de: Pointer to source tile map
-; @ b : Rows to copy
+; @ b : Number of rows to copy
 ScreenCopy::
     ld c, SCRN_X_B
 .rowLoop
@@ -375,6 +375,23 @@ ScreenCopy::
     ld a, SCRN_VX_B - SCRN_X_B
     add_r16_a hl
     jr ScreenCopy
+
+; Used to set a full map of 20*14 regular tiles
+; @ hl: Pointer to upper-left tile
+; @ b : Tile ID
+; @ c : Number of rows to copy
+ScreenSet::
+    ld d, SCRN_X_B
+.rowLoop
+    ld a, b
+    ld [hli], a
+    dec d
+    jr nz, .rowLoop
+    dec c
+    ret z
+    ld a, SCRN_VX_B - SCRN_X_B
+    add_r16_a hl
+    jr ScreenSet
 
 SECTION "Metatile Definitions", WRAM0 
 wMetatileDefinitions::
@@ -403,7 +420,7 @@ wMapData::
 SECTION "Scroll Loader Vars", WRAM0
 
 ; 4.4 positional vector keeping track of the current tile to load.
-wVBlankMapLoadPosition:
+wVBlankMapLoadPosition::
     ds 1
 
 ; Which way to scroll? TRANSDIR is DIR + 1, since 0 means no scroll.

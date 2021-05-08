@@ -241,9 +241,9 @@ OctaviaUpdateSpellGraphic::
     jp memcopy
 
 SECTION "Octavia Vars", WRAM0
-wActiveSpellGraphic:
+wActiveSpellGraphic::
     ds 1
-wTargetSpellGraphic:
+wTargetSpellGraphic::
     ds 1
 
 wOctaviaSpellActive::

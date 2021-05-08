@@ -4,6 +4,7 @@ DEF STAT_INC SET 1
 INCLUDE "include/enum.inc"
 
     start_enum STATIC_FX
+        enum NONE
         enum SHOW_HUD
         enum PRINT_SCROLL
         enum TEXTBOX_PALETTE

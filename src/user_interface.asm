@@ -73,14 +73,29 @@ ResetHUD::
     ld a, -1
     ld [wHUDActivePlayerBuffer], a
 
-    inc a
-    ld [wHUDReset], a
+    ld hl, PalOctavia
+    ASSERT PalOctavia + sizeof_PALETTE == PalPoppy && PalPoppy + sizeof_PALETTE == PalTiber
+    ASSERT sizeof_PALETTE == 8
+    ld a, [wActivePlayer]
+    add a, a ; a * 2
+    add a, a ; a * 4
+    add a, a ; a * 8
+    add_r16_a hl
+    ld de, wBCPD + sizeof_PALETTE * 7
+    ld c, sizeof_PALETTE
+    rst memcopy_small
+
+    ld a, PALETTE_STATE_RESET
+    ld [wPaletteState], a
+
+    xor a, a
+    ld [wResetHUD], a
 
     ret
 
 UpdateHUD::
 
-    ld a, [wHUDReset]
+    ld a, [wResetHUD]
     and a, a
     jp nz, ResetHUD
 
@@ -535,7 +550,10 @@ TestPrintString::
 
 SECTION "HUD Variables", WRAM0
 
-wHUDReset::
+wEnableHUD::
+    ds 1
+
+wResetHUD::
     ds 1
 
 wHUDActiveItemGraphic:

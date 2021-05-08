@@ -59,6 +59,6 @@ DEF MENU_STACK_CAPACITY equ 10
         enum NOT_CLOSED
         enum CANCELLED
         enum VALIDATED
-    enum
+    end_enum
 
     ENDC

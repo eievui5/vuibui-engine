@@ -809,28 +809,6 @@ WarpTileCheck::
     
 
 PlayerUpdateMapPosition:
-    ; Find an unreserved entity array.
-    ld hl, wPlayerEntityArrayIndex
-    ld bc, 3
-  .loop
-    ld a, [hli]
-    cp 1
-    adc a
-    or b
-    ld b, a
-    dec c
-    jr nz, .loop
-    ld a, -1
-  .count
-    inc a
-    srl b
-    jr c, .count
-    cp a, 2
-    jr nc, .store
-    ld a, -1 ; if the result is over 2, set the available index to -1
-.store
-    ldh [hAvailableEntityArray], a
-
     ld a, [wActivePlayer]
     ld b, a ; Save value of active player
 
@@ -998,6 +976,8 @@ PlayerDialogueLookup:
 
 SECTION "Player Variables", WRAM0
 
+wPlayerVariables::
+
 ; The Character currently being controlled by the player. Used as an offset.
 wActivePlayer::
     ds 1
@@ -1050,19 +1030,6 @@ wPlayerRoom::
     .tiber::
         ds 2
 
-; Used to check which entity array should be used by the current player, 
-; allowing a room to retain it's state between player swaps. If two players are
-; in the same room, these values must match. That means when a player is left 
-; behind this value must update to an unused room, and when entering a room that
-; a player has occupied, this value must update to that player's.
-wPlayerEntityArrayIndex::
-    .octavia::
-        ds 1
-    .poppy::
-        ds 1
-    .tiber::
-        ds 1 
-
 ; The currently equipped items.
 ; Lower Nibble = A, Upper Nibble = B
 wPlayerEquipped::
@@ -1072,6 +1039,8 @@ wPlayerEquipped::
         ds 1
     .tiber::
         ds 1
+
+wPlayerVariablesEnd::
 
 SECTION "Player Array", WRAM0, ALIGN[$08]
 wPlayerArray::

@@ -29,7 +29,7 @@ GetBitfieldMask:
     and a, %00000111
 
     ; `a = 1 << a`. Used for indexing into bitfields.
-    ; Courtesy of calc84maniac. Thanks.
+    ; Thanks, calc84maniac.
     ; Check if resulting bit should be in high or low nibble
     sub a, 4
     jr nc, .highNibble

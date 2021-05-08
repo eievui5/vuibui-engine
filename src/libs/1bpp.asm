@@ -15,7 +15,7 @@ Functions:
 SECTION "One Bit Per Pixel", ROM0
 
 ; Equivalent to memcopy_small, but copies each byte twice for 1bpp graphics.
-; @  c: tiles
+; @  c: length
 ; @ de: destination
 ; @ hl: source
 Unpack1bpp::
@@ -29,7 +29,7 @@ Unpack1bpp::
 	ret
 
 ; Complements each byte, inverting the resulting graphics.
-; @  c: tiles
+; @  c: length
 ; @ de: destination
 ; @ hl: source
 Complement1bpp::

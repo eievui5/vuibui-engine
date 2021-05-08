@@ -83,22 +83,39 @@ Initialize::
     ; HRAM
         ldh [hCurrentKeys], a
         ldh [hNewKeys], a
-        ASSERT ENGINE_STATE_GAMEPLAY == 0
-        ldh [hEngineState], a
         ldh [hSCXBuffer], a
         ldh [hSCYBuffer], a
     ; WRAM
+        ; Clear OAM
         ld bc, wShadowOAM.end - wShadowOAM
         ld hl, _OAMRAM
         call memset
-        ld [wStatFXMode], a
-
-        ; I still need to init some RAM. Will work on this!
-        ; SIZEOF("Section") will make this much easier.
-        ; So will a proper title screen and saving/loading
-        ld bc, $850
-        ld hl, _RAM
+        ld bc, wShadowOAM.end - wShadowOAM
+        ld hl, wShadowOAM
         call memset
+        ; Reset FX Mode to STATIC
+        ld [wStatFXMode], a
+        ; Clear Raster Array
+        ld hl, wRasterFX
+        ld bc, 80
+        call memset
+        ; Clear Static FX
+        ld [wStaticFX], a
+        ; Clear palettes
+        ld hl, wBCPD
+        ld bc, sizeof_PALETTE * 16 + 1
+        call memset
+        
+        ld [wNbMenus], a
+        ld [wRoomTransitionDirection], a
+        ld [wTextState], a
+        ld [wActiveSpellGraphic], a
+        ld [wTargetSpellGraphic], a
+        ld [wEnableHUD], a
+        ld [wFrameTimer], a
+        ld [wTextScriptFinished], a
+        ld [wTextboxFadeProgress], a
+        ld [wVBlankMapLoadPosition], a
 
     ; VRAM
         ld hl, _VRAM
@@ -139,26 +156,6 @@ Initialize::
     ld bc, $0010
     call memset
 
-; UI graphics
-    ; Heart graphics
-    ld a, BANK(pb16_Heart)
-    swap_bank
-    ld de, pb16_Heart
-    ld hl, VRAM_TILES_BG + TILE_HEART * 16
-    ld b, 3 ; 2 tiles
-    call pb16_unpack_block
-    ; Button hints
-    ld a, BANK(GameFont)
-    swap_bank
-    get_character "A"
-    ld de, VRAM_TILES_BG + TILE_A_CHAR * 16
-    ld c, 8 * 2
-    call Unpack1bpp
-
-; Debug Map
-    ld a, SPAWN_ENTITIES | UPDATE_TILEMAP
-    call UpdateActiveMap
-
 ; Enable audio
     ld a, $80
     ldh [rAUDENA], a
@@ -192,10 +189,50 @@ Initialize::
 .palReset
     ld a, PALETTE_STATE_RESET
     ld [wPaletteState], a
+    ; Force-update while the screen is off
+    call UpdatePalettes
 
-    call ResetHUD
+; Set up Menu
+    ld a, ENGINE_STATE_MENU
+    ldh [hEngineState], a
+
+    ld de, TestMenuHeader
+    ld b, BANK("Menu Test")
+    call AddMenu
+
+    jp Main
+
+; Initiallizes memory to restart gameplay. Will be replaced with a default save file.
+InitializeGameplay::
+
+.waitVBlank
+    ld a, [rLY]
+    cp a, SCRN_Y
+    jr c, .waitVBlank
+
+    xor a, a
+    ld [rLCDC], a
+
+    ldh a, [hCurrentBank]
+    push af
+
+
+; Clear shadow OAM
+    xor a, a
+    ld bc, wShadowOAM.end - wShadowOAM
+    ld hl, wShadowOAM
+    call memset
+    ld bc, wShadowOAM.end - wShadowOAM
+    ld hl, _OAMRAM
+    call memset
 
 ; Clean and initialize player array.
+
+    ld bc, wPlayerVariablesEnd - wPlayerVariables
+    ld hl, wPlayerVariables
+    call memset
+    ld [wPoppyActiveArrows], a
+
     ld a, high(PlayerOctavia)
     ld hl, wOctavia
     ld [hli], a
@@ -234,7 +271,7 @@ Initialize::
     call memset
 
 ; Player health
-    ld a, 40
+    ld a, 10
     ld hl, wPlayerMaxHealth
     ld [hli], a
     ld [hli], a
@@ -245,7 +282,6 @@ Initialize::
 
 ; Player Items
     ld a, ITEM_HEAL_WAND << 4 | ITEM_FIRE_WAND
-    ;ld a, ITEM_ICE_WAND << 4 | ITEM_SHOCK_WAND
     ld [wPlayerEquipped.octavia], a
     ld a, ITEM_BOW << 4
     ld [wPlayerEquipped.poppy], a
@@ -269,28 +305,56 @@ Initialize::
     ld b, 6
     call pb16_unpack_block
 
-; Configure STAT FX
+; UI graphics
+    ; Heart graphics
+    ld a, BANK(pb16_Heart)
+    swap_bank
+    ld de, pb16_Heart
+    ld hl, VRAM_TILES_BG + TILE_HEART * 16
+    ld b, 3 ; 2 tiles
+    call pb16_unpack_block
+    ; Button hints
+    ld a, BANK(GameFont)
+    swap_bank
+    get_character "A"
+    ld de, VRAM_TILES_BG + TILE_A_CHAR * 16
+    ld c, 8 * 2
+    call Unpack1bpp
+
+; Reset HUD
+    call ResetHUD
+    ld a, TRUE
+    ld [wEnableHUD], a
     xor a, a
-    ld hl, wRasterFX
-    ld bc, 80
-    call memset
+    ld [wPrintState], a
 
-    ld a, STATIC_FX_SHOW_HUD
-    ld [wStaticFX], a
+; Default map
 
-; Set up Menu
-    ld a, ENGINE_STATE_MENU
-    ldh [hEngineState], a
+    xor a, a
+    ld [wWorldMapPositionX], a
+    ld [wWorldMapPositionY], a
+    ld [wActiveWorldMap], a
 
-    ld de, TestMenuHeader
-    ld b, BANK("Menu Test")
-    call AddMenu
+    ld a, SPAWN_ENTITIES | UPDATE_TILEMAP
+    call UpdateActiveMap
 
-; Re-enable the screen
-    ;ld a, SCREEN_NORMAL
-    ;ldh [rLCDC], a
-    ;ldh [hLCDCBuffer], a
+; Position camera
+    ld a, (256 - SCRN_X)/2
+    ldh [rSCX], a
+    ldh [hSCXBuffer], a
+    ld a, (256 - SCRN_Y)/2 - 16
+    ldh [rSCY], a
+    ldh [hSCYBuffer], a
 
-    jp Main
+    ld a, SCREEN_NORMAL
+    ld [hLCDCBuffer], a
+    ld a, SKIP_FRAME
+    ld [rLCDC], a
 
-InitializeGameplay::
+    ASSERT ENGINE_STATE_GAMEPLAY == 0
+    xor a, a
+    ld [hEngineState], a
+
+    pop af
+    swap_bank
+    ret

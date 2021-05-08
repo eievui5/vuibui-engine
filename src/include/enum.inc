@@ -33,7 +33,7 @@ MACRO start_enum
         FAIL "Expected at least 1 arg"
     ENDC
     IF DEF(ENUM_NAME)
-        FAIL "Close enums with `end_enum`"
+        FAIL "{ENUM_NAME} unclosed! Close enums with `end_enum`"
     ENDC
 
     DEF ENUM_NAME EQUS "\1"

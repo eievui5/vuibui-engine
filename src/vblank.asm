@@ -52,10 +52,13 @@ VBlank:
     call OctaviaUpdateSpellGraphic
 
 ; Redraw the HUD and print function
+    ld a, [wEnableHUD]
+    and a, a
+    jr z, .input
     call UpdateHUD
     call UpdatePrint
 
-; Update Input
+.input
     ; This should happen last, since it does not rely on VBlank
     call UpdateInput
     ; Delete me (debug button)

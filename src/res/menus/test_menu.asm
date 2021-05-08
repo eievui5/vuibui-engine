@@ -1,8 +1,28 @@
 INCLUDE "include/bool.inc"
 INCLUDE "include/engine.inc"
+INCLUDE "include/graphics.inc"
 INCLUDE "include/hardware.inc"
 INCLUDE "include/macros.inc"
 INCLUDE "include/menu.inc"
+INCLUDE "include/text.inc"
+
+    start_enum M, $80
+        enum BKG
+        enum POINTER
+        enum S
+        enum t
+        enum a
+        enum r
+        enum O
+        enum p
+        enum i
+        enum o
+        enum n
+        enum s
+    end_enum
+
+DEF POINTER_ANIM_MAX EQU 2
+DEF POINTER_ANIM_POINT EQU 16
 
 SECTION "Menu Test", ROMX
 
@@ -10,7 +30,7 @@ TestMenuHeader::
     db BANK("Menu Test")
     dw TestMenuInit
     ; Used Buttons
-    db PADF_A | PADF_B | PADF_UP | PADF_DOWN
+    db PADF_A | PADF_B | PADF_RIGHT | PADF_LEFT | PADF_UP | PADF_DOWN
     ; Auto-repeat
     db FALSE
     ; Button functions
@@ -21,7 +41,7 @@ TestMenuHeader::
     ; Default selected item
     db 0
     ; Number of items in the menu
-    db 3
+    db 2
     ; Redraw
     dw TestMenuRedraw
     ; Private Items Pointer
@@ -37,15 +57,52 @@ TestMenuInit:
     cp a, SCRN_Y
     jr nc, .waitVBlank
 
+; Reset graphics
     xor a, a
     ldh [rLCDC], a
     ldh [rSCX], a
     ldh [rSCY], a
 
-    ld de, TestMenuLayout
+; Initiallize variables
+    ld [wPointerDir], a
+    ld [wPointerOffset], a
+    ld a, $B * 8
+    ld [wPointerYPos], a
+
+; Load tiles
+    ld a, $FF
+    get_tile hl, M_POINTER
+    ld bc, sizeof_TILE
+    call memset
+
+
+    get_tile de, M_S
+
+    ld hl, TestMenuString
+    call LoadCharacters
+
     ld hl, _SCRN1
-    ld b, SCRN_Y_B - 2
+    ld bc, M_BKG << 8 | SCRN_Y_B
+    call ScreenSet
+
+    get_tilemap hl, _SCRN1, 0, 10
+    ld de, TestMenuStartRow
+    ld b, 1
     call ScreenCopy
+    
+    get_tilemap hl, _SCRN1, 0, 12
+    ld de, TestMenuOptionsRow
+    ld b, 1
+    call ScreenCopy
+
+    ; Load palettes
+    ld hl, PalGrey
+    ld de, wBCPD
+    ld c, sizeof_PALETTE
+    call memcopy_small
+    ld a, PALETTE_STATE_RESET
+    ld [wPaletteState], a
+    call UpdatePalettes
 
     ld a, SCREEN_MENU
     ldh [rLCDC], a
@@ -60,11 +117,6 @@ TestMenuRedraw:
     and a, STATF_BUSY
     jr nz, TestMenuRedraw
 
-    ld a, $82
-    ld [_SCRN1], a
-    ld [_SCRN1 + 32], a
-    ld [_SCRN1 + 64], a
-
     ; Grab the menu pointer off the stack
     ld hl, sp + 2
     ld a, [hli]
@@ -75,22 +127,67 @@ TestMenuRedraw:
     dec hl ; Size
     dec hl ; SelectedItem
     ld a, [hl]
-    ld hl, _SCRN1
+
+    ; Push sprites to OAM
     ld b, a
+    ld hl, TestMenuSprites
     and a, a
     jr z, .multSkip
-.mult
-    ld a, 32
-    add_r16_a hl
-    dec b
-    jr nz, .mult
-.multSkip
+    .mult
+        inc hl
+        inc hl
+        inc hl
+        inc hl
+        dec b
+        jr nz, .mult
+    .multSkip
+    ld de, wShadowOAM
+    ld c, 4
+    rst memcopy_small
 
-    ldh a, [rSTAT]
-    and a, STATF_BUSY
-    jr nz, .multSkip
+    ld hl, wShadowOAM
+    ld a, [wPointerYPos]
+    cp a, [hl]
+    jr z, :++
+    jr nc, :+
+    add a, 4
+    jr :++
+:   sub a, 4
 
-    ld a, $81
+:   ld [hl], a
+    ld [wPointerYPos], a
+
+:   ld a, [wPointerDir]
+    and a, a
+    ld a, [wPointerOffset]
+    jr z, :+
+
+    inc a
+    cp a, (POINTER_ANIM_MAX + 1) * POINTER_ANIM_POINT
+    jr nz, :++
+    xor a, a
+    ld [wPointerDir], a
+    ld a, POINTER_ANIM_MAX * POINTER_ANIM_POINT
+    jr :++
+
+:   dec a
+    cp a, -(POINTER_ANIM_MAX + 1) * POINTER_ANIM_POINT
+    jr nz, :+
+    ld a, 1
+    ld [wPointerDir], a
+    ld a, -POINTER_ANIM_MAX * POINTER_ANIM_POINT
+
+:   ld [wPointerOffset], a
+    ld hl, wShadowOAM + 1
+
+    ; Divide point out
+    ASSERT POINTER_ANIM_POINT == 16
+        sra a
+        sra a
+        sra a
+        sra a
+    
+    add a, [hl]
     ld [hl], a
 
     ret
@@ -108,16 +205,30 @@ HandleAPress:
     inc hl
 
     ld a, [hl]
-    dec a
+    and a, a
     ret nz
-    
-    ld [hEngineState], a
-    ld a, MENU_ACTION_VALIDATE
-    ld a, SCREEN_NORMAL
-    ld [hLCDCBuffer], a
-    ret
 
-TestMenuLayout:
-    REPT 20 * 16
-        db $82
-    ENDR
+    jp InitializeGameplay
+
+TestMenuString:
+    db "StarOpions", 0
+
+TestMenuStartRow:
+    db M_BKG, M_BKG, M_BKG, M_BKG, M_BKG, M_S, M_t, M_a, M_r, M_t, M_BKG, M_BKG, M_BKG, M_BKG, M_BKG, M_BKG, M_BKG, M_BKG, M_BKG, M_BKG
+
+TestMenuOptionsRow:
+    db M_BKG, M_BKG, M_BKG, M_BKG, M_BKG, M_O, M_p, M_t, M_i, M_o, M_n, M_s, M_BKG, M_BKG, M_BKG, M_BKG, M_BKG, M_BKG, M_BKG, M_BKG
+
+TestMenuSprites:
+.start
+    db $B * 8, $4 * 8, M_POINTER, 0
+.options
+    db $D * 8, $4 * 8, M_POINTER, 0
+
+SECTION "Test Menu Vars", WRAM0
+wPointerDir:
+    ds 1
+wPointerOffset:
+    ds 1
+wPointerYPos:
+    ds 1

@@ -36,13 +36,16 @@ Stat:
     jr nz, FXMode
 
     ld a, [wStaticFX]
-    ASSERT STATIC_FX_SHOW_HUD == 0
+    ASSERT STATIC_FX_NONE == 0
     and a, a
+    jp z, ExitStat
+    ASSERT STATIC_FX_SHOW_HUD == 1
+    dec a
     jr z, ShowHUD
-    ASSERT STATIC_FX_PRINT_SCROLL == 1
+    ASSERT STATIC_FX_PRINT_SCROLL == 2
     dec a
     jr z, PrintScroll
-    ASSERT STATIC_FX_TEXTBOX_PALETTE == 2
+    ASSERT STATIC_FX_TEXTBOX_PALETTE == 3
     dec a
     jr z, TextboxPalette
 
