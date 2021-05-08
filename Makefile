@@ -15,17 +15,9 @@ DEPDIR := dep
 RESDIR := res
 
 # Program constants
-ifneq ($(OS),Windows_NT)
-    # POSIX OSes
-    RM_RF := rm -rf
-    MKDIR_P := mkdir -p
-	RGBDS   := 
-else
-    # Windows
-    RM_RF := -rm -rf
-    MKDIR_P := -mkdir -p
-	RGBDS   := rgbds/windows/
-endif
+RM_RF := rm -rf
+MKDIR_P := mkdir -p
+RGBDS   := 
 
 RGBASM  := $(RGBDS)rgbasm
 RGBLINK := $(RGBDS)rgblink

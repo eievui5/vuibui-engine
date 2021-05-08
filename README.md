@@ -1,8 +1,5 @@
 
-Currently being built on RGBDS 0.5.0-rc2
-
-A local copy of RGBDS is included for Windows.
-The makefile will automatically use the included version.
+Currently being built on RGBDS 0.5.0
 
 Naming Conventions:
 
