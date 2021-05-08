@@ -24,7 +24,7 @@ DEF SLIDE_IN_AMOUNT EQU 15 ; How many pixels before we've slid in?
 
 SECTION "Heads Up Display", ROM0
 
-ResetHUD:
+ResetHUD::
 
     ld a, 1
     ldh [rVBK], a
@@ -175,7 +175,7 @@ UpdateHUD::
     add_r16_a hl
     ld de, wBCPD + sizeof_PALETTE * 7
     ld c, sizeof_PALETTE
-    call memcopy_small
+    rst memcopy_small
     ld a, PALETTE_STATE_RESET
     ld [wPaletteState], a
 

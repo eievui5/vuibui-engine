@@ -358,6 +358,24 @@ VBlankScrollLoader::
     ldh [hSCXBuffer], a
     ret
 
+; Used to load a full map of 20*14 regular tiles
+; @ hl: Pointer to upper-left tile
+; @ de: Pointer to source tile map
+; @ b : Rows to copy
+ScreenCopy::
+    ld c, SCRN_X_B
+.rowLoop
+    ld a, [de]
+    ld [hli], a
+    inc de
+    dec c
+    jr nz, .rowLoop
+    dec b
+    ret z
+    ld a, SCRN_VX_B - SCRN_X_B
+    add_r16_a hl
+    jr ScreenCopy
+
 SECTION "Metatile Definitions", WRAM0 
 wMetatileDefinitions::
     ; 2 * 2 Tiles

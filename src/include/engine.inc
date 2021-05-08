@@ -11,14 +11,16 @@ INCLUDE "hardware.inc"
 DEF SCREEN_NORMAL EQU LCDCF_ON | LCDCF_WIN9C00 | LCDCF_WINOFF | LCDCF_BG9800 | LCDCF_OBJ16 | LCDCF_OBJON  | LCDCF_BGON
 ; Hide objects and switch to second tilemap for UI.
 DEF SCREEN_HUD EQU    LCDCF_ON | LCDCF_WIN9C00 | LCDCF_WINOFF | LCDCF_BG9C00 | LCDCF_OBJ16 | LCDCF_OBJOFF | LCDCF_BGON
+; Same as HUD, but with objects shown.
+DEF SCREEN_MENU EQU   LCDCF_ON | LCDCF_WIN9C00 | LCDCF_WINOFF | LCDCF_BG9C00 | LCDCF_OBJ16 | LCDCF_OBJON  | LCDCF_BGON
 
 ; Engine Flags
 
     start_enum ENGINE_STATE
-        enum NORMAL
+        enum GAMEPLAY
         enum SCRIPT
         enum ROOM_TRANSITION
-        enum ROOM_SWAP
+        enum MENU
     end_enum
 
     start_enum PALETTE_STATE

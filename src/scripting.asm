@@ -53,7 +53,7 @@ HandleScript::
 
 ; End of script!
 ScriptEnd:
-    ASSERT ENGINE_STATE_NORMAL == 0
+    ASSERT ENGINE_STATE_GAMEPLAY == 0
     xor a, a
     ldh [hEngineState], a
     ret

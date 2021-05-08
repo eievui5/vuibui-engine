@@ -6,6 +6,16 @@ INCLUDE "include/structs.inc"
 
 DEF MENU_STACK_CAPACITY equ 10
 
+; When an event is called, the struct can be accessed with:
+; ld hl, sp+2
+; ld a, [hli]
+; ld h, [hl]
+; ld l, a
+; This points to: 
+;   - RedrawFunc:   RedrawFunc + 1 (must inc or dec)
+;   - ButtonHooks:  AllowWrapping
+;   - Closing:      
+
     struct Menu
         bytes 1, Bank ; ROM bank where everything is located
         words 1, InitFunc
@@ -20,7 +30,7 @@ DEF MENU_STACK_CAPACITY equ 10
         words 1, ItemsPtr ; Pointer where the menu's items are located (might be anything, that's left for the redraw function to decide)
         words 1, ClosingFunc ; Function to be called when the menu is closed
 
-        bytes 0, ROMSize ; MenuROMSize = number of bytes to copy
+        dunion ROMSize ; Number of bytes to copy. Replaced by RepeatPressCounter when in RAM.
         ; Work memory, not stored in ROM
         bytes 1, RepeatPressCounter ; Tracks for how many frames RepeatPress has been in effect (loops between 30 and 31, though) Every time the counter hits 32, it's reset to 31 and the button is "pressed"
         bytes 2, MiscState ; The struct is allowed to do anything with this (frame counter, state, etc.)

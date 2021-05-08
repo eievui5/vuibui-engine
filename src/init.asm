@@ -1,6 +1,7 @@
 INCLUDE "include/banks.inc"
 INCLUDE "include/bool.inc"
 INCLUDE "include/engine.inc"
+INCLUDE "include/entities.inc"
 INCLUDE "include/graphics.inc"
 INCLUDE "include/hardware.inc"
 INCLUDE "include/map.inc"
@@ -9,9 +10,14 @@ INCLUDE "include/stat.inc"
 INCLUDE "include/text.inc"
 INCLUDE "include/tiledata.inc"
 
+SECTION "Header", ROM0[$100]
+	di
+	jp InitializeSystem
+	ds $150 - $104, 0
+
 SECTION "Initialize", ROM0
 ; Inits system value based off `a` and `b`. Do not jump to this!
-InitializeSystem::
+InitializeSystem:
     cp a, $11 ; The CGB boot rom sets `a` to $11
     jr nz, .dmg
     bit 0, b ; The AGB boot rom sets bit 0 of `b`
@@ -41,7 +47,7 @@ InitializeSystem::
 	ldh [rLCDC], a
 
     ld a, 1
-    ld [rKEY1], a
+    ldh [rKEY1], a
     stop
     jr Initialize.waitSkip
 
@@ -53,6 +59,9 @@ Initialize::
 	xor a, a
 	ldh [rLCDC], a
 .waitSkip
+
+; Reset Stack to WRAMX
+    ld sp, wStackOrigin
 
 ; Enable interrupts
     ; Clear queued interrupts
@@ -69,31 +78,34 @@ Initialize::
     ; And enable!
     ei
 
-; Clear VRAM
-    ld hl, _VRAM
-    ld bc, $2000
+; Zero-Initiallized RAM
     xor a, a
-    call memset
-    ld hl, $C000
-    ld bc, $1000
-    call memset
+    ; HRAM
+        ldh [hCurrentKeys], a
+        ldh [hNewKeys], a
+        ASSERT ENGINE_STATE_GAMEPLAY == 0
+        ldh [hEngineState], a
+        ldh [hSCXBuffer], a
+        ldh [hSCYBuffer], a
+    ; WRAM
+        ld bc, wShadowOAM.end - wShadowOAM
+        ld hl, _OAMRAM
+        call memset
+        ld [wStatFXMode], a
 
+        ; I still need to init some RAM. Will work on this!
+        ; SIZEOF("Section") will make this much easier.
+        ; So will a proper title screen and saving/loading
+        ld bc, $850
+        ld hl, _RAM
+        call memset
 
-; Reset Stack to WRAMX
-    ld sp, wStackOrigin
+    ; VRAM
+        ld hl, _VRAM
+        ld bc, $2000
+        call memset
 
-; Initialize high ram
-    xor a, a
-    ldh [hCurrentKeys], a
-    ldh [hNewKeys], a
-    ASSERT ENGINE_STATE_NORMAL == 0
-    ldh [hEngineState], a
-    xor a, a ; ld a, 0
-    ld bc, wShadowOAM.end - wShadowOAM
-    ld hl, _OAMRAM
-    call memset
-
-; Load the OAM Routine into HRAM
+; Load OAM Routine into HRAM
 	ld hl, OAMDMA
 	ld b, OAMDMA.end - OAMDMA 
     ld c, LOW(hOAMDMA)
@@ -127,18 +139,17 @@ Initialize::
     ld bc, $0010
     call memset
 
+; UI graphics
+    ; Heart graphics
     ld a, BANK(pb16_Heart)
     swap_bank
-
-; load button hints
     ld de, pb16_Heart
     ld hl, VRAM_TILES_BG + TILE_HEART * 16
     ld b, 3 ; 2 tiles
     call pb16_unpack_block
-
+    ; Button hints
     ld a, BANK(GameFont)
     swap_bank
-
     get_character "A"
     ld de, VRAM_TILES_BG + TILE_A_CHAR * 16
     ld c, 8 * 2
@@ -148,29 +159,13 @@ Initialize::
     ld a, SPAWN_ENTITIES | UPDATE_TILEMAP
     call UpdateActiveMap
 
-; Load metatiles onto _SCRN0
-    ld de, _SCRN0
-    ld hl, wMetatileDefinitions
-    call LoadMetatileMap
-    ldh a, [hSystem]
-    and a, a
-    jr z, :+
-    ld a, TRUE
-    ldh [rVBK], a
-    ld de, _SCRN0
-    ld hl, wMetatileAttributes
-    call LoadMetatileMap
-    xor a, a
-    ldh [rVBK], a
-:    
-
 ; Enable audio
     ld a, $80
-    ld [rAUDENA], a
+    ldh [rAUDENA], a
     ld a, $FF
-    ld [rAUDTERM], a
+    ldh [rAUDTERM], a
     ld a, $FF
-    ld [rAUDVOL], a
+    ldh [rAUDVOL], a
 
 ; Configure Default Pallet
     ldh a, [hSystem]
@@ -198,8 +193,9 @@ Initialize::
     ld a, PALETTE_STATE_RESET
     ld [wPaletteState], a
 
-.initPlayers
-; Initialize Player Array
+    call ResetHUD
+
+; Clean and initialize player array.
     ld a, high(PlayerOctavia)
     ld hl, wOctavia
     ld [hli], a
@@ -209,8 +205,11 @@ Initialize::
     ld [hli], a
     ld a, 256/2
     ld [hli], a
+    xor a, a
+    ld bc, sizeof_Entity - Entity_XPos - 1
+    call memset
+
     ld a, high(PlayerPoppy)
-    ld hl, wPoppy
     ld [hli], a
     ld a, low(PlayerPoppy)
     ld [hli], a
@@ -218,8 +217,11 @@ Initialize::
     ld [hli], a
     ld a, 256/2 - 16
     ld [hli], a
+    xor a, a
+    ld bc, sizeof_Entity - Entity_XPos - 1
+    call memset
+
     ld a, high(PlayerTiber)
-    ld hl, wTiber
     ld [hli], a
     ld a, low(PlayerTiber)
     ld [hli], a
@@ -227,23 +229,21 @@ Initialize::
     ld [hli], a
     ld a, 256/2 + 16
     ld [hli], a
+    xor a, a
+    ld bc, sizeof_Entity - Entity_XPos - 1
+    call memset
 
-    ld a, BANK(GfxOctavia)
-    swap_bank
+; Player health
+    ld a, 40
+    ld hl, wPlayerMaxHealth
+    ld [hli], a
+    ld [hli], a
+    ld [hli], a
+    ld [wOctavia_Health], a
+    ld [wPoppy_Health], a
+    ld [wTiber_Health], a
 
-    ; Load player graphics
-    ld hl, GfxOctavia
-    ld de, VRAM_TILES_OBJ + TILE_OCTAVIA_DOWN_1 * $10
-    ld bc, (GfxOctavia.end - GfxOctavia) * 3
-    call memcopy
-    
-    ld a, BANK(pb16_GfxArrow)
-    swap_bank
-    ld hl, _VRAM + (TILE_ARROW_DOWN * $10)
-    ld de, pb16_GfxArrow
-    ld b, 6
-    call pb16_unpack_block
-
+; Player Items
     ld a, ITEM_HEAL_WAND << 4 | ITEM_FIRE_WAND
     ;ld a, ITEM_ICE_WAND << 4 | ITEM_SHOCK_WAND
     ld [wPlayerEquipped.octavia], a
@@ -252,20 +252,22 @@ Initialize::
     ld a, ITEM_SWORD
     ld [wPlayerEquipped.tiber], a
 
-    ld a, TRUE
-    ld [wHUDReset], a
-    ld a, 17
-    ld [wOctavia_Health], a
-    ld a, 23
-    ld [wPoppy_Health], a
-    ld a, 40
-    ld [wTiber_Health], a
+; Load the player's graphics
+    ld a, BANK(GfxOctavia)
+    swap_bank
 
-    ld a, 40
-    ld hl, wPlayerMaxHealth
-    ld [hli], a
-    ld [hli], a
-    ld [hli], a
+    ; Load player graphics
+    ld hl, GfxOctavia
+    ld de, VRAM_TILES_OBJ + TILE_OCTAVIA_DOWN_1 * $10
+    ld bc, (GfxOctavia.end - GfxOctavia) * 3
+    call memcopy
+
+    ld a, BANK(pb16_GfxArrow)
+    swap_bank
+    ld hl, _VRAM + (TILE_ARROW_DOWN * $10)
+    ld de, pb16_GfxArrow
+    ld b, 6
+    call pb16_unpack_block
 
 ; Configure STAT FX
     xor a, a
@@ -276,13 +278,19 @@ Initialize::
     ld a, STATIC_FX_SHOW_HUD
     ld [wStaticFX], a
 
-; Set screen position
-    xor a, a
-    ldh [hSCXBuffer], a
-    ldh [hSCYBuffer], a
+; Set up Menu
+    ld a, ENGINE_STATE_MENU
+    ldh [hEngineState], a
+
+    ld de, TestMenuHeader
+    ld b, BANK("Menu Test")
+    call AddMenu
 
 ; Re-enable the screen
-    ld a, SCREEN_NORMAL
-    ld [rLCDC], a
+    ;ld a, SCREEN_NORMAL
+    ;ldh [rLCDC], a
+    ;ldh [hLCDCBuffer], a
 
     jp Main
+
+InitializeGameplay::

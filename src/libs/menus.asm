@@ -4,8 +4,6 @@ INCLUDE "include/banks.inc"
 INCLUDE "include/hardware.inc"
 INCLUDE "include/menu.inc"
 
-
-/*
 SECTION "Menu system", ROM0
 
 ; Adds a menu on top of the menu stack
@@ -34,7 +32,15 @@ AddMenu::
     push hl
 
     ld c, Menu_ROMSize
-    rst memcopy_small
+    
+    ; Changed this to a standalone loop for now. My func is reversed.
+.copy
+    ld a, [de]
+    ld [hli], a
+    inc de
+    dec c
+    jr nz, .copy
+
     xor a
     ld bc, sizeof_Menu - Menu_ROMSize
     call memset
@@ -48,8 +54,7 @@ AddMenu::
     ld l, a
     or h
     ret z
-    rst _hl_
-    ret
+    jp hl
 
 
 ; Processes one frame of the menu stack (thus, the topmost)
@@ -94,7 +99,7 @@ ProcessMenus::
     ld d, a
     ld b, 0 ; Start by supposing no button will be RepeatPress'd
     ; If any (non-ignored) button is pressed, stop RepeatPress
-    ldh a, [hCurrentKeys]
+    ldh a, [hNewKeys]
     and c ; It's fine to do this, since a pressed button is held anyways
     jr z, .dontResetRepeatPress
     xor a
@@ -145,7 +150,7 @@ ProcessMenus::
     ; hl = AllowWrapping
 
     ; Check if a button has been pressed
-    ldh a, [hCurrentKeys]
+    ldh a, [hNewKeys]
     and c ; Get only those that we are interested in
     jr nz, .buttonPressed
     ; Check if a button is being RepeatPressed
@@ -324,7 +329,7 @@ PreventMenuAction::
     xor a
     ld [wMenuAction], a
     ret
-*/
+
 SECTION "Menu system vars", WRAM0
 
 wNbMenus::

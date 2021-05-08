@@ -1,4 +1,50 @@
 INCLUDE "include/banks.inc"
+INCLUDE "include/hardware.inc"
+
+SECTION "Null", ROM0[$0000]
+; null is equal to $0000. This should be used as a missing pointer value, and if
+; called it will crash.
+null::
+    nop
+    nop
+    rst crash
+
+SECTION "Call HL", ROM0[$0008]
+; Used to call the address pointed to by `hl`. Mapped to `rst $08` or `rst _hl_`
+_hl_::
+    jp hl
+
+SECTION "Memcopy Small", ROM0[$0010]
+
+; A slightly faster version of memcopy that requires less setup but can only do
+; up to 256 bytes. Fits into `rst $18` and thus can be written as 
+; `rst memcopy_small`. Destination and source are both offset by length, in case 
+; you want to copy to or from multiple places
+; @ c:  length
+; @ de: destination
+; @ hl: source
+memcopy_small::
+    ld a, [hli]
+    ld [de], a
+    inc de
+    dec c
+    jr nz, memcopy_small
+    ret
+
+SECTION "Swap Bank", ROM0[$0018]
+; Sets mBankSelect and hCurrentBank to `a`
+; @ a: Bank
+SwapBank::
+    ld [mBankSelect], a
+    ldh [hCurrentBank], a
+    ret
+
+SECTION "Crash Handler", ROM0[$0038]
+crash:
+    ld d, d
+    ld b, b
+    di
+    halt
 
 SECTION "Overwrite Bytes", ROM0
 
@@ -68,52 +114,27 @@ HandleJumpTable::
     ; Now jump!
     jp hl
 
-SECTION "Null", ROM0[$0000]
-; null is equal to $0000. This should be used as a missing pointer value, and if
-; called it will crash.
-null::
-    nop
-    nop
-    rst crash
-
-SECTION "Call HL", ROM0[$0008]
-; Used to call the address pointed to by `hl`. Mapped to `rst $08` or `rst _hl_`
-_hl_::
-    jp hl
-
-SECTION "Memcopy Small", ROM0[$0010]
-
-; A slightly faster version of memcopy that requires less setup but can only do
-; up to 256 bytes. Fits into `rst $18` and thus can be written as 
-; `rst memcopy_small`. Destination and source are both offset by length, in case 
-; you want to copy to or from multiple places
-; @ c:  length
-; @ de: destination
-; @ hl: source
-memcopy_small::
-    ld a, [hli]
-    ld [de], a
-    inc de
-    dec c
-    jr nz, memcopy_small
-    ret
-
-SECTION "Swap Bank", ROM0[$0018]
-; Sets mBankSelect and hCurrentBank to `a`
-; @ a: Bank
-SwapBank::
-    ld [mBankSelect], a
-    ldh [hCurrentBank], a
-    ret
-
-SECTION "Crash Handler", ROM0[$0038]
-crash:
-    ld d, d
-    ld b, b
-    di
-    halt
-
 SECTION "Call de", ROM0
+
+; Calls the value in `de` by pushing it and returning
 _de_::
     push de
     ret
+
+SECTION "LCD Memory", ROM0
+
+; Waits for VRAM access before setting data.
+; @ b:  source
+; @ c:  length
+; @ hl: destination
+LCDMemsetSmall::
+.waitVRAM
+	ldh a, [rSTAT]
+	and STATF_BUSY
+	jr nz, .waitVRAM
+
+	ld a, b
+	ld [hli], a
+	dec c
+	jr nz, LCDMemsetSmall
+	ret

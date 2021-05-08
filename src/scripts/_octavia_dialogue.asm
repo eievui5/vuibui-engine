@@ -6,13 +6,16 @@ INCLUDE "include/text.inc"
 SECTION "Octavia Dialogue", ROMX
 
 OctaviaGeneric::
-    compare wPlayerWaitLink.octavia, wActivePlayer, :+, :++++
-:   octavia_text .waitText
+    compare wPlayerWaitLink.octavia, wActivePlayer, .waitDialogue, .followDialogue
+
+.waitDialogue
+    octavia_text .waitText
     question_branch :++, :+
 :   set_pointer wPlayerWaitLink.octavia, PLAYER_OCTAVIA
 :   end_script
 
-:   octavia_text .followText
+.followDialogue
+    octavia_text .followText
     question_branch :++, :+
 :   call_function PlayerSetWaitLink.octavia
 :   end_script

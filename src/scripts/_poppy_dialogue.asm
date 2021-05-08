@@ -6,13 +6,16 @@ INCLUDE "include/text.inc"
 SECTION "Poppy Dialogue", ROMX
 
 PoppyGeneric::
-    compare wPlayerWaitLink.poppy, wActivePlayer, :+, :++++
-:   poppy_text .waitText
+    compare wPlayerWaitLink.poppy, wActivePlayer, .waitDialogue, .followDialogue
+
+.waitDialogue
+    poppy_text .waitText
     question_branch :++, :+
 :   set_pointer wPlayerWaitLink.poppy, PLAYER_POPPY
 :   end_script
 
-:   poppy_text .followText
+.followDialogue
+    poppy_text .followText
     question_branch :++, :+
 :   call_function PlayerSetWaitLink.poppy
 :   end_script

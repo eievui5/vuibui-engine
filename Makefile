@@ -49,8 +49,9 @@ SRCS =  $(wildcard $(SRCDIR)/*.asm) \
 	$(wildcard $(SRCDIR)/scripts/*.asm) \
 	$(wildcard $(SRCDIR)/res/*.asm) \
 	$(wildcard $(SRCDIR)/res/gfx/*.asm) \
-	$(wildcard $(SRCDIR)/res/tilesets/*.asm) \
-	$(wildcard $(SRCDIR)/res/maps/*.asm)
+	$(wildcard $(SRCDIR)/res/maps/*.asm) \
+	$(wildcard $(SRCDIR)/res/menus/*.asm) \
+	$(wildcard $(SRCDIR)/res/tilesets/*.asm)
 
 ## Project-specific configuration
 # Use this to override the above

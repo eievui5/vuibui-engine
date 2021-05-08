@@ -15,14 +15,19 @@ SECTION "VBlank Interrupt", ROM0[$40]
     jp VBlank
 
 SECTION "VBlank", ROM0
-; Verticle Screen Blanking
+; Vertical Screen Blanking
 VBlank:
     ; Save old bank so that we can restore it.
     ldh a, [hCurrentBank]
     ld [wInterruptBankBuffer], a
 
-    ld a, SCREEN_NORMAL
+    ldh a, [hLCDCBuffer]
     ldh [rLCDC], a
+
+; OAM DMA
+    ; push wShadowOAM to OAM though DMA
+    ld a, high(wShadowOAM)
+    call hOAMDMA
 
 ; Scroll
     ldh a, [hSCXBuffer]
@@ -30,33 +35,28 @@ VBlank:
     ldh a, [hSCYBuffer]
     ldh [rSCY], a
 
-.dma
-    ; push wShadowOAM to OAM though DMA
-    ld a, high(wShadowOAM)
-    call hOAMDMA
-
-.pals
+; Palettes
     ld a, [wPaletteState]
     and a, a
     call nz, UpdatePalettes
 
-.metatileLoading
+; Load tiles during screen transition
     call VBlankScrollLoader
 
-.textbox
+; Draw the textbox during dialogue
     call HandleTextbox
 
-.tileRequests
+; Check if octavia needs a new spell graphic.
     ld a, BANK(OctaviaUpdateSpellGraphic)
     swap_bank
     call OctaviaUpdateSpellGraphic
 
-.hudUpdate
+; Redraw the HUD and print function
     call UpdateHUD
     call UpdatePrint
 
-.input
-    ; Updating Input should happen last, since it does not rely on VBlank
+; Update Input
+    ; This should happen last, since it does not rely on VBlank
     call UpdateInput
     ; Delete me (debug button)
     ldh a, [hNewKeys]
@@ -120,4 +120,7 @@ hSCXBuffer::
     ds 1
 
 hSCYBuffer::
+    ds 1
+
+hLCDCBuffer::
     ds 1

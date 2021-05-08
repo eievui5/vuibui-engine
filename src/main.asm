@@ -1,10 +1,4 @@
-
 INCLUDE "include/engine.inc"
-
-SECTION "Header", ROM0[$100]
-	di
-	jp InitializeSystem
-	ds $150 - $104, 0
 
 SECTION "Main Loop", ROM0
 
@@ -21,30 +15,19 @@ Main::
 
     ; Check engine state
     ldh a, [hEngineState]
+    ASSERT ENGINE_STATE_GAMEPLAY == 0
     and a, a
-    ASSERT ENGINE_STATE_NORMAL == 0
-    jr z, .handleNormal
+    jr z, Gameplay
     ASSERT ENGINE_STATE_SCRIPT == 1
     dec a
-    jr z, .handleScript
+    jr z, Script
     ASSERT ENGINE_STATE_ROOM_TRANSITION == 2
-
-.handleTransition
-    call RenderPlayersTransition
-    call PlayerTransitionMovement
-    jr .end
-
-.handleScript
-    call RenderEntities
-    call HandleScript
-    jr .end
-
-.handleNormal
-.entities
-    call HandleEntities
-    call PlayerCameraInterpolation ; Update camera!
-
-    call RenderEntities
+    dec a
+    jr z, Transition
+    ASSERT ENGINE_STATE_MENU == 3
+    dec a
+    jr z, Menu
+    ld b, b
 
 .end::
     ; When main is unhalted we ensure that it will not loop.
@@ -58,11 +41,37 @@ Main::
     ld [wNewFrame], a
     jr Main
 
+Gameplay:
+    call HandleEntities
+    ; Update the camera before rendering
+    call PlayerCameraInterpolation
+    call RenderEntities
+    jr Main.end
+
+Transition:
+    call RenderPlayersTransition
+    call PlayerTransitionMovement
+    jr Main.end
+
+Script:
+    call RenderEntities
+    call HandleScript
+    jr Main.end
+
+Menu:
+    call ProcessMenus
+    jr Main.end
+
 SECTION "Main Vars", WRAM0
 
 ; if != 0, restart main loop
 wNewFrame::
     ds 1
+
+; Used by menus to manipulate hSCBuffer without changing the gameplay camera.
+wGameplayScrollBuffer::
+    .x  ds 1
+    .y  ds 1
 
 SECTION "Engine Flags", HRAM
 hEngineState::

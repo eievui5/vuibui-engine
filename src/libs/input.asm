@@ -73,7 +73,7 @@ UpdateInput::
 
   ; And release the controller
   ld a,P1F_NONE
-  ld [rP1],a
+  ldh [rP1],a
 
   ; Combine with previous hCurrentKeys to make hNewKeys
   ldh a,[hCurrentKeys]
