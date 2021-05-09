@@ -61,16 +61,6 @@ VBlank:
 .input
     ; This should happen last, since it does not rely on VBlank
     call UpdateInput
-    ; Delete me (debug button)
-    ldh a, [hNewKeys]
-    bit PADB_START, a
-    jr z, .return
-
-    ld a, BANK(TestPrintString)
-    ld hl, TestPrintString
-    call PrintNotification
-
-.return
 
     ; Increment the global frame timer
     ld hl, wFrameTimer

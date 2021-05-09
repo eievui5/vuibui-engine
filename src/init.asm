@@ -86,13 +86,7 @@ Initialize::
         ldh [hSCXBuffer], a
         ldh [hSCYBuffer], a
     ; WRAM
-        ; Clear OAM
-        ld bc, wShadowOAM.end - wShadowOAM
-        ld hl, _OAMRAM
-        call memset
-        ld bc, wShadowOAM.end - wShadowOAM
-        ld hl, wShadowOAM
-        call memset
+        call ResetOAM
         ; Reset FX Mode to STATIC
         ld [wStatFXMode], a
         ; Clear Raster Array
@@ -216,15 +210,7 @@ InitializeGameplay::
     ldh a, [hCurrentBank]
     push af
 
-
-; Clear shadow OAM
-    xor a, a
-    ld bc, wShadowOAM.end - wShadowOAM
-    ld hl, wShadowOAM
-    call memset
-    ld bc, wShadowOAM.end - wShadowOAM
-    ld hl, _OAMRAM
-    call memset
+    call ResetOAM
 
 ; Clean and initialize player array.
 

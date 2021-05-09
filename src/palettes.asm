@@ -155,7 +155,7 @@ CgbFadeLight:
 
 .final
     ld a, [wFadeProgress]
-    add a, %00001000 ; aligned increment
+    add a, %00010000 ; aligned increment *2
     jr nc, .skipExit
     ; Exit when wFadeProgress overflows.
     xor a, a

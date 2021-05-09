@@ -71,7 +71,7 @@ RenderMetasprite::
     ; Find Available Shadow OAM
     ldh a, [hOAMIndex]
     ld de, wShadowOAM
-    add_r16_a d, e
+    add_r16_a de
     ; Load and offset Y
     ld a, [hli]
     .pushSprite ; We can skip that load, since a loop will have already done it.

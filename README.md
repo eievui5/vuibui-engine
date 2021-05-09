@@ -1,6 +1,8 @@
 
 Currently being built on RGBDS 0.5.0
 
+Rangi's Tilemap Studio is used to create binary map files for the menus.
+
 Naming Conventions:
 
 - All labels are `PascalCase`

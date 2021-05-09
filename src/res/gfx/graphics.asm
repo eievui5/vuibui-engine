@@ -34,6 +34,10 @@ pb16_Heart::
     INCBIN "res/gfx/ui_heart.pb16"
 .end::
 
+pb16_MenuSeperators::
+    INCBIN "res/gfx/menu_seperators.pb16"
+.end::
+
 SECTION "Color Palettes", ROMX
 PalOctavia::
     pal 31, 31, 31, \

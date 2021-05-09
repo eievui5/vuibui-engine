@@ -358,7 +358,7 @@ VBlankScrollLoader::
     ldh [hSCXBuffer], a
     ret
 
-; Used to load a full map of 20*14 regular tiles
+; Used to load a full map of 20*18 regular tiles
 ; @ hl: Pointer to upper-left tile
 ; @ de: Pointer to source tile map
 ; @ b : Number of rows to copy

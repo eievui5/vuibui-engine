@@ -6,13 +6,6 @@ SECTION "Main Loop", ROM0
 ; Engine should only call out so that code can be reused.
 Main::
 
-.cleanOAM
-    xor a ; ld a, 0
-    ld bc, wShadowOAM.end - wShadowOAM
-    ld hl, wShadowOAM
-    call memset
-    ldh [hOAMIndex], a ; Reset the OAM index.
-
     ; Check engine state
     ldh a, [hEngineState]
     ASSERT ENGINE_STATE_GAMEPLAY == 0
@@ -42,6 +35,19 @@ Main::
     jr Main
 
 Gameplay:
+    ; Check if the player has pressed start.
+    ldh a, [hCurrentKeys]
+    bit PADB_START, a
+    jr z, .skipInventoryOpen
+    ld b, BANK("Inventory")
+    ld de, InventoryHeader
+    call AddMenu
+    ld a, ENGINE_STATE_MENU
+    ldh [hEngineState], a
+    jr Menu
+.skipInventoryOpen
+
+    call CleanOAM
     call HandleEntities
     ; Update the camera before rendering
     call PlayerCameraInterpolation
@@ -49,13 +55,15 @@ Gameplay:
     jr Main.end
 
 Transition:
+    call CleanOAM
     call RenderPlayersTransition
     call PlayerTransitionMovement
     jr Main.end
 
 Script:
-    call RenderEntities
+    call CleanOAM
     call HandleScript
+    call RenderEntities
     jr Main.end
 
 Menu:

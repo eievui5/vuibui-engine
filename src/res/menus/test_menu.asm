@@ -30,7 +30,7 @@ TestMenuHeader::
     db BANK("Menu Test")
     dw TestMenuInit
     ; Used Buttons
-    db PADF_A | PADF_B | PADF_RIGHT | PADF_LEFT | PADF_UP | PADF_DOWN
+    db PADF_A | PADF_B | PADF_UP | PADF_DOWN
     ; Auto-repeat
     db FALSE
     ; Button functions
@@ -207,6 +207,9 @@ HandleAPress:
     ld a, [hl]
     and a, a
     ret nz
+
+    ld a, MENU_ACTION_VALIDATE
+    ld [wMenuAction], a
 
     jp InitializeGameplay
 
