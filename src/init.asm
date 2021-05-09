@@ -181,9 +181,8 @@ Initialize::
     ld de, wOCPD
     rst memcopy_small
 .palReset
-    ld a, PALETTE_STATE_RESET
-    ld [wPaletteState], a
     ; Force-update while the screen is off
+    ld a, PALETTE_STATE_RESET
     call UpdatePalettes
 
 ; Set up Menu

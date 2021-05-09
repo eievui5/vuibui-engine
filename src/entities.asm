@@ -33,18 +33,11 @@ HandleEntities::
     add hl, bc ; Apply the entity offset
 
     ; Check for entity
-    ld a, [hl] ; Load the first byte of the entity
-    and a, a ; If the first byte is not 0, skip the next check
-    jr nz, .loadPointer
-    inc l
-    ld a, [hld]
-    and a, a
-    jr z, .loop ; if the value is *still* 0, loop.
-
-.loadPointer
     ld a, [hli]
     ld l, [hl]
     ld h, a
+    or a, l ; If this results in z, hl == 0
+    jr z, .loop
 
     ; Load entity Script
     ld a, [hli] ; Load bank of script
@@ -77,20 +70,12 @@ RenderEntities::
     add hl, bc ; Apply the entity offset
 
     ; Check for entity
-    ld a, [hl] ; Load the first byte of the entity
-    and a, a ; If the first byte is not 0, skip the next check
-    jr nz, .loadPointer
-    inc l
-    ld a, [hld]
-    and a, a
-    jr z, .loop ; if the value is *still* 0, loop.
-
-.loadPointer
     ld a, [hli]
     ld l, [hl]
     ld h, a
+    or a, l ; If this results in z, hl == 0
+    jr z, .loop
 
-    ASSERT EntityDefinition_Logic + 6 == EntityDefinition_Render
     ld a, EntityDefinition_Render - EntityDefinition_Logic
     add_r16_a hl
 

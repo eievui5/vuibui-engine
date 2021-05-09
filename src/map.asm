@@ -350,6 +350,79 @@ GetActiveMap::
     ; bc is the map's data.
     ret
 
+; Used to reload the active map's tiles if they were changed for any reason.
+; Must occur during VBlank, and expects interrupts to be off.
+ReloadMapGraphics::
+
+    ld a, [wActiveWorldMap]
+    ld b, a
+    add a, b ; a * 2
+    add a, b ; a * 3
+    ld hl, MapLookup
+    add_r16_a hl
+
+    ld a, [hli]
+    ldh [hMapBankBuffer], a
+    ld [mBankSelect], a
+
+    ld a, [hli]
+    ld h, [hl]
+    ld l, a
+
+    ; Seek to tiles and reload them
+    inc hl
+    inc hl
+    ld a, [hli]
+    ld b, a
+    ld a, [hli]
+    ld c, a
+    ld a, [hli]
+
+    push hl
+
+    ld d, [hl]
+    ld e, a
+    ld a, c
+    ld [mBankSelect], a
+    ld hl, VRAM_TILES_SHARED
+    call pb16_unpack_block
+
+    ldh a, [hMapBankBuffer]
+    ld [mBankSelect], a
+
+    pop hl
+
+    ld a, [hSystem]
+    and a, a
+    jr z, .cgbSkip
+
+    inc hl
+
+    ld a, [hli]
+    ld b, a
+    ld a, [hli]
+    ld h, [hl]
+    ld l, a
+    ld a, b
+    ld [mBankSelect], a
+
+    ld c, MAP_BKG_PALS * sizeof_PALETTE
+    ld de, wBCPD
+    rst memcopy_small
+    ld c, MAP_OBJ_PALS * sizeof_PALETTE
+    ld de, wOCPD + (sizeof_PALETTE * (8 - MAP_OBJ_PALS)) ; Skip the players' reserved palettes
+    rst memcopy_small
+
+.cgbSkip
+
+    ld a, PALETTE_STATE_RESET
+    ld [wPaletteState], a
+
+    ldh a, [hCurrentBank]
+    ld [mBankSelect], a
+
+    ret
+
 ; Used to check which World Map we're referencing (Overworld, Dungeon, etc...)
 ; Maximum of 85 Maps, since 256/3 = 85
 MapLookup:

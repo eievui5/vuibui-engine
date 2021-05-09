@@ -6,15 +6,18 @@ INCLUDE "include/structs.inc"
 
 DEF MENU_STACK_CAPACITY equ 10
 
-; When an event is called, the struct can be accessed with:
-; ld hl, sp+2
-; ld a, [hli]
-; ld h, [hl]
-; ld l, a
-; This points to: 
+; When an event is called, the struct can be accessed with: 
+/*
+ld hl, sp+2
+ld a, [hli]
+ld h, [hl]
+ld l, a
+*/
+; This points to:
+;   - Init:         Bank
 ;   - RedrawFunc:   RedrawFunc + 1 (must inc or dec)
 ;   - ButtonHooks:  AllowWrapping
-;   - Closing:      
+;   - Closing:
 
     struct Menu
         bytes 1, Bank ; ROM bank where everything is located

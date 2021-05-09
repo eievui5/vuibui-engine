@@ -309,6 +309,8 @@ SECTION "Load Characters", ROM0
 ; @ hl: String
 ; @ de: destination
 LoadCharacters::
+    ldh a, [hCurrentBank]
+    ld [mBankSelect], a
     ld a, [hli]
     and a, a
     ret z
@@ -316,6 +318,8 @@ LoadCharacters::
         ; Offset to needed tile
         ld h, 0
         ld l, a
+        ld a, BANK(GameFont)
+        ld [mBankSelect], a
         ld bc, GameFont - ($20 * 8) ; We start on ascii character 32 (space), so we need to subtract 32 * 8 as an offset.
         add hl, hl ; a * 2
         add hl, hl ; a * 4

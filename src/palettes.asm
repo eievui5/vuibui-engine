@@ -6,6 +6,7 @@ INCLUDE "include/switch.inc"
 
 SECTION "Update Palettes", ROM0
 
+; Requires a palette state as in input
 UpdatePalettes::
     ld b, a
     ldh a, [hSystem]

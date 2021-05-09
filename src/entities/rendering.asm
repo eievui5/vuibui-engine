@@ -65,16 +65,17 @@ RenderMetasprite::
     ld h, [hl]
     ld l, a
 
-    ; At this point:
-    ; bc - Position (x, y)
-    ; hl - Metasprite pointer
-    ; Find Available Shadow OAM
+; This label is used to render a metasprite at an absolute location, rather than
+; considering any entity information. Make sure to set `hRenderByte` to zero!
+; @ bc: Position (x, y)
+; @ hl: Metasprite pointer
+.absolute::
     ldh a, [hOAMIndex]
     ld de, wShadowOAM
     add_r16_a de
     ; Load and offset Y
     ld a, [hli]
-    .pushSprite ; We can skip that load, since a loop will have already done it.
+.pushSprite ; We can skip that load, since a loop will have already done it.
     push bc
     add a, b
     ld b, a
@@ -139,6 +140,6 @@ RenderMetaspriteDirection::
     ld d, a ; Store for later.
     jr RenderMetasprite.afterFrameHook ; Jump back to the standard render function
 
-SECTION UNION "Volatile", HRAM
-hRenderByte: ; currently stores the entity's invtimer to find out if it should blink
+SECTION "Render Info", HRAM
+hRenderByte:: ; currently stores the entity's invtimer to find out if it should blink
     ds 1

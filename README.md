@@ -1,7 +1,8 @@
 
-Currently being built on RGBDS 0.5.0
+Currently being built on RGBDS 0.5.1
 
 Rangi's Tilemap Studio is used to create binary map files for the menus.
+A custom mapping software is being slowly developed for creating world maps.
 
 Naming Conventions:
 

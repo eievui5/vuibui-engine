@@ -25,7 +25,7 @@ OctaviaMetasprites::
     .rightGrab dw .spriteRightSwing ; Side swing and 
     .leftGrab  dw .spriteLeftSwing ; grab are the same
     
-.spriteDown:
+.spriteDown::
     db -8 ; y
     db -8 ; x
     db TILE_OCTAVIA_DOWN_1 ; Tile ID
@@ -39,7 +39,7 @@ OctaviaMetasprites::
     db METASPRITE_END
 
 
-.spriteUp:
+.spriteUp::
     db -8 ; y
     db -8 ; x
     db TILE_OCTAVIA_UP_1 ; Tile ID
@@ -53,7 +53,7 @@ OctaviaMetasprites::
     db METASPRITE_END
 
 
-.spriteRight:
+.spriteRight::
     db -8 ; y
     db -8 ; x
     db TILE_OCTAVIA_RIGHT_1 ; Tile ID
@@ -67,7 +67,7 @@ OctaviaMetasprites::
     db METASPRITE_END
 
 
-.spriteLeft: ; Flipped version of .spriteRight
+.spriteLeft:: ; Flipped version of .spriteRight
     db -8 ; y
     db -8 ; x
     db TILE_OCTAVIA_RIGHT_2 ; Tile ID
@@ -82,7 +82,7 @@ OctaviaMetasprites::
 
 ; Steps
 
-.spriteDownStep: ; Flipped version
+.spriteDownStep:: ; Flipped version
     db -8 ; y
     db -8 ; x
     db TILE_OCTAVIA_DOWN_2 ; Tile ID
@@ -96,7 +96,7 @@ OctaviaMetasprites::
     db METASPRITE_END
 
 
-.spriteUpStep: ; Flipped version
+.spriteUpStep:: ; Flipped version
     db -8 ; y
     db -8 ; x
     db TILE_OCTAVIA_UP_2 ; Tile ID
@@ -110,7 +110,7 @@ OctaviaMetasprites::
     db METASPRITE_END
 
 
-.spriteRightStep:
+.spriteRightStep::
     db -8 ; y
     db -8 ; x
     db TILE_OCTAVIA_RIGHT_STEP_1 ; Tile ID
@@ -124,7 +124,7 @@ OctaviaMetasprites::
     db METASPRITE_END
 
 
-.spriteLeftStep: ; Flipped version of .spriteRight
+.spriteLeftStep:: ; Flipped version of .spriteRight
     db -8 ; y
     db -8 ; x
     db TILE_OCTAVIA_RIGHT_STEP_2 ; Tile ID
@@ -139,7 +139,7 @@ OctaviaMetasprites::
 
 ; Swings
 
-.spriteDownSwing:
+.spriteDownSwing::
     db -8 ; y
     db -8 ; x
     db TILE_OCTAVIA_DOWN_ACT ; Tile ID
@@ -152,7 +152,7 @@ OctaviaMetasprites::
 
     db METASPRITE_END
 
-.spriteUpSwing:
+.spriteUpSwing::
     db -8 ; y
     db -8 ; x
     db TILE_OCTAVIA_UP_1 ; Tile ID
@@ -166,7 +166,7 @@ OctaviaMetasprites::
     db METASPRITE_END
 
 
-.spriteRightSwing:
+.spriteRightSwing::
     db -8 ; y
     db -8 ; x
     db TILE_OCTAVIA_RIGHT_1 ; Tile ID
@@ -180,7 +180,7 @@ OctaviaMetasprites::
     db METASPRITE_END
 
 
-.spriteLeftSwing: ; Flipped version of .spriteRight
+.spriteLeftSwing:: ; Flipped version of .spriteRight
     db -8 ; y
     db -8 ; x
     db TILE_OCTAVIA_RIGHT_ACT ; Tile ID
@@ -193,7 +193,7 @@ OctaviaMetasprites::
 
     db METASPRITE_END
 
-.spriteDownGrab
+.spriteDownGrab::
     db -8 ; y
     db -8 ; x
     db TILE_OCTAVIA_DOWN_ACT ; Tile ID
@@ -206,7 +206,7 @@ OctaviaMetasprites::
 
     db METASPRITE_END
 
-.spriteUpGrab
+.spriteUpGrab::
     db -8 ; y
     db -8 ; x
     db TILE_OCTAVIA_UP_ACT ; Tile ID

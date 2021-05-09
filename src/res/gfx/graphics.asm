@@ -26,17 +26,20 @@ GfxPlayerSpells::
 
 pb16_GfxArrow::
     INCBIN "res/gfx/misc/arrow.h.pb16"
-.end::
 
 SECTION "User Interface", ROMX
 
 pb16_Heart::
-    INCBIN "res/gfx/ui_heart.pb16"
-.end::
+    INCBIN "res/gfx/ui/heart.pb16"
 
 pb16_MenuSeperators::
-    INCBIN "res/gfx/menu_seperators.pb16"
-.end::
+    INCBIN "res/gfx/ui/menu_seperators.pb16"
+
+obpp_Pointer::
+    INCBIN "res/gfx/ui/pointer.1bpp"
+
+obpp_ItemSelection::
+    INCBIN "res/gfx/ui/item_selection.h.1bpp"
 
 SECTION "Color Palettes", ROMX
 PalOctavia::

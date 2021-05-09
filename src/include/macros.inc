@@ -6,7 +6,7 @@ DEF MACROS_INC SET 1
 ; @ add_r16_a r16
 ; @ 5 bytes
 ; @ 5 cycles
-add_r16_a: MACRO
+MACRO add_r16_a
     IF _NARG == 1
         add a, LOW(\1) ; a = low + old_l
         ld LOW(\1), a  ; a = low + old_l = new_l
@@ -28,6 +28,12 @@ MACRO abs_a
     cpl
     inc a
   :
+ENDM
+
+MACRO lb
+    assert -128 <= (\2) && (\2) <= 255, "Second argument to `lb` must be 8-bit!"
+    assert -128 <= (\3) && (\3) <= 255, "Third argument to `lb` must be 8-bit!"
+    ld \1, ((\2) << 8) | (\3)
 ENDM
 
 ; Seek through \1 (r8) from \2 to \3. Only 8-bit; prone to overflowing. Will warn about being used stupidly.

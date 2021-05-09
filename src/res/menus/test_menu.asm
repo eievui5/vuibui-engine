@@ -30,7 +30,7 @@ TestMenuHeader::
     db BANK("Menu Test")
     dw TestMenuInit
     ; Used Buttons
-    db PADF_A | PADF_B | PADF_UP | PADF_DOWN
+    db PADF_A | PADF_UP | PADF_DOWN
     ; Auto-repeat
     db FALSE
     ; Button functions
@@ -47,7 +47,7 @@ TestMenuHeader::
     ; Private Items Pointer
     dw 0
     ; Close Function
-    dw null
+    dw InitializeGameplay ; Initiallize gameplay when this menu closes
 
 TestMenuInit:
 ; Wait for VRAM access
@@ -70,10 +70,11 @@ TestMenuInit:
     ld [wPointerYPos], a
 
 ; Load tiles
-    ld a, $FF
-    get_tile hl, M_POINTER
-    ld bc, sizeof_TILE
-    call memset
+    ld a, BANK(obpp_Pointer)
+    ld hl, obpp_Pointer
+    get_tile de, M_POINTER
+    ld c, 8
+    call Unback1bppBanked
 
 
     get_tile de, M_S
@@ -96,13 +97,17 @@ TestMenuInit:
     call ScreenCopy
 
     ; Load palettes
-    ld hl, PalGrey
-    ld de, wBCPD
-    ld c, sizeof_PALETTE
-    call memcopy_small
-    ld a, PALETTE_STATE_RESET
-    ld [wPaletteState], a
-    call UpdatePalettes
+    ldh a, [hSystem]
+    and a, a
+    jr z, .cgbSkip
+        ld hl, PalGrey
+        ld de, wBCPD
+        ld c, sizeof_PALETTE
+        call memcopy_small
+
+        ld a, PALETTE_STATE_RESET
+        call UpdatePalettes
+    .cgbSkip
 
     ld a, SCREEN_MENU
     ldh [rLCDC], a
@@ -193,9 +198,6 @@ TestMenuRedraw:
     ret
 
 HandleAPress:
-    xor a, a
-    ld [wMenuAction], a
-
     ; Grab the menu pointer off the stack
     ld hl, sp + 2
     ld a, [hli]
@@ -206,12 +208,11 @@ HandleAPress:
 
     ld a, [hl]
     and a, a
-    ret nz
+    ret z
 
-    ld a, MENU_ACTION_VALIDATE
+    xor a, a ; Clear validate action if not on start
     ld [wMenuAction], a
-
-    jp InitializeGameplay
+    ret
 
 TestMenuString:
     db "StarOpions", 0

@@ -12,6 +12,8 @@ Functions:
 
 */
 
+INCLUDE "include/banks.inc"
+
 SECTION "One Bit Per Pixel", ROM0
 
 ; Equivalent to memcopy_small, but copies each byte twice for 1bpp graphics.
@@ -26,6 +28,13 @@ Unpack1bpp::
 	inc de
 	dec c
 	jr nz, Unpack1bpp
+	ret
+
+Unback1bppBanked::
+	ld [mBankSelect], a
+	call Unpack1bpp
+	ldh a, [hCurrentBank]
+	ld [mBankSelect], a
 	ret
 
 ; Complements each byte, inverting the resulting graphics.

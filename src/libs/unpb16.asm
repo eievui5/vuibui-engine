@@ -21,7 +21,11 @@
 ; This software has been modified by Eldred Habert (ISSOtm):
 ; - Removal of .inc file
 ; - Different variable allocation
+;
+; This software has been modified by Eievui
+; - MBC5 bank trampoline function
 
+INCLUDE "include/banks.inc"
 
 section "pb16 temp byte", HRAM
 
@@ -90,4 +94,12 @@ pb16_unpack_block::
   ld c,a
   dec b
   jr nz,.packetloop
+  ret
+
+; Swaps to bank `a` before calling pb16_unpack_block, and restores the bank upon exit
+pb16_unpack_banked::
+  ld [mBankSelect], a
+  call pb16_unpack_block
+  ldh a, [hCurrentBank]
+  ld [mBankSelect], a
   ret
