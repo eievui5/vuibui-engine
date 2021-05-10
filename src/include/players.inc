@@ -85,6 +85,22 @@ DEF POPPY_ARROW_DAMAGE EQU 1
         enum HEAL_WAND
     end_enum
 
+    start_enum ITEMB
+        enum FIRE_WAND, BOW, SWORD
+        enum ICE_WAND
+        enum SHOCK_WAND
+        enum HEAL_WAND
+    end_enum
+
+    DEF ITEMF_FIRE_WAND     EQU 1
+    DEF ITEMF_ICE_WAND      EQU 2
+    DEF ITEMF_SHOCK_WAND    EQU 4
+    DEF ITEMF_HEAL_WAND     EQU 8
+
+    DEF ITEMF_BOW           EQU 1
+
+    DEF ITEMF_SWORD         EQU 1
+
     start_enum SPELL_GFX
         enum NONE
         enum FIRE

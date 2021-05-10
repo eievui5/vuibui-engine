@@ -213,10 +213,17 @@ InitializeGameplay::
 
 ; Clean and initialize player array.
 
-    ld bc, wPlayerVariablesEnd - wPlayerVariables
-    ld hl, wPlayerVariables
+    ; Until there is a save file, just zero-init the player variables
+    ld bc, SIZEOF("Player Variables")
+    ld hl, STARTOF("Player Variables")
     call memset
     ld [wPoppyActiveArrows], a
+
+    ld a, ITEMF_FIRE_WAND | ITEMF_SHOCK_WAND | ITEMF_ICE_WAND | ITEMF_HEAL_WAND
+    ld [wItems.octavia], a
+    ld a, ITEMF_SWORD
+    ld [wItems.poppy], a
+    ld [wItems.tiber], a
 
     ld a, high(PlayerOctavia)
     ld hl, wOctavia
@@ -264,14 +271,6 @@ InitializeGameplay::
     ld [wOctavia_Health], a
     ld [wPoppy_Health], a
     ld [wTiber_Health], a
-
-; Player Items
-    ld a, ITEM_HEAL_WAND << 4 | ITEM_FIRE_WAND
-    ld [wPlayerEquipped.octavia], a
-    ld a, ITEM_BOW << 4
-    ld [wPlayerEquipped.poppy], a
-    ld a, ITEM_SWORD
-    ld [wPlayerEquipped.tiber], a
 
 ; Load the player's graphics
     ld a, BANK(GfxOctavia)

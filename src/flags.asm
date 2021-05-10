@@ -10,7 +10,7 @@ SECTION "Bitfield Functions", ROM0
 ; @ output:
 ; @ a:  Flag mask
 ; @ hl: Flag address
-GetBitfieldMask:    
+GetBitfieldMask::
     ; Get the address containing the target bit.
     ld a, b
     and a, %11111000
@@ -26,6 +26,13 @@ GetBitfieldMask:
 
     ; Get the proper bitmask Using the lower 3 bits.
     ld a, b
+    
+; Returns the mask of the input value
+; @ input:
+; @ a:  Value
+; @ output:
+; @ a:  Mask
+GetBitA::
     and a, %00000111
 
     ; `a = 1 << a`. Used for indexing into bitfields.

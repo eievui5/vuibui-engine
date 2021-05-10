@@ -1040,6 +1040,19 @@ wPlayerEquipped::
     .tiber::
         ds 1
 
+; The player's unlocked items.
+; @ bit 0: Item 0
+; @ bit 1: Item 1
+; @ bit 2: Item 2
+; @ bit 3: Item 3
+wItems::
+    .octavia::
+        ds 1
+    .poppy::
+        ds 1
+    .tiber::
+        ds 1
+
 wPlayerVariablesEnd::
 
 SECTION "Player Array", WRAM0, ALIGN[$08]

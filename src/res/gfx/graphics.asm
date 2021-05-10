@@ -41,6 +41,37 @@ obpp_Pointer::
 obpp_ItemSelection::
     INCBIN "res/gfx/ui/item_selection.h.1bpp"
 
+SECTION "Item Icons", ROMX
+
+; These need to be split.
+pb16_FireSpell::
+    INCBIN "res/gfx/ui/items/fire_spell.pb16"
+pb16_IceSpell::
+    INCBIN "res/gfx/ui/items/ice_spell.pb16"
+pb16_ShockSpell::
+    INCBIN "res/gfx/ui/items/shock_spell.pb16"
+pb16_HealSpell::
+    INCBIN "res/gfx/ui/items/heal_spell.pb16"
+pb16_Bow::
+    INCBIN "res/gfx/ui/items/bow.pb16"
+pb16_Knife::
+    INCBIN "res/gfx/ui/items/knife.pb16"
+pb16_Cloak::
+    INCBIN "res/gfx/ui/items/cloak.pb16"
+pb16_Placeholder::
+    INCBIN "res/gfx/ui/items/placeholder.pb16"
+pb16_Sword::
+    INCBIN "res/gfx/ui/items/sword.pb16"
+pb16_Shield::
+    INCBIN "res/gfx/ui/items/shield.pb16"
+pb16_Hammer::
+    INCBIN "res/gfx/ui/items/hammer.pb16"
+pb16_Glove::
+    INCBIN "res/gfx/ui/items/glove.pb16"
+
+pb16_Buttons::
+    INCBIN "res/gfx/font/buttons.pb16"
+
 SECTION "Color Palettes", ROMX
 PalOctavia::
     pal 31, 31, 31, \

@@ -34,6 +34,33 @@ INCLUDE "include/macros.inc"
         enum POINT
         enum POINT2
         enum SELECTION
+        enum SELECTION2
+        ; Items
+        enum ITEM_0_0
+        enum ITEM_0_1
+        enum ITEM_0_2
+        enum ITEM_0_3
+
+        enum ITEM_1_0
+        enum ITEM_1_1
+        enum ITEM_1_2
+        enum ITEM_1_3
+
+        enum ITEM_2_0
+        enum ITEM_2_1
+        enum ITEM_2_2
+        enum ITEM_2_3
+
+        enum ITEM_3_0
+        enum ITEM_3_1
+        enum ITEM_3_2
+        enum ITEM_3_3
+        ; Hints
+        enum DASH
+        enum A_TOP
+        enum B_TOP
+        enum A_BOT
+        enum B_BOT
     end_enum
 
 DEF COLUMN_1 EQU %10000000
@@ -53,12 +80,12 @@ InventoryHeader::
     db FALSE
     ; Button functions
     ; A, B, Sel, Start, Right, Left, Up, Down
-    dw HandleAPress, null, null, null, MoveRight, MoveLeft, MoveUp, MoveDown
+    dw HandleAPress, HandleBPress, null, null, MoveRight, MoveLeft, MoveUp, MoveDown
     db 0 ; Last selected item
     ; Allow wrapping
     db FALSE
     ; Default selected item
-    db $80 ; Temporarily set to second column
+    db 0
     ; Number of items in the menu
     db 2
     ; Redraw
@@ -127,11 +154,120 @@ InventoryInit:
     ld c, 16
     call Unback1bppBanked
 
-; Reload palettes
+    ; Load a line into VRAM to use as a dash
+    ld a, %01111110
+    ld [VRAM_TILES_SHARED + ((TILE_DASH - $80) * sizeof_TILE) + 16-2], a
+    ld [VRAM_TILES_SHARED + ((TILE_DASH - $80) * sizeof_TILE) + 16-1], a
+
+    ; Load the player's items
+    ld a, BANK("Item Icons")
+    swap_bank
+
+    ; Load the button hints
+    ld de, pb16_Buttons
+    get_tile hl, TILE_A_TOP
+    ld b, 4
+    call pb16_unpack_block
+    
+    ld a, [wActivePlayer]
+    and a, a
+    jr z, .octaviaItems
+    dec a
+    jr z, .poppyItems
+    ; fallthrough...
+; Tiber items
+    ld de, pb16_Sword
+    get_tile hl, TILE_ITEM_0_0
+    ld b, 4
+    call pb16_unpack_block
+    
+    ld de, pb16_Shield
+    get_tile hl, TILE_ITEM_1_0
+    ld b, 4
+    call pb16_unpack_block
+    
+    ld de, pb16_Hammer
+    get_tile hl, TILE_ITEM_2_0
+    ld b, 4
+    call pb16_unpack_block
+    
+    ld de, pb16_Glove
+    get_tile hl, TILE_ITEM_3_0
+    ld b, 4
+    call pb16_unpack_block
+    jr .reloadPalettes
+
+.poppyItems
+    ld de, pb16_Bow
+    get_tile hl, TILE_ITEM_0_0
+    ld b, 4
+    call pb16_unpack_block
+    
+    ld de, pb16_Knife
+    get_tile hl, TILE_ITEM_1_0
+    ld b, 4
+    call pb16_unpack_block
+    
+    ld de, pb16_Cloak
+    get_tile hl, TILE_ITEM_2_0
+    ld b, 4
+    call pb16_unpack_block
+    
+    ld de, pb16_Placeholder
+    get_tile hl, TILE_ITEM_3_0
+    ld b, 4
+    call pb16_unpack_block
+    jr .reloadPalettes
+
+.octaviaItems
+    ld de, pb16_FireSpell
+    get_tile hl, TILE_ITEM_0_0
+    ld b, 4
+    call pb16_unpack_block
+    
+    ld de, pb16_IceSpell
+    get_tile hl, TILE_ITEM_1_0
+    ld b, 4
+    call pb16_unpack_block
+    
+    ld de, pb16_ShockSpell
+    get_tile hl, TILE_ITEM_2_0
+    ld b, 4
+    call pb16_unpack_block
+    
+    ld de, pb16_HealSpell
+    get_tile hl, TILE_ITEM_3_0
+    ld b, 4
+    call pb16_unpack_block
+
+.reloadPalettes
+
+    ; Load palettes on CGB
+    ldh a, [hSystem]
+    and a, a
+    jr z, .cgbSkip
+
+    ld hl, PalGrey
+    ld de, wBCPD
+    ld c, sizeof_PALETTE
+    rst memcopy_small
+
+    ld a, [wActivePlayer]
+    ASSERT sizeof_PALETTE == 8
+    add a, a ; a * 2
+    add a, a ; a * 4
+    add a, a ; a * 8
+    ld hl, PalOctavia
+    add_r16_a hl
+    ld c, sizeof_PALETTE
+    rst memcopy_small
+
+.cgbSkip
+
     ld a, PALETTE_STATE_RESET
     call UpdatePalettes
 
-; Scroll to origin
+.scrolling
 
     ; Store current scroll values
     ldh a, [hSCXBuffer]
@@ -144,6 +280,8 @@ InventoryInit:
     ldh [hSCYBuffer], a
     ldh [rSCX], a
     ldh [rSCY], a
+    ld [wLastSelectedItem], a
+
 
 ; Disable HUD
     ld [wStaticFX], a
@@ -178,6 +316,69 @@ InventoryInit:
     ld c, 7
     rst memcopy_small
 
+    ; Display the player's items on screen
+    ld a, [wActivePlayer]
+    ld hl, wItems
+    add_r16_a hl
+    ld b, [hl]
+
+    ; Item 0
+        bit 0, b
+        jr z, .item1
+        get_tilemap hl, _SCRN1, 1, 9
+        ld a, TILE_ITEM_0_0
+        ld [hli], a
+        inc a
+        ld [hli], a
+        get_tilemap hl, _SCRN1, 1, 10
+        inc a
+        ld [hli], a
+        inc a
+        ld [hli], a
+
+    .item1
+        bit 1, b
+        jr z, .item2
+        get_tilemap hl, _SCRN1, 1, 11
+        ld a, TILE_ITEM_1_0
+        ld [hli], a
+        inc a
+        ld [hli], a
+        get_tilemap hl, _SCRN1, 1, 12
+        inc a
+        ld [hli], a
+        inc a
+        ld [hli], a
+
+    .item2
+        bit 2, b
+        jr z, .item3
+        get_tilemap hl, _SCRN1, 1, 13
+        ld a, TILE_ITEM_2_0
+        ld [hli], a
+        inc a
+        ld [hli], a
+        get_tilemap hl, _SCRN1, 1, 14
+        inc a
+        ld [hli], a
+        inc a
+        ld [hli], a
+
+    .item3
+        bit 3, b
+        jr z, .exit
+        get_tilemap hl, _SCRN1, 1, 15
+        ld a, TILE_ITEM_3_0
+        ld [hli], a
+        inc a
+        ld [hli], a
+        get_tilemap hl, _SCRN1, 1, 16
+        inc a
+        ld [hli], a
+        inc a
+        ld [hli], a
+
+.exit
 ; Configure screen and display the inventory
     ld a, SCREEN_MENU
     ldh [hLCDCBuffer], a
@@ -186,9 +387,87 @@ InventoryInit:
     reti
 
 InventoryRedraw:
+    call CleanOAM
     xor a, a
-    ldh [hOAMIndex], a
     ldh [hRenderByte], a
+
+    call DrawEquipped
+
+    ; Highlight the selected item on CGB
+    ldh a, [hSystem]
+    and a, a
+    jr z, .cgbSkip
+
+    ; Grab the UI pointer off the stack.
+    ld hl, sp+2
+    ld a, [hli]
+    ld h, [hl]
+    ld l, a
+    dec hl
+    dec hl
+    dec hl
+    
+    bit 7, [hl]
+    jr nz, .cgbSkip ; Skip if we're on the wrong column
+
+    ld a, TRUE
+    ldh [rVBK], a
+
+    ld b, 8
+    get_tilemap hl, _SCRN1, 1, 9
+.cleanAttributesLoop
+    ldh a, [rSTAT]
+    and a, STATF_BUSY
+    jr nz, .cleanAttributesLoop
+
+    ; xor a, a
+    ld [hli], a
+    ld [hl], a
+
+    ld a, 31
+    add_r16_a hl
+    dec b
+    jr nz, .cleanAttributesLoop
+    
+    ; Grab the UI pointer off the stack.
+    ld hl, sp+2
+    ld a, [hli]
+    ld h, [hl]
+    ld l, a
+    dec hl
+    dec hl
+    dec hl
+
+    ld a, [hl] ; grab and offset selection
+    swap a ; a * 16
+    add a, a ; a * 32
+    add a, a ; a * 64
+    get_tilemap hl, _SCRN1, 1, 9
+    add_r16_a hl
+
+:   ldh a, [rSTAT]
+    and a, STATF_BUSY
+    jr nz, :-
+
+    ld a, 1
+    ld [hli], a
+    ld [hl], a
+
+    ld a, 31
+    add_r16_a hl
+
+:   ldh a, [rSTAT]
+    and a, STATF_BUSY
+    jr nz, :-
+
+    ld a, 1
+    ld [hli], a
+    ld [hl], a
+
+    xor a, a
+    ldh [rVBK], a
+
+.cgbSkip
 
 ; Render player doll
     ; Get the active player's metasprites
@@ -251,6 +530,38 @@ InventoryRedraw:
     ld b, [hl]
     bit 7, [hl]
     jr nz, .options ; if bit 7 is set, 
+    ; Otherwise, draw the item cursor.
+
+    ldh a, [hOAMIndex]
+    ld hl, wShadowOAM + 4
+    add_r16_a hl
+
+    ld a, b
+    swap a ; a * 16
+    add a, 9 * 8 + 16 ; Offset to item list
+    ld [hli], a
+    ld a, 1 * 8 + 8 - 1
+    ld [hli], a
+    ld a, TILE_SELECTION
+    ld [hli], a
+    xor a, a
+    ld [hli], a
+
+    ld a, b
+    swap a ; a * 16
+    add a, 9 * 8 + 16 ; Offset to item list
+    ld [hli], a
+    ld a, 2 * 8 + 8 + 1
+    ld [hli], a
+    ld a, TILE_SELECTION
+    ld [hli], a
+    ld a, OAMF_XFLIP
+    ld [hli], a
+
+
+    ldh a, [hOAMIndex]
+    add a, 8
+    ldh [hOAMIndex], a
 
     ret
 
@@ -343,6 +654,13 @@ MoveRight:
     ld h, [hl]
     ld l, a
     ; Allow Wrapping
+    inc hl ; SelectedItem
+    bit 7, [hl]
+    ret nz
+    ld a, [hl]
+    ld [wLastSelectedItem], a
+    ld a, 0 | COLUMN_1
+    ld [hl], a
     ret
 
 MoveLeft:
@@ -353,6 +671,11 @@ MoveLeft:
     ld h, [hl]
     ld l, a
     ; Allow Wrapping
+    inc hl ; SelectedItem
+    bit 7, [hl]
+    ret z
+    ld a, [wLastSelectedItem]
+    ld [hl], a
     ret
 
 MoveUp:
@@ -381,15 +704,36 @@ MoveDown:
     ld l, a
     ; Allow Wrapping
     inc hl ; SelectedItem
+    ld b, [hl]
 
-    ld a, 3
-    bit 7, [hl]
-    jr z, .items
     ; options has a max Y of 3
     ld a, 2 | COLUMN_1
-.items
-    cp a, [hl]
+    bit 7, b
+    jr nz, .skipItems
+    ; Items goes up to 4 depending on how many items are unlocked.
+    ld a, [wActivePlayer]
+    ld hl, wItems
+    add_r16_a hl
+    ; Check each item slot
+    ld a, 3
+    bit 3, [hl]
+    jr nz, .skipItems
+    dec a
+    bit 2, [hl]
+    jr nz, .skipItems
+    dec a
+    bit 1, [hl]
+    jr nz, .skipItems
+    dec a
+.skipItems
+    cp a, b
     ret z
+    ld hl, sp+2
+    ld a, [hli]
+    ld h, [hl]
+    ld l, a
+    ; Allow Wrapping
+    inc hl ; SelectedItem
     inc [hl]
     ret
 
@@ -403,10 +747,247 @@ HandleAPress:
 
     ld a, [hl]
     cp a, 0 | COLUMN_1
-    ret z
+    ret z ; Exit menu if on the first option
+    ; cp a, 1 | COLUMN_1 (save)
+    ; cp a, 2 | COLUMN_1 (save + quit)
+    bit 7, a
+    jr nz, .exit ; Do nothing (yet) if on the second column
+
+    ; Save the target item in c
+    ld c, [hl]
+    inc c
+
+    ; Otherwise, select an item.
+    ld a, [wActivePlayer]
+    ld de, wPlayerEquipped
+    add_r16_a de
+
+    ld a, [de]
+    and a, $0F ; Mask out old B item
+    cp a, c ; Check if old A item is the same as new A item
+    jr nz, .notInA
+    ; If the new A item matches old A, clear A
+    ld a, [de]
+    and a, $F0
+    ld [de], a
+    jr .exit
+.notInA
+
+    ld a, [de]
+    and a, $F0 ; Mask out old A item
+    swap a
+    cp a, c ; If new A matches old B, clear B
+    jr nz, .notInB
+    ld a, c
+    ld [de], a
+    jr .exit
+.notInB
+
+    ld a, [de]
+    and a, $F0 ; Mask out the old A value
+    or a, c ; combine old A and new B
+    ld [de], a
+
+.exit
+
+    ; Was that item unlocked?
+    and a, $0F
+    dec a
+    call GetBitA
+    ld b, a
+
+    ld a, [wActivePlayer]
+    ld hl, wItems
+    add_r16_a hl
+
+    ld a, b
+    and a, [hl]
+    jr nz, .gotItem
+
+    ; No? Reset it!
+    ld a, [de]
+    and a, $F0
+    ld [de], a
+
+.gotItem
 
     xor a, a
     ld [wMenuAction], a
+    ret
+
+HandleBPress:
+    ld hl, sp+2
+    ld a, [hli]
+    ld h, [hl]
+    ld l, a
+    ; Allow Wrapping
+    inc hl
+
+    ; Close if on the second column
+    bit 7, [hl]
+    ret nz
+
+    ; Save the target item in c
+    ld c, [hl]
+    inc c
+
+    ; Otherwise, select an item.
+    ld a, [wActivePlayer]
+    ld de, wPlayerEquipped
+    add_r16_a de
+
+    ld a, [de]
+    and a, $0F ; Mask out old B item
+    cp a, c ; Check if old A item is the same as new B item
+    jr nz, .notInA
+    ; If the new B item matches old A, overwrite A
+    ld a, c
+    swap a
+    ld [de], a
+    jr .exit
+.notInA
+
+    ld a, [de]
+    and a, $F0 ; Mask out old A item
+    swap a ; Push B into the lower nibbel
+    cp a, c ; If new B matches old B, clear B
+    jr nz, .notInB
+    ; If this item is already in B, clear B
+    ld a, [de]
+    and a, $0F
+    ld [de], a
+    jr .exit
+.notInB
+
+    ld a, [de]
+    and a, $0F ; Mask out the old B value
+    swap c ; Move new B to the upper nibble
+    or a, c ; combine old A and new B
+    ld [de], a
+
+.exit
+    ; Was that item unlocked?
+    and a, $F0
+    swap a
+    dec a
+    call GetBitA
+    ld b, a
+
+    ld a, [wActivePlayer]
+    ld hl, wItems
+    add_r16_a hl
+
+    ld a, b
+    and a, [hl]
+    jr nz, .gotItem
+
+    ; No? Reset it!
+    ld a, [de]
+    and a, $0F
+    ld [de], a
+
+.gotItem
+
+    xor a, a
+    ld [wMenuAction], a
+    ret
+
+; Redraw equipped items each frame
+DrawEquipped:
+
+    get_tilemap hl, _SCRN1, 3, 9
+    ld b, 4
+.cleanLoop
+
+:   ldh a, [rSTAT]
+    and a, STATF_BUSY
+    jr nz, :-
+
+    ld a, TILE_CLEAR
+    ld [hli], a
+    ld [hl], a
+    ld a, 32
+    add_r16_a hl
+
+:   ldh a, [rSTAT]
+    and a, STATF_BUSY
+    jr nz, :-
+
+    ld a, TILE_CLEAR
+    ld [hl], a
+    ld a, 31
+    add_r16_a hl
+    dec b
+    jr nz, .cleanLoop
+    
+
+    ld a, [wActivePlayer]
+    ld hl, wPlayerEquipped
+    add_r16_a hl
+    ld b, [hl]
+
+    ; Draw A button
+    get_tilemap hl, _SCRN1, 3, 9
+    ld a, b
+    and a, $0F
+    jr z, .drawB
+    dec a
+    ; This only works because items cap out at 4, but this UI needs a lot of
+    ; changes if I ever need more so I'm not worried.
+    swap a ; a * 16
+    add a, a ; a * 32
+    add a, a ; a * 64
+    add_r16_a hl
+
+:   ldh a, [rSTAT]
+    and a, STATF_BUSY
+    jr nz, :-
+
+    ld a, TILE_DASH
+    ld [hli], a
+    inc a
+    ld [hli], a
+    ld a, 32 - 1
+    add_r16_a hl
+
+:   ldh a, [rSTAT]
+    and a, STATF_BUSY
+    jr nz, :-
+
+    ld a, TILE_A_BOT
+    ld [hli], a
+
+.drawB
+    get_tilemap hl, _SCRN1, 3, 9
+    ld a, b
+    and a, $F0
+    ret z
+    dec a
+    and a, $F0 ; mask again in case of underflow
+    ; This only works because items cap out at 4, but this UI needs a lot of
+    ; changes if I ever need more so I'm not worried.
+    ; swap a (not needed for high byte)
+    add a, a ; a * 2 (32)
+    add a, a ; a * 4 (64)
+    add_r16_a hl
+
+:   ldh a, [rSTAT]
+    and a, STATF_BUSY
+    jr nz, :-
+
+    ld a, TILE_DASH
+    ld [hli], a
+    ld a, TILE_B_TOP
+    ld [hli], a
+    ld a, 32 - 1
+    add_r16_a hl
+
+:   ldh a, [rSTAT]
+    and a, STATF_BUSY
+    jr nz, :-
+
+    ld a, TILE_B_BOT
+    ld [hli], a
     ret
 
 SECTION "Inventory Data", ROMX, BANK[2]
@@ -437,6 +1018,11 @@ SECTION "Inventory Variables", WRAM0
 ; Which direction is the doll facing?
 wPlayerDollDirection:
     ds 1
+
 ; Step and directory timer
 wPlayerDollTimer:
+    ds 1
+
+; The return position when going between columns
+wLastSelectedItem:
     ds 1
