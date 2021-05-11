@@ -6,6 +6,7 @@ INCLUDE "include/enum.inc"
 INCLUDE "include/graphics.inc"
 INCLUDE "include/hardware.inc"
 INCLUDE "include/macros.inc"
+INCLUDE "include/map.inc"
 
     start_enum TILE, $80
         enum CLEAR
@@ -64,6 +65,8 @@ INCLUDE "include/macros.inc"
     end_enum
 
 DEF COLUMN_1 EQU %10000000
+DEF UI_PAL EQU 6
+DEF SEL_PAL EQU 7
 
 SECTION "Inventory", ROM0
 
@@ -248,7 +251,7 @@ InventoryInit:
     jr z, .cgbSkip
 
     ld hl, PalGrey
-    ld de, wBCPD
+    ld de, wBCPD + sizeof_PALETTE * 6
     ld c, sizeof_PALETTE
     rst memcopy_small
 
@@ -264,8 +267,7 @@ InventoryInit:
 
 .cgbSkip
 
-    ld a, PALETTE_STATE_RESET
-    call UpdatePalettes
+    ; Palette reset moved to after panorama
 
 .scrolling
 
@@ -295,6 +297,16 @@ InventoryInit:
     call ResetOAM
 
 ; Draw the screen
+    ; Reset pals
+    ld a, TRUE
+    ldh [rVBK], a
+    ld b, UI_PAL
+    ld c, 10
+    ld hl, _SCRN1 + (8 * 32) ; Skip 8 rows
+    call ScreenSet
+    xor a, a
+    ldh [rVBK], a
+
     ld b, 10
     ld a, BANK(InventoryMap)
     swap_bank
@@ -315,6 +327,85 @@ InventoryInit:
     get_tilemap de, _SCRN1, 9, 9
     ld c, 7
     rst memcopy_small
+
+    ; Lookup the active map's panorama
+    ld a, [wActiveWorldMap]
+    ld b, a
+    add a, a
+    add a, b
+    ld hl, PanoramaLookup
+    add_r16_a hl
+
+    ; Load the active map's panorama
+    ld a, [hli]
+    swap_bank
+    ld a, [hli]
+    ld h, [hl]
+    ld l, a
+
+    ldh a, [hSystem]
+    and a, a
+    jr z, .skipColorOffset
+    ; Offset to CGB stuff
+    ld a, Panorama_CGBSize
+    add_r16_a hl
+.skipColorOffset
+
+    ; Load the active map's panorama's tiles
+    ld a, [hli]
+    ld b, a ; Load number of tiles
+    ld a, [hli]
+    push hl
+        ld d, [hl]
+        ld e, a
+        ld hl, VRAM_TILES_BG
+        call pb16_unpack_block
+    pop hl
+    inc hl
+
+    ; Load the active map's panorama's map
+    ld a, [hli]
+    push hl
+        ld d, [hl]
+        ld e, a
+        ld hl, _SCRN1
+        ld b, 8 ; 8 rows.
+        call ScreenCopy
+    pop hl
+    inc hl
+
+    ldh a, [hSystem]
+    and a, a
+    jr z, .cgbPanSkip
+
+    ; Load the active map's panorama's attributes
+    ld a, TRUE
+    ldh [rVBK], a
+    ld a, [hli]
+    push hl
+        ld d, [hl]
+        ld e, a
+        ld hl, _SCRN1
+        ld b, 8 ; 8 rows.
+        call ScreenCopy
+    pop hl
+    inc hl
+    xor a, a
+    ldh [rVBK], a
+
+    ; Load the active map's panorama's palettes
+    ld a, [hli]
+    ld h, [hl]
+    ld l, a
+    ld de, wBCPD
+    ld c, sizeof_PALETTE * 6
+    rst memcopy_small
+
+.cgbPanSkip
+    
+    ; Both systems need this reset
+    ld a, PALETTE_STATE_RESET
+    call UpdatePalettes
 
     ; Display the player's items on screen
     ld a, [wActivePlayer]
@@ -420,7 +511,7 @@ InventoryRedraw:
     and a, STATF_BUSY
     jr nz, .cleanAttributesLoop
 
-    ; xor a, a
+    ld a, UI_PAL
     ld [hli], a
     ld [hl], a
 
@@ -449,7 +540,7 @@ InventoryRedraw:
     and a, STATF_BUSY
     jr nz, :-
 
-    ld a, 1
+    ld a, SEL_PAL
     ld [hli], a
     ld [hl], a
 
@@ -460,7 +551,7 @@ InventoryRedraw:
     and a, STATF_BUSY
     jr nz, :-
 
-    ld a, 1
+    ld a, SEL_PAL
     ld [hli], a
     ld [hl], a
 

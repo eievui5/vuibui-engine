@@ -429,6 +429,10 @@ MapLookup:
     ; World Map 0
     far_pointer OverworldMap
 
+PanoramaLookup::
+    ; World Map 0
+    far_pointer BeachPanorama
+
 SECTION "Active Map Variables", WRAM0
 
 ; Which map are we on?
