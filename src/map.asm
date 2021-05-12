@@ -431,6 +431,7 @@ MapLookup:
 
 PanoramaLookup::
     ; World Map 0
+    far_pointer NightPanorama
     far_pointer BeachPanorama
 
 SECTION "Active Map Variables", WRAM0
