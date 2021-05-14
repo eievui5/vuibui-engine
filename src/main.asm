@@ -52,6 +52,7 @@ Gameplay:
     ; Update the camera before rendering
     call PlayerCameraInterpolation
     call RenderEntities
+    call audio_update
     jr Main.end
 
 Transition:

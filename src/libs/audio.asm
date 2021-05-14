@@ -1,8 +1,4 @@
 
-; This version of audio.asm has been slightly modified by Eievui for use in the 
-; VuiBui engine. A precomputed pitch table is included at the bottom of this file,
-; originally generated using Damian Yerrick's `pitchtable.py`
-
 ;
 ; Sound effects driver for GB
 ;
@@ -24,9 +20,14 @@
 ;    misrepresented as being the original software.
 ; 3. This notice may not be removed or altered from any source distribution.
 ;
+; This version of audio.asm has been slightly modified by Eievui for use in the 
+; VuiBui engine. A precomputed pitch table is included at the bottom of this 
+; file, originally generated using Damian Yerrick's `pitchtable.py`
+;
+; Additionally, the `audio_update` function was updated to swap to the SFX bank
 
+INCLUDE "include/banks.inc"
 INCLUDE "include/hardware.inc"
-;INCLUDE "src/global.inc"
 
 LOG_SIZEOF_CHANNEL equ 3
 LOG_SIZEOF_SFX equ 2
@@ -48,138 +49,6 @@ Channel_envpitch = 3
 section "wavebank", ROM0, ALIGN[4]
 wavebank:
   db $FF,$EE,$DD,$CC,$BB,$AA,$99,$88,$77,$66,$55,$44,$33,$22,$11,$00
-
-sfx_table:
-  db 3, 0
-  dw fx_roll
-  db 0, 0
-  dw fx_jump
-  db 0, 0
-  dw fx_land
-  db 0, 0
-  dw fx_fall
-  db 3, 0
-  dw fx_rolltojump
-  db 1, 0
-  dw fx_point
-  db 1, 0
-  dw fx_complete
-  db 0, 0
-  dw fx_launch
-
-  db 3, 0
-  dw fx_land2
-  db 1, 0
-  dw fx_achieve
-  db 1, 0
-  dw fx_combostop
-  db 3, 0
-  dw fx_lowcombo_bonk
-
-  db 2, 0
-  dw fx_wavetest
-
-fx_roll:
-  db ENVF_DPAR|ENVF_PITCH|1, $10, $6E
-  db ENVF_PITCH|7, $64
-  db ENVF_PITCH|5, $57
-  db ENVF_PITCH|7, $64
-  db ENVF_PITCH|5, $57
-fx_land2:
-  db ENVF_DPAR|ENVF_PITCH|5, $10, $6C
-  db ENVF_PITCH|2, $65
-  db ENVF_PITCH|1, $66
-  db ENVF_PITCH|1, $67
-  db $FF
-fx_rolltojump:
-  db ENVF_DPAR|ENVF_PITCH|1, $10, $5E
-  db ENVF_PITCH|2, $54
-  db ENVF_DPAR|ENVF_PITCH|2, $50, $25
-  db $FF
-fx_jump:
-  db ENVF_DPAR|ENVF_PITCH|$80, $59, 45
-  db ENVF_PITCH|$80, 47
-  db ENVF_PITCH|$80, 49
-  db ENVF_DPAR|ENVF_PITCH|$80, $81, 51
-  db ENVF_PITCH|$80, 53
-  db ENVF_PITCH|$80, 55
-  db ENVF_PITCH|$80, 56
-  db ENVF_PITCH|$80, 57
-  db $FF
-fx_land:
-  db ENVF_DPAR|ENVF_PITCH|$80, $81, 16
-  db ENVF_PITCH|$80, 12
-  db ENVF_PITCH|$80, 9
-  db ENVF_PITCH|$80, 7
-  db ENVF_PITCH|$80, 5
-  db ENVF_PITCH|$81, 3
-  db ENVF_PITCH|$82, 2
-  db $FF
-fx_fall:
-  db ENVF_DPAR|ENVF_PITCH|$81, $4A, 57
-  db ENVF_PITCH|$81, 56
-  db ENVF_PITCH|$81, 55
-  db ENVF_PITCH|$81, 54
-  db ENVF_DPAR|ENVF_PITCH|$81, $80, 53
-  db ENVF_PITCH|$81, 52
-  db ENVF_PITCH|$81, 51
-  db ENVF_PITCH|$81, 50
-  db ENVF_DPAR|ENVF_PITCH|$81, $72, 49
-  db ENVF_PITCH|$81, 48
-  db ENVF_PITCH|$81, 47
-  db ENVF_PITCH|$81, 46
-  db $FF
-fx_point:
-  db ENVF_DPAR|ENVF_PITCH|$84, $C1, 48
-  db ENVF_DPAR|ENVF_PITCH|$88, $C1, 55
-  db $FF
-fx_complete:
-  db ENVF_DPAR|ENVF_PITCH|$43, $C1, 36
-  db ENVF_DPAR|ENVF_PITCH|$43, $C1, 38
-  db ENVF_DPAR|ENVF_PITCH|$43, $C1, 40
-  db ENVF_DPAR|ENVF_PITCH|$43, $C1, 36
-  db ENVF_DPAR|ENVF_PITCH|$43, $D1, 40
-  db ENVF_DPAR|ENVF_PITCH|$43, $E1, 43
-  db ENVF_DPAR|ENVF_PITCH|$43, $F1, 48
-  db ENVF_PITCH|$41, 43
-  db ENVF_PITCH|$43, 48
-  db ENVF_PITCH|$41, 43
-  db ENVF_PITCH|$41, 48
-  db ENVF_PITCH|$41, 43
-  db ENVF_PITCH|$41, 48
-  db $FF
-fx_launch:
-  db ENVF_DPAR|ENVF_PITCH|$80, $F1, 58
-  db ENVF_PITCH|$40, 28
-  db ENVF_PITCH|$8D, 26
-  db $FF
-fx_achieve:
-  db ENVF_DPAR|ENVF_PITCH|$81, $C1, 37
-  db $42
-  db $81
-  db ENVF_DPAR|ENVF_PITCH|$43, $C1, 49
-  db $42
-  db $84
-  db $FF
-fx_combostop:
-  db ENVF_DPAR|ENVF_PITCH|$42, $A1, 31
-  db ENVF_DPAR|ENVF_PITCH|$42, $A1, 36
-  db ENVF_DPAR|ENVF_PITCH|$41, $A1, 40
-  db $82
-  db ENVF_DPAR|ENVF_PITCH|$42, $A1, 31
-  db ENVF_DPAR|ENVF_PITCH|$42, $A1, 34
-  db ENVF_DPAR|ENVF_PITCH|$41, $A1, 38
-  db $86
-  db $FF
-fx_lowcombo_bonk:
-  db ENVF_DPAR|ENVF_PITCH|2, $43, $5D
-  db ENVF_PITCH|2, $4D
-  db $FF
-
-fx_wavetest:
-  db ENVF_DPAR|ENVF_PITCH|$0F, $00, 24
-  db $FF
-
 
 section "audioengine", ROM0
 

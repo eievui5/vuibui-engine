@@ -150,13 +150,10 @@ Initialize::
     ld bc, $0010
     call memset
 
-; Enable audio
-    ld a, $80
-    ldh [rAUDENA], a
-    ld a, $FF
-    ldh [rAUDTERM], a
-    ld a, $FF
-    ldh [rAUDVOL], a
+; Configure audio
+    call audio_init
+    ld a, 9
+    call audio_play_fx
 
 ; Configure Default Pallet
     ldh a, [hSystem]

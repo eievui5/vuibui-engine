@@ -1,6 +1,8 @@
 
 Currently being built on RGBDS 0.5.1
 
+Requires a POSIX environment with GNU make and Python to build.
+
 Rangi's Tilemap Studio is used to create binary map files for the menus.
 A custom mapping software is being slowly developed for creating world maps.
 
