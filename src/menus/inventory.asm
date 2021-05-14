@@ -1084,7 +1084,7 @@ DrawEquipped:
 SECTION "Inventory Data", ROMX, BANK[2]
 
 InventoryMap:
-    INCBIN "res/menus/inventory.tilemap"
+    INCBIN "menus/inventory.tilemap"
 .end
 
 InventoryLetters:

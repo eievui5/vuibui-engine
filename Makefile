@@ -36,15 +36,15 @@ FIXFLAGS = -p $(PADVALUE) -v -i "$(GAMEID)" -k "$(LICENSEE)" -l $(OLDLIC) -m $(M
 # The list of "root" ASM files that RGBASM will be invoked on
 SRCS =  $(wildcard $(SRCDIR)/*.asm) \
 	$(wildcard $(SRCDIR)/entities/*.asm) \
-	$(wildcard $(SRCDIR)/res/metasprites/*.asm) \
 	$(wildcard $(SRCDIR)/libs/*.asm) \
-	$(wildcard $(SRCDIR)/scripts/*.asm) \
+	$(wildcard $(SRCDIR)/menus/*.asm) \
 	$(wildcard $(SRCDIR)/res/*.asm) \
 	$(wildcard $(SRCDIR)/res/gfx/*.asm) \
 	$(wildcard $(SRCDIR)/res/maps/*.asm) \
-	$(wildcard $(SRCDIR)/res/menus/*.asm) \
-	$(wildcard $(SRCDIR)/res/tilesets/*.asm) \
+	$(wildcard $(SRCDIR)/res/metasprites/*.asm) \
 	$(wildcard $(SRCDIR)/res/panorama/*.asm) \
+	$(wildcard $(SRCDIR)/res/tilesets/*.asm) \
+	$(wildcard $(SRCDIR)/scripts/*.asm) \
 
 ## Project-specific configuration
 # Use this to override the above

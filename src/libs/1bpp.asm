@@ -1,18 +1,4 @@
-/* 1bpp.asm
-    Functions related to loading and manipulating 1bpp graphics.
-
-Functions:
-
-    Unpack1bpp
-        - Equivalent to memcopy_small, but copies each byte twice for 1bpp 
-        graphics.
-    
-    Complement1bpp
-        - Complements each byte, inverting the resulting graphics.
-
-*/
-
-INCLUDE "include/banks.inc"
+INCLUDE "include/hardware.inc"
 
 SECTION "One Bit Per Pixel", ROM0
 
@@ -30,11 +16,17 @@ Unpack1bpp::
 	jr nz, Unpack1bpp
 	ret
 
+; Switches banks and calls Unpack1bpp, switching back to hCurrent bank when 
+; finished.
+; @ a:  target bank
+; @ c:  length
+; @ de: destination
+; @ hl: source
 Unback1bppBanked::
-	ld [mBankSelect], a
+	ld [rROMB0], a
 	call Unpack1bpp
 	ldh a, [hCurrentBank]
-	ld [mBankSelect], a
+	ld [rROMB0], a
 	ret
 
 ; Complements each byte, inverting the resulting graphics.

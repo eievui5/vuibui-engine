@@ -363,7 +363,7 @@ ReloadMapGraphics::
 
     ld a, [hli]
     ldh [hMapBankBuffer], a
-    ld [mBankSelect], a
+    ld [rROMB0], a
 
     ld a, [hli]
     ld h, [hl]
@@ -383,12 +383,12 @@ ReloadMapGraphics::
     ld d, [hl]
     ld e, a
     ld a, c
-    ld [mBankSelect], a
+    ld [rROMB0], a
     ld hl, VRAM_TILES_SHARED
     call pb16_unpack_block
 
     ldh a, [hMapBankBuffer]
-    ld [mBankSelect], a
+    ld [rROMB0], a
 
     pop hl
 
@@ -404,7 +404,7 @@ ReloadMapGraphics::
     ld h, [hl]
     ld l, a
     ld a, b
-    ld [mBankSelect], a
+    ld [rROMB0], a
 
     ld c, MAP_BKG_PALS * sizeof_PALETTE
     ld de, wBCPD
@@ -419,7 +419,7 @@ ReloadMapGraphics::
     ld [wPaletteState], a
 
     ldh a, [hCurrentBank]
-    ld [mBankSelect], a
+    ld [rROMB0], a
 
     ret
 

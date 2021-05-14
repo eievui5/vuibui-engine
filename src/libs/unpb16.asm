@@ -25,7 +25,7 @@
 ; This software has been modified by Eievui
 ; - MBC5 bank trampoline function
 
-INCLUDE "include/banks.inc"
+INCLUDE "include/hardware.inc"
 
 section "pb16 temp byte", HRAM
 
@@ -98,8 +98,8 @@ pb16_unpack_block::
 
 ; Swaps to bank `a` before calling pb16_unpack_block, and restores the bank upon exit
 pb16_unpack_banked::
-  ld [mBankSelect], a
+  ld [rROMB0], a
   call pb16_unpack_block
   ldh a, [hCurrentBank]
-  ld [mBankSelect], a
+  ld [rROMB0], a
   ret

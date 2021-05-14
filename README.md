@@ -7,7 +7,6 @@ A custom mapping software is being slowly developed for creating world maps.
 Naming Conventions:
 
 - All labels are `PascalCase`
-  - Prefix `m`: MBC5 registers
   - Prefix `v`: Video RAM
   - Prefix `s`: Save/External RAM
   - Prefix `w`: Work RAM

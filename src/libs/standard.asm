@@ -32,10 +32,10 @@ memcopy_small::
     ret
 
 SECTION "Swap Bank", ROM0[$0018]
-; Sets mBankSelect and hCurrentBank to `a`
+; Sets rROMB0 and hCurrentBank to `a`
 ; @ a: Bank
 SwapBank::
-    ld [mBankSelect], a
+    ld [rROMB0], a
     ldh [hCurrentBank], a
     ret
 
@@ -138,3 +138,8 @@ LCDMemsetSmall::
 	dec c
 	jr nz, LCDMemsetSmall
 	ret
+
+SECTION "Farcall Byte", HRAM
+
+hFarCallByte:
+    ds 1
