@@ -103,7 +103,7 @@ TestMenuInit:
         ld hl, PalGrey
         ld de, wBCPD
         ld c, sizeof_PALETTE
-        call memcopy_small
+        rst memcopy_small
 
         ld a, PALETTE_STATE_RESET
         call UpdatePalettes

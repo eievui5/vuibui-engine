@@ -17,8 +17,7 @@ _hl_::
 SECTION "Memcopy Small", ROM0[$0010]
 
 ; A slightly faster version of memcopy that requires less setup but can only do
-; up to 256 bytes. Fits into `rst $18` and thus can be written as 
-; `rst memcopy_small`. Destination and source are both offset by length, in case 
+; up to 256 bytes. Destination and source are both offset by length, in case 
 ; you want to copy to or from multiple places
 ; @ c:  length
 ; @ de: destination
@@ -31,7 +30,22 @@ memcopy_small::
     jr nz, memcopy_small
     ret
 
-SECTION "Swap Bank", ROM0[$0018]
+SECTION "Memset Small", ROM0[$0018]
+
+; A slightly faster version of memset that requires less setup but can only do
+; up to 256 bytes. Destination and source are both offset by length, in case 
+; you want to copy to or from multiple places
+; @ a:  source (is preserved)
+; @ c:  length
+; @ hl: destination
+memset_small::
+    ld [hli],a
+    dec c
+    jr nz, memset_small
+    ret
+
+
+SECTION "Swap Bank", ROM0[$0020]
 ; Sets rROMB0 and hCurrentBank to `a`
 ; @ a: Bank
 SwapBank::
@@ -50,7 +64,7 @@ SECTION "Overwrite Bytes", ROM0
 
 ; Overwrites a certain amount of bytes with a single byte. Destination is offset
 ; by length, in case you want to overwrite with different values.
-; @  a: source (is preserved)
+; @ a:  source (is preserved)
 ; @ bc: length
 ; @ hl: destination
 memset::

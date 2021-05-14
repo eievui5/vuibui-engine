@@ -84,9 +84,9 @@ PoppyArrowLogic::
 
 .destroySelf
     find_arrow
-    ld bc, sizeof_Entity
+    ld c, sizeof_Entity
     xor a, a
-    call memset
+    rst memset_small
     ld hl, wPoppyActiveArrows
     dec [hl]
     ret

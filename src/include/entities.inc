@@ -24,9 +24,9 @@ ENDM
 MACRO kill_entity
     ld hl, wEntityArray
     add hl, bc
-    xor a
-    ld bc, sizeof_Entity
-    call memset
+    xor a, a
+    ld c, sizeof_Entity
+    rst memset_small
 ENDM
 
     struct Entity

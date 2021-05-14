@@ -80,9 +80,9 @@ OctaviaSpellLogic::
 
 .destroySelf
     ld hl, wOctaviaSpell
-    ld bc, sizeof_Entity
+    ld c, sizeof_Entity
     xor a, a
-    call memset
+    rst memset_small
     ld [wOctaviaSpellActive], a
     ret
 

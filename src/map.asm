@@ -30,15 +30,15 @@ UpdateActiveMap::
     ; Clear player spell
     ld hl, wOctaviaSpell
     ASSERT wOctaviaSpell + sizeof_Entity == wPoppyArrow0
-    ld bc, sizeof_Entity * 3
+    ld c, sizeof_Entity * 3
     xor a, a
-    call memset
+    rst memset_small
     ld [wOctaviaSpellActive], a
     
     ; Clear entity array
-    ld bc, sizeof_Entity * MAX_ENTITIES
+    ld c, sizeof_Entity * MAX_ENTITIES
     ld hl, wEntityArray
-    call memset
+    rst memset_small
 
 	bit UPDATE_TILEMAP_B, d
 	jp z, .skipNewTileMap

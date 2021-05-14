@@ -17,16 +17,16 @@ SECTION "Clear OAM", ROM0
 ; Reset OAM, wShadowOAM, and wOAMIndex to 0. Only use while VRAM is accessible!
 ResetOAM::
     xor a, a
-    ld bc, wShadowOAM.end - wShadowOAM
+    ld c, wShadowOAM.end - wShadowOAM
     ld hl, _OAMRAM
-    call memset
+    rst memset_small
 ; Reset wShadowOAM and wOAMIndex to 0.
 CleanOAM::
     xor a, a
     ldh [hOAMIndex], a ; Reset the OAM index.
-    ld bc, wShadowOAM.end - wShadowOAM
+    ld c, wShadowOAM.end - wShadowOAM
     ld hl, wShadowOAM
-    jp memset
+    jp memset_small
 
 SECTION UNION "Shadow OAM", WRAM0, ALIGN[8]
 wShadowOAM::

@@ -42,8 +42,8 @@ AddMenu::
     jr nz, .copy
 
     xor a
-    ld bc, sizeof_Menu - Menu_ROMSize
-    call memset
+    ld c, sizeof_Menu - Menu_ROMSize
+    rst memset_small
 
     pop hl
     ld a, [hli] ; Get bank

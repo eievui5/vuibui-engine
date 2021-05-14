@@ -91,14 +91,14 @@ Initialize::
         ld [wStatFXMode], a
         ; Clear Raster Array
         ld hl, wRasterFX
-        ld bc, 80
-        call memset
+        ld c, 80
+        rst memset_small
         ; Clear Static FX
         ld [wStaticFX], a
         ; Clear palettes
         ld hl, wBCPD
-        ld bc, sizeof_PALETTE * 16 + 1
-        call memset
+        ld c, sizeof_PALETTE * 16 + 1
+        rst memset_small
         
         ld [wNbMenus], a
         ld [wRoomTransitionDirection], a
@@ -147,8 +147,8 @@ Initialize::
     jr nz, :-
     ; Black
     ld a, $FF
-    ld bc, $0010
-    call memset
+    ld c, sizeof_TILE
+    rst memset_small
 
 ; Configure audio
     call audio_init
@@ -211,9 +211,9 @@ InitializeGameplay::
 ; Clean and initialize player array.
 
     ; Until there is a save file, just zero-init the player variables
-    ld bc, SIZEOF("Player Variables")
+    ld c, SIZEOF("Player Variables")
     ld hl, STARTOF("Player Variables")
-    call memset
+    rst memset_small
     ld [wPoppyActiveArrows], a
 
     ld a, ITEMF_FIRE_WAND | ITEMF_SHOCK_WAND | ITEMF_ICE_WAND | ITEMF_HEAL_WAND
@@ -232,8 +232,8 @@ InitializeGameplay::
     ld a, 256/2
     ld [hli], a
     xor a, a
-    ld bc, sizeof_Entity - Entity_XPos - 1
-    call memset
+    ld c, sizeof_Entity - Entity_XPos - 1
+    rst memset_small
 
     ld a, high(PlayerPoppy)
     ld [hli], a
@@ -244,8 +244,8 @@ InitializeGameplay::
     ld a, 256/2 - 16
     ld [hli], a
     xor a, a
-    ld bc, sizeof_Entity - Entity_XPos - 1
-    call memset
+    ld c, sizeof_Entity - Entity_XPos - 1
+    rst memset_small
 
     ld a, high(PlayerTiber)
     ld [hli], a
@@ -256,8 +256,8 @@ InitializeGameplay::
     ld a, 256/2 + 16
     ld [hli], a
     xor a, a
-    ld bc, sizeof_Entity - Entity_XPos - 1
-    call memset
+    ld c, sizeof_Entity - Entity_XPos - 1
+    rst memset_small
 
 ; Player health
     ld a, 10

@@ -30,12 +30,12 @@ ResetHUD::
     ldh [rVBK], a
     ld a, OAMF_GBCPAL7
     ; Color the HUD
-    ld bc, 20
+    ld c, SCRN_X_B
     ld hl, vHUD
-    call memset
-    ld bc, 20
+    rst memset_small
+    ld c, SCRN_X_B
     ld hl, vHUD + 32
-    call memset
+    rst memset_small
     xor a, a
     ldh [rVBK], a
 
@@ -46,12 +46,12 @@ ResetHUD::
 
     ; Clear the HUD
     ld a, TILE_WHITE
-    ld bc, 20
+    ld c, SCRN_X_B
     ld hl, vHUD
-    call memset
-    ld bc, 20
+    rst memset_small
+    ld c, SCRN_X_B
     ld hl, vHUD + 32
-    call memset
+    rst memset_small
 
     ; Load the button hints
     ld hl, vAHint
@@ -170,12 +170,12 @@ UpdateHUD::
 
     ; Clear the HUD
     ld a, TILE_WHITE
-    ld bc, 10
+    ld c, 10
     ld hl, vHeartBar
-    call memset
-    ld bc, 10
+    rst memset_small
+    ld c, 10
     ld hl, vHeartBar + 32
-    call memset
+    rst memset_small
 
     ldh a, [hSystem]
     and a, a
@@ -310,8 +310,8 @@ UpdatePrint::
 
     ld hl, vPrintBar - 32
     ld a, TILE_BLACK
-    ld bc, 32
-    call memset
+    ld c, 32
+    rst memset_small
 
     ; Clear the printing row.
     ld hl, vPrintBar
@@ -344,8 +344,8 @@ UpdatePrint::
     add hl, bc
 
     ld a, $FF
-    ld bc, 16 * 4
-    call memset
+    ld c, 16 * 4
+    rst memset_small
 
     ld a, [wHUDPrintIndex]
     add a, 4
@@ -438,8 +438,8 @@ UpdatePrint::
     add hl, bc
 
     ld a, $FF
-    ld bc, 16
-    call memset
+    ld c, 16
+    rst memset_small
 
     ld a, [wPrintWaitTimer]
     dec a

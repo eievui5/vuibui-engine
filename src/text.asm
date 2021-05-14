@@ -89,8 +89,8 @@ HandleTextbox::
     add a, a ; a * 32
     ld l, a ; Destination
     ld a, HUD_MAIN_PAL
-    ld bc, TEXTBOX_WIDTH
-    call memset
+    ld c, TEXTBOX_WIDTH
+    rst memset_small
 
     xor a, a
     ldh [rVBK], a
@@ -112,7 +112,7 @@ HandleTextbox::
 
 .cleanTiles
     ; Clean text tiles
-    ld bc, $20
+    ld c, $20
     ld hl, _VRAM + $1500
     ld a, [wTextScreenIndex]
     swap a ; a * 16
@@ -121,7 +121,7 @@ HandleTextbox::
     swap a ; a * 16
     add_r16_a h, l ; a * 32
     ld a, $FF
-    call memset
+    rst memset_small
 
     ld a, [wTextScreenIndex]
     inc a
