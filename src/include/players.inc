@@ -101,7 +101,7 @@ DEF POPPY_ARROW_DAMAGE EQU 1
 
     DEF ITEMF_SWORD         EQU 1
 
-    start_enum SPELL_GFX
+    start_enum SPELL
         enum NONE
         enum FIRE
         enum ICE

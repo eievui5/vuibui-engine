@@ -46,10 +46,6 @@ Channel_envseg_cd = 0
 Channel_envptr = 1
 Channel_envpitch = 3
 
-section "wavebank", ROM0, ALIGN[4]
-wavebank:
-  db $FF,$EE,$DD,$CC,$BB,$AA,$99,$88,$77,$66,$55,$44,$33,$22,$11,$00
-
 section "audioengine", ROM0
 
 ; Starting sequences ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

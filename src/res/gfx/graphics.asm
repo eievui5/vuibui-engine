@@ -13,13 +13,13 @@ SECTION "Player Graphics", ROMX
         INCBIN "res/gfx/chars/tiber.h.2bpp"
     .end::
     GfxPlayerSpells::
-        ASSERT SPELL_GFX_FIRE == 1
+        ASSERT SPELL_FIRE == 1
         INCBIN "res/gfx/misc/fire.2bpp"
-        ASSERT SPELL_GFX_ICE == 2
+        ASSERT SPELL_ICE == 2
         INCBIN "res/gfx/misc/ice.2bpp"
-        ASSERT SPELL_GFX_SHOCK == 3
+        ASSERT SPELL_SHOCK == 3
         INCBIN "res/gfx/misc/shock.2bpp"
-        ASSERT SPELL_GFX_HEAL == 4
+        ASSERT SPELL_HEAL == 4
         INCBIN "res/gfx/misc/heal.2bpp"
     pb16_GfxArrow::
         INCBIN "res/gfx/misc/arrow.h.pb16"

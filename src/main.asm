@@ -22,16 +22,14 @@ Main::
     jr z, Menu
     ld b, b
 
-.end::
-    ; When main is unhalted we ensure that it will not loop.
     xor a, a
     ld [wNewFrame], a
+.end::
+    ; When main is unhalted we ensure that it will not loop.
     halt
     ld a, [wNewFrame]
     and a, a
     jr z, .end
-    xor a, a
-    ld [wNewFrame], a
     jr Main
 
 Gameplay:

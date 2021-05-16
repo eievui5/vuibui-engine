@@ -61,7 +61,7 @@ MACRO enum
         FAIL "`enum` missing opening `start_enum`!"
     ENDC
     FOR i, _NARG
-        DEF ENUM_FIELD_NAME EQUS "{ENUM_NAME}_\1" 
+        DEF ENUM_FIELD_NAME EQUS "{ENUM_NAME}_\1"
         IF i != 0
             RSSET _RS - ENUM_STEP
         ENDC

@@ -5,6 +5,7 @@ INCLUDE "include/directions.inc"
 INCLUDE "include/entities.inc"
 INCLUDE "include/graphics.inc"
 INCLUDE "include/players.inc"
+INCLUDE "include/sfx.inc"
 INCLUDE "include/switch.inc"
 
 /*  Octavia's functions.
@@ -106,23 +107,23 @@ OctaviaDamage:
 OctaviaRod:
 .heal
     ld d, 1
-    ld e, SPELL_GFX_HEAL
+    ld e, SPELL_HEAL
     ld b, TRUE ; b is true if the spell should heal players.
     ld c, 1
     jr .shootHeal
 .fire
     ld d, DAMAGE_EFFECT_FIRE | OCTAVIA_FIRE_DAMAGE
-    ld e, SPELL_GFX_FIRE
+    ld e, SPELL_FIRE
     ld c, 0
     jr .shoot
 .ice
     ld d, DAMAGE_EFFECT_ICE | OCTAVIA_ICE_DAMAGE
-    ld e, SPELL_GFX_ICE
+    ld e, SPELL_ICE
     ld c, 2
     jr .shoot
 .shock
     ld d, DAMAGE_EFFECT_SHOCK | OCTAVIA_SHOCK_DAMAGE
-    ld e, SPELL_GFX_SHOCK
+    ld e, SPELL_SHOCK
     ld c, 1
 .shoot
     ld b, FALSE ; b is false if the spell should hurt enemies.
@@ -147,6 +148,7 @@ OctaviaRod:
     ret c
     ld a, FRAMEOFF_SWING
     ld [wOctavia_Frame], a
+    jr z, .playSound ; If this is the first time swinging, play a sound
     ld a, [wOctavia_Timer]
     cp a, 8 + 4 + 1 ; 8 frame action!
     ret c
@@ -173,31 +175,28 @@ OctaviaRod:
     ld a, [wOctavia_Direction]
     ASSERT DIR_DOWN == 0
     and a, a
-    jr z, .down
+    jr z, .pos
     ASSERT DIR_UP == 1
     dec a
-    jr z, .up
+    jr z, .neg
     ASSERT DIR_RIGHT == 2
     inc l
     dec a
-    jr z, .right
+    jr z, .pos
     ASSERT DIR_LEFT == 3
-.left
+.neg
     ld a, -3
     ld [hl], a
     ret
-.down
-    ld a, 3
-    ld [hl], a ; Copy/pasting this is faster and smaller than jr.
-    ret
-.up
-    ld a, -3
-    ld [hl], a
-    ret
-.right
+.pos
     ld a, 3
     ld [hl], a
     ret
+.playSound
+    ; Use value in `e` to find SFX
+    ld a, SOUND_FLAME - 1
+    add a, e
+    jp audio_play_fx
 .forceExit
     ASSERT PLAYER_STATE_NORMAL == 0
     xor a, a

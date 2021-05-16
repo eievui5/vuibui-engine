@@ -152,8 +152,6 @@ Initialize::
 
 ; Configure audio
     call audio_init
-    ld a, 9
-    call audio_play_fx
 
 ; Configure Default Pallet
     ldh a, [hSystem]
@@ -221,6 +219,8 @@ InitializeGameplay::
     ld a, ITEMF_SWORD
     ld [wItems.poppy], a
     ld [wItems.tiber], a
+    ld a, ITEM_FIRE_WAND | ITEM_ICE_WAND << 4
+    ld [wPlayerEquipped.octavia], a
 
     ld a, high(PlayerOctavia)
     ld hl, wOctavia
