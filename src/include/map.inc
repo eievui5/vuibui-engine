@@ -1,4 +1,5 @@
 
+INCLUDE "include/banks.inc"
 INCLUDE "include/enum.inc"
 INCLUDE "include/structs.inc"
 
@@ -101,6 +102,7 @@ ENDM
 ; Map enumerations
     start_enum MAP
         enum OVERWORLD
+        enum BEACH
     end_enum
 
     struct MapData

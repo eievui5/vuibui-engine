@@ -15,8 +15,6 @@ DEPDIR := dep
 RESDIR := res
 
 # Program constants
-RM_RF := rm -rf
-MKDIR_P := mkdir -p
 RGBDS   := 
 
 RGBASM  := $(RGBDS)rgbasm
@@ -62,10 +60,10 @@ all: $(ROM)
 
 # `clean`: Clean temp and bin files
 clean:
-	$(RM_RF) $(BINDIR)
-	$(RM_RF) $(OBJDIR)
-	$(RM_RF) $(DEPDIR)
-	$(RM_RF) $(RESDIR)
+	rm -rf $(BINDIR)
+	rm -rf $(OBJDIR)
+	rm -rf $(DEPDIR)
+	rm -rf $(RESDIR)
 .PHONY: clean
 
 # `rebuild`: Build everything from scratch
@@ -83,7 +81,7 @@ rebuild:
 
 # How to build a ROM
 $(BINDIR)/%.$(ROMEXT) $(BINDIR)/%.sym $(BINDIR)/%.map: $(patsubst $(SRCDIR)/%.asm,$(OBJDIR)/%.o,$(SRCS))
-	@$(MKDIR_P) $(@D)
+	@mkdir -p $(@D)
 	$(RGBLINK) $(LDFLAGS) -m $(BINDIR)/$*.map -n $(BINDIR)/$*.sym -o $(BINDIR)/$*.$(ROMEXT) $^ \
 	&& $(RGBFIX) -v $(FIXFLAGS) $(BINDIR)/$*.$(ROMEXT)
 ifneq ($(OS),Windows_NT)
@@ -97,7 +95,7 @@ endif
 # Caution: some of these flags were added in RGBDS 0.4.0, using an earlier version WILL NOT WORK
 # (and produce weird errors)
 $(OBJDIR)/%.o $(DEPDIR)/%.mk: $(SRCDIR)/%.asm
-	@$(MKDIR_P) $(patsubst %/,%,$(dir $(OBJDIR)/$* $(DEPDIR)/$*))
+	@mkdir -p $(patsubst %/,%,$(dir $(OBJDIR)/$* $(DEPDIR)/$*))
 	$(RGBASM) $(ASFLAGS) -M $(DEPDIR)/$*.mk -MG -MP -MQ $(OBJDIR)/$*.o -MQ $(DEPDIR)/$*.mk -o $(OBJDIR)/$*.o $<
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -119,33 +117,38 @@ VPATH := $(SRCDIR)
 # Define how to compress files using the PackBits16 codec
 # Compressor script requires Python 3
 $(RESDIR)/%.pb16: ./tools/pb16.py $(RESDIR)/%.2bpp
-	@$(MKDIR_P) $(@D)
+	@mkdir -p $(@D)
 	$^ $@
 
 # Convert .png files into .2bpp files.
 $(RESDIR)/%.2bpp: $(RESDIR)/%.png
-	@$(MKDIR_P) $(@D)
+	@mkdir -p $(@D)
 	$(RGBGFX) -o $@ $^
 
 # Convert .png files into .1bpp files.
 $(RESDIR)/%.1bpp: $(RESDIR)/%.png
-	@$(MKDIR_P) $(@D)
+	@mkdir -p $(@D)
 	$(RGBGFX) -d 1 -o $@ $^
 
 # Convert .png files into .h.2bpp files (-h flag)
 $(RESDIR)/%.h.2bpp: $(RESDIR)/%.png
-	@$(MKDIR_P) $(@D)
+	@mkdir -p $(@D)
 	$(RGBGFX) -h -o $@ $^
 
 # Convert .png files into .h.1bpp files (-h flag)
 $(RESDIR)/%.h.1bpp: $(RESDIR)/%.png
-	@$(MKDIR_P) $(@D)
+	@mkdir -p $(@D)
 	$(RGBGFX) -d 1 -h -o $@ $^
 
 # Convert .png files into .pal files
 $(RESDIR)/%.pal: $(RESDIR)/%.png
-	@$(MKDIR_P) $(@D)
+	@mkdir -p $(@D)
 	$(RGBGFX) -p $@ $^
+
+# Convert .json files into .tilemap files
+$(RESDIR)/%.tilemap: $(RESDIR)/%.json
+	@mkdir -p $(@D)
+	python ./tools/tiledbin.py $^ $@
 
 # Catch non-existent files
 # KEEP THIS LAST!!

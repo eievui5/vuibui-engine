@@ -1,0 +1,14 @@
+{ "columns":3,
+ "image":"beach_metatiles.png",
+ "imageheight":64,
+ "imagewidth":48,
+ "margin":0,
+ "name":"beach",
+ "spacing":0,
+ "tilecount":12,
+ "tiledversion":"1.6.0",
+ "tileheight":16,
+ "tilewidth":16,
+ "type":"tileset",
+ "version":"1.6"
+}

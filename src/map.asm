@@ -428,6 +428,7 @@ ReloadMapGraphics::
 MapLookup:
     ; World Map 0
     far_pointer OverworldMap
+    far_pointer BeachMap
 
 PanoramaLookup::
     ; World Map 0
