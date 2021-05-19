@@ -40,16 +40,13 @@ VBlank:
     and a, a
     call nz, UpdatePalettes
 
+; These should be moved to the main thread!!!
+
 ; Load tiles during screen transition
     call VBlankScrollLoader
 
 ; Draw the textbox during dialogue
     call HandleTextbox
-
-; Check if octavia needs a new spell graphic.
-    ld a, BANK(OctaviaUpdateSpellGraphic)
-    swap_bank
-    call OctaviaUpdateSpellGraphic
 
 ; Redraw the HUD and print function
     ld a, [wEnableHUD]
@@ -84,6 +81,7 @@ VBlank:
 ; @ d:  X
 ; @ e:  Y
 SetScrollBuffer::
+    ; TODO: SetScrollBuffer can get stuck when trying to cross the entire screen.
     ld a, d
     cp a, 256 - 160 + 1 ; Is A past the screen bounds?
     jr nc, .storeY

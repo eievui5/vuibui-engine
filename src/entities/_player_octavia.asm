@@ -131,8 +131,6 @@ OctaviaRod:
     ld a, [wOctaviaSpellActive]
     and a, a
     jr nz, .forceExit
-    ld a, e
-    ld [wTargetSpellGraphic], a
 
     ld a, [wOctavia_Flags]
     and a, a
@@ -140,6 +138,21 @@ OctaviaRod:
     ld [wOctavia_Timer], a
     inc a
     ld [wOctavia_Flags], a
+    ; Update spell graphic
+    ld a, e
+    dec a
+    add a, a ; a * 2
+    swap a ; a * 32
+    ld hl, GfxPlayerSpells
+    add_r16_a hl
+    ; This is what you get when you try to refactor old code. Stack usage.
+    push bc
+    push de
+    ld c, 32 ; Size of 2 tiles
+    ld de, VRAM_TILES_OBJ + TILE_PLAYER_SPELL * $10
+    call LCDMemcopySmall
+    pop bc
+    pop de
 .skipInit
     ld a, [wOctavia_Timer]
     inc a
@@ -220,31 +233,19 @@ OctaviaAIFollow:
     ld hl, wOctavia
     jp PlayerMoveAndSlide
 
-; Updates the current spell graphic during VBlank if needed.
-OctaviaUpdateSpellGraphic::
-    ld a, [wActiveSpellGraphic]
-    ld b, a
-    ld a, [wTargetSpellGraphic]
-    cp a, b
-    ret z
-    ld [wActiveSpellGraphic], a
-    dec a
-    add a, a ; a * 2
-    swap a  ; a * 32
-    ld hl, GfxPlayerSpells
-    add_r16_a hl
-    ld a, BANK(GfxPlayerSpells)
-    swap_bank
-    ld bc, 32 ; Size of 2 tiles
-    ld de, VRAM_TILES_OBJ + TILE_PLAYER_SPELL * $10
-    jp memcopy
+GfxPlayerSpells::
+    ASSERT SPELL_FIRE == 1
+    INCBIN "res/gfx/misc/fire.2bpp"
+    ASSERT SPELL_ICE == 2
+    INCBIN "res/gfx/misc/ice.2bpp"
+    ASSERT SPELL_SHOCK == 3
+    INCBIN "res/gfx/misc/shock.2bpp"
+    ASSERT SPELL_HEAL == 4
+    INCBIN "res/gfx/misc/heal.2bpp"
 
 SECTION "Octavia Vars", WRAM0
-wActiveSpellGraphic::
-    ds 1
-wTargetSpellGraphic::
-    ds 1
 
+; Is there a spell active?
 wOctaviaSpellActive::
     ds 1
 

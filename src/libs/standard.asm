@@ -153,6 +153,28 @@ LCDMemsetSmall::
 	jr nz, LCDMemsetSmall
 	ret
 
+; Waits for VRAM access before copying data.
+; @ bc: length
+; @ de: destination
+; @ hl: source
+LCDMemcopySmall::
+    dec bc
+    inc b
+    inc c
+.loop:
+    ldh a, [rSTAT]
+    and STATF_BUSY
+    jr nz, .loop
+
+    ld a, [hli]
+    ld [de], a
+    inc de
+    dec c
+    jr nz, .loop
+    dec b
+    jr nz, .loop
+    ret
+
 SECTION "Farcall Byte", HRAM
 
 hFarCallByte:

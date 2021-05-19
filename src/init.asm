@@ -103,8 +103,6 @@ Initialize::
         ld [wNbMenus], a
         ld [wRoomTransitionDirection], a
         ld [wTextState], a
-        ld [wActiveSpellGraphic], a
-        ld [wTargetSpellGraphic], a
         ld [wEnableHUD], a
         ld [wFrameTimer], a
         ld [wTextScriptFinished], a

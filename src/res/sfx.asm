@@ -111,8 +111,10 @@ ENDM
 SECTION "Sound Effects", ROMX, ALIGN[4]
 
 sfx_table::
-    dsound FLAME, WAVE, fx_wavetest; SoundFlame
+    dsound FLAME, NOISE, SoundFlame
     dsound ICE_SPELL, NOISE, SoundLightning
+    dsound SHOCK_SPELL, WAVE, fx_wavetest
+    dsound HEAL_SPELL, WAVE, fx_wavetest
 
 wavebank::
     ; Toothy Wave
