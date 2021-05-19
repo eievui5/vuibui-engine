@@ -45,9 +45,6 @@ VBlank:
 ; Load tiles during screen transition
     call VBlankScrollLoader
 
-; Draw the textbox during dialogue
-    call HandleTextbox
-
 ; Redraw the HUD and print function
     ld a, [wEnableHUD]
     and a, a
@@ -63,7 +60,7 @@ VBlank:
     ld hl, wFrameTimer
     inc [hl]
 
-    ; Let the main loop know a new frame is ready
+    ; Let the wait loops know a new frame is ready
     ld a, TRUE
     ld [wNewFrame], a
 

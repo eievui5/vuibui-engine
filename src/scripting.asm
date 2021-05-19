@@ -66,16 +66,6 @@ ScriptNull:
     ret
 
 ScriptText:
-    ld a, [wTextScriptFinished]
-    and a, a
-    jr nz, .textEnd
-    ld a, [wTextState]
-    ASSERT TEXT_HIDDEN == 0
-    and a, a
-    ret nz
-.textStart
-    ld a, TEXT_START
-    ld [wTextState], a
     load_hl_scriptpointer
     inc hl
     ; Load bank
@@ -86,11 +76,7 @@ ScriptText:
     ld [wTextPointer], a
     ld a, [hl]
     ld [wTextPointer + 1], a
-    ret
-.textEnd
-    ; Clear finished flag
-    xor a, a
-    ld [wTextScriptFinished], a
+    call HandleTextbox
     load_hl_scriptpointer
     inc hl 
     inc hl 
@@ -206,7 +192,3 @@ SECTION "Script Variables", WRAM0
 
 wActiveScriptPointer::
     ds 3 ; bank, little endian pointer
-
-; Is the text we created done?
-wTextScriptFinished::
-    ds 1

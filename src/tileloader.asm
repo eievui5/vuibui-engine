@@ -358,13 +358,16 @@ VBlankScrollLoader::
     ldh [hSCXBuffer], a
     ret
 
-; Used to load a full map of 20*18 regular tiles
+; Used to load a full map of 20*18 regular tiles. LCD-Safe
 ; @ hl: Pointer to upper-left tile
 ; @ de: Pointer to source tile map
 ; @ b : Number of rows to copy
 ScreenCopy::
     ld c, SCRN_X_B
 .rowLoop
+        ldh a, [rSTAT]
+        and STATF_BUSY
+        jr nz, .rowLoop
     ld a, [de]
     ld [hli], a
     inc de
@@ -376,13 +379,16 @@ ScreenCopy::
     add_r16_a hl
     jr ScreenCopy
 
-; Used to set a full map of 20*14 regular tiles
+; Used to set a full map of 20*14 regular tiles. LCD-Safe
 ; @ hl: Pointer to upper-left tile
 ; @ b : Tile ID
 ; @ c : Number of rows to copy
 ScreenSet::
     ld d, SCRN_X_B
 .rowLoop
+        ldh a, [rSTAT]
+        and STATF_BUSY
+        jr nz, .rowLoop
     ld a, b
     ld [hli], a
     dec d

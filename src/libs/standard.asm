@@ -153,6 +153,27 @@ LCDMemsetSmall::
 	jr nz, LCDMemsetSmall
 	ret
 
+; @ d:  source (is preserved)
+; @ bc: length
+; @ hl: destination
+LCDMemset::
+    inc b
+    inc c
+    jr .decCounter
+.loadByte
+	ldh a, [rSTAT]
+	and STATF_BUSY
+	jr nz, .loadByte
+
+    ld a, d
+    ld [hli], a
+.decCounter
+    dec c
+    jr nz, .loadByte
+    dec b
+    jr nz, .loadByte
+    ret
+
 ; Waits for VRAM access before copying data.
 ; @ bc: length
 ; @ de: destination

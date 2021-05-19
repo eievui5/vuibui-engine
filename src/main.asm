@@ -62,8 +62,10 @@ Transition:
 
 Script:
     call CleanOAM
+    ; Render before scripting, in case scripting takes more than a frame 
+    ; ( drawing text, for example ). This shouldn't matter much.
+    call RenderEntities 
     call HandleScript
-    call RenderEntities
     jr Main.end
 
 Menu:

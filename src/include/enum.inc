@@ -24,11 +24,11 @@
     IF !DEF(ENUM_INC)
 DEF ENUM_INC SET 1
 
-; Start a new enumeration.
+; Start a new enumeration. Will warn if an unclosed enum is found.
 ; @ start_enum Name, [start], [step]
 MACRO start_enum 
 
-; Start an enumeration
+    ; Check for arguments and unclosed enums.
     IF _NARG < 1
         FAIL "Expected at least 1 arg"
     ENDC
@@ -38,14 +38,14 @@ MACRO start_enum
 
     DEF ENUM_NAME EQUS "\1"
 
-; Handle start position
+    ; Handle start position
     IF _NARG > 1
         RSSET \2
     ELSE
         RSRESET
     ENDC
 
-; Handle step amount
+    ; Handle step amount
     IF _NARG == 3
         DEF ENUM_STEP EQU \3
     ELSE
@@ -54,25 +54,24 @@ MACRO start_enum
 ENDM
 
 ; Add new values to the enumeration, one higher than the last. 
-; Will result in the constant "Name_Value"
+; Will result in the constant "Name_Value". If multiple arguments are supplied
+; they will all share a value.
 ; @ enum Value, [Value]...
 MACRO enum
     IF !DEF(ENUM_NAME)
         FAIL "`enum` missing opening `start_enum`!"
     ENDC
     FOR i, _NARG
-        DEF ENUM_FIELD_NAME EQUS "{ENUM_NAME}_\1"
         IF i != 0
             RSSET _RS - ENUM_STEP
         ENDC
-ENUM_FIELD_NAME RB ENUM_STEP
-        PURGE ENUM_FIELD_NAME
+        DEF {ENUM_NAME}_\1 RB ENUM_STEP
         SHIFT
     ENDR
 
 ENDM
 
-; End an enumeration and clean up
+; End an enumeration and clean up variables.
 MACRO end_enum
     IF !DEF(ENUM_NAME)
         FAIL "`end_enum` missing opening `start_enum`!"

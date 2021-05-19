@@ -20,154 +20,94 @@ INCLUDE "include/text.inc"
 
 SECTION "Text Box", ROM0
 
-; How many tiles can we set per frame?
-TEXTBOX_WIDTH EQU 20
-
 ; Initiallize, render, and close the textbox.
-; Sorry to anyone reading through this, it's not well-commented.
 HandleTextbox::
-
-    ld a, [wTextState]
-    and a, a
-    ret z ; No flag state? Return
-    dec a ; Set the minimum value to 0 for switch
-    switch
-        case TEXT_START - 1, .start
-        case TEXT_CLEARING - 1, .clearWindow
-        case TEXT_CLEANING - 1, .cleanTiles
-        case TEXT_DRAWING - 1, .drawing
-        case TEXT_WAITING -1, .waiting
-        case TEXT_ASK - 1, .ask
-    end_switch
-
-.start
-    ; Reset Textbox screen index.
+; Initialize textbox
     xor a, a
     ld [wTextScreenIndex], a
     ; Hide HUD
     ld a, 143
     ldh [rLYC], a
-    ; Update wTextState
-    ld a, TEXT_CLEARING
-    ld [wTextState], a
-    ret
-
-.clearWindow
+    
+; Clean VRAM
 
     ld a, BANK(TextboxMap)
     swap_bank
 
     ; Map the window to textbox.
-    ld d, high(_SCRN1) + 3
-    ld a, [wTextScreenIndex]
-    swap a ; a * 16
-    add a, a ; a * 32
-    ld e, a ; Destination
-    ld a, [wTextScreenIndex]
-    ld c, a
-    ld hl, TextboxMap
-    swap a   ; a * 16
-    add a, c ; a * 17
-    add a, c ; a * 18
-    add a, c ; a * 19
-    add a, c ; a * 20
-    add_r16_a h, l
-    ld c, TEXTBOX_WIDTH
-    rst memcopy_small
+    ld hl, _SCRN1 + $300
+    ld de, TextboxMap
+    ld b, 5 ; Load 5 rows.
+    call ScreenCopy
 
+    ; Reset palettes on CGB.
     ldh a, [hSystem]
     and a, a
-    jr z, .cgbSkip
-
-    ld a, 1
-    ldh [rVBK], a
-
-    ; Reset Textbox palettes
-    ld h, high(_SCRN1) + 3
-    ld a, [wTextScreenIndex]
-    swap a ; a * 16
-    add a, a ; a * 32
-    ld l, a ; Destination
-    ld a, HUD_MAIN_PAL
-    ld c, TEXTBOX_WIDTH
-    rst memset_small
-
-    xor a, a
-    ldh [rVBK], a
-
-.cgbSkip
-
-    ld a, [wTextScreenIndex]
-    inc a
-    ld [wTextScreenIndex], a
-    cp a, 5 ; Copy 5 lines.
-    ret nz
-
-    ; Reset screen index and switch to cleaning state
-    xor a, a
-    ld [wTextScreenIndex], a
-    ld a, TEXT_CLEANING
-    ld [wTextState], a
-    ret 
+    jr z, .cleanTiles
+        ld a, 1
+        ldh [rVBK], a
+        ld hl, _SCRN1 + $300
+        ld b, HUD_MAIN_PAL
+        ld c, 5 ; Load 5 rows.
+        call ScreenSet
+        xor a, a
+        ldh [rVBK], a
 
 .cleanTiles
     ; Clean text tiles
-    ld c, $20
+    ld bc, sizeof_TILE * 32
     ld hl, _VRAM + $1500
-    ld a, [wTextScreenIndex]
-    swap a ; a * 16
-    add_r16_a h, l
-    ld a, [wTextScreenIndex]
-    swap a ; a * 16
-    add_r16_a h, l ; a * 32
-    ld a, $FF
-    rst memset_small
+    ld d, $FF
+    call LCDMemset
 
-    ld a, [wTextScreenIndex]
-    inc a
-    ld [wTextScreenIndex], a
-    cp a, 16 ; 512 / 32 = 16
-    ret nz
-
-    xor a, a
-    ld [wTextScreenIndex], a
-    ld a, TEXT_DRAWING
-    ld [wTextState], a
+; Show Textbox
     ld a, 144 - 40
     ldh [rLYC], a
-    ld a, STATIC_FX_TEXTBOX_PALETTE
-    ld [wStaticFX], a
-    ret
 
-.drawing
-    ; 10 Chars per line, 20 max.
+    ldh a, [hSystem]
+    and a, a
+    ld a, STATIC_FX_SHOW_HUD ; Show HUD on DMG
+    jr z, :+
+        ld a, STATIC_FX_TEXTBOX_PALETTE ; Use Hi-Color on CGB
+:   ld [wStaticFX], a
+
+.draw
+    ; Wait for the next frame to draw another character.
+    xor a, a
+    ld [wNewFrame], a
+:   halt
+    ld a, [wNewFrame]
+    and a, a
+    jr z, :-
 
     ld a, [wTextBank]
     swap_bank
 
-    ; This is messy and dumb, I know. But it's only a few (2) extra cycles to save 2 bytes of ram
-    ld a, [wTextPointer]
-    ld h, a
-    ld a, [wTextPointer + 1]
-    ld l, a
-    inc hl
-    ld a, h
-    ld [wTextPointer], a
-    ld a, l
-    ld [wTextPointer + 1], a
-    dec hl
-    ; hl now points to next ascii character to print.
-    ld a, [hl]
+    ld hl, wTextPointer
+    ld a, [hli]
+    ld d, a
+    ld a, [hld]
+    ld e, a
+    inc de
+    ld a, d
+    ld [hli], a
+    ld [hl], e
+    dec de
+    ; de now points to next ascii character to print.
+    ld a, [de]
+
+    ; If the next character terminates the message, wait for input.
+    ASSERT SPCHAR_TERMINATE == 0
     and a, a
-    jr z, .return
+    jr z, .wait
     cp a, "\n"
     jr z, .newLine
     cp a, SPCHAR_QUESTION
-    jr z, .returnAsk
+    jr z, .ask
 
     ld h, 0
     ld l, a
-    ld bc, GameFont - ($20 * 8) ; We start on ascii character 32 (space), so we need to subtract 32 * 8 as an offset.
+    ld bc, GameFont - (32 * 8) ; We start on ascii character 32 (space), so we need to subtract 32 * 8 as an offset.
     add hl, hl ; a * 2
     add hl, hl ; a * 4
     add hl, hl ; a * 8
@@ -189,41 +129,38 @@ HandleTextbox::
     ; add a, LOW(vTextTiles)
     ld e, a
 
-    ld c, $10/2
-    call Complement1bpp
+    ld c, sizeof_1BPP
+    call LCDComplement1bpp
 
     ld a, [wTextScreenIndex]
     inc a
     ld [wTextScreenIndex], a
     cp a, $20
-    ret nz
-.return
-    ld a, TEXT_WAITING
-    ld [wTextState], a
-    ret
-.returnAsk
-    ld a, TEXT_ASK
-    ld [wTextState], a
-    xor a, a
-    ld [wTextAnswer], a
-    ret
+    jr nz, .draw
+    jr .wait
+
 .newLine
     ld a, [wTextScreenIndex]
     ; If we're past line 1
     cp a, 16
-    jr c, .nextLine
-    ld a, TEXT_WAITING
-    ld [wTextState], a
-    ret
+    jr nc, .wait
 .nextLine
     ld a, 16
     ld [wTextScreenIndex], a
-    ret
+    jr .draw
 
-.waiting 
+.wait
+    ; Wait for the next frame to check input
+    xor a, a
+    ld [wNewFrame], a
+:   halt
+    ld a, [wNewFrame]
+    and a, a
+    jr z, :-
+
     ldh a, [hNewKeys]
     bit PADB_A, a
-    ret z ; No input? Keep waiting...
+    jr z, :- ; No input? Keep waiting...
 
     ld a, [wTextBank]
     swap_bank
@@ -237,25 +174,23 @@ HandleTextbox::
     ASSERT SPCHAR_TERMINATE == 0
     and a, a ; cp a, SPCHAR_TERMINATE
     jr z, .close
-    ; If it wasn't an "@", we must be waiting for the next line!
+    ; If it wasn't null, we must be waiting for the next line.
     ; Reset screen index and switch to cleaning state
     xor a, a
     ld [wTextScreenIndex], a
-    ld a, TEXT_CLEANING
-    ld [wTextState], a
-    ret
-
-.close
-    ld a, 1
-    ld [wResetHUD], a
-    ; Let scripting know we're done
-    ld [wTextScriptFinished], a
-    ASSERT TEXT_HIDDEN == 0
-    xor a, a
-    ld [wTextState], a
-    ret
+    jp .cleanTiles
 
 .ask
+    xor a, a
+    ld [wTextAnswer], a
+
+    ; Wait for the next frame to check input
+    xor a, a
+    ld [wNewFrame], a
+:   halt
+    ld a, [wNewFrame]
+    and a, a
+    jr z, :-
 
     ld a, BANK(GameFont)
     swap_bank
@@ -281,25 +216,29 @@ HandleTextbox::
     ld c, 8
     ld de, vTextTiles + $0100
     get_character " "
-    call Complement1bpp
+    call LCDComplement1bpp
     ld c, 8
     ld de, vTextTiles
     get_character ">"
-    call Complement1bpp
+    call LCDComplement1bpp
     jr .acceptCheck
 .cursorDraw1
     ld c, 8
     ld de, vTextTiles
     get_character " "
-    call Complement1bpp
+    call LCDComplement1bpp
     ld c, 8
     ld de, vTextTiles + $0100
     get_character ">"
-    call Complement1bpp
+    call LCDComplement1bpp
 .acceptCheck
     ldh a, [hNewKeys]
     bit PADB_A, a
-    jr nz, .close
+    jr z, :-
+
+.close
+    ld a, 1
+    ld [wResetHUD], a
     ret
 
 SECTION "Load Characters", ROM0

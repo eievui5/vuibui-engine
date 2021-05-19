@@ -105,7 +105,6 @@ Initialize::
         ld [wTextState], a
         ld [wEnableHUD], a
         ld [wFrameTimer], a
-        ld [wTextScriptFinished], a
         ld [wTextboxFadeProgress], a
         ld [wVBlankMapLoadPosition], a
 
