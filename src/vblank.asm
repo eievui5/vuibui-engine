@@ -73,25 +73,6 @@ VBlank:
     pop af
     reti
 
-
-; Stores de into the scroll buffers, making sure not to leave the screen bounds. Only a is used.
-; @ d:  X
-; @ e:  Y
-SetScrollBuffer::
-    ; TODO: SetScrollBuffer can get stuck when trying to cross the entire screen.
-    ld a, d
-    cp a, 256 - 160 + 1 ; Is A past the screen bounds?
-    jr nc, .storeY
-    ldh [hSCXBuffer], a
-.storeY
-    ld a, e
-    cp a, 256 - 144 + 16 + 1 ; Is A past the screen bounds?
-    ret nc
-    ldh [hSCYBuffer], a
-    ret
-
-
-
 SECTION "VBlank Vars", WRAM0
 
 wInterruptBankBuffer::

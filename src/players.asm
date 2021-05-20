@@ -11,68 +11,6 @@ INCLUDE "include/players.inc"
 INCLUDE "include/switch.inc"
 INCLUDE "include/tiledata.inc"
 
-/*  players.asm
-    Common functions shared by the players.
-
-Functions:
-
-    HandlePlayers
-        - Run once per frame, handling player logic and special states such as 
-        the active room. Called from HandleEntities.
-
-    PlayerInputMovement
-        - Set the player's velocity based off the DPad input.
-        @ input:
-        - bc: Player offset ( PLAYER enum * sizeof_Entity )
-
-    PlayerDamage
-        - The common Damage state handling for all players. Includes death and 
-        knockback.
-
-    PlayerAIFollow
-        - Generic "Follow the active player state."
-        @ input:
-        - bc: Player offset ( PLAYER enum * sizeof_Entity )
-
-    UseItemCheck
-        - Used to set the players state if they have attempted to use an item.
-        @ input:
-        - b:  Value of w<Player>Equipped
-        - hl: Pointer to w<Player>State
-
-Variables:
-
-    wActivePlayer
-        - The Character currently being controlled by the player. Used as an 
-        offset.
-
-    wTransitionBuffer
-        - Used to make sure we only transition upon entering a transition tile.
-
-    wAllyLogicMode
-        - Used to adjust entity logic based on the layout of the current room.
-
-    wPlayerWaiting
-        - Player waiting boolean
-
-    wPlayerRoom
-        - Player world map Position. Used to keep track of which room an
-        inactive player is waiting in.
-    
-    wPlayerEquipped
-        - The currently equipped items. Lower Nibble = A, Upper Nibble = B
-
-    wPlayerArray
-        - An array of the player's entity data. Important for reusing entity
-        functions
-
-    wOctaviaProjectile
-        - A reserved entity for Octavia's current spell
-
-    wPoppyProjectiles
-        - Two reserved entities for Poppy's arrows.
-*/
-
 SECTION "Player Functions", ROM0
 
 ; Run once per frame, handling player logic and special states such as the
@@ -854,34 +792,43 @@ PlayerCameraInterpolation::
     ld a, [wActivePlayer]
     ASSERT sizeof_Entity == 16
     swap a ; a * 16
-    ld hl, wPlayerArray + Entity_YPos
-    add_r16_a h, l
+    ld de, wPlayerArray + Entity_YPos
+    add_r16_a de
 
     ; Y Interp
     ldh a, [hSCYBuffer]
     ld b, a
-    ld a, [hli] ; Seek to X!
+    ld a, [de]
     sub a, 80 + 8
-    sub a, b
-    sra a ; divide by 8, conserve the sign
-    sra a 
-    sra a 
+    jr nc, :+
+        xor a, a
+:   sub a, b
+    rra ; divide by 8
+    sra a
+    sra a
+    ld c, a
     add a, b
-    ld e, a
+    cp a, 256 - 144 + 16 + 1 ; Is -A past the screen bounds?
+    jr nc, .x
+:   ldh [hSCYBuffer], a
 
-    ; X Interp
-    ldh a, [hSCXBuffer]
+.x  ldh a, [hSCXBuffer]
     ld b, a
-    ld a, [hl]
+    inc de ; Seek to X
+    ld a, [de]
     sub a, 72 + 8
-    sub a, b
-    sra a ; divide by 8, conserve the sign
-    sra a 
-    sra a 
+    jr nc, :+
+        xor a, a
+:   sub a, b
+    rra ; divide by 8, conserve the sign
+    sra a
+    sra a
     add a, b
-    ld d, a
-
-    jp SetScrollBuffer
+    cp a, 256 - 160 + 1 ; Is A past the screen bounds?
+    ret nc
+    ldh [hSCXBuffer], a
+    ld a, e
+    ret
 
 ; Checks if any of the active players are colliding with `de`. Returns a pointer
 ; to the detected player in `hl`, $0000 if no player was found.
