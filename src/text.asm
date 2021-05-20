@@ -73,9 +73,9 @@ HandleTextbox::
 
 .draw
     ; Wait for the next frame to draw another character.
-    xor a, a
+:   xor a, a
     ld [wNewFrame], a
-:   halt
+    halt
     ld a, [wNewFrame]
     and a, a
     jr z, :-
@@ -151,9 +151,9 @@ HandleTextbox::
 
 .wait
     ; Wait for the next frame to check input
-    xor a, a
+:   xor a, a
     ld [wNewFrame], a
-:   halt
+    halt
     ld a, [wNewFrame]
     and a, a
     jr z, :-
@@ -185,9 +185,9 @@ HandleTextbox::
     ld [wTextAnswer], a
 
     ; Wait for the next frame to check input
-    xor a, a
+:   xor a, a
     ld [wNewFrame], a
-:   halt
+    halt
     ld a, [wNewFrame]
     and a, a
     jr z, :-

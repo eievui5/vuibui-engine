@@ -799,7 +799,8 @@ PlayerCameraInterpolation::
     ldh a, [hSCYBuffer]
     ld b, a
     ld a, [de]
-    sub a, 80 + 8
+    sub a, 11
+    sub a, 80 - 11
     jr nc, :+
         xor a, a
 :   sub a, b
@@ -816,7 +817,8 @@ PlayerCameraInterpolation::
     ld b, a
     inc de ; Seek to X
     ld a, [de]
-    sub a, 72 + 8
+    sub a, 11
+    sub a, 72 + 8 - 11
     jr nc, :+
         xor a, a
 :   sub a, b

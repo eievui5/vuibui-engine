@@ -25,12 +25,11 @@ Main::
 .end::
     xor a, a
     ld [wNewFrame], a
-.wait
     ; When main is unhalted we ensure that it will not loop.
     halt
     ld a, [wNewFrame]
     and a, a
-    jr z, .wait
+    jr z, .end
     jr Main
 
 Gameplay:
@@ -46,8 +45,8 @@ Gameplay:
     jr Menu
 .skipInventoryOpen
 
-    call CleanOAM
     call HandleEntities
+    call CleanOAM
     ; Update the camera before rendering
     call PlayerCameraInterpolation
     call RenderEntities
@@ -55,17 +54,15 @@ Gameplay:
     jr Main.end
 
 Transition:
+    call PlayerTransitionMovement
     call CleanOAM
     call RenderPlayersTransition
-    call PlayerTransitionMovement
     jr Main.end
 
 Script:
-    call CleanOAM
-    ; Render before scripting, in case scripting takes more than a frame 
-    ; ( drawing text, for example ). This shouldn't matter much.
-    call RenderEntities 
     call HandleScript
+    call CleanOAM
+    call RenderEntities 
     jr Main.end
 
 Menu:
