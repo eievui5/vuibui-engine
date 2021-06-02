@@ -8,18 +8,15 @@ include "include/macros.inc"
 SECTION "Tileloader", ROM0 
 
 ; Automatically loads the entire tilemap. Screen must be off.
-; @ de: Destination ( _SCRN0, _SCRN1. VRAM Bank 1 for attributes. )
 ; @ hl: Metatiles definitions pointer
 LoadMetatileMap::
     ld bc, $0000
 .loop
-    push de ; A lot of stack usage? This is the slow version, who cares.
-    push hl
+    push hl ; A lot of stack usage? This is the slow version, who cares.
     push bc
     call LoadMetatile
     pop bc
     pop hl
-    pop de
 
     inc b ; Next X pos
     ld a, b
@@ -57,14 +54,13 @@ LoadMapData::
 ; Loads a metatile from a given location on the current wMetatileMap, and places it accordingly.
 ; @ b:  Metatile X Location (0 - 15)
 ; @ c:  Metatile Y Location (0 - 15)
-; @ de: Destination ( _SCRN0, _SCRN1, wMapData. VRAM Bank 1 for attributes. )
 ; @ hl: Metatiles definitions pointer
 LoadMetatile::
     push hl
 
     ld a, b ; (0 - 16) -> (0 - 32)
     add a, a  ; a * 2
-    add_r16_a d, e
+    add_r16_a de, _SCRN0
     ld  h, c ; c * 256
     ld  l, $00 ; (0 - 16) -> (0 - 1024)
     srl h
@@ -77,26 +73,33 @@ LoadMetatile::
     ; [de] is our map target
 
     ; Let's start by offsetting our map...
-    ld hl, wMetatileMap
     ld a, b
-    add_r16_a h, l ; add the X value
+    add_r16_a hl, wMetatileMap ; add the X value
     ld a, c
     swap a ; c * 16
-    add_r16_a h, l ; add the Y value
+    add_r16_a hl ; add the Y value
     ; [hl] contains our target tile.
 
     ; TODO: Sacrifice a bit of speed and use 16 bits.
-    ld a, [hl] ; Load the tile
+    ld l, [hl] ; Load the tile
+    ld h, 0
     ; Tiles are 4 bytes long.
-    add a, a ; a * 2 !!!
-    add a, a ; a * 4 !!!
+    add hl, hl
+    add hl, hl
+    ld b, h
+    ld c, l
     
     pop hl ; Definition target
-    add_r16_a h, l ; Offset definition pointer
+    add hl, bc
     ; [hl] is now the metatile data to copy.
 
     ld bc, $0202 ; loop counter: b = x, c = y
 .loadRow
+
+:   ldh a, [rSTAT]
+    and a, STATF_BUSY
+    jr nz, :-
+
     ld a, [hli]
     ld [de], a
     inc de
@@ -106,7 +109,7 @@ LoadMetatile::
     ret z
     ld b, $02 ; Neither? Next Row.
     ld a, 32 - 2
-    add_r16_a d, e
+    add_r16_a de
     jr .loadRow
 
 
@@ -115,15 +118,17 @@ LoadMetatile::
 ; @ c:  Metatile Y Location (0 - 15)
 LoadMetatileData::
     swap c ; c * 16
-    ld d, $00
-    ld e, b
     ld a, c
-    add_r16_a d, e
+    ; de = b + a
+    add a, b ; a = low + old_l
+    ld e, a  ; a = low + old_l = new_l
+    adc a, 0 ; a = new_l + old_h + carry
+    sub a, e ; a = old_h + carry
+    ld d, a
     ld hl, wMetatileMap
     add hl, de
     ld a, [hl] ; Load the current tile
-    ld hl, wMetatileData
-    add_r16_a h, l
+    add_r16_a hl, wMetatileData
     ld a, [hl] ; Load that tile's data.
     ld hl, wMapData
     add hl, de
@@ -133,6 +138,163 @@ LoadMetatileData::
 ; 4 is possible on the DMG, but I think it's cutting it close.
 ; Try setting this to 3 if you have issues. (May require recalibrating scrolling)
 TILES_PER_FRAME EQU 4
+
+; Scroll the screen while loading a map and adjust sprites to show new enemies
+; and hide old ones.
+
+; UNFINISHED
+ScrollLoader::
+
+; Initialize direction starting position
+    ; Use 15 when possible.
+    ld a, [wRoomTransitionDirection]
+    ASSERT DIR_DOWN == 0
+    lb bc, 15, 0 ; x, y
+    and a, a
+    jr z, .start
+    ASSERT DIR_UP == 1
+    lb bc, 15, 15
+    dec a
+    jr z, .start
+    ASSERT DIR_RIGHT == 2
+    lb bc, 0, 15
+    dec a
+    jr z, .start
+    ASSERT DIR_LEFT == 3
+    lb bc, 15, 15
+    
+.start ; Scrolling loop
+    ; Load 8 tiles per frame.
+    ldh a, [hHaltAlternate]
+    inc a
+    ldh [hHaltAlternate], a
+    and a, %111
+    jr nz, :+
+    halt
+
+    ;ld a, [wActivePlayer]
+    ;ASSERT sizeof_Entity == 16
+    ;swap a ; a * 16
+    ;; hl = a + wPlayerArray
+    ;add a, LOW(wPlayerArray + Entity_YVel)
+    ;ld l, a
+    ;ld h, HIGH(wPlayerArray)
+    ;call MoveNoClip
+
+:
+; Load Colors
+    ldh a, [hSystem]
+    and a, a
+    jr z, :+ ; cgbskip
+        ld hl, wMetatileAttributes
+        push bc
+        call LoadMetatile
+        pop bc
+; Load Metatiles
+:   ld hl, wMetatileDefinitions
+    push bc
+    call LoadMetatile
+    pop bc
+
+; Increment tile position
+    ld a, [wRoomTransitionDirection]
+    ASSERT DIR_DOWN == 0
+    and a, a
+    jr z, .down
+    ASSERT DIR_UP == 1
+    dec a
+    jr z, .up
+    ASSERT DIR_RIGHT == 2
+    dec a
+    jr z, .right
+    ASSERT DIR_LEFT == 3
+.left
+
+    ld a, b
+    cp a, 15
+    jr z, :+ ; skip scroll if we haven't moved yet
+    ldh a, [hSCXBuffer]
+    dec a
+    cp a, 96 - 1
+    jr z, :+
+    ldh [hSCXBuffer], a
+:
+
+    ld a, c
+    sub a, 1 ; dec 1 + carry flag
+    ld c, a
+    jr nc, .start
+    ld c, 15
+    ld a, b
+    sub a, 1
+    ld b, a
+    jr nc, .start
+    
+    ret
+.down
+    ld a, c
+    and a, a
+    jr z, :+
+    ldh a, [hSCYBuffer]
+    inc a
+    cp a, 1
+    jr z, :+ ; Stop at Zero!
+    ldh [hSCYBuffer], a
+:
+    ld a, b
+    sub a, 1 ; dec 1 + carry flag
+    ld b, a
+    jr nc, .start
+    ld b, 15
+    inc c
+    ld a, c
+    cp a, 16
+    jr nz, .start
+
+    ret
+.up
+    ld a, c
+    cp a, 15
+    jr z, :+ ; skip scroll if we haven't moved yet
+    ldh a, [hSCYBuffer]
+    dec a
+    cp a, 128 - 1
+    jr z, :+
+    ldh [hSCYBuffer], a
+:
+    ld a, b
+    sub a, 1 ; dec 1 + carry flag
+    ld b, a
+    jp nc, .start
+    ld b, 15
+    ld a, c
+    sub a, 1
+    ld c, a
+    jp nc, .start
+    
+    ret
+.right
+    ld a, b
+    and a, a
+    jr z, :+
+    ldh a, [hSCXBuffer]
+    inc a
+    cp a, 1
+    jr z, :+ ; Stop at Zero!
+    ldh [hSCXBuffer], a
+:
+
+    ld a, c
+    sub a, 1 ; dec 1 + carry flag
+    ld c, a
+    jp nc, .start
+    ld c, 15
+    inc b
+    ld a, b
+    cp a, 16
+    jp nz, .start
+
+    ret
 
 ; Scrolls the screen and loads tiles during VBlank. Also handles tilemap updates
 ; when the screen is hidden, with disabled scrolling.
@@ -158,7 +320,6 @@ VBlankScrollLoader::
     cp a, TRANSDIR_LEFT
     jr z, .skipFirst
     ld bc, $0000
-    ld de, _SCRN0
     ld hl, wMetatileDefinitions
     call LoadMetatile
     ld a, [hSystem]
@@ -168,7 +329,6 @@ VBlankScrollLoader::
     ld a, 1 ; Swap banks
     ldh [rVBK], a
     ld bc, $0000
-    ld de, _SCRN0
     ld hl, wMetatileAttributes
     call LoadMetatile
     xor a, a ; Return to bank 0
@@ -219,21 +379,19 @@ VBlankScrollLoader::
     ; The 0 tile still needs to be loaded.
     ; Don't worry about overwriting it if it's already there.
     ld bc, $0000
-    ld de, _SCRN0
     ld hl, wMetatileDefinitions
     call LoadMetatile    
     ldh a, [hSystem]
     and a, a
     jr z, :+
-    ; If not on DMG, load attributes
-    ld a, 1 ; Swap banks
-    ldh [rVBK], a
-    ld bc, $0000
-    ld de, _SCRN0
-    ld hl, wMetatileAttributes
-    call LoadMetatile
-    xor a, a ; Return to bank 0
-    ldh [rVBK], a
+        ; If not on DMG, load attributes
+        ld a, 1 ; Swap banks
+        ldh [rVBK], a
+        ld bc, $0000
+        ld hl, wMetatileAttributes
+        call LoadMetatile
+        xor a, a ; Return to bank 0
+        ldh [rVBK], a
 :  
 
     xor a, a
@@ -259,7 +417,6 @@ VBlankScrollLoader::
     ld b, a
 
     ; Load tiles onto _SCRN0 from the wMetatileDefinitions.
-    ld de, _SCRN0
     ld hl, wMetatileDefinitions
     push bc
     call LoadMetatile
@@ -270,7 +427,6 @@ VBlankScrollLoader::
     ; If not on DMG, load attributes
     ld a, 1 ; Swap banks
     ldh [rVBK], a
-    ld de, _SCRN0
     ld hl, wMetatileAttributes
     call LoadMetatile
     xor a, a ; Return to bank 0
@@ -433,4 +589,8 @@ wVBlankMapLoadPosition::
 wRoomTransitionDirection::
     ; 0 == inactive
     ; FACING_ENUMS slide the camera and load the room.
+    ds 1
+
+SECTION UNION "Volatile", HRAM
+hHaltAlternate:
     ds 1

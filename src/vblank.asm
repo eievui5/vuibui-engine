@@ -1,5 +1,4 @@
 INCLUDE "include/banks.inc"
-INCLUDE "include/bool.inc"
 INCLUDE "include/directions.inc"
 INCLUDE "include/engine.inc"
 INCLUDE "include/hardware.inc"
@@ -49,7 +48,6 @@ VBlank:
     ld a, [wEnableHUD]
     and a, a
     jr z, .input
-    call UpdateHUD
     call UpdatePrint
 
 .input
@@ -61,7 +59,7 @@ VBlank:
     inc [hl]
 
     ; Let the wait loops know a new frame is ready
-    ld a, TRUE
+    ld a, 1
     ld [wNewFrame], a
 
     ; Restore register state

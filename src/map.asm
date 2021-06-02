@@ -1,5 +1,4 @@
 INCLUDE "include/banks.inc"
-INCLUDE "include/bool.inc"
 INCLUDE "include/engine.inc"
 INCLUDE "include/entities.inc"
 INCLUDE "include/graphics.inc"
@@ -19,12 +18,12 @@ SECTION "Map Lookup", ROM0
 UpdateActiveMap::
 	ld d, a ; Save inputs in `d` for a bit
 
-    ld a, TRUE
+    ld a, 1
     ld [wTransitionBuffer], a
 
 	bit SPAWN_ENTITIES_B, d
 	jr z, :+
-	; ld a, TRUE
+	; ld a, 1
     ldh [hRespawnEntitiesFlag], a ; Any non-zero value is enough
 :
     ; Clear player spell
@@ -72,8 +71,7 @@ UpdateActiveMap::
     ld b, a
     add a, b ; a * 2
     add a, b ; a * 3
-    ld hl, MapLookup
-    add_r16_a hl
+    add_r16_a hl, MapLookup
 
     ld a, [hli] ; Load target bank.
 	ldh [hMapBankBuffer], a ; Save bank for later
@@ -195,7 +193,7 @@ UpdateActiveMap::
 		call memcopy
 		call LoadMapData
 
-    ld a, TRUE
+    ld a, 1
     ldh [rVBK], a
 
     ld de, _SCRN0
@@ -205,10 +203,8 @@ UpdateActiveMap::
     xor a, a
     ldh [rVBK], a
     
-    ld de, _SCRN0
     ld hl, wMetatileDefinitions
-    call LoadMetatileMap
-
+    call LoadMetatileMap ; Force-load the entire map.
     call LoadMapData
 
     ld a, PALETTE_STATE_RESET
@@ -228,6 +224,7 @@ UpdateActiveMap::
 		ld bc, MAP_SIZE
 		ld de, wMetatileMap
 		call memcopy
+        ;call ScrollLoader
 		call LoadMapData
 .skipDoubleLoad
     pop hl
@@ -272,17 +269,15 @@ MapdataAllyLogic:
 MapdataSetWarp:
     ld a, [hli]
     ldh [hWarpDataIndex], a ; Save the tile index.
-    ld de, wWarpData0
-    add_r16_a de ; Offset to de for the memcopy
+    add_r16_a de, wWarpData0 ; Offset to de for the memcopy
     ld a, [hli]
     ld b, a
     ld a, [hli]
     ld c, a
     push hl
-    ld hl, wMapData
     swap b
     ld a, b
-    add_r16_a hl
+    add_r16_a hl, wMapData
     ld a, c
     add_r16_a hl
     ldh a, [hWarpDataIndex]
@@ -300,8 +295,7 @@ GetActiveMap::
     ld b, a
     add a, b ; a * 2
     add a, b ; a * 3
-    ld hl, MapLookup
-    add_r16_a hl
+    add_r16_a hl, MapLookup
 
     ld a, [hli] ; Load target bank.
 	ldh [hMapBankBuffer], a ; Save bank for later
@@ -358,8 +352,7 @@ ReloadMapGraphics::
     ld b, a
     add a, b ; a * 2
     add a, b ; a * 3
-    ld hl, MapLookup
-    add_r16_a hl
+    add_r16_a hl, MapLookup
 
     ld a, [hli]
     ldh [hMapBankBuffer], a

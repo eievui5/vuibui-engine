@@ -1,8 +1,7 @@
 
     IF !DEF(SCRIPTING_INC)
-DEF SCRIPTING_INC SET 1
+DEF SCRIPTING_INC EQU 1
     
-INCLUDE "include/bool.inc"
 INCLUDE "include/enum.inc"
 
     start_enum SCRIPT 
@@ -121,7 +120,7 @@ ENDM
 ; Branches to `.label0` if the first option was chosen, and `.label1` otherwise
 ; @ question_branch .label0, .label1
 MACRO question_branch
-    branch wTextAnswer, FALSE, \1, \2
+    branch wTextAnswer, 0, \1, \2
 ENDM
 
 MACRO octavia_text

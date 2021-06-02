@@ -1,5 +1,5 @@
     IF !DEF(FLAGS_INC)
-DEF FLAGS_INC SET 1
+DEF FLAGS_INC EQU 1
 
 INCLUDE "include/enum.inc"
 

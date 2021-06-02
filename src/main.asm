@@ -51,6 +51,7 @@ Gameplay:
     call PlayerCameraInterpolation
     call RenderEntities
     call audio_update
+    call UpdateHUD
     jr Main.end
 
 Transition:

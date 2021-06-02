@@ -60,7 +60,7 @@ RenderMetasprite::
     ld l, a
     ld a, d ; Load frame
     add a, a ; frame * 2
-    add_r16_a h, l
+    add_r16_a hl
     ld a, [hli]
     ld h, [hl]
     ld l, a
@@ -71,8 +71,7 @@ RenderMetasprite::
 ; @ hl: Metasprite pointer
 .absolute::
     ldh a, [hOAMIndex]
-    ld de, wShadowOAM
-    add_r16_a de
+    add_r16_a de, wShadowOAM
     ; Load and offset Y
     ld a, [hli]
 .pushSprite ; We can skip that load, since a loop will have already done it.

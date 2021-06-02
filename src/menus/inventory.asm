@@ -1,6 +1,5 @@
 
 INCLUDE "include/banks.inc"
-INCLUDE "include/bool.inc"
 INCLUDE "include/engine.inc"
 INCLUDE "include/enum.inc"
 INCLUDE "include/graphics.inc"
@@ -80,13 +79,13 @@ InventoryHeader::
     ; Used Buttons
     db PADF_A | PADF_B | PADF_RIGHT | PADF_LEFT | PADF_UP | PADF_DOWN
     ; Auto-repeat
-    db FALSE
+    db 0
     ; Button functions
     ; A, B, Sel, Start, Right, Left, Up, Down
     dw HandleAPress, HandleBPress, null, null, MoveRight, MoveLeft, MoveUp, MoveDown
     db 0 ; Last selected item
     ; Allow wrapping
-    db FALSE
+    db 0
     ; Default selected item
     db 0
     ; Number of items in the menu
@@ -140,8 +139,7 @@ InventoryInit:
     ; Each entry is 4 bytes, include the 0-terminator.
     add a, a ; a * 2
     add a, a ; a * 4
-    ld hl, OctaviaLetters
-    add_r16_a hl
+    add_r16_a hl, OctaviaLetters
     get_tile de, TILE_NAME
     call LoadCharacters
 
@@ -260,8 +258,7 @@ InventoryInit:
     add a, a ; a * 2
     add a, a ; a * 4
     add a, a ; a * 8
-    ld hl, PalOctavia
-    add_r16_a hl
+    add_r16_a hl, PalOctavia
     ld c, sizeof_PALETTE
     rst memcopy_small
 
@@ -298,10 +295,9 @@ InventoryInit:
 
 ; Draw the screen
     ; Reset pals
-    ld a, TRUE
+    ld a, 1
     ldh [rVBK], a
-    ld b, UI_PAL
-    ld c, 10
+    lb bc, UI_PAL, 10 ; 10 rows
     ld hl, _SCRN1 + (8 * 32) ; Skip 8 rows
     call ScreenSet
     xor a, a
@@ -322,8 +318,7 @@ InventoryInit:
     add a, a ; a * 4
     add a, a ; a * 8
     sub a, b ; a * 7 !!!
-    ld hl, OctaviaString
-    add_r16_a hl
+    add_r16_a hl, OctaviaString
     get_tilemap de, _SCRN1, 9, 9
     ld c, 7
     rst memcopy_small
@@ -333,8 +328,7 @@ InventoryInit:
     ld b, a
     add a, a
     add a, b
-    ld hl, PanoramaLookup
-    add_r16_a hl
+    add_r16_a hl, PanoramaLookup
 
     ; Load the active map's panorama
     ld a, [hli]
@@ -379,7 +373,7 @@ InventoryInit:
     jr z, .cgbPanSkip
 
     ; Load the active map's panorama's attributes
-    ld a, TRUE
+    ld a, 1
     ldh [rVBK], a
     ld a, [hli]
     push hl
@@ -409,8 +403,7 @@ InventoryInit:
 
     ; Display the player's items on screen
     ld a, [wActivePlayer]
-    ld hl, wItems
-    add_r16_a hl
+    add_r16_a hl, wItems
     ld b, [hl]
 
     ; Item 0
@@ -501,7 +494,7 @@ InventoryRedraw:
     bit 7, [hl]
     jr nz, .cgbSkip ; Skip if we're on the wrong column
 
-    ld a, TRUE
+    ld a, 1
     ldh [rVBK], a
 
     ld b, 8
@@ -566,8 +559,7 @@ InventoryRedraw:
     ld b, a
     add a, a ; a * 2
     add a, b ; a * 3 !!!
-    ld hl, .metaspriteLookup
-    add_r16_a hl
+    add_r16_a hl, .metaspriteLookup
     ld a, [hli]
     swap_bank
     ld a, [hli]
@@ -624,8 +616,7 @@ InventoryRedraw:
     ; Otherwise, draw the item cursor.
 
     ldh a, [hOAMIndex]
-    ld hl, wShadowOAM + 4
-    add_r16_a hl
+    add_r16_a hl, wShadowOAM + 4
 
     ld a, b
     swap a ; a * 16
@@ -659,8 +650,7 @@ InventoryRedraw:
 .options
 
     ldh a, [hOAMIndex]
-    ld hl, wShadowOAM + 4
-    add_r16_a hl
+    add_r16_a hl, wShadowOAM + 4
 
     ld a, b
     add a, a ; Selection * 2
@@ -719,7 +709,7 @@ InventoryClose:
     ldh [hSCYBuffer], a
     ldh [rSCY], a
 
-    ld a, TRUE
+    ld a, 1
     ld [wEnableHUD], a
     call ResetHUD
 
@@ -803,8 +793,7 @@ MoveDown:
     jr nz, .skipItems
     ; Items goes up to 4 depending on how many items are unlocked.
     ld a, [wActivePlayer]
-    ld hl, wItems
-    add_r16_a hl
+    add_r16_a hl, wItems
     ; Check each item slot
     ld a, 3
     bit 3, [hl]
@@ -850,8 +839,7 @@ HandleAPress:
 
     ; Otherwise, select an item.
     ld a, [wActivePlayer]
-    ld de, wPlayerEquipped
-    add_r16_a de
+    add_r16_a de, wPlayerEquipped
 
     ld a, [de]
     and a, $0F ; Mask out old B item
@@ -888,8 +876,7 @@ HandleAPress:
     ld b, a
 
     ld a, [wActivePlayer]
-    ld hl, wItems
-    add_r16_a hl
+    add_r16_a hl, wItems
 
     ld a, b
     and a, [hl]
@@ -924,8 +911,7 @@ HandleBPress:
 
     ; Otherwise, select an item.
     ld a, [wActivePlayer]
-    ld de, wPlayerEquipped
-    add_r16_a de
+    add_r16_a de, wPlayerEquipped
 
     ld a, [de]
     and a, $0F ; Mask out old B item
@@ -965,8 +951,7 @@ HandleBPress:
     ld b, a
 
     ld a, [wActivePlayer]
-    ld hl, wItems
-    add_r16_a hl
+    add_r16_a hl, wItems
 
     ld a, b
     and a, [hl]
@@ -1013,8 +998,7 @@ DrawEquipped:
     
 
     ld a, [wActivePlayer]
-    ld hl, wPlayerEquipped
-    add_r16_a hl
+    add_r16_a hl, wPlayerEquipped
     ld b, [hl]
 
     ; Draw A button

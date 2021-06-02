@@ -1,6 +1,6 @@
 
     IF !DEF(TILES_INC)
-DEF TILES_INC SET 1
+DEF TILES_INC EQU 1
 
 INCLUDE "directions.inc"
 INCLUDE "enum.inc"

@@ -66,8 +66,7 @@ FXMode:
 
     ; Index into the FX array.
     sra a
-    ld hl, wRasterFX
-    add_r16_a hl
+    add_r16_a hl, wRasterFX
     ld a, [hl]
 
     ; If no FX is loaded, exit!

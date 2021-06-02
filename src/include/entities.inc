@@ -1,6 +1,6 @@
 
     IF !DEF(ENTITIES_INC)
-DEF ENTITIES_INC SET 1
+DEF ENTITIES_INC EQU 1
 
 INCLUDE "macros.inc"
 INCLUDE "structs.inc"
@@ -48,7 +48,7 @@ ENDM
         ; Reserved Private Vars - No suggested use, but required for padding size up to 16
         bytes 1, Priv1          ; 
         bytes 1, Priv2          ; 
-    end_struct              ; 16 bytes long. You may not go over or under 16, because entities use StructSeekUnsafe for speed.
+    end_struct              ; 16 bytes long. You may not go over or under 16.
 
     struct EntityDefinition
         dunion   Logic

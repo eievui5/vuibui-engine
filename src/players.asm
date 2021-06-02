@@ -1,5 +1,4 @@
 INCLUDE "include/banks.inc"
-INCLUDE "include/bool.inc"
 INCLUDE "include/directions.inc"
 INCLUDE "include/engine.inc"
 INCLUDE "include/entities.inc"
@@ -149,8 +148,7 @@ CyclePlayers:
 
     ld c, 3
     ld a, [wActivePlayer]
-    ld hl, wPlayerWaitLink
-    add_r16_a h, l
+    add_r16_a hl, wPlayerWaitLink
     ld b, [hl]
     ld hl, wPlayerWaitLink
 .waitLoop
@@ -174,8 +172,7 @@ CyclePlayers:
 PlayerActivityCheck::
 .waiting::
     ld b, a
-    ld hl, wPlayerWaitLink
-    add_r16_a h, l
+    add_r16_a hl, wPlayerWaitLink
     ld a, [wActivePlayer]
     cp a, [hl]
     ret nz
@@ -183,16 +180,14 @@ PlayerActivityCheck::
 .disabled::
     ; Is player enabled?
     ld b, a
-    ld hl, wPlayerDisabled
-    add_r16_a h, l
+    add_r16_a hl, wPlayerDisabled
     ld a, [hl]
     and a, a
     ret nz
     ld a, b
 .room::
     add a, a
-    ld hl, wPlayerRoom
-    add_r16_a h, l
+    add_r16_a hl, wPlayerRoom
     ld a, [wWorldMapPositionY]
     cp a, [hl]
     ret nz ; If the rooms match, call normally.
@@ -319,8 +314,7 @@ PlayerAIFollow::
     ld a, [wActivePlayer]
     ASSERT sizeof_Entity == 16
     swap a ; a * 16
-    ld de, wPlayerArray + Entity_YPos
-    add_r16_a de
+    add_r16_a de, wPlayerArray + Entity_YPos
     find_player Entity_YPos
     ; de: target
     ; hl: self
@@ -350,10 +344,20 @@ PlayerAIFollow::
     ld l, a
 
     ld a, d
-    abs_a
+    ; abs(a)
+    bit 7, a
+    jr z, :+
+    cpl
+    inc a
+  :
     ld b, a
     ld a, e
-    abs_a
+    ; abs(a)
+    bit 7, a
+    jr z, :+
+    cpl
+    inc a
+  :
     ; ld c, a (I immediatly need c in a, so this is needless.)
     ; ba = abs(de)
 
@@ -388,7 +392,12 @@ PlayerAIFollow::
 
 .yVel
     ld a, d
-    abs_a
+    ; abs(a)
+    bit 7, a
+    jr z, :+
+    cpl
+    inc a
+  :
     cp a, c
     jr c, .yVelZero
     bit 7, d
@@ -405,7 +414,12 @@ PlayerAIFollow::
     ld [hli], a
 .xVel
     ld a, e
-    abs_a
+    ; abs(a)
+    bit 7, a
+    jr z, :+
+    cpl
+    inc a
+  :
     cp a, c
     jr c, .xVelZero
     bit 7, e
@@ -420,10 +434,20 @@ PlayerAIFollow::
     xor a, a
 .storeXVel
     ld [hld], a
-    abs_a
+    ; abs(a)
+    bit 7, a
+    jr z, :+
+    cpl
+    inc a
+  :
     ld b, a
     ld a, [hl]
-    abs_a
+    ; abs(a)
+    bit 7, a
+    jr z, :+
+    cpl
+    inc a
+  :
     add a, b
     ret z
 
@@ -483,8 +507,7 @@ InteractionCheck::
     cp a, $FF
     ret z
     add a, a ; a * 2 (Pointer)
-    ld hl, PlayerDialogueLookup
-    add_r16_a hl
+    add_r16_a hl, PlayerDialogueLookup
     ld a, [hli]
     ld h, [hl]
     ld l, a
@@ -551,8 +574,7 @@ PlayerTransitionMovement::
     ld a, [wActivePlayer]
     ASSERT sizeof_Entity == 16
     swap a ; a * 16
-    ld hl, wPlayerArray + Entity_YPos
-    add_r16_a hl
+    add_r16_a hl, wPlayerArray + Entity_YPos
     ld a, [wRoomTransitionDirection]
     ASSERT TRANSDIR_DOWN == 1
     dec a
@@ -609,8 +631,7 @@ PlayerTransitionMovement::
     ld a, [wActivePlayer]
     ASSERT sizeof_Entity == 16
     swap a ; a * 16
-    ld hl, wPlayerArray + Entity_YPos
-    add_r16_a hl
+    add_r16_a hl, wPlayerArray + Entity_YPos
     ld d, [hl] ; Store active Y
     inc l
     ld e, [hl] ; Store active X
@@ -642,8 +663,7 @@ PlayerTransitionMovement::
     ld a, c
     ASSERT sizeof_Entity == 16
     swap a ; a * 16
-    ld hl, wPlayerArray
-    add_r16_a hl
+    add_r16_a hl, wPlayerArray
     call MoveNoClip
 
 .updateAllyPositionsDecrement
@@ -661,9 +681,9 @@ ScreenTransitionCheck::
     ASSERT TILEDATA_TRANSITION_LEFT - TILEDATA_TRANSITION_DOWN == 3
     ; We don't *actually* want this to be one lower, but the transition routine 
     ; expects DIR + 1
-    sub a, TILEDATA_TRANSITION_DOWN - 1 
+    sub a, TILEDATA_TRANSITION_DOWN - 1
     ; And we *do* want this 1 higher, but we need to offset the - we just did.
-    cp a, TILEDATA_TRANSITION_LEFT - TILEDATA_TRANSITION_DOWN + 2
+    cp a, TILEDATA_TRANSITION_LEFT - TILEDATA_TRANSITION_DOWN + 2 ; + 1
     jr nc, .clearTransBuffer ; Clear wTransitionBuffer if we're not transitioning now.
     ld h, a
     ld a, [wTransitionBuffer]
@@ -676,7 +696,7 @@ ScreenTransitionCheck::
     ; Now calculate the new map to load
     ld hl, wWorldMapPositionY
 .downCheck
-    dec a
+    dec a ; and a, a
     jr nz, .upCheck
     inc [hl]
     jr .update
@@ -715,8 +735,7 @@ WarpTileCheck::
     sub a, TILEDATA_WARP_0
     cp a, TILEDATA_WARP_3 - TILEDATA_WARP_0 + 1
     ret nc
-    ld hl, wWarpData0
-    add_r16_a hl
+    add_r16_a hl, wWarpData0
     ld a, [hli]
     ld [wActiveWorldMap], a
     ld a, [hli]
@@ -781,8 +800,7 @@ PlayerSetWaitLink:
     ld a, PLAYER_TIBER
     jr .store
 .store
-    ld hl, wPlayerWaitLink
-    add_r16_a h, l
+    add_r16_a hl, wPlayerWaitLink
     ld a, [wActivePlayer]
     ld [hl], a
     ret
@@ -792,8 +810,7 @@ PlayerCameraInterpolation::
     ld a, [wActivePlayer]
     ASSERT sizeof_Entity == 16
     swap a ; a * 16
-    ld de, wPlayerArray + Entity_YPos
-    add_r16_a de
+    add_r16_a de, wPlayerArray + Entity_YPos
 
     ; Y Interp
     ldh a, [hSCYBuffer]

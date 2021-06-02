@@ -47,9 +47,7 @@ UpdatePalettes::
     ret
 .dmgFadeLight
     ld a, [wFrameTimer]
-    bit 0, a
-    ret nz
-    bit 1, a
+    and a, %11 ; every 4th frame
     ret nz
 
     ldh a, [rOBP0]

@@ -28,14 +28,9 @@ ResetHUD::
 
     ld a, 1
     ldh [rVBK], a
-    ld a, OAMF_GBCPAL7
-    ; Color the HUD
-    ld c, SCRN_X_B
     ld hl, vHUD
-    rst memset_small
-    ld c, SCRN_X_B
-    ld hl, vHUD + 32
-    rst memset_small
+    lb bc, 7, 2 ; palette 7, 2 rows
+    call ScreenSet
     xor a, a
     ldh [rVBK], a
 
@@ -45,16 +40,17 @@ ResetHUD::
     ldh [rLYC], a
 
     ; Clear the HUD
-    ld a, TILE_WHITE
-    ld c, SCRN_X_B
     ld hl, vHUD
-    rst memset_small
-    ld c, SCRN_X_B
-    ld hl, vHUD + 32
-    rst memset_small
+    lb bc, TILE_WHITE, 2 ; 2 rows
+    call ScreenSet
 
     ; Load the button hints
     ld hl, vAHint
+
+:   ldh a, [rSTAT]
+    and a, STATF_BUSY
+    jr nz, :-
+
     ld a, TILE_A_CHAR
     ld [hl], a
     ASSERT HIGH(vAHint) == HIGH(vBHint)
@@ -63,24 +59,17 @@ ResetHUD::
     inc a
     ld [hl], a
 
-    ; Reset Button Graphics
-    xor a, a
-    ld hl, wHUDActiveItemGraphic
-    ld [hli], a
-    ld [hl], a
-
     ; Signal to reset healthbars
     ld a, -1
     ld [wHUDActivePlayerBuffer], a
 
-    ld hl, PalOctavia
     ASSERT PalOctavia + sizeof_PALETTE == PalPoppy && PalPoppy + sizeof_PALETTE == PalTiber
     ASSERT sizeof_PALETTE == 8
     ld a, [wActivePlayer]
     add a, a ; a * 2
     add a, a ; a * 4
     add a, a ; a * 8
-    add_r16_a hl
+    add_r16_a hl, PalOctavia
     ld de, wBCPD + sizeof_PALETTE * 7
     ld c, sizeof_PALETTE
     rst memcopy_small
@@ -88,16 +77,9 @@ ResetHUD::
     ld a, PALETTE_STATE_RESET
     ld [wPaletteState], a
 
-    xor a, a
-    ld [wResetHUD], a
-
     ret
 
 UpdateHUD::
-
-    ld a, [wResetHUD]
-    and a, a
-    jp nz, ResetHUD
 
     ld a, [wActivePlayer]
 
@@ -107,22 +89,18 @@ UpdateHUD::
 
     ; Only animate healthbar every 4th frame
     ld a, [wFrameTimer]
-    bit 0, a
-    ret z
-    bit 1, a
-    ret z
+    and a, %11
+    ret nz
 
     ld a, [wActivePlayer]
     ; Get the active player's health
-    ld hl, wPlayerArray + Entity_Health
     ASSERT sizeof_Entity == 16
     swap a ; a * 16
-    add_r16_a hl
+    add_r16_a hl, wPlayerArray + Entity_Health
     ld b, [hl]
     ; Get the last value we checked for health
     ld a, [wActivePlayer]
-    ld hl, wHUDPlayerHealthBuffer
-    add_r16_a hl
+    add_r16_a hl, wHUDPlayerHealthBuffer
     ld a, [hl]
     cp a, b ; Compare last value to current value
     ret z ; return if no change is needed
@@ -147,7 +125,7 @@ UpdateHUD::
     inc a ; Half hearts need to draw one off (basically, round up!)
     ld b, TILE_HEART_HALF
 .skipHalf
-    ld c , a
+    ld c, a
     ld a, TILE_HEART_EMPTY
     cp a, b
     ld a, c
@@ -155,13 +133,17 @@ UpdateHUD::
     inc a
 :
     cp a, 10 + 1
-    ; These `-1`s are weird but they work so /shrug ?
     ld hl, vHeartBar - 1
     jr c, .skipBottom
     sub a, 10 
     ld hl, vHeartBar + 32 - 1
 .skipBottom
     add_r16_a hl
+
+:   ldh a, [rSTAT]
+    and a, STATF_BUSY
+    jr nz, :-
+
     ld [hl], b
     ret
 
@@ -169,25 +151,20 @@ UpdateHUD::
 .redraw
 
     ; Clear the HUD
-    ld a, TILE_WHITE
-    ld c, 10
+    lb bc, TILE_WHITE, 10
     ld hl, vHeartBar
-    rst memset_small
-    ld c, 10
-    ld hl, vHeartBar + 32
-    rst memset_small
+    call ScreenSet
 
     ldh a, [hSystem]
     and a, a
     jr z, .skipColor
-    ld hl, PalOctavia
     ASSERT PalOctavia + sizeof_PALETTE == PalPoppy && PalPoppy + sizeof_PALETTE == PalTiber
     ASSERT sizeof_PALETTE == 8
     ld a, [wActivePlayer]
     add a, a ; a * 2
     add a, a ; a * 4
     add a, a ; a * 8
-    add_r16_a hl
+    add_r16_a hl, PalOctavia
     ld de, wBCPD + sizeof_PALETTE * 7
     ld c, sizeof_PALETTE
     rst memcopy_small
@@ -201,13 +178,17 @@ UpdateHUD::
 
     ; Reset Health Bar (max health)
     ld b, 10
-    ld hl, wPlayerMaxHealth
-    add_r16_a hl
+    add_r16_a hl, wPlayerMaxHealth
     ld c, [hl]
     sra c ; Each tile is 2 health, so divide by 2
-    ld a, TILE_HEART_EMPTY
     ld hl, vHeartBar
 .topLoop
+
+:   ldh a, [rSTAT]
+    and a, STATF_BUSY
+    jr nz, :-
+    
+    ld a, TILE_HEART_EMPTY
     ld [hli], a
     dec b
     jr z, .bottom
@@ -219,6 +200,12 @@ UpdateHUD::
     jr z, .drawHearts
     ld hl, vHeartBar + 32 ; Next row
 .bottomLoop
+
+:   ldh a, [rSTAT]
+    and a, STATF_BUSY
+    jr nz, :-
+    
+    ld a, TILE_HEART_EMPTY
     ld [hli], a
     dec c
     jr nz, .bottomLoop
@@ -227,13 +214,11 @@ UpdateHUD::
     ld a, e
     ASSERT sizeof_Entity == 16
     swap a ; a * 16
-    ld hl, wPlayerArray + Entity_Health
-    add_r16_a hl
+    add_r16_a hl, wPlayerArray + Entity_Health
     ld b, [hl] ; save health for just a bit
 
     ld a, e ; make sure to store in the correct buffer
-    ld hl, wHUDPlayerHealthBuffer
-    add_r16_a hl
+    add_r16_a hl, wHUDPlayerHealthBuffer
     ld [hl], b ; set health buffer to the current player's health
     ld a, b
 
@@ -252,12 +237,16 @@ UpdateHUD::
     sub a, 10
     ld hl, vHeartBar + 32 - 1
 :   add_r16_a hl
+
+:   ldh a, [rSTAT]
+    and a, STATF_BUSY
+    jr nz, :-
+
     ld a, TILE_HEART_HALF
     ld [hld], a ; We already did a set up, so skip the regular one
     jr .bottomSetUp
 .setUp
-    ld hl, vHeartBar - 1
-    add_r16_a hl
+    add_r16_a hl, vHeartBar - 1
 .bottomSetUp
     ld a, c
     and a, a
@@ -267,10 +256,14 @@ UpdateHUD::
     jr c, .heartTopLoop ; If a < 10, only draw top row.
     sub a, 10
     ld b, a
-    ld hl, vHeartBar + 32 - 1
-    add_r16_a hl
-    ld a, TILE_HEART
+    add_r16_a hl, vHeartBar + 32 - 1
 .heartBottomLoop
+    
+:   ldh a, [rSTAT]
+    and a, STATF_BUSY
+    jr nz, :-
+
+    ld a, TILE_HEART
     ld [hld], a
     dec b
     jr nz, .heartBottomLoop
@@ -278,6 +271,11 @@ UpdateHUD::
     ld c, 10
     ld hl, vHeartBar + 10 - 1
 .heartTopLoop
+
+:   ldh a, [rSTAT]
+    and a, STATF_BUSY
+    jr nz, :-
+    
     ld a, TILE_HEART
     ld [hld], a
     dec c
@@ -551,15 +549,6 @@ TestPrintString::
 SECTION "HUD Variables", WRAM0
 
 wEnableHUD::
-    ds 1
-
-wResetHUD::
-    ds 1
-
-wHUDActiveItemGraphic:
-.slotA
-    ds 1
-.slotB
     ds 1
 
 ; The player that was active last time we updated the HUD, used for health bars

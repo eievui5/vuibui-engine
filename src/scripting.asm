@@ -88,9 +88,8 @@ ScriptText:
 ScriptSetposPlayer:
     load_hl_scriptpointer
     inc hl
-    ld de, wPlayerArray + Entity_YPos
     ld a, [hli] ; Load Player Offset
-    add_r16_a d, e ; Offset to current player
+    add_r16_a de, wPlayerArray + Entity_YPos ; Offset to current player
     ld a, [hli]
     ld [de], a ; Copy YPos
     inc e ; this is safe

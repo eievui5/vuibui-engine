@@ -1,5 +1,4 @@
 INCLUDE "include/banks.inc"
-INCLUDE "include/bool.inc"
 INCLUDE "include/damage.inc"
 INCLUDE "include/directions.inc"
 INCLUDE "include/entities.inc"
@@ -108,7 +107,7 @@ OctaviaRod:
 .heal
     ld d, 1
     ld e, SPELL_HEAL
-    ld b, TRUE ; b is true if the spell should heal players.
+    ld b, 1 ; b is true if the spell should heal players.
     ld c, 1
     jr .shootHeal
 .fire
@@ -126,7 +125,7 @@ OctaviaRod:
     ld e, SPELL_SHOCK
     ld c, 1
 .shoot
-    ld b, FALSE ; b is false if the spell should hurt enemies.
+    ld b, 0 ; b is false if the spell should hurt enemies.
 .shootHeal
     ld a, [wOctaviaSpellActive]
     and a, a
@@ -143,8 +142,7 @@ OctaviaRod:
     dec a
     add a, a ; a * 2
     swap a ; a * 32
-    ld hl, GfxPlayerSpells
-    add_r16_a hl
+    add_r16_a hl, GfxPlayerSpells
     ; This is what you get when you try to refactor old code. Stack usage.
     push bc
     push de
@@ -165,7 +163,7 @@ OctaviaRod:
     ld a, [wOctavia_Timer]
     cp a, 8 + 4 + 1 ; 8 frame action!
     ret c
-    ld a, TRUE
+    ld a, 1
     ld [wOctaviaSpellActive], a
     ld hl, wOctaviaSpell
     ld a, HIGH(OctaviaSpell)

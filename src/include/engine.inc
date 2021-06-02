@@ -1,6 +1,6 @@
 
     IF !DEF(ENGINE_INC)
-ENGINE_INC SET 1
+DEF ENGINE_INC EQU 1
 
 INCLUDE "enum.inc"
 INCLUDE "hardware.inc"

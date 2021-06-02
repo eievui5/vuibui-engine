@@ -47,8 +47,7 @@ HandleTextbox::
         ld a, 1
         ldh [rVBK], a
         ld hl, _SCRN1 + $300
-        ld b, HUD_MAIN_PAL
-        ld c, 5 ; Load 5 rows.
+        lb bc, HUD_MAIN_PAL, 5 ; Load 5 rows.
         call ScreenSet
         xor a, a
         ldh [rVBK], a
@@ -237,9 +236,7 @@ HandleTextbox::
     jr z, :-
 
 .close
-    ld a, 1
-    ld [wResetHUD], a
-    ret
+    jp ResetHUD
 
 SECTION "Load Characters", ROM0
 

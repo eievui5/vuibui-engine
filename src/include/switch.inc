@@ -1,6 +1,6 @@
 
     IF !DEF(SWITCH_INC)
-DEF SWITCH_INC SET 1
+DEF SWITCH_INC EQU 1
 
 ; Begin a switch statement. This will ultimately return, so please `call` your switch if this is unwanted.
 ; All you need to do is set `a` to the case value. VALUES ABOVE THE MAX CASE WILL NOT WORK!

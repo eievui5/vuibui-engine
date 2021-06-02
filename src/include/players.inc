@@ -2,7 +2,7 @@
 INCLUDE "include/enum.inc"
 
     IF !DEF(PLAYERS_INC)
-DEF PLAYERS_INC SET 1
+DEF PLAYERS_INC EQU 1
 
 ; Used to find a player's data at a given offset, storing it in hl. 
 ; @ bc: PLAYER enum * sizeof_Entity

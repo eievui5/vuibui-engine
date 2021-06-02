@@ -2,7 +2,7 @@
 INCLUDE "include/enum.inc"
 
     IF !DEF(DIRECTIONS_INC)
-DIRECTIONS_INC SET 1
+DEF DIRECTIONS_INC EQU 1
 
     start_enum DIR
         enum DOWN

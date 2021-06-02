@@ -1,5 +1,4 @@
 INCLUDE "include/banks.inc"
-INCLUDE "include/bool.inc"
 INCLUDE "include/engine.inc"
 INCLUDE "include/entities.inc"
 INCLUDE "include/graphics.inc"
@@ -301,7 +300,7 @@ InitializeGameplay::
 
 ; Reset HUD
     call ResetHUD
-    ld a, TRUE
+    ld a, 1
     ld [wEnableHUD], a
     xor a, a
     ld [wPrintState], a

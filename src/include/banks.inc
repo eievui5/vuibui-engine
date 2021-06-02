@@ -1,5 +1,5 @@
     IF !DEF(BANKS_INC)
-DEF BANKS_INC SET 1
+DEF BANKS_INC EQU 1
 
 INCLUDE "include/enum.inc"
 

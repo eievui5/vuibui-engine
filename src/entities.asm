@@ -1,6 +1,5 @@
 
 INCLUDE "include/banks.inc"
-INCLUDE "include/bool.inc"
 INCLUDE "include/directions.inc"
 INCLUDE "include/entities.inc"
 INCLUDE "include/hardware.inc"
@@ -145,7 +144,6 @@ PlayerMoveAndSlide::
     ld a, Entity_YPos - Entity_XVel
     add a, l
     ld l, a
-    SeekAssert Entity_YPos, Entity_XPos, 1
     ld a, [hli]
     ld b, a ; Save the Y Pos for later
     ld a, c
@@ -208,12 +206,9 @@ PlayerMoveAndSlide::
     
 ; WARNING!!! This is a disgusting copy/paste rather than a loop.
 .yMovement
-    SeekAssert Entity_XPos, Entity_YVel, 1
     inc l ; Seek to YVel
-    SeekAssert Entity_YVel, Entity_XPos, -1
     ld a, [hld] ; Seek to XPos
     ld b, a ; B contains Y Velocity
-    SeekAssert Entity_XPos, Entity_YPos, -1
     ld a, [hld] ; Seek to YPos
     ld c, a ; Save the XPos for later
     ld a, b
@@ -269,7 +264,6 @@ MoveAndSlide::
     ld a, Entity_YPos - Entity_XVel
     add a, l
     ld l, a
-    SeekAssert Entity_YPos, Entity_XPos, 1
     ld a, [hli]
     ld b, a ; Save the Y Pos for later
     ld a, c
@@ -299,12 +293,9 @@ MoveAndSlide::
     ld a, d
     ld [hl], a ; Update X Pos. 
 .yMovement
-    SeekAssert Entity_XPos, Entity_YVel, 1
     inc l ; Seek to YVel
-    SeekAssert Entity_YVel, Entity_XPos, -1
     ld a, [hld] ; Seek to XPos
     ld b, a ; B contains Y Velocity
-    SeekAssert Entity_XPos, Entity_YPos, -1
     ld a, [hld] ; Seek to YPos
     ld c, a ; Save the XPos for later
     ld a, b
@@ -392,12 +383,22 @@ CheckEntityCollision::
     inc l
     ld a, [hli] ; Load YPos
     sub a, d ; Find the difference
-    abs_a
+    ; abs(a)
+    bit 7, a
+    jr z, :+
+    cpl
+    inc a
+  :
     cp a, ENTITY_DETECTION_SIZE
     jr nc, .retFail
     ld a, [hld] ; Load X
     sub a, e
-    abs_a
+    ; abs(a)
+    bit 7, a
+    jr z, :+
+    cpl
+    inc a
+  :
     cp a, ENTITY_DETECTION_SIZE
     jr nc, .retFail
     dec l
@@ -408,7 +409,7 @@ CheckEntityCollision::
     ret
 
 ; Returns The index of the first entity to collide with a location in bc. 
-; If a returns FALSE, no entity was found.
+; If a returns 0, no entity was found.
 ; @ d:  Y position
 ; @ e:  X position
 ; @ bc: Source entity Index
@@ -430,7 +431,7 @@ DetectEntity::
     cp a, low(sizeof_Entity * MAX_ENTITIES)
     jr nz, .continue ; Return if we've reached the end of the array 
     pop bc ; throw away source index.
-    xor a, a ; ld a, FALSE
+    xor a, a ; ld a, 0
     ret 
 .continue
     ld b, h
@@ -487,7 +488,7 @@ DetectEntity::
     push bc
     jr .loop
 .return
-    ld a, TRUE
+    ld a, 1
     ret
 
 ; Find the angle to `de` from `hl`. 
@@ -533,7 +534,7 @@ ENDR
     ld l, a
     ret
 
-SECTION "Entity Array", WRAM0, ALIGN[$08] ; Align with $00 so that we can use unsafe struct seeking
+SECTION "Entity Array", WRAM0, ALIGN[8] ; Align with $00 so that we can use unsafe struct seeking
 wEntityArray::
     ; define an array of `MAX_ENTITIES` Entities, each named wEntityXX
     dstructs MAX_ENTITIES, Entity, wEntity

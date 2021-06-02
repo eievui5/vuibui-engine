@@ -22,7 +22,7 @@
 ; SOFTWARE.
 
     IF !DEF(STRUCTS_INC)
-STRUCTS_INC SET 1
+DEF STRUCTS_INC EQU 1
 
 ; Call with the expected RGBDS-structs version string to ensure your code
 ; is compatible with the INCLUDEd version of RGBDS-structs.

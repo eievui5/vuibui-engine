@@ -1,6 +1,6 @@
 
     IF !DEF(TEXT_INC)
-DEF TEXT_INC SET 1
+DEF TEXT_INC EQU 1
 
 INCLUDE "include/enum.inc"
 

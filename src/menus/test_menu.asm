@@ -1,4 +1,3 @@
-INCLUDE "include/bool.inc"
 INCLUDE "include/engine.inc"
 INCLUDE "include/graphics.inc"
 INCLUDE "include/hardware.inc"
@@ -32,12 +31,12 @@ TestMenuHeader::
     ; Used Buttons
     db PADF_A | PADF_UP | PADF_DOWN
     ; Auto-repeat
-    db FALSE
+    db 0
     ; Button functions
     dw HandleAPress, null, null, null, null, null, null, null
     db 0 ; Last selected item
     ; Allow wrapping
-    db TRUE
+    db 1
     ; Default selected item
     db 0
     ; Number of items in the menu
@@ -83,7 +82,7 @@ TestMenuInit:
     call LoadCharacters
 
     ld hl, _SCRN1
-    ld bc, M_BKG << 8 | SCRN_Y_B
+    lb bc, M_BKG, SCRN_Y_B
     call ScreenSet
 
     get_tilemap hl, _SCRN1, 0, 10

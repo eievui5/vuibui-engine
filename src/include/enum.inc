@@ -22,7 +22,7 @@
 ;
 
     IF !DEF(ENUM_INC)
-DEF ENUM_INC SET 1
+DEF ENUM_INC EQU 1
 
 ; Start a new enumeration. Will warn if an unclosed enum is found.
 ; @ start_enum Name, [start], [step]
