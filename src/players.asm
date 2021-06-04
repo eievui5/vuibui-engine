@@ -593,25 +593,25 @@ PlayerTransitionMovement::
 .down
     ld a, [hl]
     ; These location checks are slightly off, since sprites are not centered.
-    cp a, 24 ; 24 - stops on the first tile
+    cp a, 56 ; stops on the third tile
     jr z, .updateAllyPositions ; Are we already there?
     inc [hl] ; No? Then move down    
     jr .animatePlayerY
 .up
     ld a, [hl]
-    cp a, 8 ; Stop on the first tile
+    cp a, -24 ; Stop on the first tile
     jr z, .updateAllyPositions ; Are we already there?
     dec [hl] ; No? Then move up
     jr .animatePlayerY
 .right
     ld a, [hl]
-    cp a, 16 ; Stop on the first tile
+    cp a, 49 ; Stop on the first tile
     jr z, .updateAllyPositions ; Are we already there?
     inc [hl] ; No? Then move right
     jr .animatePlayerX
 .left
     ld a, [hl]
-    cp a, 1 ; Stop on the first tile
+    cp a, -31 ; Stop on the first tile
     jr z, .updateAllyPositions ; Are we already there?
     dec [hl] ; No? Then move left
 .animatePlayerX

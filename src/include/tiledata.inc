@@ -8,9 +8,12 @@ INCLUDE "enum.inc"
 ; Tile Constants
 
     start_enum TILEDATA
+
+        ; Collision will not detect these tiles
         enum CLEAR
-        ; Entity Walls (Entities cannot pass these)
-        enum COLLISION 
+
+        ; Only entities will collide with these tiles.
+        enum ENTITY_COLLISION
         enum TRANSITION_DOWN, TRANSITIONS ; Tiles to determine screen transitions.
         enum TRANSITION_UP
         enum TRANSITION_RIGHT
@@ -18,8 +21,11 @@ INCLUDE "enum.inc"
         enum WARP_0, WARPS ; 4 Tiles corresponding to up to four warps in a map.
         enum WARP_1
         enum WARP_2
-        enum WARP_3, ENTITY_WALL_MAX ; End of entity walls
-        ; End of entity walls.
+        enum WARP_3 ; End of entity walls
+        
+        ; Everything will collide with these tiles.
+        enum COLLISION
+        enum NPC_0, NPCS
     end_enum
 
 

@@ -67,7 +67,7 @@ RenderMetasprite::
 
 ; This label is used to render a metasprite at an absolute location, rather than
 ; considering any entity information. Make sure to set `hRenderByte` to zero!
-; @ bc: Position (x, y)
+; @ bc: Position (y, x)
 ; @ hl: Metasprite pointer
 .absolute::
     ldh a, [hOAMIndex]

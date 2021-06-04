@@ -2,9 +2,10 @@ INCLUDE "include/banks.inc"
 INCLUDE "include/engine.inc"
 INCLUDE "include/entities.inc"
 INCLUDE "include/graphics.inc"
-INCLUDE "include/map.inc"
 INCLUDE "include/hardware.inc"
 INCLUDE "include/macros.inc"
+INCLUDE "include/map.inc"
+INCLUDe "include/npc.inc"
 INCLUDE "include/switch.inc"
 INCLUDE "include/tiledata.inc"
 
@@ -24,7 +25,7 @@ UpdateActiveMap::
 	bit SPAWN_ENTITIES_B, d
 	jr z, :+
 	; ld a, 1
-    ldh [hRespawnEntitiesFlag], a ; Any non-zero value is enough
+    ldh [hRespawnEntitiesFlag], a
 :
     ; Clear player spell
     ld hl, wOctaviaSpell
@@ -37,6 +38,11 @@ UpdateActiveMap::
     ; Clear entity array
     ld c, sizeof_Entity * MAX_ENTITIES
     ld hl, wEntityArray
+    rst memset_small
+
+    ; Clear NPC array
+    ld c, sizeof_NPC * MAX_NPCS
+    ld hl, wNPCArray
     rst memset_small
 
 	bit UPDATE_TILEMAP_B, d
@@ -244,6 +250,9 @@ UpdateActiveMap::
     ASSERT MAPDATA_SET_WARP == 3
     dec a
     jr z, MapdataSetWarp
+    ASSERT MAPDATA_NPC == 4
+    dec a
+    jr z, MapdataNPC
 
 MapdataEntity:
     ldh a, [hRespawnEntitiesFlag]
@@ -286,6 +295,60 @@ MapdataSetWarp:
     pop hl
     ld c, sizeof_WarpData
     rst memcopy_small
+    jr UpdateActiveMap.nextData
+
+MapdataNPC:
+    ld a, [hli]
+    ldh [hNPCIndex], a
+    ASSERT sizeof_NPC == 8
+    add a, a ; a * 2
+    add a, a ; a * 4
+    add a, a ; a * 8
+    
+    ; Load NPC array
+    ASSERT LOW(wNPCArray) == 0
+    ld e, a
+    ld d, HIGH(wNPCArray)
+
+    ld c, sizeof_NPC
+    rst memcopy_small
+
+    ; Switch to using `de`, the location of the entity in RAM. This allows us to
+    ; only use `e` for seeking, and not worry about correcting `hl`
+
+    ld a, NPC_Position - (NPC_Script + 2)
+    add a, e
+    ld e, a
+
+    ; Lookup tile based on X, Y locations
+    ; Load X
+    ld a, [de]
+    and a, $0F
+
+    ld b, b
+    ; Add X to wMapData, store in `bc`
+    add a, LOW(wMapData)
+    ld c, a
+    adc a, HIGH(wMapData)
+    sub a, c
+    ld b, a
+
+    ; Now load Y
+    ld a, [de]
+    and a, $F0 ; Already convieniently *16!
+
+    ; Add Y to `bc`
+    add a, c
+    ld c, a
+    adc a, b
+    sub a, c
+    ld b, a
+
+    ; Seek down to the ID
+    ldh a, [hNPCIndex]
+    add a, TILEDATA_NPC_0
+    ld [bc], a ; Load an NPC tile onto the map.
+
     jr UpdateActiveMap.nextData
 
 ; Returns the active Map in `hl`, and its data in `bc`.
@@ -451,7 +514,8 @@ SECTION UNION "Volatile", HRAM
 ; Boolean value, set when entities should be respawned
 hRespawnEntitiesFlag:
     ds 1
-hWarpDataIndex: 
+hWarpDataIndex:
+hNPCIndex:
 hLCDCBuffer:
     ds 1
 hMapBankBuffer:

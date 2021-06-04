@@ -52,6 +52,7 @@ HandleEntities::
 
 RenderEntities::
     call RenderPlayers
+    call RenderNPCs
     ; loop through entity array
     ; bc: offset of current entity !!! MUST NOT CHANGE C !!!
     ; loop through entity array
@@ -131,7 +132,7 @@ SpawnEntity::
     ret
 
 ; Expanded version of MoveAndSlide which performs corner checks and only
-; collides with TILEDATA_COLLISION, rather than all excluded tiles.
+; collides with tiles greater than or equal to TILEDATA_COLLISION.
 ; @ hl: pointer to Entity. Returns Entity_YPos
 PlayerMoveAndSlide::
 .xMovement
@@ -163,11 +164,12 @@ PlayerMoveAndSlide::
     push bc ; And save our test position, incase we need to slide around a corner.
     call LookupMapData
     ld a, [hl]
-    cp a, TILEDATA_COLLISION
+    cp a, TILEDATA_COLLISION - 1
     pop bc
     pop hl
     pop de
-    jr z, .yMovement ; Is there data here? Don't move.
+    ; If a >= TILEDATA_COLLISION, skip movement
+    jr nc, .yMovement
     ; Handle movement
     ld a, d
     ld [hl], a ; Update X Pos. 
@@ -184,8 +186,9 @@ PlayerMoveAndSlide::
     ld a, [hl]
     pop bc
     pop hl
-    cp a, TILEDATA_COLLISION; Is there a wall on the corner?
-    jr nz, .xBottomCornerCheck 
+    cp a, TILEDATA_COLLISION
+    ; If a < TILEDATA_COLLISION, don't slide out.
+    jr c, .xBottomCornerCheck 
     inc l
     dec [hl] ; Slide out
     dec l
@@ -198,8 +201,9 @@ PlayerMoveAndSlide::
     call LookupMapData
     ld a, [hl]
     pop hl
-    cp a, TILEDATA_COLLISION; Is there a wall on the corner?
-    jr nz, .yMovement
+    cp a, TILEDATA_COLLISION
+    ; If a < TILEDATA_COLLISION, don't slide out.
+    jr c, .yMovement
     inc l
     inc [hl] ; Slide out
     dec l
@@ -228,11 +232,12 @@ PlayerMoveAndSlide::
     push bc
     call LookupMapData
     ld a, [hl]
-    cp a, TILEDATA_COLLISION
+    cp a, TILEDATA_COLLISION - 1
     pop bc
     pop hl
     pop de
-    ret z ; Is there data here? Don't move.
+    ; If a >= TILEDATA_COLLISION, skip movement
+    ret nc
     ld [hl], d ; Update Y Pos.
     ; Due to what some might call a bug, I only need to check one corner here.
     ; TODO: Make it check both.
@@ -244,14 +249,16 @@ PlayerMoveAndSlide::
     call LookupMapData
     ld a, [hl]
     pop hl
-    cp a, TILEDATA_COLLISION; Is there a wall on the corner?
-    ret nz
+    cp a, TILEDATA_COLLISION
+    ; If a < TILEDATA_COLLISION, don't slide out.
+    ret c
     inc l
     inc [hl] ; Slide out
     dec l
     ret
 
-; Move the Entity based on its Velocity. Slide along collision.
+; Move the Entity based on its Velocity. Slide along collision. Detects any
+; collision greater than or equal to TILEDATA_ENTITY_COLLISION
 ; @ hl: pointer to Entity. Returns Entity_YPos
 MoveAndSlide::
 .xMovement
@@ -284,11 +291,12 @@ MoveAndSlide::
     call LookupMapData
     ld a, [hl]
     dec a ; Skip 0
-    cp a, TILEDATA_ENTITY_WALL_MAX
+    cp a, TILEDATA_ENTITY_COLLISION - 1
     pop bc
     pop hl
     pop de
-    jr c, .yMovement ; Is there data here? Don't move.
+    ; If a >= TILEDATA_COLLISION, skip movement
+    jr nc, .yMovement
     ; Handle movement
     ld a, d
     ld [hl], a ; Update X Pos. 
@@ -316,11 +324,12 @@ MoveAndSlide::
     call LookupMapData
     ld a, [hl]
     dec a ; Skip 0
-    cp a, TILEDATA_ENTITY_WALL_MAX
+    cp a, TILEDATA_ENTITY_COLLISION - 1
     pop bc
     pop hl
     pop de
-    ret c ; Is there data here? Don't move.
+    ; If a >= TILEDATA_COLLISION, skip movement
+    ret nc
     ld [hl], d ; Update Y Pos.
     ret
 

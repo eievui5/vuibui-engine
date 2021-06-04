@@ -33,6 +33,7 @@ DebugMap: ; Using DebugMetatiles
     db $01, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $05
     db $01, $03, $03, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01
 .data
+    create_npc 0, PoppyMetasprites, 0, 1, 1, null
     create_entity HitDummy, (256/2) + 32, (256/2)
     set_warp 0, 2, 2, MAP_BEACH, 0, 0, 256/2, 256/2
     end_mapdata

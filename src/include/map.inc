@@ -91,12 +91,31 @@ MACRO set_warp
     db \4, \5, \6, \7, \8 ; Warp Data
 ENDM
 
+; Spawn an NPC when entering a given room.
+; @ create_npc ID, Metasprites, Direction, Y, X, Script
+MACRO create_npc
+    IF _NARG != 6
+        FAIL "Expected 8 args."
+    ELIF \1 > 3
+        FAIL "Entity ID cannot be greater than 3."
+    ENDC
+    db MAPDATA_NPC
+    db \1 ; ID
+    db BANK(\2)
+    dw \2 ; Metasprites
+    db \3 ; Direction
+    db (\5 << 4) | \4 ; X and Y
+    db BANK(\6)
+    dw \6 ; Script
+ENDM
+
 ; Macro Data enumerations
     start_enum MAPDATA
         enum END
         enum ENTITY
         enum ALLY_MODE
         enum SET_WARP
+        enum NPC
     end_enum
 
 ; Map enumerations
