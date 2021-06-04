@@ -8,6 +8,7 @@ INCLUDE "include/text.inc"
 SECTION "Tiber Dialogue", ROMX, BANK[2]
 
 TiberGeneric::
+    pause
     compare wPlayerWaitLink.tiber, wActivePlayer, .waitDialogue, .followDialogue
 
 .waitDialogue

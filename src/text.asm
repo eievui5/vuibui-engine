@@ -236,6 +236,10 @@ HandleTextbox::
     jr z, :-
 
 .close
+    ; Reset keys to prevent misinputs.
+    xor a, a
+    ldh [hCurrentKeys], a
+    ldh [hNewKeys], a
     jp ResetHUD
 
 SECTION "Load Characters", ROM0

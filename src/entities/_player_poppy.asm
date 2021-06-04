@@ -64,7 +64,7 @@ PoppyActiveNormal: ; How to move.
     ld a, [wPlayerEquipped.poppy]
     ld b, a
     ld hl, wPoppy
-    call InteractionCheck
+    call PlayerInteractionCheck
     ld hl, wPoppy_State
     call UseItemCheck
 .activeMove

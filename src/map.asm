@@ -325,7 +325,6 @@ MapdataNPC:
     ld a, [de]
     and a, $0F
 
-    ld b, b
     ; Add X to wMapData, store in `bc`
     add a, LOW(wMapData)
     ld c, a

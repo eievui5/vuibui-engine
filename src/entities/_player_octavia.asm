@@ -76,11 +76,15 @@ OctaviaActiveNormal:
     end_switch
 
 .skipAISwitch
+    ld hl, wOctavia
+    call PlayerInteractionCheck
+
+    ld hl, wOctavia
+    call NPCInteractionCheck
+
     ; Attack check
     ld a, [wPlayerEquipped.octavia]
     ld b, a
-    ld hl, wOctavia
-    call InteractionCheck
     ld hl, wOctavia_State
     call UseItemCheck
 .activeMove

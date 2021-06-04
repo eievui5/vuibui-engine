@@ -14,6 +14,8 @@ INCLUDE "include/enum.inc"
         enum FUNCTION
         enum COMPARE
         enum SET_TEXT_GRADIENT
+        enum PAUSE
+        enum UNPAUSE
     end_enum
 
 ; Returns to normal processing
@@ -114,6 +116,15 @@ MACRO text_color
     dw \1
 ENDM
 
+; Pause the game
+MACRO pause
+    db SCRIPT_PAUSE
+ENDM
+
+; Unpause the game
+MACRO unpause
+    db SCRIPT_UNPAUSE
+ENDM
 
 ; ################# Pseudo-Scripts
 

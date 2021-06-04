@@ -6,6 +6,7 @@ INCLUDE "include/text.inc"
 SECTION "Octavia Dialogue", ROMX
 
 OctaviaGeneric::
+    pause
     compare wPlayerWaitLink.octavia, wActivePlayer, .waitDialogue, .followDialogue
 
 .waitDialogue

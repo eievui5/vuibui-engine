@@ -68,7 +68,7 @@ TiberActiveNormal: ; How to move.
     ld a, [wPlayerEquipped.tiber]
     ld b, a
     ld hl, wTiber
-    call InteractionCheck
+    call PlayerInteractionCheck
     ld hl, wTiber_State
     call UseItemCheck
 .activeMove

@@ -106,6 +106,10 @@ Initialize::
         ld [wFrameTimer], a
         ld [wTextboxFadeProgress], a
         ld [wVBlankMapLoadPosition], a
+        ld hl, wActiveScriptPointer
+        ld [hli], a
+        ld [hli], a
+        ld [hli], a
 
     ; VRAM
         ld hl, _VRAM
@@ -330,7 +334,8 @@ InitializeGameplay::
 
     ASSERT ENGINE_STATE_GAMEPLAY == 0
     xor a, a
-    ld [hEngineState], a
+    ldh [hEngineState], a
+    ldh [hPaused], a
 
     pop af
     swap_bank

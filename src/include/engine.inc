@@ -20,7 +20,6 @@ DEF SKIP_FRAME EQU LCDCF_ON
 
     start_enum ENGINE_STATE
         enum GAMEPLAY
-        enum SCRIPT
         enum ROOM_TRANSITION
         enum MENU
     end_enum

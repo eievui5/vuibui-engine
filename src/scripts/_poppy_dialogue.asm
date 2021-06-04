@@ -6,6 +6,7 @@ INCLUDE "include/text.inc"
 SECTION "Poppy Dialogue", ROMX
 
 PoppyGeneric::
+    pause
     compare wPlayerWaitLink.poppy, wActivePlayer, .waitDialogue, .followDialogue
 
 .waitDialogue

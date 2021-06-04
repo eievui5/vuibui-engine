@@ -25,7 +25,6 @@ ENDM
 SECTION "Script Handlers", ROM0
 
 HandleScript::
-    ld a, [wActiveScriptPointer]
     swap_bank
 .nextByte
     load_hl_scriptpointer
@@ -50,12 +49,20 @@ HandleScript::
         dw ScriptCompare
         ASSERT SCRIPT_SET_TEXT_GRADIENT == 8
         dw ScriptSetTextGradient
+        ASSERT SCRIPT_PAUSE == 9
+        dw ScriptPause
+        ASSERT SCRIPT_UNPAUSE == 10
+        dw ScriptUnpause
 
 ; End of script!
 ScriptEnd:
     ASSERT ENGINE_STATE_GAMEPLAY == 0
     xor a, a
-    ldh [hEngineState], a
+    ldh [hPaused], a ; Unpause (if paused)
+    ld hl, wActiveScriptPointer ; Clear script
+    ld [hli], a
+    ld [hli], a
+    ld [hli], a
     ret
 
 ; Dummy script
@@ -186,6 +193,16 @@ ScriptSetTextGradient:
     ld [wTextboxPalettes], a
     load_scriptpointer_hl ; restore and exit
     ret
+
+ScriptPause:
+    ld a, 1
+    ldh [hPaused], a
+    jp ScriptNull
+
+ScriptUnpause:
+    xor a, a
+    ldh [hPaused], a
+    jp ScriptNull
 
 SECTION "Script Variables", WRAM0
 

@@ -6,6 +6,7 @@ INCLUDE "include/enum.inc"
 INCLUDE "include/hardware.inc"
 INCLUDE "include/macros.inc"
 INCLUDE "include/map.inc"
+INCLUDE "include/npc.inc"
 INCLUDE "include/players.inc"
 INCLUDE "include/switch.inc"
 INCLUDE "include/tiledata.inc"
@@ -495,10 +496,70 @@ UseItemCheck::
     ld [hl], b
     ret
 
+; Check if a player is trying to talk to an NPC. If this succeeds a super return
+; is performed, and player logic will end.
+; @ `hl`: Pointer to Player. 
+NPCInteractionCheck::
+    ldh a, [hNewKeys]
+    bit PADB_A, a
+    ret z
+    call GetEntityTargetPosition
+    ; Add positions to wMapData
+    ; Divide X by 16
+    ld a, e
+    ; Weird offset! I clearly screwed up entity positions...
+    sub a, $F 
+    and a, $F0
+    swap a
+    ; Add X to wMapData, store in `bc`
+    add a, LOW(wMapData)
+    ld c, a
+    adc a, HIGH(wMapData)
+    sub a, c
+    ld b, a
+
+    ; Mask out lower bits (divide by 16, then mult by 16)
+    ld a, d
+    ; Weird offset! I clearly screwed up entity positions...
+    sub a, $10
+    and a, $F0
+
+    ; Add Y to `bc`
+    add a, c
+    ld c, a
+    adc a, b
+    sub a, c
+    ld b, a
+
+    ; Check the tile we found
+    ld a, [bc]
+    ; Offset to NPC tiles
+    sub a, TILEDATA_NPC_0
+    ret c ; If a < TILEDATA_NPC_0
+    cp a, TILEDATA_NPC_3 + 1
+    ret nc ; If a > TILEDATA_NPC_3
+
+    ASSERT sizeof_NPC == 8
+    add a, a ; a * 2
+    add a, a ; a * 4
+    add a, a ; a * 8
+
+    ; Grab that NPC's script
+    add a, LOW(wNPCArray + NPC_ScriptBank)
+    ld l, a
+    ld h, HIGH(wNPCArray + NPC_ScriptBank)
+
+    ld c, 3
+    ld de, wActiveScriptPointer
+    rst memcopy_small
+
+    pop hl ; Super ret !
+    ret
+
 ; Check if the players are trying to talk. If this succeeds a super return is 
 ; performed, and player logic will end.
 ; @ `hl`: Pointer to Player. 
-InteractionCheck::
+PlayerInteractionCheck::
     ldh a, [hNewKeys]
     bit PADB_A, a
     ret z
@@ -519,12 +580,10 @@ InteractionCheck::
     ld de, wActiveScriptPointer
     rst memcopy_small
 
-    ld a, ENGINE_STATE_SCRIPT
-    ldh [hEngineState], a
     pop hl ; Super ret!
     ret
 
-; Returns the entity position offset by their facing direction in `de` (X, Y)
+; Returns the entity position offset by their facing direction in `de` (Y, X)
 ; @ `hl`: pointer to entity
 GetEntityTargetPosition::
     ld a, Entity_Direction - Entity_DataPointer
@@ -1031,5 +1090,5 @@ wPlayerArray::
     dstructs 2, Entity, wPoppyArrow
 
 SECTION UNION "Volatile", HRAM
-hAvailableEntityArray:
+hLastBank:
     ds 1

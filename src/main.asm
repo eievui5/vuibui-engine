@@ -11,13 +11,10 @@ Main::
     ASSERT ENGINE_STATE_GAMEPLAY == 0
     and a, a
     jr z, Gameplay
-    ASSERT ENGINE_STATE_SCRIPT == 1
-    dec a
-    jr z, Script
-    ASSERT ENGINE_STATE_ROOM_TRANSITION == 2
+    ASSERT ENGINE_STATE_ROOM_TRANSITION == 1
     dec a
     jr z, Transition
-    ASSERT ENGINE_STATE_MENU == 3
+    ASSERT ENGINE_STATE_MENU == 2
     dec a
     jr z, Menu
     ld b, b
@@ -33,6 +30,17 @@ Main::
     jr Main
 
 Gameplay:
+
+    ; Check if a script is currently running
+    ld a, [wActiveScriptPointer]
+    and a, a
+    call nz, HandleScript
+    
+    ; Check if we're paused.
+    ldh a, [hPaused]
+    and a, a
+    jr nz, .pauseMode
+
     ; Check if the player has pressed start.
     ldh a, [hCurrentKeys]
     bit PADB_START, a
@@ -46,6 +54,8 @@ Gameplay:
 .skipInventoryOpen
 
     call HandleEntities
+
+.pauseMode
     call CleanOAM
     ; Update the camera before rendering
     call PlayerCameraInterpolation
@@ -58,12 +68,6 @@ Transition:
     call PlayerTransitionMovement
     call CleanOAM
     call RenderPlayersTransition
-    jr Main.end
-
-Script:
-    call HandleScript
-    call CleanOAM
-    call RenderEntities 
     jr Main.end
 
 Menu:
@@ -84,6 +88,9 @@ wGameplayScrollBuffer::
 SECTION "Engine Flags", HRAM
 hEngineState::
     ds 1 
+
+hPaused::
+    ds 1
 
 ; The system we're running on. See engine.inc for constants.
 ; @ 0: DMG

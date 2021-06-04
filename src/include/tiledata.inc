@@ -25,7 +25,10 @@ INCLUDE "enum.inc"
         
         ; Everything will collide with these tiles.
         enum COLLISION
-        enum NPC_0, NPCS
+        enum NPC_0
+        enum NPC_1
+        enum NPC_2
+        enum NPC_3
     end_enum
 
 
