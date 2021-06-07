@@ -7,19 +7,22 @@ SECTION "Octavia Dialogue", ROMX
 
 OctaviaGeneric::
     pause
-    compare wPlayerWaitLink.octavia, wActivePlayer, .waitDialogue, .followDialogue
-
-.waitDialogue
-    octavia_text .waitText
-    question_branch :++, :+
-:   set_pointer wPlayerWaitLink.octavia, PLAYER_OCTAVIA
-:   end_script
+    jump_if wPlayerWaitLink.octavia, wActivePlayer, \
+        .waitDialogue
 
 .followDialogue
     octavia_text .followText
-    question_branch :++, :+
-:   call_function PlayerSetWaitLink.octavia
-:   end_script
+    question_branch .end
+    call_function PlayerSetWaitLink.octavia
+    end_script
+
+.waitDialogue
+    octavia_text .waitText
+    question_branch .end
+    set_pointer wPlayerWaitLink.octavia, PLAYER_OCTAVIA
+.end
+    end_script
+
 
 .waitText
     say "Yeah? Do you\n"

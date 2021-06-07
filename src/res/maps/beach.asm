@@ -1,6 +1,7 @@
 
 INCLUDE "include/map.inc"
 INCLUDE "include/graphics.inc"
+INCLUDE "include/tiledata.inc"
 
 SECTION "Beach Map", ROMX
 
@@ -59,7 +60,7 @@ BeachMetatiles:
 .attributes
     ds 12*4, 0
 .data
-    ds 12
+    ds 12, TILEDATA_CLEAR
 
 Beach: INCBIN "res/maps/beach/beach_map.tilemap"
 

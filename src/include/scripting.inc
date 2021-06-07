@@ -23,7 +23,6 @@ MACRO end_script
     db SCRIPT_END
 ENDM
 
-; Used to break up simu-ops, such as movement.
 MACRO pass
     db SCRIPT_NULL
 ENDM
@@ -36,8 +35,7 @@ MACRO display_text
     ENDC
     db SCRIPT_TEXT
     db bank(\1)
-    db high(\1)
-    db low(\1)
+    dw \1
 ENDM
 
 ; Sets the given player's position and direction. Will not scroll the camera (yet) and thus has weird effects.
@@ -54,20 +52,17 @@ ENDM
 
     ENDC
 
-; Branches to `.label0` if `pointer` is 0, and `.label1` otherwise
-; @ branch pointer, value, .label0, .label1
+; Branches to `.label` if `pointer` equals `value`
+; @ branch pointer, value, .label
 ; @ pointer: Pointer to the value to compare
 ; @ value: Value to compare to pointer
-; @ .label0: Location to jump to if the check succeeds.
-; @ .label1: Location to jump to if the check fails.
+; @ .label: Location to jump to if the check succeeds.
 MACRO branch
-    IF _NARG != 4
-        FAIL "Expected 4 args"
-    ENDC
+    ASSERT _NARG == 3, "Expected 3 args"
     db SCRIPT_BRANCH
     dw \1, 
     db \2
-    dw \3, \4
+    dw \3
 ENDM
 
 ; Sets the reffered `pointer` to `value`
@@ -91,18 +86,15 @@ MACRO call_function
     dw \1
 ENDM
 
-; Compares two pointers
-; @ compare .pointer0, .pointer1, .label0, .label1
+; Jump if two pointers are equal
+; @ compare .pointer0, .pointer1, .label
 ; @ .pointer0: Pointer to the value to compare
 ; @ .pointer1:
 ; @ .label0: Location to jump to if the check succeeds.
-; @ .label1: Location to jump to if the check fails.
-MACRO compare
-    IF _NARG != 4
-        FAIL "Expected 4 args"
-    ENDC
+MACRO jump_if
+    ASSERT _NARG == 3, "Expected 3 args"
     db SCRIPT_COMPARE
-    dw \1, \2, \3, \4
+    dw \1, \2, \3
 ENDM
 
 ; Update text box gradient.
@@ -128,10 +120,10 @@ ENDM
 
 ; ################# Pseudo-Scripts
 
-; Branches to `.label0` if the first option was chosen, and `.label1` otherwise
-; @ question_branch .label0, .label1
+; Branches to `.label` if the first option was chosen
+; @ question_branch .label0
 MACRO question_branch
-    branch wTextAnswer, 0, \1, \2
+    branch wTextAnswer, 0, \1
 ENDM
 
 MACRO octavia_text

@@ -69,8 +69,7 @@ ScriptEnd:
 ScriptNull:
     load_hl_scriptpointer
     inc hl
-    load_scriptpointer_hl
-    ret
+    jp ScriptExitStub
 
 ScriptText:
     load_hl_scriptpointer
@@ -80,17 +79,16 @@ ScriptText:
     ld [wTextBank], a
     ; Load pointer
     ld a, [hli]
-    ld [wTextPointer], a
-    ld a, [hl]
     ld [wTextPointer + 1], a
+    ld a, [hl]
+    ld [wTextPointer], a
     call HandleTextbox
     load_hl_scriptpointer
     inc hl 
     inc hl 
     inc hl
     inc hl
-    load_scriptpointer_hl
-    ret
+    jp ScriptExitStub
 
 ScriptSetposPlayer:
     load_hl_scriptpointer
@@ -110,28 +108,33 @@ ScriptSetposPlayer:
     ASSERT Entity_Frame - Entity_Direction == 1
     inc e
     ld [de], a ; A bit of a hack, but I wanna set direction *and* frame.
-    load_scriptpointer_hl ; restore and exit
-    ret
+    jp ScriptExitStub
 
 ScriptBranch:
     load_hl_scriptpointer
     inc hl
+    ; Load pointer
     ld a, [hli]
     ld e, a
     ld a, [hli]
     ld d, a
     ld a, [de]
+    ; Compare pointer to value and jump if equal.
     cp a, [hl]
     inc hl ; Luckily, this touches no flags!
-    jr z, .skipOne
-    inc hl
-    inc hl
-.skipOne
+    jr nz, .fail
+    ; Jump to pointer
     ld a, [hli]
     ld [wActiveScriptPointer + 1], a
     ld a, [hl]
     ld [wActiveScriptPointer + 2], a
     ret
+.fail
+    ; Skip pointer
+    inc hl
+    inc hl
+    jr ScriptExitStub
+
 
 ScriptSetPointer:
     load_hl_scriptpointer
@@ -142,8 +145,7 @@ ScriptSetPointer:
     ld d, a
     ld a, [hli]
     ld [de], a
-    load_scriptpointer_hl ; restore and exit
-    ret
+    jr ScriptExitStub
 
 ScriptFunction:
     load_hl_scriptpointer
@@ -160,27 +162,33 @@ ScriptFunction:
 ScriptCompare:
     load_hl_scriptpointer
     inc hl
+    ; Grab first pointer
     ld a, [hli]
     ld e, a
     ld a, [hli]
     ld d, a
     ld a, [de]
     ld b, a
+    ; Grab second pointer
     ld a, [hli]
     ld e, a
     ld a, [hli]
     ld d, a
     ld a, [de]
+    ; Return if the pointers are not equal
     cp a, b
-    jr z, .skipOne
-    inc hl
-    inc hl
-.skipOne
+    jr nz, .fail
+    ; Otherwise, jump to the pointer
     ld a, [hli]
     ld [wActiveScriptPointer + 1], a
     ld a, [hl]
     ld [wActiveScriptPointer + 2], a
     ret
+.fail
+    ; Skip the pointer
+    inc hl
+    inc hl
+    jr ScriptExitStub
 
 ScriptSetTextGradient:
     load_hl_scriptpointer
@@ -191,8 +199,7 @@ ScriptSetTextGradient:
     ld [wTextboxPalettes + 1], a
     ld a, [hli]
     ld [wTextboxPalettes], a
-    load_scriptpointer_hl ; restore and exit
-    ret
+    jr ScriptExitStub
 
 ScriptPause:
     ld a, 1
@@ -203,6 +210,12 @@ ScriptUnpause:
     xor a, a
     ldh [hPaused], a
     jp ScriptNull
+
+
+; Save some space with a tail call.
+ScriptExitStub:
+    load_scriptpointer_hl ; restore and exit
+    ret
 
 SECTION "Script Variables", WRAM0
 

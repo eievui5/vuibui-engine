@@ -7,19 +7,21 @@ SECTION "Poppy Dialogue", ROMX
 
 PoppyGeneric::
     pause
-    compare wPlayerWaitLink.poppy, wActivePlayer, .waitDialogue, .followDialogue
-
-.waitDialogue
-    poppy_text .waitText
-    question_branch :++, :+
-:   set_pointer wPlayerWaitLink.poppy, PLAYER_POPPY
-:   end_script
+    jump_if wPlayerWaitLink.poppy, wActivePlayer, \
+        .waitDialogue
 
 .followDialogue
     poppy_text .followText
-    question_branch :++, :+
-:   call_function PlayerSetWaitLink.poppy
-:   end_script
+    question_branch .end
+    call_function PlayerSetWaitLink.poppy
+    end_script
+
+.waitDialogue
+    poppy_text .waitText
+    question_branch .end
+    set_pointer wPlayerWaitLink.poppy, PLAYER_POPPY
+.end
+    end_script
 
 .waitText
     say "Huh? Oh, What's\n"
