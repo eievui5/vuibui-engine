@@ -233,7 +233,7 @@ OctaviaAIFollow:
     call PlayerAIFollow
     
     ld hl, wOctavia
-    jp PlayerMoveAndSlide
+    jp MoveAndSlide
 
 GfxPlayerSpells::
     ASSERT SPELL_FIRE == 1

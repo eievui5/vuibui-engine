@@ -183,7 +183,7 @@ PoppyAIFollow:
     call PlayerAIFollow
     
     ld hl, wPoppy
-    jp PlayerMoveAndSlide
+    jp MoveAndSlide
 
 SECTION "Poppy Vars", WRAM0
 ; Used to keep track of how many arrows are active at a time.

@@ -1,5 +1,7 @@
 INCLUDE "include/npc.inc"
 
+; TODO: NPCs should look at the player when talked to.
+
 SECTION "NPC Logic", ROM0
 
 RenderNPCs::

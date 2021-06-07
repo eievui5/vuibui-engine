@@ -31,7 +31,6 @@ OctaviaSpellLogic::
     call LookupMapData
     pop bc
     ld a, [hl]
-    dec a ; Ignore 0
     cp a, TILEDATA_ENTITY_COLLISION - 1
     jr nc, .destroySelf
     ld a, [wOctaviaSpell_Flags]

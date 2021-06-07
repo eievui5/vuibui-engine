@@ -5,12 +5,18 @@ DEF TILES_INC EQU 1
 INCLUDE "directions.inc"
 INCLUDE "enum.inc"
 
+; Inequality checks require that these values not equal 1.
+ASSERT TILEDATA_ENTITY_COLLISION - 1 != 0
+ASSERT TILEDATA_COLLISION - 1 != 0
+
 ; Tile Constants
 
     start_enum TILEDATA
 
         ; Collision will not detect these tiles
         enum CLEAR
+        ; ENTITY_COLLISION - 1 must not equal zero, so pad the enum for now
+        enum BUFFER
 
         ; Only entities will collide with these tiles.
         enum ENTITY_COLLISION

@@ -290,7 +290,6 @@ MoveAndSlide::
     push bc ; And save our test position, incase we need to slide around a corner.
     call LookupMapData
     ld a, [hl]
-    dec a ; Skip 0
     cp a, TILEDATA_ENTITY_COLLISION - 1
     pop bc
     pop hl
@@ -323,7 +322,6 @@ MoveAndSlide::
     push bc
     call LookupMapData
     ld a, [hl]
-    dec a ; Skip 0
     cp a, TILEDATA_ENTITY_COLLISION - 1
     pop bc
     pop hl
