@@ -1,10 +1,8 @@
-
 INCLUDE "include/banks.inc"
 INCLUDE "include/directions.inc"
 INCLUDE "include/entities.inc"
 INCLUDE "include/hardware.inc"
 INCLUDE "include/graphics.inc"
-INCLUDE "include/macros.inc"
 INCLUDE "include/tiledata.inc"
 
 ; Entities are stored in wEntityArray, which includes a 2-byte pointer to the
@@ -23,7 +21,12 @@ HandleEntities::
     jr .skip
 .loop
     ld a, sizeof_Entity
-    add_r16_a bc
+    ; Add `a` to `bc`
+    add a, c
+    ld c, a
+    adc a, b
+    sub a, c
+    ld b, a
     ld a, c
     cp a, low(sizeof_Entity * MAX_ENTITIES)
     ret z ; Return if we've reached the end of the array
@@ -61,7 +64,12 @@ RenderEntities::
     jr .skip
 .loop
     ld a, sizeof_Entity
-    add_r16_a bc
+    ; Add `a` to `bc`
+    add a, c
+    ld c, a
+    adc a, b
+    sub a, c
+    ld b, a
     ld a, c
     cp a, low(sizeof_Entity * MAX_ENTITIES)
     ret z ; Return if we've reached the end of the array
@@ -77,7 +85,12 @@ RenderEntities::
     jr z, .loop
 
     ld a, EntityDefinition_Render - EntityDefinition_Logic
-    add_r16_a hl
+    ; Add `a` to `hl`
+    add a, l
+    ld l, a
+    adc a, h
+    sub a, l
+    ld h, a
 
     ; Load entity Script
     ld a, [hli] ; Load bank of script
@@ -374,11 +387,22 @@ LookupMapData::
     ld a, c
     swap a ; a / 16 (sort of...)
     and a, %00001111 ; Mask out the upper bits
-    add_r16_a hl; Offset map data by X. Lower byte is safe to use.
+    ; Offset map data by X. Lower byte is safe to use.
+    ; Add `a` to `hl`
+    add a, l
+    ld l, a
+    adc a, h
+    sub a, l
+    ld h, a
     ; Y translation (255 -> 16 * 16 or 256 ! )
     ld a, b
     and a, %11110000 ; We do need to mask out a bit...s
-    add_r16_a hl
+    ; Add `a` to `hl`
+    add a, l
+    ld l, a
+    adc a, h
+    sub a, l
+    ld h, a
     ret
 
 ; Check if the entity pointed to by `hl` collides with the position `de`.

@@ -2,8 +2,7 @@
     IF !DEF(ENTITIES_INC)
 DEF ENTITIES_INC EQU 1
 
-INCLUDE "macros.inc"
-INCLUDE "structs.inc"
+INCLUDE "include/structs.inc"
 
 ; Used to find an entity's data at a given offset, storing it in hl. 
 ; @ bc: Entity Index

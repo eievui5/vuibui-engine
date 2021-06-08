@@ -1,21 +1,6 @@
-/* stat.asm
-    FX and Stat interupts
-
-    Stat is complicated and confusing, so this is split into two modes.
-
-    Static mode jumps to a given FX when triggered. This is used for the HUD.
-    Requires more fine control, but much less processor usage.
-
-    The unused Raster Mode can play a given effect on every odd scan line, by
-    using rLY to index into an array of scanline FX. Used for cutscenes or
-    areas with low processor usage.
-
-*/
-
 INCLUDE "include/banks.inc"
 INCLUDE "include/engine.inc"
 INCLUDE "include/hardware.inc"
-INCLUDE "include/macros.inc"
 INCLUDE "include/stat.inc"
 
 SECTION "Stat Interrupt", ROM0[$48]
@@ -66,7 +51,12 @@ FXMode:
 
     ; Index into the FX array.
     sra a
-    add_r16_a hl, wRasterFX
+    ; Add `a` to `wRasterFX` and store in `hl`
+    add a, LOW(wRasterFX)
+    ld l, a
+    adc a, HIGH(wRasterFX)
+    sub a, l
+    ld h, a 
     ld a, [hl]
 
     ; If no FX is loaded, exit!
@@ -134,7 +124,12 @@ TextboxPalette:
     ld l, a
     ld a, [wTextboxFadeProgress]
     add a, a
-    add_r16_a hl
+    ; Add `a` to `hl`
+    add a, l
+    ld l, a
+    adc a, h
+    sub a, l
+    ld h, a
     ld a, [hli]
     ld b, a
     ld c, [hl]

@@ -2,7 +2,6 @@ INCLUDE "include/banks.inc"
 INCLUDE "include/directions.inc"
 INCLUDE "include/engine.inc"
 INCLUDE "include/entities.inc"
-INCLUDE "include/macros.inc"
 INCLUDE "include/players.inc"
 INCLUDE "include/scripting.inc"
 INCLUDE "include/switch.inc"
@@ -94,7 +93,14 @@ ScriptSetposPlayer:
     load_hl_scriptpointer
     inc hl
     ld a, [hli] ; Load Player Offset
-    add_r16_a de, wPlayerArray + Entity_YPos ; Offset to current player
+    ; Offset to current player
+    ; Add `a` to `wPlayerArray + Entity_YPos` and store in `de`
+    add a, LOW(wPlayerArray + Entity_YPos)
+    ld e, a
+    adc a, HIGH(wPlayerArray + Entity_YPos)
+    sub a, e
+    ld d, a
+
     ld a, [hli]
     ld [de], a ; Copy YPos
     inc e ; this is safe

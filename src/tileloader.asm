@@ -1,9 +1,8 @@
-
 INCLUDE "include/directions.inc"
-include "include/engine.inc"
-include "include/hardware.inc"
+INCLUDE "include/engine.inc"
+INCLUDE "include/hardware.inc"
+INCLUDE "include/lb.inc"
 INCLUDE "include/tiledata.inc"
-include "include/macros.inc"
 
 SECTION "Tileloader", ROM0 
 
@@ -60,7 +59,13 @@ LoadMetatile::
 
     ld a, b ; (0 - 16) -> (0 - 32)
     add a, a  ; a * 2
-    add_r16_a de, _SCRN0
+    ; Add `a` to `_SCRN0` and store in `de`
+    add a, LOW(_SCRN0)
+    ld e, a
+    adc a, HIGH(_SCRN0)
+    sub a, e
+    ld d, a
+
     ld  h, c ; c * 256
     ld  l, $00 ; (0 - 16) -> (0 - 1024)
     srl h
@@ -74,10 +79,21 @@ LoadMetatile::
 
     ; Let's start by offsetting our map...
     ld a, b
-    add_r16_a hl, wMetatileMap ; add the X value
+    ; Add `a` to `wMetatileMap` and store in `hl`
+    add a, LOW(wMetatileMap)
+    ld l, a
+    adc a, HIGH(wMetatileMap)
+    sub a, l
+    ld h, a ; add the X value
     ld a, c
     swap a ; c * 16
-    add_r16_a hl ; add the Y value
+    ; add the Y value
+    ; Add `a` to `hl`
+    add a, l
+    ld l, a
+    adc a, h
+    sub a, l
+    ld h, a
     ; [hl] contains our target tile.
 
     ; TODO: Sacrifice a bit of speed and use 16 bits.
@@ -109,7 +125,12 @@ LoadMetatile::
     ret z
     ld b, $02 ; Neither? Next Row.
     ld a, 32 - 2
-    add_r16_a de
+    ; Add `a` to `de`
+    add a, e
+    ld e, a
+    adc a, d
+    sub a, e
+    ld d, a
     jr .loadRow
 
 
@@ -128,7 +149,12 @@ LoadMetatileData::
     ld hl, wMetatileMap
     add hl, de
     ld a, [hl] ; Load the current tile
-    add_r16_a hl, wMetatileData
+    ; Add `a` to `wMetatileData` and store in `hl`
+    add a, LOW(wMetatileData)
+    ld l, a
+    adc a, HIGH(wMetatileData)
+    sub a, l
+    ld h, a 
     ld a, [hl] ; Load that tile's data.
     ld hl, wMapData
     add hl, de
@@ -397,7 +423,7 @@ VBlankScrollLoader::
     xor a, a
     ldh [hEngineState], a ; Reset engine
     ld a, PALETTE_STATE_RESET
-    ld [wPaletteState], a
+    ld [wPaletteThread], a
     pop bc ; Clean stack
     ret
 
@@ -532,7 +558,12 @@ ScreenCopy::
     dec b
     ret z
     ld a, SCRN_VX_B - SCRN_X_B
-    add_r16_a hl
+    ; Add `a` to `hl`
+    add a, l
+    ld l, a
+    adc a, h
+    sub a, l
+    ld h, a
     jr ScreenCopy
 
 ; Used to set a full map of 20*14 regular tiles. LCD-Safe
@@ -552,7 +583,12 @@ ScreenSet::
     dec c
     ret z
     ld a, SCRN_VX_B - SCRN_X_B
-    add_r16_a hl
+    ; Add `a` to `hl`
+    add a, l
+    ld l, a
+    adc a, h
+    sub a, l
+    ld h, a
     jr ScreenSet
 
 SECTION "Metatile Definitions", WRAM0 

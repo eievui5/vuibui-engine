@@ -142,10 +142,9 @@ SECTION "LCD Memory", ROM0
 ; @ c:  length
 ; @ hl: destination
 LCDMemsetSmall::
-.waitVRAM
 	ldh a, [rSTAT]
 	and STATF_BUSY
-	jr nz, .waitVRAM
+	jr nz, LCDMemsetSmall
 
 	ld a, b
 	ld [hli], a
@@ -153,6 +152,7 @@ LCDMemsetSmall::
 	jr nz, LCDMemsetSmall
 	ret
 
+; Waits for VRAM access before setting data.
 ; @ d:  source (is preserved)
 ; @ bc: length
 ; @ hl: destination
@@ -175,25 +175,19 @@ LCDMemset::
     ret
 
 ; Waits for VRAM access before copying data.
-; @ bc: length
+; @ c:  length
 ; @ de: destination
 ; @ hl: source
 LCDMemcopySmall::
-    dec bc
-    inc b
-    inc c
-.loop:
     ldh a, [rSTAT]
     and STATF_BUSY
-    jr nz, .loop
+    jr nz, LCDMemcopySmall
 
     ld a, [hli]
     ld [de], a
     inc de
     dec c
-    jr nz, .loop
-    dec b
-    jr nz, .loop
+    jr nz, LCDMemcopySmall
     ret
 
 SECTION "Farcall Byte", HRAM

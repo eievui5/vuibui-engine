@@ -1,14 +1,9 @@
-/* user_interface.asm
-    Used for HUD and UI functions
-
-*/
-
 INCLUDE "include/banks.inc"
 INCLUDE "include/engine.inc"
 INCLUDE "include/entities.inc"
 INCLUDE "include/graphics.inc"
 INCLUDE "include/hardware.inc"
-INCLUDE "include/macros.inc"
+INCLUDE "include/lb.inc"
 INCLUDE "include/stat.inc"
 INCLUDE "include/text.inc"
 INCLUDE "include/tiledata.inc"
@@ -69,13 +64,18 @@ ResetHUD::
     add a, a ; a * 2
     add a, a ; a * 4
     add a, a ; a * 8
-    add_r16_a hl, PalOctavia
+    ; Add `a` to `PalOctavia` and store in `hl`
+    add a, LOW(PalOctavia)
+    ld l, a
+    adc a, HIGH(PalOctavia)
+    sub a, l
+    ld h, a 
     ld de, wBCPD + sizeof_PALETTE * 7
     ld c, sizeof_PALETTE
     rst memcopy_small
 
     ld a, PALETTE_STATE_RESET
-    ld [wPaletteState], a
+    ld [wPaletteThread], a
 
     ret
 
@@ -96,11 +96,21 @@ UpdateHUD::
     ; Get the active player's health
     ASSERT sizeof_Entity == 16
     swap a ; a * 16
-    add_r16_a hl, wPlayerArray + Entity_Health
+    ; Add `a` to `wPlayerArray + Entity_Health` and store in `hl`
+    add a, LOW(wPlayerArray + Entity_Health)
+    ld l, a
+    adc a, HIGH(wPlayerArray + Entity_Health)
+    sub a, l
+    ld h, a 
     ld b, [hl]
     ; Get the last value we checked for health
     ld a, [wActivePlayer]
-    add_r16_a hl, wHUDPlayerHealthBuffer
+    ; Add `a` to `wHUDPlayerHealthBuffer` and store in `hl`
+    add a, LOW(wHUDPlayerHealthBuffer)
+    ld l, a
+    adc a, HIGH(wHUDPlayerHealthBuffer)
+    sub a, l
+    ld h, a 
     ld a, [hl]
     cp a, b ; Compare last value to current value
     ret z ; return if no change is needed
@@ -138,7 +148,12 @@ UpdateHUD::
     sub a, 10 
     ld hl, vHeartBar + 32 - 1
 .skipBottom
-    add_r16_a hl
+    ; Add `a` to `hl`
+    add a, l
+    ld l, a
+    adc a, h
+    sub a, l
+    ld h, a
 
 :   ldh a, [rSTAT]
     and a, STATF_BUSY
@@ -164,12 +179,17 @@ UpdateHUD::
     add a, a ; a * 2
     add a, a ; a * 4
     add a, a ; a * 8
-    add_r16_a hl, PalOctavia
+    ; Add `a` to `PalOctavia` and store in `hl`
+    add a, LOW(PalOctavia)
+    ld l, a
+    adc a, HIGH(PalOctavia)
+    sub a, l
+    ld h, a 
     ld de, wBCPD + sizeof_PALETTE * 7
     ld c, sizeof_PALETTE
     rst memcopy_small
     ld a, PALETTE_STATE_RESET
-    ld [wPaletteState], a
+    ld [wPaletteThread], a
 
 .skipColor
 
@@ -178,7 +198,12 @@ UpdateHUD::
 
     ; Reset Health Bar (max health)
     ld b, 10
-    add_r16_a hl, wPlayerMaxHealth
+    ; Add `a` to `wPlayerMaxHealth` and store in `hl`
+    add a, LOW(wPlayerMaxHealth)
+    ld l, a
+    adc a, HIGH(wPlayerMaxHealth)
+    sub a, l
+    ld h, a 
     ld c, [hl]
     sra c ; Each tile is 2 health, so divide by 2
     ld hl, vHeartBar
@@ -214,11 +239,21 @@ UpdateHUD::
     ld a, e
     ASSERT sizeof_Entity == 16
     swap a ; a * 16
-    add_r16_a hl, wPlayerArray + Entity_Health
+    ; Add `a` to `wPlayerArray + Entity_Health` and store in `hl`
+    add a, LOW(wPlayerArray + Entity_Health)
+    ld l, a
+    adc a, HIGH(wPlayerArray + Entity_Health)
+    sub a, l
+    ld h, a 
     ld b, [hl] ; save health for just a bit
 
     ld a, e ; make sure to store in the correct buffer
-    add_r16_a hl, wHUDPlayerHealthBuffer
+    ; Add `a` to `wHUDPlayerHealthBuffer` and store in `hl`
+    add a, LOW(wHUDPlayerHealthBuffer)
+    ld l, a
+    adc a, HIGH(wHUDPlayerHealthBuffer)
+    sub a, l
+    ld h, a 
     ld [hl], b ; set health buffer to the current player's health
     ld a, b
 
@@ -236,7 +271,12 @@ UpdateHUD::
     jr c, :+
     sub a, 10
     ld hl, vHeartBar + 32 - 1
-:   add_r16_a hl
+    ; Add `a` to `hl`
+:   add a, l
+    ld l, a
+    adc a, h
+    sub a, l
+    ld h, a
 
 :   ldh a, [rSTAT]
     and a, STATF_BUSY
@@ -246,7 +286,12 @@ UpdateHUD::
     ld [hld], a ; We already did a set up, so skip the regular one
     jr .bottomSetUp
 .setUp
-    add_r16_a hl, vHeartBar - 1
+    ; Add `a` to `vHeartBar - 1` and store in `hl`
+    add a, LOW(vHeartBar - 1)
+    ld l, a
+    adc a, HIGH(vHeartBar - 1)
+    sub a, l
+    ld h, a 
 .bottomSetUp
     ld a, c
     and a, a
@@ -256,7 +301,12 @@ UpdateHUD::
     jr c, .heartTopLoop ; If a < 10, only draw top row.
     sub a, 10
     ld b, a
-    add_r16_a hl, vHeartBar + 32 - 1
+    ; Add `a` to `vHeartBar + 32 - 1` and store in `hl`
+    add a, LOW(vHeartBar + 32 - 1)
+    ld l, a
+    adc a, HIGH(vHeartBar + 32 - 1)
+    sub a, l
+    ld h, a 
 .heartBottomLoop
     
 :   ldh a, [rSTAT]

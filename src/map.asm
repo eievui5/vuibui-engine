@@ -3,7 +3,6 @@ INCLUDE "include/engine.inc"
 INCLUDE "include/entities.inc"
 INCLUDE "include/graphics.inc"
 INCLUDE "include/hardware.inc"
-INCLUDE "include/macros.inc"
 INCLUDE "include/map.inc"
 INCLUDe "include/npc.inc"
 INCLUDE "include/switch.inc"
@@ -57,7 +56,7 @@ UpdateActiveMap::
 	; Wait for the palettes to fade out
 .waitPalFade
 	halt
-	ld a, [wPaletteState]
+	ld a, [wPaletteThread]
 	and a, a
 	jr nz, .waitPalFade
 
@@ -77,7 +76,12 @@ UpdateActiveMap::
     ld b, a
     add a, b ; a * 2
     add a, b ; a * 3
-    add_r16_a hl, MapLookup
+    ; Add `a` to `MapLookup` and store in `hl`
+    add a, LOW(MapLookup)
+    ld l, a
+    adc a, HIGH(MapLookup)
+    sub a, l
+    ld h, a 
 
     ld a, [hli] ; Load target bank.
 	ldh [hMapBankBuffer], a ; Save bank for later
@@ -130,7 +134,7 @@ UpdateActiveMap::
         rst memcopy_small
     pop hl
     ld a, PALETTE_STATE_RESET
-    ld [wPaletteState], a
+    ld [wPaletteThread], a
     jr .palFinish
 
 .palSkip
@@ -214,7 +218,7 @@ UpdateActiveMap::
     call LoadMapData
 
     ld a, PALETTE_STATE_RESET
-    ld [wPaletteState], a
+    ld [wPaletteThread], a
 
 	ld a, [hLCDCBuffer]
 	ldh [rLCDC], a
@@ -278,7 +282,14 @@ MapdataAllyLogic:
 MapdataSetWarp:
     ld a, [hli]
     ldh [hWarpDataIndex], a ; Save the tile index.
-    add_r16_a de, wWarpData0 ; Offset to de for the memcopy
+    ; Offset to de for the memcopy
+    ; Add `a` to `wWarpData0` and store in `de`
+    add a, LOW(wWarpData0)
+    ld e, a
+    adc a, HIGH(wWarpData0)
+    sub a, e
+    ld d, a
+ 
     ld a, [hli]
     ld b, a
     ld a, [hli]
@@ -286,9 +297,19 @@ MapdataSetWarp:
     push hl
     swap b
     ld a, b
-    add_r16_a hl, wMapData
+    ; Add `a` to `wMapData` and store in `hl`
+    add a, LOW(wMapData)
+    ld l, a
+    adc a, HIGH(wMapData)
+    sub a, l
+    ld h, a 
     ld a, c
-    add_r16_a hl
+    ; Add `a` to `hl`
+    add a, l
+    ld l, a
+    adc a, h
+    sub a, l
+    ld h, a
     ldh a, [hWarpDataIndex]
     add a, TILEDATA_WARPS
     ld [hl], a
@@ -357,7 +378,12 @@ GetActiveMap::
     ld b, a
     add a, b ; a * 2
     add a, b ; a * 3
-    add_r16_a hl, MapLookup
+    ; Add `a` to `MapLookup` and store in `hl`
+    add a, LOW(MapLookup)
+    ld l, a
+    adc a, HIGH(MapLookup)
+    sub a, l
+    ld h, a 
 
     ld a, [hli] ; Load target bank.
 	ldh [hMapBankBuffer], a ; Save bank for later
@@ -372,18 +398,34 @@ GetActiveMap::
     ld d, a
 
     ld a, MapData_Layout - MapData_Size ; Skip to the layout
-    add_r16_a hl
+    ; Add `a` to `hl`
+    add a, l
+    ld l, a
+    adc a, h
+    sub a, l
+    ld h, a
 
     ld a, [wWorldMapPositionX]
     add a, a ; Pointers are 2 bytes long.
-    add_r16_a hl ; Add X offset.
+    ; Add X offset.
+    ; Add `a` to `hl`
+    add a, l
+    ld l, a
+    adc a, h
+    sub a, l
+    ld h, a
     ld a, [wWorldMapPositionY]
     and a, a ; If y = 0 just skip.
     jr z, .skipY
     ld b, a 
     ld a, c 
 .multLoop ; Multiply c (width) * b (ypos) and add the result to hl
-    add_r16_a hl
+    ; Add `a` to `hl`
+    add a, l
+    ld l, a
+    adc a, h
+    sub a, l
+    ld h, a
     dec b
     jr nz, .multLoop
 .skipY ; This is dumb
@@ -391,7 +433,14 @@ GetActiveMap::
     ld b, h
     ld c, l
     ld a, d ; Restore map size
-    add_r16_a bc ; Offset to find the map data
+    ; Offset to find the map data
+    ; Add `a` to `bc`
+    add a, c
+    ld c, a
+    adc a, b
+    sub a, c
+    ld b, a
+
     ld a, [bc] ; Load first pointer byte
     ld d, a
     inc bc
@@ -414,7 +463,12 @@ ReloadMapGraphics::
     ld b, a
     add a, b ; a * 2
     add a, b ; a * 3
-    add_r16_a hl, MapLookup
+    ; Add `a` to `MapLookup` and store in `hl`
+    add a, LOW(MapLookup)
+    ld l, a
+    adc a, HIGH(MapLookup)
+    sub a, l
+    ld h, a 
 
     ld a, [hli]
     ldh [hMapBankBuffer], a
@@ -471,7 +525,7 @@ ReloadMapGraphics::
 .cgbSkip
 
     ld a, PALETTE_STATE_RESET
-    ld [wPaletteState], a
+    ld [wPaletteThread], a
 
     ldh a, [hCurrentBank]
     ld [rROMB0], a

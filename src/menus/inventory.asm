@@ -4,7 +4,7 @@ INCLUDE "include/engine.inc"
 INCLUDE "include/enum.inc"
 INCLUDE "include/graphics.inc"
 INCLUDE "include/hardware.inc"
-INCLUDE "include/macros.inc"
+INCLUDE "include/lb.inc"
 INCLUDE "include/map.inc"
 
     start_enum TILE, $80
@@ -101,11 +101,11 @@ InventoryInit:
 
 ; Fade out before we turn off the screen
     ld a, PALETTE_STATE_FADE_LIGHT
-    ld [wPaletteState], a
+    ld [wPaletteThread], a
 
 .waitFade
     halt
-    ld a, [wPaletteState]
+    ld a, [wPaletteThread]
     and a, a
     jr nz, .waitFade
 
@@ -139,7 +139,12 @@ InventoryInit:
     ; Each entry is 4 bytes, include the 0-terminator.
     add a, a ; a * 2
     add a, a ; a * 4
-    add_r16_a hl, OctaviaLetters
+    ; Add `a` to `OctaviaLetters` and store in `hl`
+    add a, LOW(OctaviaLetters)
+    ld l, a
+    adc a, HIGH(OctaviaLetters)
+    sub a, l
+    ld h, a 
     get_tile de, TILE_NAME
     call LoadCharacters
 
@@ -258,7 +263,12 @@ InventoryInit:
     add a, a ; a * 2
     add a, a ; a * 4
     add a, a ; a * 8
-    add_r16_a hl, PalOctavia
+    ; Add `a` to `PalOctavia` and store in `hl`
+    add a, LOW(PalOctavia)
+    ld l, a
+    adc a, HIGH(PalOctavia)
+    sub a, l
+    ld h, a 
     ld c, sizeof_PALETTE
     rst memcopy_small
 
@@ -318,7 +328,12 @@ InventoryInit:
     add a, a ; a * 4
     add a, a ; a * 8
     sub a, b ; a * 7 !!!
-    add_r16_a hl, OctaviaString
+    ; Add `a` to `OctaviaString` and store in `hl`
+    add a, LOW(OctaviaString)
+    ld l, a
+    adc a, HIGH(OctaviaString)
+    sub a, l
+    ld h, a 
     get_tilemap de, _SCRN1, 9, 9
     ld c, 7
     rst memcopy_small
@@ -328,7 +343,12 @@ InventoryInit:
     ld b, a
     add a, a
     add a, b
-    add_r16_a hl, PanoramaLookup
+    ; Add `a` to `PanoramaLookup` and store in `hl`
+    add a, LOW(PanoramaLookup)
+    ld l, a
+    adc a, HIGH(PanoramaLookup)
+    sub a, l
+    ld h, a 
 
     ; Load the active map's panorama
     ld a, [hli]
@@ -342,7 +362,12 @@ InventoryInit:
     jr z, .skipColorOffset
     ; Offset to CGB stuff
     ld a, Panorama_CGBSize
-    add_r16_a hl
+    ; Add `a` to `hl`
+    add a, l
+    ld l, a
+    adc a, h
+    sub a, l
+    ld h, a
 .skipColorOffset
 
     ; Load the active map's panorama's tiles
@@ -403,7 +428,12 @@ InventoryInit:
 
     ; Display the player's items on screen
     ld a, [wActivePlayer]
-    add_r16_a hl, wItems
+    ; Add `a` to `wItems` and store in `hl`
+    add a, LOW(wItems)
+    ld l, a
+    adc a, HIGH(wItems)
+    sub a, l
+    ld h, a 
     ld b, [hl]
 
     ; Item 0
@@ -509,7 +539,12 @@ InventoryRedraw:
     ld [hl], a
 
     ld a, 31
-    add_r16_a hl
+    ; Add `a` to `hl`
+    add a, l
+    ld l, a
+    adc a, h
+    sub a, l
+    ld h, a
     dec b
     jr nz, .cleanAttributesLoop
     
@@ -527,7 +562,12 @@ InventoryRedraw:
     add a, a ; a * 32
     add a, a ; a * 64
     get_tilemap hl, _SCRN1, 1, 9
-    add_r16_a hl
+    ; Add `a` to `hl`
+    add a, l
+    ld l, a
+    adc a, h
+    sub a, l
+    ld h, a
 
 :   ldh a, [rSTAT]
     and a, STATF_BUSY
@@ -538,7 +578,12 @@ InventoryRedraw:
     ld [hl], a
 
     ld a, 31
-    add_r16_a hl
+    ; Add `a` to `hl`
+    add a, l
+    ld l, a
+    adc a, h
+    sub a, l
+    ld h, a
 
 :   ldh a, [rSTAT]
     and a, STATF_BUSY
@@ -559,7 +604,12 @@ InventoryRedraw:
     ld b, a
     add a, a ; a * 2
     add a, b ; a * 3 !!!
-    add_r16_a hl, .metaspriteLookup
+    ; Add `a` to `.metaspriteLookup` and store in `hl`
+    add a, LOW(.metaspriteLookup)
+    ld l, a
+    adc a, HIGH(.metaspriteLookup)
+    sub a, l
+    ld h, a 
     ld a, [hli]
     swap_bank
     ld a, [hli]
@@ -573,7 +623,12 @@ InventoryRedraw:
     and a, %100000
     jr nz, .renderDoll
     ld a, 8
-    add_r16_a hl
+    ; Add `a` to `hl`
+    add a, l
+    ld l, a
+    adc a, h
+    sub a, l
+    ld h, a
     jr .renderDoll
 .directionIncrement
     ld a, [wPlayerDollDirection]
@@ -590,7 +645,12 @@ InventoryRedraw:
 .renderDoll
     ld a, [wPlayerDollDirection]
     add a, a ; a * 2
-    add_r16_a hl
+    ; Add `a` to `hl`
+    add a, l
+    ld l, a
+    adc a, h
+    sub a, l
+    ld h, a
 
     ld a, [hli]
     ld h, [hl]
@@ -616,7 +676,12 @@ InventoryRedraw:
     ; Otherwise, draw the item cursor.
 
     ldh a, [hOAMIndex]
-    add_r16_a hl, wShadowOAM + 4
+    ; Add `a` to `wShadowOAM + 4` and store in `hl`
+    add a, LOW(wShadowOAM + 4)
+    ld l, a
+    adc a, HIGH(wShadowOAM + 4)
+    sub a, l
+    ld h, a 
 
     ld a, b
     swap a ; a * 16
@@ -650,7 +715,12 @@ InventoryRedraw:
 .options
 
     ldh a, [hOAMIndex]
-    add_r16_a hl, wShadowOAM + 4
+    ; Add `a` to `wShadowOAM + 4` and store in `hl`
+    add a, LOW(wShadowOAM + 4)
+    ld l, a
+    adc a, HIGH(wShadowOAM + 4)
+    sub a, l
+    ld h, a 
 
     ld a, b
     add a, a ; Selection * 2
@@ -683,11 +753,11 @@ InventoryRedraw:
 InventoryClose:
     ; Fade out before we turn off the screen
     ld a, PALETTE_STATE_FADE_LIGHT
-    ld [wPaletteState], a
+    ld [wPaletteThread], a
 
 .waitFade
     halt
-    ld a, [wPaletteState]
+    ld a, [wPaletteThread]
     and a, a
     jr nz, .waitFade
 
@@ -793,7 +863,12 @@ MoveDown:
     jr nz, .skipItems
     ; Items goes up to 4 depending on how many items are unlocked.
     ld a, [wActivePlayer]
-    add_r16_a hl, wItems
+    ; Add `a` to `wItems` and store in `hl`
+    add a, LOW(wItems)
+    ld l, a
+    adc a, HIGH(wItems)
+    sub a, l
+    ld h, a 
     ; Check each item slot
     ld a, 3
     bit 3, [hl]
@@ -839,7 +914,12 @@ HandleAPress:
 
     ; Otherwise, select an item.
     ld a, [wActivePlayer]
-    add_r16_a de, wPlayerEquipped
+    ; Add `a` to `wPlayerEquipped` and store in `de`
+    add a, LOW(wPlayerEquipped)
+    ld e, a
+    adc a, HIGH(wPlayerEquipped)
+    sub a, e
+    ld d, a
 
     ld a, [de]
     and a, $0F ; Mask out old B item
@@ -876,7 +956,12 @@ HandleAPress:
     ld b, a
 
     ld a, [wActivePlayer]
-    add_r16_a hl, wItems
+    ; Add `a` to `wItems` and store in `hl`
+    add a, LOW(wItems)
+    ld l, a
+    adc a, HIGH(wItems)
+    sub a, l
+    ld h, a 
 
     ld a, b
     and a, [hl]
@@ -911,7 +996,12 @@ HandleBPress:
 
     ; Otherwise, select an item.
     ld a, [wActivePlayer]
-    add_r16_a de, wPlayerEquipped
+    ; Add `a` to `wPlayerEquipped` and store in `de`
+    add a, LOW(wPlayerEquipped)
+    ld e, a
+    adc a, HIGH(wPlayerEquipped)
+    sub a, e
+    ld d, a
 
     ld a, [de]
     and a, $0F ; Mask out old B item
@@ -951,7 +1041,12 @@ HandleBPress:
     ld b, a
 
     ld a, [wActivePlayer]
-    add_r16_a hl, wItems
+    ; Add `a` to `wItems` and store in `hl`
+    add a, LOW(wItems)
+    ld l, a
+    adc a, HIGH(wItems)
+    sub a, l
+    ld h, a 
 
     ld a, b
     and a, [hl]
@@ -983,7 +1078,12 @@ DrawEquipped:
     ld [hli], a
     ld [hl], a
     ld a, 32
-    add_r16_a hl
+    ; Add `a` to `hl`
+    add a, l
+    ld l, a
+    adc a, h
+    sub a, l
+    ld h, a
 
 :   ldh a, [rSTAT]
     and a, STATF_BUSY
@@ -992,13 +1092,23 @@ DrawEquipped:
     ld a, TILE_CLEAR
     ld [hl], a
     ld a, 31
-    add_r16_a hl
+    ; Add `a` to `hl`
+    add a, l
+    ld l, a
+    adc a, h
+    sub a, l
+    ld h, a
     dec b
     jr nz, .cleanLoop
     
 
     ld a, [wActivePlayer]
-    add_r16_a hl, wPlayerEquipped
+    ; Add `a` to `wPlayerEquipped` and store in `hl`
+    add a, LOW(wPlayerEquipped)
+    ld l, a
+    adc a, HIGH(wPlayerEquipped)
+    sub a, l
+    ld h, a 
     ld b, [hl]
 
     ; Draw A button
@@ -1012,7 +1122,12 @@ DrawEquipped:
     swap a ; a * 16
     add a, a ; a * 32
     add a, a ; a * 64
-    add_r16_a hl
+    ; Add `a` to `hl`
+    add a, l
+    ld l, a
+    adc a, h
+    sub a, l
+    ld h, a
 
 :   ldh a, [rSTAT]
     and a, STATF_BUSY
@@ -1023,7 +1138,12 @@ DrawEquipped:
     inc a
     ld [hli], a
     ld a, 32 - 1
-    add_r16_a hl
+    ; Add `a` to `hl`
+    add a, l
+    ld l, a
+    adc a, h
+    sub a, l
+    ld h, a
 
 :   ldh a, [rSTAT]
     and a, STATF_BUSY
@@ -1044,7 +1164,12 @@ DrawEquipped:
     ; swap a (not needed for high byte)
     add a, a ; a * 2 (32)
     add a, a ; a * 4 (64)
-    add_r16_a hl
+    ; Add `a` to `hl`
+    add a, l
+    ld l, a
+    adc a, h
+    sub a, l
+    ld h, a
 
 :   ldh a, [rSTAT]
     and a, STATF_BUSY
@@ -1055,7 +1180,12 @@ DrawEquipped:
     ld a, TILE_B_TOP
     ld [hli], a
     ld a, 32 - 1
-    add_r16_a hl
+    ; Add `a` to `hl`
+    add a, l
+    ld l, a
+    adc a, h
+    sub a, l
+    ld h, a
 
 :   ldh a, [rSTAT]
     and a, STATF_BUSY

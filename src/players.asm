@@ -4,7 +4,6 @@ INCLUDE "include/engine.inc"
 INCLUDE "include/entities.inc"
 INCLUDE "include/enum.inc"
 INCLUDE "include/hardware.inc"
-INCLUDE "include/macros.inc"
 INCLUDE "include/map.inc"
 INCLUDE "include/npc.inc"
 INCLUDE "include/players.inc"
@@ -149,7 +148,12 @@ CyclePlayers:
 
     ld c, 3
     ld a, [wActivePlayer]
-    add_r16_a hl, wPlayerWaitLink
+    ; Add `a` to `wPlayerWaitLink` and store in `hl`
+    add a, LOW(wPlayerWaitLink)
+    ld l, a
+    adc a, HIGH(wPlayerWaitLink)
+    sub a, l
+    ld h, a 
     ld b, [hl]
     ld hl, wPlayerWaitLink
 .waitLoop
@@ -173,7 +177,12 @@ CyclePlayers:
 PlayerActivityCheck::
 .waiting::
     ld b, a
-    add_r16_a hl, wPlayerWaitLink
+    ; Add `a` to `wPlayerWaitLink` and store in `hl`
+    add a, LOW(wPlayerWaitLink)
+    ld l, a
+    adc a, HIGH(wPlayerWaitLink)
+    sub a, l
+    ld h, a 
     ld a, [wActivePlayer]
     cp a, [hl]
     ret nz
@@ -181,14 +190,24 @@ PlayerActivityCheck::
 .disabled::
     ; Is player enabled?
     ld b, a
-    add_r16_a hl, wPlayerDisabled
+    ; Add `a` to `wPlayerDisabled` and store in `hl`
+    add a, LOW(wPlayerDisabled)
+    ld l, a
+    adc a, HIGH(wPlayerDisabled)
+    sub a, l
+    ld h, a 
     ld a, [hl]
     and a, a
     ret nz
     ld a, b
 .room::
     add a, a
-    add_r16_a hl, wPlayerRoom
+    ; Add `a` to `wPlayerRoom` and store in `hl`
+    add a, LOW(wPlayerRoom)
+    ld l, a
+    adc a, HIGH(wPlayerRoom)
+    sub a, l
+    ld h, a 
     ld a, [wWorldMapPositionY]
     cp a, [hl]
     ret nz ; If the rooms match, call normally.
@@ -315,7 +334,13 @@ PlayerAIFollow::
     ld a, [wActivePlayer]
     ASSERT sizeof_Entity == 16
     swap a ; a * 16
-    add_r16_a de, wPlayerArray + Entity_YPos
+    ; Add `a` to `wPlayerArray + Entity_YPos` and store in `de`
+    add a, LOW(wPlayerArray + Entity_YPos)
+    ld e, a
+    adc a, HIGH(wPlayerArray + Entity_YPos)
+    sub a, e
+    ld d, a
+
     find_player Entity_YPos
     ; de: target
     ; hl: self
@@ -568,7 +593,12 @@ PlayerInteractionCheck::
     cp a, $FF
     ret z
     add a, a ; a * 2 (Pointer)
-    add_r16_a hl, PlayerDialogueLookup
+    ; Add `a` to `PlayerDialogueLookup` and store in `hl`
+    add a, LOW(PlayerDialogueLookup)
+    ld l, a
+    adc a, HIGH(PlayerDialogueLookup)
+    sub a, l
+    ld h, a 
     ld a, [hli]
     ld h, [hl]
     ld l, a
@@ -633,7 +663,12 @@ PlayerTransitionMovement::
     ld a, [wActivePlayer]
     ASSERT sizeof_Entity == 16
     swap a ; a * 16
-    add_r16_a hl, wPlayerArray + Entity_YPos
+    ; Add `a` to `wPlayerArray + Entity_YPos` and store in `hl`
+    add a, LOW(wPlayerArray + Entity_YPos)
+    ld l, a
+    adc a, HIGH(wPlayerArray + Entity_YPos)
+    sub a, l
+    ld h, a 
     ld a, [wRoomTransitionDirection]
     ASSERT TRANSDIR_DOWN == 1
     dec a
@@ -690,7 +725,12 @@ PlayerTransitionMovement::
     ld a, [wActivePlayer]
     ASSERT sizeof_Entity == 16
     swap a ; a * 16
-    add_r16_a hl, wPlayerArray + Entity_YPos
+    ; Add `a` to `wPlayerArray + Entity_YPos` and store in `hl`
+    add a, LOW(wPlayerArray + Entity_YPos)
+    ld l, a
+    adc a, HIGH(wPlayerArray + Entity_YPos)
+    sub a, l
+    ld h, a 
     ld d, [hl] ; Store active Y
     inc l
     ld e, [hl] ; Store active X
@@ -722,7 +762,12 @@ PlayerTransitionMovement::
     ld a, c
     ASSERT sizeof_Entity == 16
     swap a ; a * 16
-    add_r16_a hl, wPlayerArray
+    ; Add `a` to `wPlayerArray` and store in `hl`
+    add a, LOW(wPlayerArray)
+    ld l, a
+    adc a, HIGH(wPlayerArray)
+    sub a, l
+    ld h, a 
     call MoveNoClip
 
 .updateAllyPositionsDecrement
@@ -794,7 +839,12 @@ WarpTileCheck::
     sub a, TILEDATA_WARP_0
     cp a, TILEDATA_WARP_3 - TILEDATA_WARP_0 + 1
     ret nc
-    add_r16_a hl, wWarpData0
+    ; Add `a` to `wWarpData0` and store in `hl`
+    add a, LOW(wWarpData0)
+    ld l, a
+    adc a, HIGH(wWarpData0)
+    sub a, l
+    ld h, a 
     ld a, [hli]
     ld [wActiveWorldMap], a
     ld a, [hli]
@@ -816,7 +866,7 @@ WarpTileCheck::
     ld [wPoppy_XPos], a
     ld [wTiber_XPos], a
     ld a, PALETTE_STATE_FADE_LIGHT
-    ld [wPaletteState], a
+    ld [wPaletteThread], a
     ld a, UPDATE_TILEMAP
     call UpdateActiveMap
     ; End the frame early.
@@ -859,7 +909,12 @@ PlayerSetWaitLink:
     ld a, PLAYER_TIBER
     jr .store
 .store
-    add_r16_a hl, wPlayerWaitLink
+    ; Add `a` to `wPlayerWaitLink` and store in `hl`
+    add a, LOW(wPlayerWaitLink)
+    ld l, a
+    adc a, HIGH(wPlayerWaitLink)
+    sub a, l
+    ld h, a 
     ld a, [wActivePlayer]
     ld [hl], a
     ret
@@ -869,7 +924,12 @@ PlayerCameraInterpolation::
     ld a, [wActivePlayer]
     ASSERT sizeof_Entity == 16
     swap a ; a * 16
-    add_r16_a de, wPlayerArray + Entity_YPos
+    ; Add `a` to `wPlayerArray + Entity_YPos` and store in `de`
+    add a, LOW(wPlayerArray + Entity_YPos)
+    ld e, a
+    adc a, HIGH(wPlayerArray + Entity_YPos)
+    sub a, e
+    ld d, a
 
     ; Y Interp
     ldh a, [hSCYBuffer]

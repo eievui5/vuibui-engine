@@ -146,10 +146,16 @@ OctaviaRod:
     dec a
     add a, a ; a * 2
     swap a ; a * 32
-    add_r16_a hl, GfxPlayerSpells
+    ; Add `a` to `hl`
+    add a, LOW(GfxPlayerSpells)
+    ld l, a
+    adc a, HIGH(GfxPlayerSpells)
+    sub a, l
+    ld h, a
     ; This is what you get when you try to refactor old code. Stack usage.
     push bc
     push de
+    ld b, b
     ld c, 32 ; Size of 2 tiles
     ld de, VRAM_TILES_OBJ + TILE_PLAYER_SPELL * $10
     call LCDMemcopySmall

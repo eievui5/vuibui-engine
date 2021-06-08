@@ -1,5 +1,4 @@
 INCLUDE "include/banks.inc"
-INCLUDE "include/macros.inc"
 INCLUDE "include/entities.inc"
 
 /* Entity Class format
