@@ -3,6 +3,7 @@ INCLUDE "include/directions.inc"
 INCLUDE "include/engine.inc"
 INCLUDE "include/entities.inc"
 INCLUDE "include/enum.inc"
+INCLUDE "include/graphics.inc"
 INCLUDE "include/hardware.inc"
 INCLUDE "include/map.inc"
 INCLUDE "include/npc.inc"
@@ -1048,6 +1049,30 @@ CheckAllyCollision::
 .retTiber
     ld a, PLAYER_TIBER
     ret
+
+LoadPlayerGraphics::
+    ld a, BANK(GfxOctavia)
+    swap_bank
+
+    ; Load player graphics
+    ld hl, GfxOctavia
+    ld de, VRAM_TILES_OBJ + TILE_OCTAVIA_DOWN_1 * $10
+    ld bc, (GfxOctavia.end - GfxOctavia) * 3
+    call memcopy
+
+    ld a, BANK(pb16_GfxArrow)
+    swap_bank
+    ld hl, _VRAM + (TILE_ARROW_DOWN * $10)
+    ld de, pb16_GfxArrow
+    ld b, 6
+    call pb16_unpack_block
+    
+    ld a, BANK(pb16_GfxSword)
+    swap_bank
+    ld hl, _VRAM + (TILE_SWORD_UP * $10)
+    ld de, pb16_GfxSword
+    ld b, 8
+    jp pb16_unpack_block
 
 ; Used to lookup the dialogue corresponding to the current room.
 PlayerDialogueLookup:

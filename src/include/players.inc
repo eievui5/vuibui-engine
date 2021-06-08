@@ -65,6 +65,8 @@ DEF POPPY_ARROW_DAMAGE EQU 1
         enum STEP 
         enum SWING
         enum GRAB
+        enum SWORD
+        enum SWORD_SWOOSH
     end_enum
 
 ; The state of the 3 players.

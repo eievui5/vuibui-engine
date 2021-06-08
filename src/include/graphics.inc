@@ -123,6 +123,10 @@ ENDM
         enum ARROW_DOWN
         enum ARROW_RIGHT_FLETCH
         enum ARROW_RIGHT_POINT
+        enum SWORD_UP
+        enum SWORD_RIGHT_HANDLE
+        enum SWORD_RIGHT_POINT
+        enum SWORD_SWOOSH
     end_enum
 
 DEF vTextTiles EQU $9500

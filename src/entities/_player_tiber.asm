@@ -4,10 +4,11 @@ INCLUDE "include/entities.inc"
 INCLUDE "include/players.inc"
 INCLUDE "include/switch.inc"
 
-DEF SWORD_WINDUP_TIME = 2 + 1
-DEF SWORD_DRAW_TIME   = 2 + 3
-DEF SWORD_OUTDEL_TIME = 2 + 5
-DEF SWORD_DAMAGE_TIME = 12 + 7
+RSSET 4
+DEF SWORD_WINDUP_TIME RB 4
+DEF SWORD_DRAW_TIME   RB 4
+DEF SWORD_OUTDEL_TIME RB 4
+DEF SWORD_DAMAGE_TIME RB 0
 
 SECTION "Tiber AI", ROMX
 
@@ -109,9 +110,13 @@ TiberSword:
     ld a, [wTiber_Timer]
     cp a, SWORD_DRAW_TIME ; 2 frame draw
     ret c
-    ; ld [wTiber_Frame], FRAMEOFF_SWORD
+    ld a, FRAMEOFF_SWORD_SWOOSH
+    ld [wTiber_Frame], a
+    ld a, [wTiber_Timer]
     cp a, SWORD_OUTDEL_TIME ; start damage after 6 frames
     ret c
+    ld a, FRAMEOFF_SWORD
+    ld [wTiber_Frame], a
 
     ld hl, wTiber
     call GetEntityTargetPosition

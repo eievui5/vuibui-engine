@@ -280,21 +280,7 @@ InitializeGameplay::
     ld [wTiber_Health], a
 
 ; Load the player's graphics
-    ld a, BANK(GfxOctavia)
-    swap_bank
-
-    ; Load player graphics
-    ld hl, GfxOctavia
-    ld de, VRAM_TILES_OBJ + TILE_OCTAVIA_DOWN_1 * $10
-    ld bc, (GfxOctavia.end - GfxOctavia) * 3
-    call memcopy
-
-    ld a, BANK(pb16_GfxArrow)
-    swap_bank
-    ld hl, _VRAM + (TILE_ARROW_DOWN * $10)
-    ld de, pb16_GfxArrow
-    ld b, 6
-    call pb16_unpack_block
+    call LoadPlayerGraphics
 
 ; UI graphics
     ; Heart graphics

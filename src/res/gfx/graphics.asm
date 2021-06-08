@@ -14,6 +14,8 @@ SECTION "Player Graphics", ROMX
     .end::
     pb16_GfxArrow::
         INCBIN "res/gfx/misc/arrow.h.pb16"
+    pb16_GfxSword::
+        INCBIN "res/gfx/misc/sword.h.pb16"
 
 SECTION "User Interface", ROMX
     pb16_Heart::
