@@ -492,7 +492,8 @@ DrawCharacter:
 
     ld hl, wHUDPrintTarget
     ld a, [hli] ; bank
-    swap_bank
+    ; Change this to a SwapBank when you move printing out of VBlank!
+    ld [rROMB0], a ; rst SwapBank
 
     ld a, [hli] ; low
     ld h, [hl] ; high
@@ -521,7 +522,7 @@ DrawCharacter:
     ld c, 8
 
     ld a, BANK(GameFont)
-    swap_bank
+    ld [rROMB0], a ; rst SwapBank
 
     jp Complement1bpp
 

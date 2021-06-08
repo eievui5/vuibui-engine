@@ -5,9 +5,6 @@ DEF GRAPHICS_INC EQU 1
 INCLUDE "enum.inc"
 INCLUDE "hardware.inc"
 
-; Max number of sprites
-DEF MAXIMUM_SPRITES EQU 40 
-
 ; Metasprite end byte
 DEF METASPRITE_END EQU $64
 
