@@ -94,11 +94,12 @@ Initialize::
         rst memset_small
         ; Clear Static FX
         ld [wStaticFX], a
-        ; Clear palettes
+        ; Clear palettes and target palettes
         ld hl, wBCPD
-        ld c, sizeof_PALETTE * 16 + 1
+        ld bc, sizeof_PALETTE * 16
         rst memset_small
         
+        ld [wPaletteThread], a
         ld [wNbMenus], a
         ld [wRoomTransitionDirection], a
         ld [wTextState], a
@@ -115,6 +116,15 @@ Initialize::
         ld hl, _VRAM
         ld bc, $2000
         call memset
+
+    ; Set the palette target to white for now.
+    ld a, $FF
+    ld hl, wBCPDTarget
+    ld bc, sizeof_PALETTE * 16
+    rst memset_small
+    
+    ld a, 16
+    ld [wFadeSpeed], a
 
 ; Load OAM Routine into HRAM
 	ld hl, OAMDMA
@@ -171,7 +181,7 @@ Initialize::
     swap_bank
 
     ; Copy the four default object palettes
-    ld hl, PalOctavia
+    ld hl, PalPlayers
     ld c, sizeof_PALETTE * 4
     ld de, wOCPD
     rst memcopy_small

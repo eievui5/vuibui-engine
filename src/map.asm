@@ -126,15 +126,18 @@ UpdateActiveMap::
         ld a, b
         swap_bank
 
+        ; Copy palettes to the fade target
         ld c, MAP_BKG_PALS * sizeof_PALETTE
         ld de, wBCPD
         rst memcopy_small
         ld c, MAP_OBJ_PALS * sizeof_PALETTE
         ld de, wOCPD + (sizeof_PALETTE * (8 - MAP_OBJ_PALS)) ; Skip the players' reserved palettes
         rst memcopy_small
+        ld c, 4 * sizeof_PALETTE
+        ld de, wOCPD
+        ld hl, PalPlayers
+        rst memcopy_small
     pop hl
-    ld a, PALETTE_STATE_RESET
-    ld [wPaletteThread], a
     jr .palFinish
 
 .palSkip
@@ -520,6 +523,10 @@ ReloadMapGraphics::
     rst memcopy_small
     ld c, MAP_OBJ_PALS * sizeof_PALETTE
     ld de, wOCPD + (sizeof_PALETTE * (8 - MAP_OBJ_PALS)) ; Skip the players' reserved palettes
+    rst memcopy_small
+    ld c, 4 * sizeof_PALETTE
+    ld de, wOCPD
+    ld hl, PalPlayers
     rst memcopy_small
 
 .cgbSkip

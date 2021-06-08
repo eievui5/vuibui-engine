@@ -59,11 +59,13 @@ ResetHUD::
     ld [wHUDActivePlayerBuffer], a
 
     ASSERT PalOctavia + sizeof_PALETTE == PalPoppy && PalPoppy + sizeof_PALETTE == PalTiber
-    ASSERT sizeof_PALETTE == 8
+    ASSERT sizeof_PALETTE == 12
     ld a, [wActivePlayer]
     add a, a ; a * 2
     add a, a ; a * 4
-    add a, a ; a * 8
+    ld c, a
+    add a, c ; a * 8
+    add a, c ; a * 12
     ; Add `a` to `PalOctavia` and store in `hl`
     add a, LOW(PalOctavia)
     ld l, a
@@ -74,8 +76,7 @@ ResetHUD::
     ld c, sizeof_PALETTE
     rst memcopy_small
 
-    ld a, PALETTE_STATE_RESET
-    ld [wPaletteThread], a
+
 
     ret
 
@@ -174,11 +175,13 @@ UpdateHUD::
     and a, a
     jr z, .skipColor
     ASSERT PalOctavia + sizeof_PALETTE == PalPoppy && PalPoppy + sizeof_PALETTE == PalTiber
-    ASSERT sizeof_PALETTE == 8
     ld a, [wActivePlayer]
+    ASSERT sizeof_PALETTE == 12
     add a, a ; a * 2
     add a, a ; a * 4
+    ld c, a
     add a, a ; a * 8
+    add a, c ; a * 12
     ; Add `a` to `PalOctavia` and store in `hl`
     add a, LOW(PalOctavia)
     ld l, a
@@ -188,6 +191,7 @@ UpdateHUD::
     ld de, wBCPD + sizeof_PALETTE * 7
     ld c, sizeof_PALETTE
     rst memcopy_small
+    
     ld a, PALETTE_STATE_RESET
     ld [wPaletteThread], a
 

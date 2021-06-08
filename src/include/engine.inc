@@ -29,6 +29,7 @@ DEF SKIP_FRAME EQU LCDCF_ON
         enum FADE_DARK ; Fade all colors to default dark shade
         enum FADE_LIGHT ; Fade all colors to default light shade
         enum RESET ; Set colors to the color buffer
+        enum FADE
     end_enum
 
     start_enum PRINT_STATE

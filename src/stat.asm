@@ -1,5 +1,6 @@
 INCLUDE "include/banks.inc"
 INCLUDE "include/engine.inc"
+INCLUDE "include/graphics.inc"
 INCLUDE "include/hardware.inc"
 INCLUDE "include/stat.inc"
 
@@ -123,16 +124,18 @@ TextboxPalette:
     ld a, [wTextboxPalettes + 1]
     ld l, a
     ld a, [wTextboxFadeProgress]
-    add a, a
+    ASSERT sizeof_COLOR == 3
+    ld d, a
+    add a, a ; a * 2
+    add a, d ; a * 3
     ; Add `a` to `hl`
     add a, l
     ld l, a
     adc a, h
     sub a, l
     ld h, a
-    ld a, [hli]
-    ld b, a
-    ld c, [hl]
+    ; Convert palette and store in `de`
+    call Convert24BitPalette
 
     ld a, [wTextboxFadeProgress]
     inc a
@@ -154,9 +157,9 @@ TextboxPalette:
     and a, STATF_BUSY
     jr nz, :-
 
-    ld a, b
+    ld a, e
     ldh [rBCPD], a
-    ld a, c
+    ld a, d
     ldh [rBCPD], a
     ld a, SCREEN_HUD
     ldh [rLCDC], a

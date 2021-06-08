@@ -253,16 +253,19 @@ InventoryInit:
     and a, a
     jr z, .cgbSkip
 
+
     ld hl, PalGrey
     ld de, wBCPD + sizeof_PALETTE * 6
     ld c, sizeof_PALETTE
     rst memcopy_small
 
     ld a, [wActivePlayer]
-    ASSERT sizeof_PALETTE == 8
+    ASSERT sizeof_PALETTE == 12
     add a, a ; a * 2
     add a, a ; a * 4
+    ld c, a
     add a, a ; a * 8
+    add a, c ; a * 12
     ; Add `a` to `PalOctavia` and store in `hl`
     add a, LOW(PalOctavia)
     ld l, a
@@ -270,6 +273,12 @@ InventoryInit:
     sub a, l
     ld h, a 
     ld c, sizeof_PALETTE
+    rst memcopy_small
+
+    ; Load player pals
+    ld c, 3 * sizeof_PALETTE
+    ld de, wOCPD
+    ld hl, PalPlayers
     rst memcopy_small
 
 .cgbSkip
@@ -751,6 +760,10 @@ InventoryRedraw:
     far_pointer TiberMetasprites
 
 InventoryClose:
+    ld a, $FF
+    ld bc, sizeof_PALETTE * 16
+    ld hl, wBCPDTarget
+    rst memset_small
     ; Fade out before we turn off the screen
     ld a, PALETTE_STATE_FADE_LIGHT
     ld [wPaletteThread], a

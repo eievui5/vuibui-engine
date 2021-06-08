@@ -58,6 +58,8 @@ SECTION "Font", ROMX
         INCBIN "res/gfx/font/font.1bpp"
 
 SECTION "Player Palettes", ROMX
+
+PalPlayers::
     PalOctavia::
         pal 31, 31, 31, \
             18, 26, 24, \

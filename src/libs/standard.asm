@@ -55,7 +55,6 @@ SwapBank::
 
 SECTION "Crash Handler", ROM0[$0038]
 crash:
-    ld d, d
     ld b, b
     di
     halt

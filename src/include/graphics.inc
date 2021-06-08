@@ -12,7 +12,8 @@ DEF VRAM_TILES_OBJ EQU $8000
 DEF VRAM_TILES_SHARED EQU $8800
 DEF VRAM_TILES_BG EQU $9000
 
-DEF sizeof_PALETTE EQU 8
+DEF sizeof_COLOR EQU 3
+DEF sizeof_PALETTE EQU sizeof_COLOR * 4
 DEF sizeof_TILE EQU 16
 DEF sizeof_1BPP EQU 8
 
@@ -56,13 +57,9 @@ MACRO get_object
 ENDM
 
 MACRO rgb
-    IF _NARG != 3
-        FAIL "Expected 3 args!"
-    ENDC
-    IF \1 > 31 || \2 > 31 || \3 > 31
-        FAIL "Colors must be between 0 and 31"
-    ENDC
-    dw (\1) | (\2) << 5 | (\3) << 10
+    ASSERT _NARG == 3, "Expected 3 args!"
+    ASSERT !(\1 > 31 || \2 > 31 || \3 > 31), "Colors must be between 0 and 31"
+    db (\1) << 3, (\2) << 3, (\3) << 3
 ENDM
 
 MACRO pal
