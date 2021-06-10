@@ -35,6 +35,7 @@ DebugMap: ; Using DebugMetatiles
 .data
     create_npc 0, PoppyMetasprites, 0, 1, 1, TiberGeneric
     create_entity HitDummy, (256/2) + 32, (256/2)
+    create_entity ScriptedEntity, (256/2) + 32, (256/2) + 32
     set_warp 0, 2, 2, MAP_BEACH, 0, 0, 256/2, 256/2
     end_mapdata
 

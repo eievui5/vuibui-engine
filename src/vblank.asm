@@ -22,7 +22,7 @@ VBlank:
 
 ; OAM DMA
     ; push wShadowOAM to OAM though DMA
-    ld a, high(wShadowOAM)
+    ld a, HIGH(wShadowOAM)
     call hOAMDMA
 
 ; Scroll

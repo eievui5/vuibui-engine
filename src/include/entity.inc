@@ -2,31 +2,8 @@
     IF !DEF(ENTITIES_INC)
 DEF ENTITIES_INC EQU 1
 
+INCLUDE "include/enum.inc"
 INCLUDE "include/structs.inc"
-
-; Used to find an entity's data at a given offset, storing it in hl. 
-; @ bc: Entity Index
-; @ 3 bytes
-; @ 5 cycles
-MACRO find_entity
-    IF _NARG > 0
-        ld hl, wEntityArray + \1
-    ELSE
-        ld hl, wEntityArray
-    ENDC 
-    add hl, bc
-ENDM
-
- 
-; Clears an entity
-; @ bc: Entity Index. Will be lost, but shouldn't matter.
-MACRO kill_entity
-    ld hl, wEntityArray
-    add hl, bc
-    xor a, a
-    ld c, sizeof_Entity
-    rst memset_small
-ENDM
 
     struct Entity
         ; Public - Engine relies on these values.
@@ -53,9 +30,11 @@ ENDM
         dunion   Logic
         bytes 1, LogicBank
         words 1, LogicPointer
+        
         dunion   Metasprites
         bytes 1, MetaspritesBank
         words 1, MetaspritesPointer
+
         dunion   Render
         bytes 1, RenderBank
         words 1, RenderPointer

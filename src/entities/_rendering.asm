@@ -1,5 +1,5 @@
 INCLUDE "include/banks.inc"
-INCLUDE "include/entities.inc"
+INCLUDE "include/entity.inc"
 INCLUDE "include/graphics.inc"
 
 ; Renderers expect `bc` as a struct offset, as in regular logic.
@@ -47,14 +47,16 @@ RenderMetasprite::
     ld a, [hli]
     ld l, [hl]
     ld h, a
-    ; Seek to Entity data.
-    ASSERT EntityDefinition_Logic + 3 == EntityDefinition_Metasprites
-    inc hl ; Skip logic bank
-    inc hl ; skip logic low
-    inc hl ; skip logic high
+    ; Seek to Entity metasprites.
+    ld a, EntityDefinition_Metasprites - EntityDefinition_Logic
+    add a, l
+    ld l, a
+    adc a, h
+    sub a, l
+    ld h, a
     ; Load the metasprite pointer.
     ld a, [hli] ; Swap to the metasprites' bank
-    swap_bank
+    rst SwapBank
     ld a, [hli] ; Load low
     ld h, [hl] ; load high
     ld l, a
@@ -76,12 +78,8 @@ RenderMetasprite::
 ; @ hl: Metasprite pointer
 .absolute::
     ldh a, [hOAMIndex]
-    ; Add `a` to `wShadowOAM` and store in `de`
-    add a, LOW(wShadowOAM)
     ld e, a
-    adc a, HIGH(wShadowOAM)
-    sub a, e
-    ld d, a
+    ld d, HIGH(wShadowOAM)
 
     ; Load and offset Y
     ld a, [hli]
@@ -129,6 +127,7 @@ RenderMetasprite::
     jr nz, .pushSprite
     ret
 
+; Uses an entity's direction to offset its metasprites suring rendering.
 RenderMetaspriteDirection::
 .native::
     ld hl, wEntityArray

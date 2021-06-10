@@ -1,6 +1,6 @@
 
 INCLUDE "include/directions.inc"
-INCLUDE "include/entities.inc"
+INCLUDE "include/entity.inc"
 INCLUDE "include/players.inc"
 INCLUDE "include/switch.inc"
 

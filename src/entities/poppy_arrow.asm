@@ -1,22 +1,13 @@
-
-INCLUDE "include/entities.inc"
+INCLUDE "include/entity.inc"
 INCLUDE "include/hardware.inc"
 INCLUDE "include/graphics.inc"
 INCLUDE "include/tiledata.inc"
 
-MACRO find_arrow
-    IF _NARG > 0
-        ld hl, wPoppyArrow0 + \1
-    ELSE
-        ld hl, wPoppyArrow0
-    ENDC 
-    add hl, bc
-ENDM
-
 SECTION "Poppy Arrow", ROMX 
 
 PoppyArrowLogic::
-    find_arrow Entity_XVel
+    ld hl, wPoppyArrow0 + Entity_XVel
+    add hl, bc
     ld a, [hld]
     ld e, a ; Store Xvel in e
     ld a, [hld]
@@ -44,16 +35,19 @@ PoppyArrowLogic::
     call DetectEntity
     and a, a
     jr z, .popRet ; No? return...
-    find_entity Entity_CollisionData
+    ld hl, wEntityArray + Entity_CollisionData
+    add hl, bc
     ld d, h
     ld e, l
     pop bc
-    find_arrow Entity_CollisionData
+    ld hl, wPoppyArrow0 + Entity_CollisionData
+    add hl, bc
     ld a, [hl] ; Load our collision data into the target
     ld [de], a
     push de
     ; Seek to both Entity_YPos
-    find_arrow Entity_YPos
+    ld hl, wPoppyArrow0 + Entity_YPos
+    add hl, bc
     ld a, Entity_YPos - Entity_CollisionData 
     add a, e
     ld e, a
@@ -82,7 +76,8 @@ PoppyArrowLogic::
     ld [de], a ; Load X knockback
 
 .destroySelf
-    find_arrow
+    ld hl, wPoppyArrow0
+    add hl, bc
     ld c, sizeof_Entity
     xor a, a
     rst memset_small

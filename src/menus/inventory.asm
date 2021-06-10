@@ -685,12 +685,9 @@ InventoryRedraw:
     ; Otherwise, draw the item cursor.
 
     ldh a, [hOAMIndex]
-    ; Add `a` to `wShadowOAM + 4` and store in `hl`
-    add a, LOW(wShadowOAM + 4)
+    add a, 4
     ld l, a
-    adc a, HIGH(wShadowOAM + 4)
-    sub a, l
-    ld h, a 
+    ld h, HIGH(wShadowOAM + 4)
 
     ld a, b
     swap a ; a * 16
@@ -724,12 +721,9 @@ InventoryRedraw:
 .options
 
     ldh a, [hOAMIndex]
-    ; Add `a` to `wShadowOAM + 4` and store in `hl`
-    add a, LOW(wShadowOAM + 4)
+    add a, 4
     ld l, a
-    adc a, HIGH(wShadowOAM + 4)
-    sub a, l
-    ld h, a 
+    ld h, HIGH(wShadowOAM)
 
     ld a, b
     add a, a ; Selection * 2

@@ -1,7 +1,7 @@
 INCLUDE "include/banks.inc"
 INCLUDE "include/damage.inc"
 INCLUDE "include/directions.inc"
-INCLUDE "include/entities.inc"
+INCLUDE "include/entity.inc"
 INCLUDE "include/graphics.inc"
 INCLUDE "include/players.inc"
 INCLUDE "include/sfx.inc"

@@ -1,5 +1,5 @@
 
-INCLUDE "include/entities.inc"
+INCLUDE "include/entity.inc"
 INCLUDE "include/hardware.inc"
 INCLUDE "include/graphics.inc"
 INCLUDE "include/tiledata.inc"
@@ -42,7 +42,8 @@ OctaviaSpellLogic::
     call DetectEntity
     and a, a
     ret z ; No? return...
-    find_entity Entity_CollisionData
+    ld hl, wEntityArray + Entity_CollisionData
+    add hl, bc
     ld d, h
     ld e, l
     ld a, [wOctaviaSpell_CollisionData] ; Load our collision data into the target

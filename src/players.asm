@@ -1,7 +1,7 @@
 INCLUDE "include/banks.inc"
 INCLUDE "include/directions.inc"
 INCLUDE "include/engine.inc"
-INCLUDE "include/entities.inc"
+INCLUDE "include/entity.inc"
 INCLUDE "include/enum.inc"
 INCLUDE "include/graphics.inc"
 INCLUDE "include/hardware.inc"
@@ -220,7 +220,8 @@ PlayerActivityCheck::
 ; Sets the player's velocity based off the DPad.
 ; @ bc: PLAYER enum * sizeof_Entity
 PlayerInputMovement::
-    find_player Entity_YVel
+    ld hl, wPlayerArray + Entity_YVel
+    add hl, bc
     ; Reset velocity if we have control over movement
     xor a, a
     ld [hli], a ; YVel
@@ -230,7 +231,8 @@ PlayerInputMovement::
     ldh a, [hCurrentKeys]
     and a, $F0
     jr z, .activeMoveAndSlide ; Let's skip this part if not.
-    find_player Entity_Timer
+    ld hl, wPlayerArray + Entity_Timer
+    add hl, bc
     ; Every 32th tick (~ 1/2 second)...
     ld a, [hl]
     inc a 
@@ -243,14 +245,16 @@ PlayerInputMovement::
     ld a, FRAMEOFF_STEP
     ld [hl], a
 .activeMoveDown
-    find_player Entity_YVel
+    ld hl, wPlayerArray + Entity_YVel
+    add hl, bc
     ldh a, [hCurrentKeys]
     bit PADB_DOWN, a
     jr z, .activeMoveUp
     ld a, 1
     ld [hl], a
     ; Update facing
-    find_player Entity_Direction
+    ld hl, wPlayerArray + Entity_Direction
+    add hl, bc
     ASSERT DIR_DOWN == 0
     xor a, a
     ld [hl], a
@@ -259,47 +263,55 @@ PlayerInputMovement::
     ; Down and Up cannot be pressed, so skip to Left
     jr .activeMoveLeft
 .activeMoveUp
-    find_player Entity_YVel
+    ld hl, wPlayerArray + Entity_YVel
+    add hl, bc
     bit PADB_UP, a
     jr z, .activeMoveLeft
     ld a, -1
     ld [hl], a
     ; Update facing
-    find_player Entity_Direction
+    ld hl, wPlayerArray + Entity_Direction
+    add hl, bc
     ld a, DIR_UP
     ld [hl], a
     ; Restore a
     ldh a, [hCurrentKeys] 
 .activeMoveLeft
-    find_player Entity_XVel
+    ld hl, wPlayerArray + Entity_XVel
+    add hl, bc
     bit PADB_LEFT, a
     jr z, .activeMoveRight
     ld a, -1
     ld [hl], a
     ; Update facing
-    find_player Entity_Direction
+    ld hl, wPlayerArray + Entity_Direction
+    add hl, bc
     ld a, DIR_LEFT
     ld [hl], a
     ; Don't bother restoring a
     ; Left and Right cannot be pressed, so skip to Render
     jr .activeMoveAndSlide
 .activeMoveRight
-    find_player Entity_XVel
+    ld hl, wPlayerArray + Entity_XVel
+    add hl, bc
     bit PADB_RIGHT, a
     jr z, .activeMoveAndSlide
     ld a, 1
     ld [hl], a
-    find_player Entity_Direction
+    ld hl, wPlayerArray + Entity_Direction
+    add hl, bc
     ld a, DIR_RIGHT
     ld [hl], a
     ; Don't bother restoring a
 .activeMoveAndSlide
-    find_player
+    ld hl, wPlayerArray
+    add hl, bc
     jp PlayerMoveAndSlide
 
 ; The common Damage state handling for all players. Includes death and knockback.
 PlayerDamage::
-    find_player Entity_CollisionData
+    ld hl, wPlayerArray + Entity_CollisionData
+    add hl, bc
     ld a, [hl]
     and a, $0F
     jr z, .timer ; No damage left? skip...
@@ -314,7 +326,8 @@ PlayerDamage::
 .storeHealth
     ld [hl], a
 .timer
-    find_player Entity_Timer
+    ld hl, wPlayerArray + Entity_Timer
+    add hl, bc
     ld a, [hl]
     dec a
     ld [hld], a ; Seek to state
@@ -323,7 +336,8 @@ PlayerDamage::
     ; if we're down here, a already = 0
     ld [hl], a
 .knockback
-    find_player
+    ld hl, wPlayerArray
+    add hl, bc
     jp PlayerMoveAndSlide
 
 ; Generic "Follow the active player state." Does not move the Ally, only sets
@@ -342,7 +356,8 @@ PlayerAIFollow::
     sub a, e
     ld d, a
 
-    find_player Entity_YPos
+    ld hl, wPlayerArray + Entity_YPos
+    add hl, bc
     ; de: target
     ; hl: self
     ; Distance = target - self.

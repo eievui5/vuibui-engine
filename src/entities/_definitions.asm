@@ -1,5 +1,5 @@
 INCLUDE "include/banks.inc"
-INCLUDE "include/entities.inc"
+INCLUDE "include/entity.inc"
 
 /* Entity Class format
 EntityName::
@@ -14,22 +14,7 @@ EntityName::
     ; Any extra constant data can go at the end :)
 */
 
-; Defines an entity class
-MACRO define_entity
-    IF _NARG != 4
-        FAIL "Expected 4 Arguments!"
-    ENDC
-    \1::
-        db BANK(\2)
-        dw \2
-        db BANK(\3)
-        dw \3
-        db BANK(\4)
-        dw \4
-ENDM
-
 SECTION "Entity Definitions", ROM0
-
 
 PlayerOctavia::
     far_pointer OctaviaPlayerLogic
@@ -47,7 +32,6 @@ OctaviaSpell::
     far_pointer OctaviaSpellLogic
     far_pointer OctaviaSpellMetasprites
 
-ds 12 ; remvoe me
 PoppyArrow::
     far_pointer PoppyArrowLogic
     far_pointer ArrowMetasprites

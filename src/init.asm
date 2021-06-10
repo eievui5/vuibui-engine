@@ -1,6 +1,6 @@
 INCLUDE "include/banks.inc"
 INCLUDE "include/engine.inc"
-INCLUDE "include/entities.inc"
+INCLUDE "include/entity.inc"
 INCLUDE "include/graphics.inc"
 INCLUDE "include/hardware.inc"
 INCLUDE "include/map.inc"

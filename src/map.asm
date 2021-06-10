@@ -1,6 +1,6 @@
 INCLUDE "include/banks.inc"
 INCLUDE "include/engine.inc"
-INCLUDE "include/entities.inc"
+INCLUDE "include/entity.inc"
 INCLUDE "include/graphics.inc"
 INCLUDE "include/hardware.inc"
 INCLUDE "include/map.inc"
@@ -37,6 +37,11 @@ UpdateActiveMap::
     ; Clear entity array
     ld c, sizeof_Entity * MAX_ENTITIES
     ld hl, wEntityArray
+    rst memset_small
+
+    ; Clear entity fields
+    ld c, sizeof_Entity * MAX_ENTITIES
+    ld hl, wEntityFieldArray
     rst memset_small
 
     ; Clear NPC array
