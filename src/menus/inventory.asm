@@ -6,6 +6,9 @@ INCLUDE "include/graphics.inc"
 INCLUDE "include/hardware.inc"
 INCLUDE "include/lb.inc"
 INCLUDE "include/map.inc"
+INCLUDE "include/menu.inc"
+
+; I hate this enum
 
     start_enum TILE, $80
         enum CLEAR
@@ -77,12 +80,12 @@ InventoryHeader::
     db BANK("Inventory")
     dw InventoryInit
     ; Used Buttons
-    db PADF_A | PADF_B | PADF_RIGHT | PADF_LEFT | PADF_UP | PADF_DOWN
+    db PADF_A | PADF_B | PADF_SELECT | PADF_START | PADF_RIGHT | PADF_LEFT | PADF_UP | PADF_DOWN
     ; Auto-repeat
     db 0
     ; Button functions
     ; A, B, Sel, Start, Right, Left, Up, Down
-    dw HandleAPress, HandleBPress, null, null, MoveRight, MoveLeft, MoveUp, MoveDown
+    dw HandleAPress, HandleBPress, HandleStartPress, HandleStartPress, MoveRight, MoveLeft, MoveUp, MoveDown
     db 0 ; Last selected item
     ; Allow wrapping
     db 0
@@ -900,6 +903,7 @@ MoveDown:
     ret
 
 HandleAPress:
+    ret
     ld hl, sp+2
     ld a, [hli]
     ld h, [hl]
@@ -913,7 +917,7 @@ HandleAPress:
     ; cp a, 1 | COLUMN_1 (save)
     ; cp a, 2 | COLUMN_1 (save + quit)
     bit 7, a
-    jr nz, .exit ; Do nothing (yet) if on the second column
+    jr nz, .exit ; Do nothing else (yet) if on the second column
 
     ; Save the target item in c
     ld c, [hl]
@@ -1068,6 +1072,11 @@ HandleBPress:
 
     xor a, a
     ld [wMenuAction], a
+    ret
+
+HandleStartPress:
+    ld a, MENU_CANCELLED
+    ld [wMenuClosingReason], a
     ret
 
 ; Redraw equipped items each frame
