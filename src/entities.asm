@@ -43,7 +43,7 @@ HandleEntities::
 
     ; Load entity Script
     ld a, [hli] ; Load bank of script
-    swap_bank
+    rst SwapBank
     ld a, [hli] ; Load the first byte of the entity script
     ld h, [hl]  ; Finish loading the entity script
     ld l, a

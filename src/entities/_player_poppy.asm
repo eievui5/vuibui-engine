@@ -38,7 +38,10 @@ PoppyPlayerLogic::
     switch
         case PLAYER_STATE_NORMAL, PoppyActiveNormal
         case PLAYER_STATE_HURT, PoppyDamage
-        case PLAYER_STATE_BOW, PoppyBow
+        case PLAYER_STATE_ITEM0, PoppyBow
+        case PLAYER_STATE_ITEM1, PoppyBow
+        case PLAYER_STATE_ITEM2, PoppyBow
+        case PLAYER_STATE_ITEM3, PoppyBow
     end_switch
 
 PoppyActiveNormal: ; How to move.

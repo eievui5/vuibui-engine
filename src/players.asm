@@ -27,12 +27,12 @@ HandlePlayers::
     call PlayerActivityCheck.disabled ; If rooms do not match or player is disabled, skip.
     jr nz, .checkPoppy
     ld a, BANK(OctaviaPlayerLogic)
-    swap_bank
+    rst SwapBank
     call OctaviaPlayerLogic 
     ld a, [wOctaviaSpellActive]
     and a, a
     ld a, BANK(OctaviaSpellLogic)
-    swap_bank
+    rst SwapBank
     call nz, OctaviaSpellLogic
 
 .checkPoppy
@@ -40,14 +40,14 @@ HandlePlayers::
     call PlayerActivityCheck.disabled ; If rooms do not match or player is disabled, skip.
     jr nz, .checkTiber    
     ld a, BANK(PoppyPlayerLogic)
-    swap_bank
+    rst SwapBank
     call PoppyPlayerLogic
     ld a, [wPoppyActiveArrows]
     and a, a
     jr z, .checkTiber
     ; Just an unrolled entity handler for arrows...
     ld a, BANK(PoppyArrowLogic)
-    swap_bank
+    rst SwapBank
 .poppyArrow0
     ld hl, wPoppyArrow0
     ASSERT HIGH(PoppyArrow) != $00
@@ -70,7 +70,7 @@ HandlePlayers::
     call PlayerActivityCheck.disabled; If rooms do not match or player is disabled, skip.
     ret nz
     ld a, BANK(TiberPlayerLogic)
-    swap_bank
+    rst SwapBank
     jp TiberPlayerLogic
 
 ; Players can be rendered seperately from normal entities.
@@ -310,24 +310,36 @@ PlayerInputMovement::
 
 ; The common Damage state handling for all players. Includes death and knockback.
 PlayerDamage::
-    ld hl, wPlayerArray + Entity_CollisionData
-    add hl, bc
+    ld h, HIGH(wPlayerArray)
+    ld a, Entity_CollisionData
+    add a, c
+    ld l, a
     ld a, [hl]
     and a, $0F
     jr z, .timer ; No damage left? skip...
     ld d, a
     xor a, a
-    ld [hli], a ; Sekk to health
+    ld [hli], a ; Seek to health
     ld a, [hl]
     sub a, d
+    jr z, .dead
     jr nc, .storeHealth ; If damage < health, we're not dead!
-    xor a, a
-    ; Death Stuff Here.
+.dead
+    ld a, Entity_State
+    add a, c
+    ld l, a
+    ld a, PLAYER_STATE_DEAD
+    ld [hl], a
+    ld a, Entity_Health
+    add a, c
+    ld l, a
+    xor a, a ; Force to 0 if health becomes negative
 .storeHealth
     ld [hl], a
 .timer
-    ld hl, wPlayerArray + Entity_Timer
-    add hl, bc
+    ld a, Entity_Timer
+    add a, c
+    ld l, a
     ld a, [hl]
     dec a
     ld [hld], a ; Seek to state
@@ -930,24 +942,16 @@ PlayerCameraInterpolation::
     ld a, e
     ret
 
-; Checks if any of the active players are colliding with `de`. Returns a pointer
+; Checks if the active player is colliding with `de`. Returns a pointer
 ; to the detected player in `hl`, $0000 if no player was found.
 ; @ de: Check Position (Y, X)
 CheckPlayerCollision::
-    ld hl, wOctavia
-    call CheckEntityCollision
-    ld a, h
-    or a, l
-    ret nz ; If 0 was not returned, we found a player. Return.
-    ; Otherwise, keep checking
-    ld hl, wPoppy
-    call CheckEntityCollision
-    ld a, h
-    or a, l
-    ret nz ; If 0 was not returned, we found a player. Return.
-    ; Otherwise, keep checking
-    ld hl, wTiber
-    jp CheckEntityCollision ; We don't need any special checks at the end.
+    ld h, HIGH(wPlayerArray)
+    ASSERT sizeof_Entity == 16
+    ld a, [wActivePlayer]
+    swap a
+    ld l, a
+    jp CheckEntityCollision
 
 ; Checks if any of the ally players are colliding with `de`. Returns a pointer
 ; to the detected ally in `hl`. Also returns the ally's index in a (0-2).
@@ -1006,30 +1010,6 @@ CheckAllyCollision::
 .retTiber
     ld a, PLAYER_TIBER
     ret
-
-LoadPlayerGraphics::
-    ld a, BANK(GfxOctavia)
-    swap_bank
-
-    ; Load player graphics
-    ld hl, GfxOctavia
-    ld de, VRAM_TILES_OBJ + TILE_OCTAVIA_DOWN_1 * $10
-    ld bc, (GfxOctavia.end - GfxOctavia) * 3
-    call memcopy
-
-    ld a, BANK(pb16_GfxArrow)
-    swap_bank
-    ld hl, _VRAM + (TILE_ARROW_DOWN * $10)
-    ld de, pb16_GfxArrow
-    ld b, 6
-    call pb16_unpack_block
-    
-    ld a, BANK(pb16_GfxSword)
-    swap_bank
-    ld hl, _VRAM + (TILE_SWORD_UP * $10)
-    ld de, pb16_GfxSword
-    ld b, 8
-    jp pb16_unpack_block
 
 ; Used to lookup the dialogue corresponding to the current room.
 PlayerDialogueLookup:

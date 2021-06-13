@@ -5,6 +5,8 @@ INCLUDE "include/entity_script.inc"
 INCLUDE "include/graphics.inc"
 INCLUDE "include/hardware.inc"
 
+DEF STARTING_HEALTH EQU 4
+
 SECTION "Scripted Entity Definition", ROM0
 
 ScriptedEntity::
@@ -17,7 +19,6 @@ SECTION "Scripted Entity Logic", ROMX
     define_fields
     field DAMAGE_ENABLE
     field COUNTER
-    field TARGET_PLAYER
     field ANIM
 
 ScriptedEntityLogic:
@@ -69,21 +70,21 @@ ScriptedEntityLogic:
 ScriptedEntityScript:
     ; Enable the entity to take damage.
     setf DAMAGE_ENABLE, 1
-    setf TARGET_PLAYER, 0
+    seta Entity_Health, STARTING_HEALTH
 
 .chase
     ; Wait some frames before moving.
     randf COUNTER, %100001
     forf COUNTER
-        animate ANIM, %1000, 0, 4
+        animate ANIM, %10000, FRAME_NORMAL, FRAME_BOUNCE
         yield
     endfor
     ; Move for a few frames.
     randf COUNTER, %11
     forf COUNTER
-        animate ANIM, %1000, 0, 4
-        chase_player TARGET_PLAYER
-        attack_playerf COUNTER
+        animate ANIM, %1000, FRAME_NORMAL, FRAME_BOUNCE
+        chase_player
+        attack_player 2
         yield
     endfor
     ; Loop.
@@ -99,13 +100,20 @@ ScriptedEntityScript:
     endfor
     setf DAMAGE_ENABLE, 1 ; Re-enable damage when done.
     seta Entity_InvTimer, 0
+    if_nega Entity_Health
+        death_particles
+    endif
     jump .chase ; Go back to chase when you're done.
 
 SlimeMetasprites:
+    DEF FRAME_NORMAL EQU 0
+    ; Normal sprite
     dw .normal
     dw .flip
     dw .normal
     dw .flip
+    DEF FRAME_BOUNCE EQU 4
+    ; Smaller, "squished" sprite
     dw .bounce
     dw .bounceFlip
     dw .bounce

@@ -47,14 +47,45 @@ OctaviaPlayerLogic::
 .activeControl
 
     ld a, [wOctavia_State]
-    switch
-        case PLAYER_STATE_NORMAL, OctaviaActiveNormal
-        case PLAYER_STATE_HURT, OctaviaDamage
-        case PLAYER_STATE_FIRE_WAND, OctaviaRod.fire
-        case PLAYER_STATE_ICE_WAND, OctaviaRod.ice
-        case PLAYER_STATE_SHOCK_WAND, OctaviaRod.shock
-        case PLAYER_STATE_HEAL_WAND, OctaviaRod.heal
-    end_switch
+    call HandleJumpTable
+        ASSERT PLAYER_STATE_NORMAL == 0
+        dw OctaviaActiveNormal
+        ASSERT PLAYER_STATE_HURT == 1
+        dw OctaviaDamage
+        ASSERT PLAYER_STATE_ITEM0 == 2
+        dw OctaviaRod.fire
+        ASSERT PLAYER_STATE_ITEM1 == 3
+        dw OctaviaRod.ice
+        ASSERT PLAYER_STATE_ITEM2 == 4
+        dw OctaviaRod.shock
+        ASSERT PLAYER_STATE_ITEM3 == 5
+        dw OctaviaRod.heal
+        ASSERT PLAYER_STATE_DEAD == 6
+        dw OctaviaRod.fire
+
+/*
+
+WHAT SHOULD DYING DO?
+
+ - Player drops to the ground, allies must revive them
+    Pros
+        Each player gets a chance to fight
+        Health can be made lower
+    Cons
+        Makes you rapidly switch upon death; may be dissorienting.
+        Could be frustrating to die often if health is low, 
+        or unbalanced to have 3x as many chances if health is high
+        Doesn't work right if players are in different rooms or disabled.
+ - Game over if any player dies
+    Pros
+        Much easier to program
+        Works when players are seperated
+    Cons
+        Switching characters when close to death would be the best way to stay alive (is this a pro?)
+        Only the active player can be damaged (is *this* a pro?)
+        Player AI would not be able to be as advanced (... this is a pro for *me*)
+
+*/
 
 OctaviaActiveNormal:
 

@@ -44,7 +44,10 @@ TiberPlayerLogic::
     switch
         case PLAYER_STATE_NORMAL, TiberActiveNormal
         case PLAYER_STATE_HURT, TiberDamage
-        case PLAYER_STATE_SWORD, TiberSword
+        case PLAYER_STATE_ITEM0, TiberSword
+        case PLAYER_STATE_ITEM1, TiberSword
+        case PLAYER_STATE_ITEM2, TiberSword
+        case PLAYER_STATE_ITEM3, TiberSword
     end_switch
 
 TiberActiveNormal: ; How to move.

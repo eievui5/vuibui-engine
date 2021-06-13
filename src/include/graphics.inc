@@ -127,6 +127,9 @@ ENDM
         enum SWORD_RIGHT_HANDLE
         enum SWORD_RIGHT_POINT
         enum SWORD_SWOOSH
+    
+        enum SPARKLE_LEFT
+        enum SPARKLE_RIGHT
     end_enum
 
 DEF vTextTiles EQU $9500

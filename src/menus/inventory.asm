@@ -124,7 +124,7 @@ InventoryInit:
 ; Load inventory graphics
     ; Unpack seperators
     ld a, BANK(pb16_MenuSeperators)
-    swap_bank
+    rst SwapBank
     ld de, pb16_MenuSeperators
     get_tile hl, TILE_CLEAR
     ld b, 4
@@ -132,7 +132,7 @@ InventoryInit:
 
     ; Default letters
     ld a, BANK(InventoryLetters)
-    swap_bank
+    rst SwapBank
     ld hl, InventoryLetters
     get_tile de, TILE_LETTERS
     call LoadCharacters
@@ -170,7 +170,7 @@ InventoryInit:
 
     ; Load the player's items
     ld a, BANK("Item Icons")
-    swap_bank
+    rst SwapBank
 
     ; Load the button hints
     ld de, pb16_Buttons
@@ -327,7 +327,7 @@ InventoryInit:
 
     ld b, 10
     ld a, BANK(InventoryMap)
-    swap_bank
+    rst SwapBank
     ld de, InventoryMap
     ld hl, _SCRN1 + (8 * 32) ; Skip 8 rows
     call ScreenCopy
@@ -364,7 +364,7 @@ InventoryInit:
 
     ; Load the active map's panorama
     ld a, [hli]
-    swap_bank
+    rst SwapBank
     ld a, [hli]
     ld h, [hl]
     ld l, a
@@ -623,7 +623,7 @@ InventoryRedraw:
     sub a, l
     ld h, a 
     ld a, [hli]
-    swap_bank
+    rst SwapBank
     ld a, [hli]
     ld h, [hl]
     ld l, a

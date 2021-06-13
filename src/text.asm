@@ -32,7 +32,7 @@ HandleTextbox::
 ; Clean VRAM
 
     ld a, BANK(TextboxMap)
-    swap_bank
+    rst SwapBank
 
     ; Map the window to textbox.
     ld hl, _SCRN1 + $300
@@ -80,7 +80,7 @@ HandleTextbox::
     jr z, :-
 
     ld a, [wTextBank]
-    swap_bank
+    rst SwapBank
 
     ld hl, wTextPointer
     ld a, [hli]
@@ -114,7 +114,7 @@ HandleTextbox::
     ; hl now points to the tile we need to copy.
 
     ld a, BANK(GameFont)
-    swap_bank
+    rst SwapBank
 
     ld a, [wTextScreenIndex]
     swap a
@@ -162,7 +162,7 @@ HandleTextbox::
     jr z, :- ; No input? Keep waiting...
 
     ld a, [wTextBank]
-    swap_bank
+    rst SwapBank
 
     ld a, [wTextPointer]
     ld h, a
@@ -192,7 +192,7 @@ HandleTextbox::
     jr z, :-
 
     ld a, BANK(GameFont)
-    swap_bank
+    rst SwapBank
 
     ; Start by switching answers if needed
     ld hl, wTextAnswer

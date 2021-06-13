@@ -48,6 +48,10 @@ HandleEntityScript::
         dw ScriptRandField
         ASSERT ENTITY_SCRIPT_ATTACK_PLAYER == 15
         dw ScriptAttackPlayer
+        ASSERT ENTITY_SCRIPT_IF_NEG == 16
+        dw ScriptIfNegative
+        ASSERT ENTITY_SCRIPT_DEATH_PARTICLES == 17
+        dw ScriptDeathParticles
 
 ; Script handlers. Each takes `bc` as input.
 
@@ -163,7 +167,7 @@ ScriptSetMemory:
 
 ; Remove the entity from the entity array
 ScriptKill:
-    ld h, HIGH(wEntityFieldArray)
+    ld h, HIGH(wEntityArray)
     ld l, c
     xor a, a
     ld d, sizeof_Entity
@@ -263,19 +267,7 @@ ScriptGetMemory:
 
 ; This function does some weird swapping of `hl` and `de`, could be optimized.
 ScriptChasePlayer:
-    ; Grab the script pointer.
-    ld h, HIGH(wEntityFieldArray)
-    ld l, c
-    ld a, [hli]
-    ld h, [hl]
-    ld l, a
-    inc hl
-    ; Get the player to follow
-    ld a, [hli]
-    add a, LOW(wEntityFieldArray + 2)
-    ld l, a
-    ld h, HIGH(wEntityFieldArray)
-    ld a, [hl]
+    ld a, [wActivePlayer]
     ; Grab that player's position
     ASSERT sizeof_Entity == 16
     swap a
@@ -321,7 +313,7 @@ ScriptChasePlayer:
     call MoveAndSlide
     pop bc
 
-    ld a, 2
+    ld a, 1
     call IncrementScriptPointer
     jp HandleEntityScript
 
@@ -376,7 +368,9 @@ ScriptInline:
     ; Offset by the size of the inline code
     inc hl
     ld a, [hli]
+    push hl
     call IncrementScriptPointer
+    pop hl
     push bc
     rst _hl_
     pop bc
@@ -513,6 +507,62 @@ ScriptAttackPlayer:
     ld a, 2
     call IncrementScriptPointer
     jp HandleEntityScript
+
+ScriptIfNegative:
+    ld h, HIGH(wEntityFieldArray)
+    ld l, c
+    ld a, [hli]
+    ld h, [hl]
+    ld l, a
+    inc hl
+    ld a, [hl]
+    ld h, HIGH(wEntityFieldArray)
+    ; If argument is negative, find abs and index into entity array
+    bit 7, a
+    jr z, .field
+        cpl
+        inc a
+        ld h, HIGH(wEntityArray)
+.field
+    add a, c
+    ld l, a
+    ld a, [hl] ; Grab the value
+    rla ; Check if negative
+    jr nc, .false
+; true
+    ; Continue if true
+    ld a, 4
+    call IncrementScriptPointer
+    jp HandleEntityScript
+.false
+    ; Jump if false
+    ld h, HIGH(wEntityFieldArray)
+    ld l, c
+    ld a, [hli]
+    ld e, a
+    ld a, [hld]
+    ld d, a
+    inc de
+    inc de
+    ld a, [de]
+    ld [hli], a
+    inc de
+    ld a, [de]
+    ld [hl], a
+    jp HandleEntityScript
+
+ScriptDeathParticles:
+    ld h, HIGH(wEntityArray)
+    ld l, c
+    ld a, HIGH(DeathParticle)
+    ld [hli], a
+    ld [hl], LOW(DeathParticle)
+    ld h, HIGH(wEntityFieldArray)
+    ld l, c
+    ld a, LOW(DeathParticleScript)
+    ld [hli], a
+    ld [hl], HIGH(DeathParticleScript)
+    ret
 
 SECTION "Entity Script Fields", WRAM0, ALIGN[8]
 

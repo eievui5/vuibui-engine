@@ -182,7 +182,7 @@ Initialize::
 .cgbPal
 
     ld a, BANK(PalOctavia)
-    swap_bank
+    rst SwapBank
 
     ; Copy the four default object palettes
     ld hl, PalPlayers
@@ -284,19 +284,19 @@ InitializeGameplay::
     ld [wTiber_Health], a
 
 ; Load the player's graphics
-    call LoadPlayerGraphics
+    call LoadStandardGraphics
 
 ; UI graphics
     ; Heart graphics
     ld a, BANK(pb16_Heart)
-    swap_bank
+    rst SwapBank
     ld de, pb16_Heart
     ld hl, VRAM_TILES_BG + TILE_HEART * 16
     ld b, 3 ; 2 tiles
     call pb16_unpack_block
     ; Button hints
     ld a, BANK(GameFont)
-    swap_bank
+    rst SwapBank
     get_character "A"
     ld de, VRAM_TILES_BG + TILE_A_CHAR * 16
     ld c, 8 * 2
@@ -338,5 +338,36 @@ InitializeGameplay::
     ldh [hPaused], a
 
     pop af
-    swap_bank
+    rst SwapBank
     ret
+
+LoadStandardGraphics::
+    ld a, BANK(GfxOctavia)
+    rst SwapBank
+
+    ; Load player graphics
+    ld hl, GfxOctavia
+    ld de, VRAM_TILES_OBJ + TILE_OCTAVIA_DOWN_1 * $10
+    ld bc, (GfxOctavia.end - GfxOctavia) * 3
+    call memcopy
+
+    ld a, BANK(pb16_GfxArrow)
+    rst SwapBank
+    ld hl, _VRAM + (TILE_ARROW_DOWN * $10)
+    ld de, pb16_GfxArrow
+    ld b, 6
+    call pb16_unpack_block
+    
+    ld a, BANK(pb16_GfxSword)
+    rst SwapBank
+    ld hl, _VRAM + (TILE_SWORD_UP * $10)
+    ld de, pb16_GfxSword
+    ld b, 8
+    call pb16_unpack_block
+
+    ld a, BANK(pb16_GfxSparkle)
+    rst SwapBank
+    ld hl, _VRAM + (TILE_SPARKLE_LEFT * $10)
+    ld de, pb16_GfxSparkle
+    ld b, 4
+    jp pb16_unpack_block

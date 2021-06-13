@@ -23,6 +23,8 @@ DEF MAX_FIELDS EQU 14
         enum FOR
         enum RANDF
         enum ATTACK_PLAYER
+        enum IF_NEG
+        enum DEATH_PARTICLES
     end_enum
 
 ; Scripting functions:
@@ -67,7 +69,7 @@ ENDM
 
 ; Removes the entity from the entity array.
 MACRO kill
-    db ENITITY_SCRIPT_KILL
+    db ENTITY_SCRIPT_KILL
 ENDM
 
 MACRO adda
@@ -99,8 +101,7 @@ ENDM
 
 ; Chases the player pointed to by a given field
 MACRO chase_player
-    ASSERT _NARG == 1, "Expected 1 argument!"
-    db ENTITY_SCRIPT_CHASE_PLAYER, \1
+    db ENTITY_SCRIPT_CHASE_PLAYER
 ENDM
 
 MACRO animate
@@ -163,6 +164,27 @@ ENDM
 MACRO attack_playerf
     ASSERT _NARG == 1, "Expected 1 arguments!"
     db ENTITY_SCRIPT_ATTACK_PLAYER, 0 - (\1 + 2)
+ENDM
+
+MACRO if_negf
+    ASSERT _NARG == 1, "Expected 1 arguments!"
+    db ENTITY_SCRIPT_IF_NEG, (\1 + 2)
+    dw :+
+ENDM
+
+MACRO if_nega
+    ASSERT _NARG == 1, "Expected 1 arguments!"
+    db ENTITY_SCRIPT_IF_NEG, 0 - (\1)
+    dw :+
+ENDM
+
+MACRO endif
+:
+ENDM
+
+; Kills the entity and spawns death particles
+MACRO death_particles
+    db ENTITY_SCRIPT_DEATH_PARTICLES
 ENDM
 
 ; Define fields:

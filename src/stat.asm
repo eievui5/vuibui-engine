@@ -117,7 +117,7 @@ TextboxPalette:
     ldh [rBCPS], a
 
     ld a, [wTextboxPalsBank]
-    swap_bank
+    rst SwapBank
 
     ld a, [wTextboxPalettes]
     ld h, a
@@ -172,7 +172,7 @@ TextboxPalette:
 ExitStat:
     ; Restore register state
     ld a, [wInterruptBankBuffer]
-    swap_bank
+    rst SwapBank
     pop hl
     pop bc
     pop af

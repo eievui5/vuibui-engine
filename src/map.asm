@@ -90,7 +90,7 @@ UpdateActiveMap::
 
     ld a, [hli] ; Load target bank.
 	ldh [hMapBankBuffer], a ; Save bank for later
-    swap_bank
+    rst SwapBank
 
 	ld a, [hli] ; Load first pointer byte
 	ld h, [hl] ; Load second pointer byte
@@ -110,7 +110,7 @@ UpdateActiveMap::
 	push hl
 		ld hl, VRAM_TILES_SHARED
 		ld a, c
-		swap_bank
+		rst SwapBank
 		call pb16_unpack_block
 	pop hl
 
@@ -119,7 +119,7 @@ UpdateActiveMap::
     jr z, .palSkip
 
 	ldh a, [hMapBankBuffer]
-	swap_bank
+	rst SwapBank
 
         ld a, [hli] ; Load Palette Bank
         ld b, a
@@ -129,7 +129,7 @@ UpdateActiveMap::
         ld l, a
 
         ld a, b
-        swap_bank
+        rst SwapBank
 
         ; Copy palettes to the fade target
         ld c, MAP_BKG_PALS * sizeof_PALETTE
@@ -152,7 +152,7 @@ UpdateActiveMap::
     inc hl ; The last read did not include a post-inc
 
 	ldh a, [hMapBankBuffer]
-	swap_bank
+	rst SwapBank
 
 	ld a, [hli] ; Load metatile size
 	ld b, a
@@ -167,13 +167,13 @@ UpdateActiveMap::
 		ld c, b ; Restore size
 		ld de, wMetatileDefinitions
 		ldh a, [hMetatileBankBuffer]
-		swap_bank
+		rst SwapBank
 		rst memcopy_small
 	pop hl
 	inc hl ; Seek to attributes
 
 	ld a, [hMapBankBuffer]
-	swap_bank
+	rst SwapBank
 
 	; Attributes
 		ld a, [hli]
@@ -183,13 +183,13 @@ UpdateActiveMap::
 		ld c, b ; Restore size
 		ld de, wMetatileAttributes
 		ldh a, [hMetatileBankBuffer]
-		swap_bank
+		rst SwapBank
 		rst memcopy_small
 	pop hl
 	inc hl ; Seek to Data
 
 	ld a, [hMapBankBuffer]
-	swap_bank
+	rst SwapBank
 
 	; Data
 	ld a, [hli] ; We don't need to save `hl` anymore
@@ -200,7 +200,7 @@ UpdateActiveMap::
 	sra c ; size / 4 !!!
 	ld de, wMetatileData
 	ldh a, [hMetatileBankBuffer]
-	swap_bank
+	rst SwapBank
 	rst memcopy_small
     
     call GetActiveMap
@@ -247,7 +247,7 @@ UpdateActiveMap::
 .skipDoubleLoad
     pop hl
 	ldh a, [hMapBankBuffer]
-	swap_bank
+	rst SwapBank
 .nextData
     ld a, [hli]
     ASSERT MAPDATA_END == 0
@@ -395,7 +395,7 @@ GetActiveMap::
 
     ld a, [hli] ; Load target bank.
 	ldh [hMapBankBuffer], a ; Save bank for later
-    swap_bank
+    rst SwapBank
     ld a, [hli] ; Load first pointer byte
     ld h, [hl] ; Load second pointer byte
     ld l, a ; hl is now the map pointer

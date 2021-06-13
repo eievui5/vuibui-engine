@@ -12,7 +12,7 @@ SECTION "Menu system", ROM0
 ; @destroy Loaded ROM bank
 AddMenu::
     ld a, b
-    swap_bank
+    rst SwapBank
 
     ld hl, wNbMenus
     ld a, [hl]
@@ -47,7 +47,7 @@ AddMenu::
 
     pop hl
     ld a, [hli] ; Get bank
-    swap_bank
+    rst SwapBank
     ; Run init func
     ld a, [hli]
     ld h, [hl]
@@ -79,7 +79,7 @@ ProcessMenus::
 .skipMult
 
     ld a, [hli]
-    swap_bank
+    rst SwapBank
     inc hl
     inc hl ; Skip init func
 
@@ -316,7 +316,7 @@ MenuAddNew:
     push af
     call AddMenu
     pop af
-    swap_bank
+    rst SwapBank
     ret
 
 

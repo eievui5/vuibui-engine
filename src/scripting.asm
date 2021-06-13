@@ -24,7 +24,7 @@ ENDM
 SECTION "Script Handlers", ROM0
 
 HandleScript::
-    swap_bank
+    rst SwapBank
 .nextByte
     load_hl_scriptpointer
     ; [hl] -> Script Byte
