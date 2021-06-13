@@ -43,19 +43,30 @@ ResetOAM::
     ld c, wShadowOAM.end - wShadowOAM
     ld hl, _OAMRAM
     rst memset_small
-; Reset wShadowOAM and wOAMIndex to 0.
-CleanOAM::
     xor a, a
     ldh [hOAMIndex], a ; Reset the OAM index.
     ld c, wShadowOAM.end - wShadowOAM
     ld hl, wShadowOAM
-    jp memset_small
+    rst memset_small
+    ret
+; Reset wShadowOAM and wOAMIndex to 0.
+CleanOAM::
+    xor a, a
+    ldh [hOAMIndex], a ; Reset the OAM index.
+    ld c, (wShadowOAM.end - wShadowOAM)/4
+    ld de, 4
+    ld hl, wShadowOAM
+.loop
+    ld [hl], a
+    add hl, de
+    dec c
+    jr nz, .loop
+    ret
 
-SECTION UNION "Shadow OAM", WRAM0, ALIGN[8]
+SECTION "Shadow OAM", WRAM0, ALIGN[8]
 wShadowOAM::
 	ds OAM_COUNT * 4
 .end::
-
 
 SECTION "OAM DMA", HRAM
 ; Copies Shadow OAM to OAM using OAM DMA.

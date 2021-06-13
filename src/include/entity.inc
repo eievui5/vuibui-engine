@@ -7,7 +7,7 @@ INCLUDE "include/structs.inc"
 
     struct Entity
         ; Public - Engine relies on these values.
-        bytes 2, DataPointer    ; Used to look up constant information
+        words 1, DataPointer    ; Used to look up constant information
         bytes 1, YPos           ; Where is the entity. Used for collision.
         bytes 1, XPos           ; 
         bytes 1, YVel           ; How much should we be moving right now?
@@ -21,10 +21,13 @@ INCLUDE "include/structs.inc"
         bytes 1, State          ; Have I been knocked back? Killed? Am I attacking? $00 = initiallize.
         bytes 1, Timer          ; Used for various delays and animations
         bytes 1, InvTimer       ; Second timer for invicibility. If bit 2 is set the pallet swaps.
-        ; Reserved Private Vars - No suggested use, but required for padding size up to 16
-        bytes 1, Priv1          ; 
-        bytes 1, Priv2          ; 
+        ; Fractional positions - Poor planning has forced me to put these two at the end of the array
+        bytes 1, YFrac          ;
+        bytes 1, XFrac          ;
+        ;words 1, ScriptPointer
+        ;bytes 14, PrivateFields
     end_struct              ; 16 bytes long. You may not go over or under 16.
+    ASSERT sizeof_Entity == 16
 
     struct EntityDefinition
         dunion   Logic
@@ -40,7 +43,12 @@ INCLUDE "include/structs.inc"
         words 1, RenderPointer
     end_struct
 
-ASSERT sizeof_Entity == 16
+    DEF DAMAGE_MASK EQU $0F
+    start_enum DAMAGE_EFFECT, 16, 16 ; Start on the upper nibble
+        enum FIRE
+        enum ICE
+        enum SHOCK
+    end_enum
 
 DEF ENTITY_DETECTION_SIZE EQU 8 ; (8 * 8) = 16 / (16 - 2)
 

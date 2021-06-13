@@ -26,6 +26,7 @@ GetBitfieldMask::
 
     ; Get the proper bitmask Using the lower 3 bits.
     ld a, b
+    and a, %00000111
     
 ; Returns the mask of the input value
 ; @ input:
@@ -33,8 +34,6 @@ GetBitfieldMask::
 ; @ output:
 ; @ a:  Mask
 GetBitA::
-    and a, %00000111
-
     ; `a = 1 << a`. Used for indexing into bitfields.
     ; Thanks, calc84maniac.
     ; Check if resulting bit should be in high or low nibble

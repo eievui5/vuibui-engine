@@ -12,6 +12,17 @@ DEF MAX_FIELDS EQU 14
         enum SETA
         enum SETF
         enum SETM
+        enum KILL
+        enum ADDA
+        enum ADDF
+        enum MOVE
+        enum GETM
+        enum CHASE_PLAYER
+        enum ANIMATE
+        enum INLINE
+        enum FOR
+        enum RANDF
+        enum ATTACK_PLAYER
     end_enum
 
 ; Scripting functions:
@@ -54,9 +65,109 @@ MACRO setm
     db \2
 ENDM
 
+; Removes the entity from the entity array.
+MACRO kill
+    db ENITITY_SCRIPT_KILL
+ENDM
+
+MACRO adda
+    ASSERT _NARG == 2, "Expected 2 arguments!"
+    ASSERT \1 <= 16, "Index must be <= 16"
+    db ENTITY_SCRIPT_ADDA, \1, \2
+ENDM
+
+MACRO addf
+    ASSERT _NARG == 2, "Expected 2 arguments!"
+    ASSERT \1 <= MAX_FIELDS, "Index is invalid; must be <= {MAX_FIELDS}"
+    db ENTITY_SCRIPT_ADDF, \1, \2
+ENDM
+
+; Moves based on the current velocity
+; @ move
+MACRO move
+    db ENTITY_SCRIPT_MOVE
+ENDM
+
+; Grabs a value from memory and stores it in a field
+; @ getm pointer, field
+MACRO getm
+    ASSERT _NARG == 2, "Expected 2 arguments!"
+    db ENTITY_SCRIPT_GETM
+    dw \1
+    db \2
+ENDM
+
+; Chases the player pointed to by a given field
+MACRO chase_player
+    ASSERT _NARG == 1, "Expected 1 argument!"
+    db ENTITY_SCRIPT_CHASE_PLAYER, \1
+ENDM
+
+MACRO animate
+    ASSERT _NARG == 4, "Expected 4 arguments!"
+    db ENTITY_SCRIPT_ANIMATE, \1, \2, \3, \4
+ENDM
+
+
+MACRO inline
+    ASSERT _NARG == 1, "Expected the end of the inline as an argument"
+    db ENTITY_SCRIPT_INLINE, \1 - @
+ENDM
+
+; Decrements a field and jumps to the next `endfor` if it is zero. Creates a
+; local label for `endfor` to create a loop.
+; @ forf field
+MACRO forf
+    ASSERT _NARG == 1, "Expected 1 arguments!"
+:   db ENTITY_SCRIPT_FOR, (\1 + 2)
+    dw :+
+ENDM
+
+; Decrements an array field and jumps to the next `endfor` if it is zero. 
+; Creates a local label for `endfor` to create a loop.
+; @ fora field
+MACRO fora
+    ASSERT _NARG == 1, "Expected 1 arguments!"
+:   db ENTITY_SCRIPT_FOR, 0 - (\1)
+    dw :+
+ENDM
+
+; Creates an exit local label and a jump to the previous local label. Used to
+; close a for loop.
+; @ endfor
+MACRO endfor
+    jump :-
+:
+ENDM
+
+; Generates an 8-bit random integer, `and`s it with the provided mask, and then
+; stores it in a given field.
+; @ rand field, [mask]
+MACRO randf
+    IF _NARG == 1
+        db ENTITY_SCRIPT_RANDF, $FF, \1
+    ELIF _NARG == 2
+        db ENTITY_SCRIPT_RANDF, \2, \1
+    ELSE
+        FAIL "Expected 1 or 2 arguments!"
+    ENDC
+ENDM
+
+; @ attack_player damage
+MACRO attack_player
+    ASSERT _NARG == 1, "Expected 1 arguments!"
+    db ENTITY_SCRIPT_ATTACK_PLAYER, \1
+ENDM
+
+; @ attackplayerf field
+MACRO attack_playerf
+    ASSERT _NARG == 1, "Expected 1 arguments!"
+    db ENTITY_SCRIPT_ATTACK_PLAYER, 0 - (\1 + 2)
+ENDM
+
 ; Define fields:
 
-MACRO start_fields
+MACRO define_fields
     IF DEF(FIELD_INDEX)
         REDEF FIELD_INDEX SET 0
     ELSE
@@ -66,8 +177,10 @@ ENDM
 
 MACRO field
     ASSERT DEF(FIELD_INDEX), "Begin field definitions with `define_fields`"
-    ASSERT _NARG == 1, "Expected 1 argument!"
-    DEF {\1} EQU FIELD_INDEX
+    FOR i, _NARG
+        DEF \1 EQU FIELD_INDEX
+        SHIFT 1
+    ENDR
     REDEF FIELD_INDEX SET FIELD_INDEX + 1
 ENDM
 

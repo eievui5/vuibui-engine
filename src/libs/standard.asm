@@ -39,7 +39,7 @@ SECTION "Memset Small", ROM0[$0018]
 ; @ c:  length
 ; @ hl: destination
 memset_small::
-    ld [hli],a
+    ld [hli], a
     dec c
     jr nz, memset_small
     ret
@@ -188,6 +188,33 @@ LCDMemcopySmall::
     dec c
     jr nz, LCDMemcopySmall
     ret
+
+SECTION "Stack Slide", ROM0
+; @ c:  Length / 2; each repetition is two bytes
+; @ de: Source word
+; @ hl: Destination (End of block; stack goes down!)
+PushSlide::
+    ld [wSlideStack], sp
+    di ; Stack is about to die, disable interrupts
+
+    ld sp, hl
+.loop
+    push de
+    dec c
+    jr nz, .loop
+
+    ld hl, wSlideStack
+    ld b, b
+    ld a, [hli]
+    ld h, [hl]
+    ld l, a
+    ld sp, hl
+    ei ; Stack is back, enable.
+    ret
+
+SECTION "Slide Stack", WRAM0
+wSlideStack::
+    ds 2
 
 SECTION "Farcall Byte", HRAM
 

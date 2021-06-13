@@ -7,7 +7,7 @@ SECTION "Overworld Map", ROMX, BANK[3]
 OverworldMap::
     define_map \
     2, 2, \ ; Size
-    3, pb16_OverworldTiles, OverworldPalettes, DebugMetatiles ; Tileset
+    12, pb16_OverworldTiles, OverworldPalettes, DebugMetatiles ; Tileset
 .map
     dw DebugMap, DebugMap2
     dw DebugMap2, DebugMap

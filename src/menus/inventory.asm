@@ -903,7 +903,6 @@ MoveDown:
     ret
 
 HandleAPress:
-    ret
     ld hl, sp+2
     ld a, [hli]
     ld h, [hl]

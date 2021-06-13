@@ -96,9 +96,13 @@ Initialize::
         ld [wStaticFX], a
         ; Clear palettes and target palettes
         ld hl, wBCPD
-        ld bc, sizeof_PALETTE * 16
+        ld c, sizeof_PALETTE * 16
         rst memset_small
         
+        ld hl, randstate
+        ld c, 4
+        rst memset_small
+
         ld [wPaletteThread], a
         ld [wNbMenus], a
         ld [wRoomTransitionDirection], a

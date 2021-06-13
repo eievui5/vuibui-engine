@@ -66,7 +66,7 @@ OctaviaSpellLogic::
     ld a, [de] 
     ld d, b ; store Y
     ld e, a ; store X
-    call CalculateKnockback
+    call VectorFromHLToDE
     ; Lets load the knockback vector into the Target
     pop de
     ld a, Entity_YVel - Entity_CollisionData 

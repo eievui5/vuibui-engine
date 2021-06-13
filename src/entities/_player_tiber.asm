@@ -135,7 +135,7 @@ TiberSword:
     ld a, [hli]
     ld l, [hl]
     ld h, a
-    call CalculateKnockback
+    call VectorFromHLToDE
     ASSERT Entity_YVel - Entity_YPos == 2
     inc c
     inc c

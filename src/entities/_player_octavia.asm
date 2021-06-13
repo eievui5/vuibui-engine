@@ -1,5 +1,4 @@
 INCLUDE "include/banks.inc"
-INCLUDE "include/damage.inc"
 INCLUDE "include/directions.inc"
 INCLUDE "include/entity.inc"
 INCLUDE "include/graphics.inc"

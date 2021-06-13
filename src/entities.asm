@@ -271,7 +271,8 @@ PlayerMoveAndSlide::
     ret
 
 ; Move the Entity based on its Velocity. Slide along collision. Detects any
-; collision greater than or equal to TILEDATA_ENTITY_COLLISION
+; collision greater than or equal to TILEDATA_ENTITY_COLLISION. Clobbers `bc`,
+; so make sure to push/pop!
 ; @ hl: pointer to Entity. Returns Entity_YPos
 MoveAndSlide::
 .xMovement
@@ -362,6 +363,72 @@ MoveNoClip::
     ld [hl], a
     ret
 
+; Get the distance to entity `de` from entity `hl`
+; @ de: target
+; @ hl: self
+GetEntityDistance::
+    ; We use B here, but zeroing it restores the pointer
+    ASSERT sizeof_Entity * MAX_ENTITIES < 256
+    ; Distance = target - self.
+    ld a, [hli] ; Self Y
+    ld b, a
+    ld a, [de] ; Target Y
+    inc e
+    sub a, b ; Distance Y
+    ld b, a
+
+    ld a, [de] ; Target X
+    ld e, a
+    ld d, b ; Store distance Y in d
+    ld a, [hl] ; Self X
+    ld b, a
+    ld a, e
+    sub a, b ; Distance X
+    ld e, a
+    ld b, 0
+    ret
+
+; Find the direction the input vector is facing, returning it in `a`.
+; @ de - (y, x) distance vector
+GetDistanceDirection::
+    ld a, d
+    ; abs(a)
+    bit 7, a
+    jr z, :+
+    cpl
+    inc a
+:
+    ld b, a
+    ld a, e
+    ; abs(a)
+    bit 7, a
+    jr z, :+
+    cpl
+    inc a
+:
+    ; ld c, a (I immediatly need c in a, so this is needless.)
+    ; ba = abs(de)
+
+    cp a, b
+    ld b, 0 ; Most entities use `bc` as the entity index, so we should clear it
+    jr nc, .xDirGreater
+.yDirGreater
+    bit 7, d ; If d is negative
+    jr z, .posYDir
+    ld a, DIR_UP
+    ret
+.posYDir
+    ASSERT DIR_DOWN == 0
+    xor a, a
+    ret
+.xDirGreater
+    bit 7, e ; If d is negative
+    jr z, .posXDir
+    ld a, DIR_LEFT
+    ret
+.posXDir
+    ld a, DIR_RIGHT
+    ret
 
 ; Locates a given position in the map data and returns it in HL. Destroys all
 ; registers.
@@ -525,7 +592,7 @@ DetectEntity::
 ; Find the angle to `de` from `hl`. 
 ; Returns a normalized (0 or 2) vector in `hl` 
 ; (2 is used because it's a more comman value and takes nothing extra to load)
-CalculateKnockback::
+VectorFromHLToDE::
 REPT 2
     srl d
     srl e
@@ -565,7 +632,7 @@ ENDR
     ld l, a
     ret
 
-SECTION "Entity Array", WRAM0, ALIGN[8] ; Align with $00 so that we can use unsafe struct seeking
+SECTION "Entity Array", WRAM0, ALIGN[8]
 wEntityArray::
     ; define an array of `MAX_ENTITIES` Entities, each named wEntityXX
     dstructs MAX_ENTITIES, Entity, wEntity

@@ -358,24 +358,8 @@ PlayerAIFollow::
 
     ld hl, wPlayerArray + Entity_YPos
     add hl, bc
-    ; de: target
-    ; hl: self
-    ; Distance = target - self.
-    ld a, [hli] ; Self Y
-    ld b, a
-    ld a, [de] ; Target Y
-    inc e
-    sub a, b ; Distance Y
-    ld b, a
 
-    ld a, [de] ; Target X
-    ld e, a
-    ld d, b ; Store distance Y in d
-    ld a, [hl] ; Self X
-    ld b, a
-    ld a, e
-    sub a, b ; Distance X
-    ld e, a
+    call GetEntityDistance
     ; de: distance vector
     ; hl: self X
 
@@ -385,45 +369,7 @@ PlayerAIFollow::
     add a, l
     ld l, a
 
-    ld a, d
-    ; abs(a)
-    bit 7, a
-    jr z, :+
-    cpl
-    inc a
-  :
-    ld b, a
-    ld a, e
-    ; abs(a)
-    bit 7, a
-    jr z, :+
-    cpl
-    inc a
-  :
-    ; ld c, a (I immediatly need c in a, so this is needless.)
-    ; ba = abs(de)
-
-    cp a, b 
-    jr nc, .xDirGreater
-.yDirGreater
-    bit 7, d ; If d is negative
-    jr z, .posYDir
-    ld a, DIR_UP
-    jr .storeYDir
-.posYDir
-    ASSERT DIR_DOWN == 0
-    xor a, a
-.storeYDir
-    ld [hl], a
-    jr .velocity
-.xDirGreater
-    bit 7, e ; If d is negative
-    jr z, .posXDir
-    ld a, DIR_LEFT
-    jr .storeXDir
-.posXDir
-    ld a, DIR_RIGHT
-.storeXDir
+    call GetDistanceDirection
     ld [hl], a
 
 .velocity
@@ -990,19 +936,15 @@ PlayerCameraInterpolation::
 CheckPlayerCollision::
     ld hl, wOctavia
     call CheckEntityCollision
-    xor a, a
-    cp a, h
+    ld a, h
+    or a, l
     ret nz ; If 0 was not returned, we found a player. Return.
-    cp a, l
-    ret nz
     ; Otherwise, keep checking
     ld hl, wPoppy
     call CheckEntityCollision
-    xor a, a
-    cp a, h
+    ld a, h
+    or a, l
     ret nz ; If 0 was not returned, we found a player. Return.
-    cp a, l
-    ret nz
     ; Otherwise, keep checking
     ld hl, wTiber
     jp CheckEntityCollision ; We don't need any special checks at the end.
@@ -1180,7 +1122,7 @@ wItems::
 
 wPlayerVariablesEnd::
 
-SECTION "Player Array", WRAM0, ALIGN[$08]
+SECTION "Player Array", WRAM0, ALIGN[8]
 wPlayerArray::
     dstruct Entity, wOctavia
     dstruct Entity, wPoppy

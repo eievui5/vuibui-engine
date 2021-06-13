@@ -9,7 +9,7 @@ ROW_TILE EQU $82
 
 SECTION "Overworld Tiles", ROMX 
 pb16_OverworldTiles::
-    INCBIN "res/tilesets/overworld.pb16"
+    INCBIN "res/tilesets/overworld.h.pb16"
 .end::
 
 SECTION "Overworld Palettes", ROMX
