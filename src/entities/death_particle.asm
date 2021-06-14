@@ -10,11 +10,10 @@ DeathParticle::
     far_pointer DeathParticleMetasprites
     far_pointer RenderMetasprite.native
 
-SECTION "Death Particle Logic", ROM0
+SECTION "Death Particle Logic", ROMX
 
 DeathParticleLogic:
-    call HandleEntityScript
-    ret
+    jp HandleEntityScript
 
 DeathParticleScript::
     define_fields

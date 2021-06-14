@@ -33,9 +33,9 @@ ScriptedEntityLogic:
         ld a, HIGH(ScriptedEntityScript)
         ld [hld], a
         ld [hl], LOW(ScriptedEntityScript)
+        inc l
 .skipInit
     ASSERT DAMAGE_ENABLE == 0
-    inc l
     inc l
     ld a, [hl]
     and a, a
@@ -49,23 +49,27 @@ ScriptedEntityLogic:
     ld a, [hli]
     and a, a
     jr z, .noDamage ; No damage? Return.
+        ld b, b
         and a, DAMAGE_MASK ; Ignore damage effects
         ld d, a
         ld a, [hl]
         sub a, d
         ASSERT Entity_CollisionData + 1 == Entity_Health
         ld [hld], a
-        xor a, a
-        ld [hl], a ; Clear old damage.
         ld h, HIGH(wEntityFieldArray)
         ld l, c
         ld a, LOW(ScriptedEntityScript.damage)
         ld [hli], a
         ld [hl], HIGH(ScriptedEntityScript.damage)
 .noDamage
+    ld h, HIGH(wEntityArray)
+    ld a, Entity_CollisionData
+    add a, c
+    ld l, a
+    xor a, a
+    ld [hl], a ; Clear old damage.
     ; Run the script thread
-    call HandleEntityScript
-    ret
+    jp HandleEntityScript
 
 ScriptedEntityScript:
     ; Enable the entity to take damage.

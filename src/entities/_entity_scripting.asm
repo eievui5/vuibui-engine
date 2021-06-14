@@ -553,6 +553,12 @@ ScriptIfNegative:
 
 ScriptDeathParticles:
     ld h, HIGH(wEntityArray)
+    ld a, Entity_Frame
+    add a, c
+    ld l, a
+    xor a, a
+    ld [hl], a
+    ld h, HIGH(wEntityArray)
     ld l, c
     ld a, HIGH(DeathParticle)
     ld [hli], a
