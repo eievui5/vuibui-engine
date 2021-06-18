@@ -179,7 +179,7 @@ ProcessMenus::
     or l
     jr z, .skipHook
     ; The hook may choose to override the menu action, if it wishes to do so
-    rst _hl_
+    rst CallHL
 .skipHook
     pop hl ; Get back ptr to AllowWrapping
 
@@ -201,7 +201,7 @@ ProcessMenus::
     ld a, [de]
     ld d, a
     ld e, b
-    call _de_
+    call CallDE
     pop hl
 .menuActionNone
     pop de
@@ -219,7 +219,7 @@ ProcessMenus::
     ld l, a
     or h
     jr z, .noRedraw
-    rst _hl_
+    rst CallHL
 .noRedraw
     pop hl
     inc hl
@@ -236,7 +236,7 @@ ProcessMenus::
     ld l, a
     or h
     jr z, .noCloseHook
-    rst _hl_
+    rst CallHL
 .noCloseHook
     ld hl, wNbMenus
     dec [hl]

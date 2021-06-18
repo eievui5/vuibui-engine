@@ -112,9 +112,9 @@ SECTION "Sound Effects", ROMX, ALIGN[4]
 
 sfx_table::
     dsound FLAME, NOISE, SoundFlame
-    dsound ICE_SPELL, NOISE, SoundLightning
-    dsound SHOCK_SPELL, WAVE, fx_wavetest
-    dsound HEAL_SPELL, WAVE, fx_wavetest
+    dsound ICE_SPELL, NOISE, SoundFlame
+    dsound SHOCK_SPELL, NOISE, SoundLightning
+    dsound HEAL_SPELL, NOISE, SoundFlame
 
 wavebank::
     ; Toothy Wave

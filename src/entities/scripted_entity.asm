@@ -49,7 +49,6 @@ ScriptedEntityLogic:
     ld a, [hli]
     and a, a
     jr z, .noDamage ; No damage? Return.
-        ld b, b
         and a, DAMAGE_MASK ; Ignore damage effects
         ld d, a
         ld a, [hl]

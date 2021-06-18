@@ -48,10 +48,8 @@ VBlank:
     call UpdatePrint
 
 .input
-    ; This should happen last, since it does not rely on VBlank
     call UpdateInput
-
-    ; Increment the global frame timer
+    call audio_update
     ld hl, wFrameTimer
     inc [hl]
 

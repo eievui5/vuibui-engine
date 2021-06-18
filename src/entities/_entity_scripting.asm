@@ -44,8 +44,8 @@ HandleEntityScript::
         dw ScriptInline
         ASSERT ENTITY_SCRIPT_FOR == 13
         dw ScriptFor
-        ASSERT ENTITY_SCRIPT_RANDF == 14
-        dw ScriptRandField
+        ASSERT ENTITY_SCRIPT_RAND == 14
+        dw ScriptRandom
         ASSERT ENTITY_SCRIPT_ATTACK_PLAYER == 15
         dw ScriptAttackPlayer
         ASSERT ENTITY_SCRIPT_IF_NEG == 16
@@ -372,7 +372,7 @@ ScriptInline:
     call IncrementScriptPointer
     pop hl
     push bc
-    rst _hl_
+    rst CallHL
     pop bc
     jp HandleEntityScript
 
@@ -420,7 +420,7 @@ ScriptFor:
     ld [hl], a
     jp HandleEntityScript
 
-ScriptRandField:
+ScriptRandom:
     call Rand
     ld b, 0
     ld h, HIGH(wEntityFieldArray)
@@ -436,8 +436,14 @@ ScriptRandField:
     ; Grab result field
     ld a, [hli]
     ld h, HIGH(wEntityFieldArray)
+    bit 7, a
+    jr z, .field
+        ; array
+        cpl
+        inc a
+        ld h, HIGH(wEntityArray)
+.field
     add a, c ; add hl, bc
-    add a, 2
     ld l, a
     ; Store result
     ld a, d

@@ -21,7 +21,7 @@ DEF MAX_FIELDS EQU 14
         enum ANIMATE
         enum INLINE
         enum FOR
-        enum RANDF
+        enum RAND
         enum ATTACK_PLAYER
         enum IF_NEG
         enum DEATH_PARTICLES
@@ -146,9 +146,22 @@ ENDM
 ; @ rand field, [mask]
 MACRO randf
     IF _NARG == 1
-        db ENTITY_SCRIPT_RANDF, $FF, \1
+        db ENTITY_SCRIPT_RAND, $FF, \1 + 2
     ELIF _NARG == 2
-        db ENTITY_SCRIPT_RANDF, \2, \1
+        db ENTITY_SCRIPT_RAND, \2, \1 + 2
+    ELSE
+        FAIL "Expected 1 or 2 arguments!"
+    ENDC
+ENDM
+
+; Generates an 8-bit random integer, `and`s it with the provided mask, and then
+; stores it in a given field.
+; @ rand field, [mask]
+MACRO randa
+    IF _NARG == 1
+        db ENTITY_SCRIPT_RAND, $FF, 0 - \1
+    ELIF _NARG == 2
+        db ENTITY_SCRIPT_RAND, \2, 0 - \1
     ELSE
         FAIL "Expected 1 or 2 arguments!"
     ENDC

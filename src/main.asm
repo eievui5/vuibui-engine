@@ -60,7 +60,6 @@ Gameplay:
     ; Update the camera before rendering
     call PlayerCameraInterpolation
     call RenderEntities
-    call audio_update
     call UpdateHUD
     jr Main.end
 

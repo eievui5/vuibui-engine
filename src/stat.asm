@@ -79,7 +79,7 @@ ShowHUD:
     ldh [rSCY], a
     xor a, a
     ldh [rSCX], a
-    jr ExitStat
+    jp ExitStat
 
 PrintScroll:
     ; Calculate Scroll (scroll by 2 every other frame)

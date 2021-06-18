@@ -10,8 +10,8 @@ null::
     rst crash
 
 SECTION "Call HL", ROM0[$0008]
-; Used to call the address pointed to by `hl`. Mapped to `rst $08` or `rst _hl_`
-_hl_::
+; Used to call the address pointed to by `hl`. Mapped to `rst $08` or `rst CallHL`
+CallHL::
     jp hl
 
 SECTION "Memcopy Small", ROM0[$0010]
@@ -130,7 +130,7 @@ HandleJumpTable::
 SECTION "Call de", ROM0
 
 ; Calls the value in `de` by pushing it and returning
-_de_::
+CallDE::
     push de
     ret
 

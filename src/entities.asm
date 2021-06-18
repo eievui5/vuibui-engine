@@ -49,7 +49,7 @@ HandleEntities::
     ld l, a
     ; Run Entity Script Logic
     push bc ; Save the offset
-    rst _hl_ ; Call the entity's script. It may use `c` to find it's data
+    rst CallHL ; Call the entity's script. It may use `c` to find it's data
     pop bc
     jr .loop
 
@@ -100,7 +100,7 @@ RenderEntities::
     ld l, a
     ; Run Entity Script Logic
     push bc ; Save the offset
-    rst _hl_ ; Call the entity's script. It may use `c` to find it's data
+    rst CallHL ; Call the entity's script. It may use `c` to find it's data
     pop bc
     jr .loop
 
