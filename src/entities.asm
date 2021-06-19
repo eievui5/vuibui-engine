@@ -57,8 +57,6 @@ RenderEntities::
     call RenderPlayers
     call RenderNPCs
     ; loop through entity array
-    ; bc: offset of current entity !!! MUST NOT CHANGE C !!!
-    ; loop through entity array
     ; bc: offset of current entity
     ld bc, $0000
     jr .skip
@@ -66,13 +64,9 @@ RenderEntities::
     ld a, sizeof_Entity
     ; Add `a` to `bc`
     add a, c
-    ld c, a
-    adc a, b
-    sub a, c
-    ld b, a
-    ld a, c
-    cp a, low(sizeof_Entity * MAX_ENTITIES)
+    cp a, LOW(sizeof_Entity * MAX_ENTITIES)
     ret z ; Return if we've reached the end of the array
+    ld c, a
 .skip
     ld hl, wEntityArray
     add hl, bc ; Apply the entity offset

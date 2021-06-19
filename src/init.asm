@@ -98,11 +98,10 @@ Initialize::
         ld hl, wBCPD
         ld c, sizeof_PALETTE * 16
         rst memset_small
-        
+        ; Seed the randstate
         ld hl, randstate
         ld c, 4
         rst memset_small
-
         ld [wPaletteThread], a
         ld [wNbMenus], a
         ld [wRoomTransitionDirection], a
@@ -115,11 +114,12 @@ Initialize::
         ld [hli], a
         ld [hli], a
         ld [hli], a
-
     ; VRAM
         ld hl, _VRAM
         ld bc, $2000
         call memset
+    ; SRAM
+        call VerifySRAM
 
     ; Set the palette target to white for now.
     ld a, $FF
@@ -236,41 +236,30 @@ InitializeGameplay::
     ld a, ITEM_FIRE_WAND | ITEM_ICE_WAND << 4
     ld [wPlayerEquipped.octavia], a
 
-    ld a, high(PlayerOctavia)
+    ; Set up players and clear array.
     ld hl, wOctavia
+    ld a, HIGH(PlayerOctavia)
     ld [hli], a
-    ld a, low(PlayerOctavia)
-    ld [hli], a
-    ld a, 256/2
-    ld [hli], a
-    ld a, 256/2
+    ld a, LOW(PlayerOctavia)
     ld [hli], a
     xor a, a
-    ld c, sizeof_Entity - Entity_XPos - 1
+    ld c, sizeof_Entity - 2
     rst memset_small
 
-    ld a, high(PlayerPoppy)
+    ld a, HIGH(PlayerPoppy)
     ld [hli], a
-    ld a, low(PlayerPoppy)
-    ld [hli], a
-    ld a, 256/2
-    ld [hli], a
-    ld a, 256/2 - 16
+    ld a, LOW(PlayerPoppy)
     ld [hli], a
     xor a, a
-    ld c, sizeof_Entity - Entity_XPos - 1
+    ld c, sizeof_Entity - 2
     rst memset_small
 
-    ld a, high(PlayerTiber)
+    ld a, HIGH(PlayerTiber)
     ld [hli], a
-    ld a, low(PlayerTiber)
-    ld [hli], a
-    ld a, 256/2
-    ld [hli], a
-    ld a, 256/2 + 16
+    ld a, LOW(PlayerTiber)
     ld [hli], a
     xor a, a
-    ld c, sizeof_Entity - Entity_XPos - 1
+    ld c, sizeof_Entity - 2
     rst memset_small
 
 ; Player health
@@ -309,12 +298,13 @@ InitializeGameplay::
     xor a, a
     ld [wPrintState], a
 
-; Default map
-
-    xor a, a
-    ld [wWorldMapPositionX], a
-    ld [wWorldMapPositionY], a
-    ld [wActiveWorldMap], a
+; Load save file 0
+    ld a, BANK("Manage Save File")
+    rst SwapBank
+    ; Load save file 0
+    ld hl, sSave0
+    call xLoadSaveFile
+    call xLoadRepawnPoint
 
     ld a, SPAWN_ENTITIES | UPDATE_TILEMAP
     call UpdateActiveMap

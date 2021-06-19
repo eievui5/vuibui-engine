@@ -157,6 +157,27 @@ MACRO lstrip ; string_variable
     PURGE START_POS
 ENDM
 
+; Extends a new struct by an existing struct, effectively cloning its fields.
+MACRO extends ; struct_type
+    IF !DEF(\1_nb_fields)
+        FAIL "Struct \1 isn't defined!"
+    ENDC
+    FOR FIELD_ID, \1_nb_fields
+        ; Grab relevant information on each field and define a new element with
+        ; them.
+        get_nth_field_info \1, FIELD_ID
+        DEF EXTENDS_NBEL EQU STRUCT_FIELD_NBEL
+        DEF EXTENDS_TYPE EQUS STRCAT("R", "{{STRUCT_FIELD_TYPE}}")
+        DEF EXTENDS_NAME EQUS "{{STRUCT_FIELD_NAME}}"
+        purge_nth_field_info
+        ; Create a new field using tha gathered info.
+        new_field EXTENDS_NBEL, {EXTENDS_TYPE}, {EXTENDS_NAME}
+        PURGE EXTENDS_NBEL
+        PURGE EXTENDS_TYPE
+        PURGE EXTENDS_NAME
+    ENDR
+ENDM
+
 ; Allocates space for a struct in memory.
 ; If no further arguments are supplied, the space is allocated using `ds`.
 ; Otherwise, the data is written to memory using the appropriate types.
@@ -282,6 +303,7 @@ MACRO dstruct ; struct_type, instance_name[, ...]
                     DS {STRUCT_FIELD_SIZE}, \<ARG_NUM>
                 ELSE
                     REPT STRUCT_FIELD_NBEL
+                        PRINT "STRUCT_FIELD_TYPE {STRUCT_FIELD_TYPE} {{STRUCT_FIELD_TYPE}}\n"
                         D{{STRUCT_FIELD_TYPE}} \<ARG_NUM>
                     ENDR
                 ENDC

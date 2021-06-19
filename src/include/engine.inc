@@ -2,8 +2,8 @@
     IF !DEF(ENGINE_INC)
 DEF ENGINE_INC EQU 1
 
-INCLUDE "enum.inc"
-INCLUDE "hardware.inc"
+INCLUDE "include/enum.inc"
+INCLUDE "include/hardware.inc"
 
 ; Screen States
 
