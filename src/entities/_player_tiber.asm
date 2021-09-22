@@ -68,13 +68,17 @@ TiberActiveNormal: ; How to move.
     end_switch
     
 .skipAISwitch
+    ld hl, wTiber_State
+    call UseItemCheck
+
+    ld hl, wTiber
+    call NPCInteractionCheck
+
     ; Attack check
     ld a, [wPlayerEquipped.tiber]
     ld b, a
     ld hl, wTiber
     call PlayerInteractionCheck
-    ld hl, wTiber_State
-    call UseItemCheck
 .activeMove
     ld bc, PLAYER_TIBER * sizeof_Entity
     call PlayerInputMovement

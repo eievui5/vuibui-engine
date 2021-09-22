@@ -63,13 +63,17 @@ PoppyActiveNormal: ; How to move.
     end_switch
     
 .skipAISwitch
+    ld hl, wPoppy_State
+    call UseItemCheck
+
+    ld hl, wPoppy
+    call NPCInteractionCheck
+
     ; Attack check
     ld a, [wPlayerEquipped.poppy]
     ld b, a
     ld hl, wPoppy
     call PlayerInteractionCheck
-    ld hl, wPoppy_State
-    call UseItemCheck
 .activeMove
     ld bc, PLAYER_POPPY * sizeof_Entity
     call PlayerInputMovement
