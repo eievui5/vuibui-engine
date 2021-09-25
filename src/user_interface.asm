@@ -193,7 +193,7 @@ UpdateHUD::
     rst memcopy_small
     
     ld a, PALETTE_STATE_RESET
-    ld [wPaletteThread], a
+    ld [wPaletteState], a
 
 .skipColor
 

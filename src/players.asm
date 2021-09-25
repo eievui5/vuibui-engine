@@ -415,7 +415,7 @@ PlayerDeath::
         ld hl, wOCPD
         rst memcopy_small
         ld a, PALETTE_STATE_FADE
-        ld [wPaletteThread], a
+        ld [wPaletteState], a
 
 .loadScript
 
@@ -491,7 +491,7 @@ xPlayerDeathScript:
     ld c, sizeof_PALETTE * 8
     rst memset_small
     ld a, PALETTE_STATE_FADE_LIGHT
-    ld [wPaletteThread], a
+    ld [wPaletteState], a
     ret
 
 POPS
@@ -984,7 +984,7 @@ WarpTileCheck::
     ld [wPoppy_XPos], a
     ld [wTiber_XPos], a
     ld a, PALETTE_STATE_FADE_LIGHT
-    ld [wPaletteThread], a
+    ld [wPaletteState], a
     ld a, UPDATE_TILEMAP
     call UpdateActiveMap
     ; End the frame early.

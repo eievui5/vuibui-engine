@@ -32,7 +32,7 @@ VBlank:
     ldh [rSCY], a
 
 ; Palettes
-    ld a, [wPaletteThread]
+    ld a, [wPaletteState]
     and a, a
     call nz, UpdatePalettes
 

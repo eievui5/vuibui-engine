@@ -104,11 +104,11 @@ InventoryInit:
 
 ; Fade out before we turn off the screen
     ld a, PALETTE_STATE_FADE_LIGHT
-    ld [wPaletteThread], a
+    ld [wPaletteState], a
 
 .waitFade
     halt
-    ld a, [wPaletteThread]
+    ld a, [wPaletteState]
     and a, a
     jr nz, .waitFade
 
@@ -763,11 +763,11 @@ InventoryClose:
     rst memset_small
     ; Fade out before we turn off the screen
     ld a, PALETTE_STATE_FADE_LIGHT
-    ld [wPaletteThread], a
+    ld [wPaletteState], a
 
 .waitFade
     halt
-    ld a, [wPaletteThread]
+    ld a, [wPaletteState]
     and a, a
     jr nz, .waitFade
 

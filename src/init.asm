@@ -102,7 +102,7 @@ Initialize::
         ld hl, randstate
         ld c, 4
         rst memset_small
-        ld [wPaletteThread], a
+        ld [wPaletteState], a
         ld [wNbMenus], a
         ld [wRoomTransitionDirection], a
         ld [wTextState], a

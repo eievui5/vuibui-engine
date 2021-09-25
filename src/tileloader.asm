@@ -423,7 +423,7 @@ VBlankScrollLoader::
     xor a, a
     ldh [hEngineState], a ; Reset engine
     ld a, PALETTE_STATE_RESET
-    ld [wPaletteThread], a
+    ld [wPaletteState], a
     pop bc ; Clean stack
     ret
 

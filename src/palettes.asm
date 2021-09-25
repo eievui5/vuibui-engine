@@ -50,7 +50,7 @@ UpdatePalettes::
     cp a, $FF
     ret nz
     xor a, a
-    ld [wPaletteThread], a
+    ld [wPaletteState], a
     ret
 .dmgFadeLight
     ld a, [wFrameTimer]
@@ -75,7 +75,7 @@ UpdatePalettes::
     or a, b
     ret nz
     xor a, a
-    ld [wPaletteThread], a
+    ld [wPaletteState], a
     ret
 .dmgReset
     ld a, [wBGP]
@@ -85,7 +85,7 @@ UpdatePalettes::
     ld a, [wOBP1]
     ldh [rOBP1], a
     xor a, a
-    ld [wPaletteThread], a
+    ld [wPaletteState], a
     ret
 
 Cgb:
@@ -210,7 +210,7 @@ CgbFade:
     cp a, 192 ; Total number of R, G, and B values.
     ret nz
     xor a, a
-    ld [wPaletteThread], a ; disable the palette thread.
+    ld [wPaletteState], a ; disable the palette thread.
     ret
 
 ; Fades a given color towards the corresponding target value in `w*Target`,
@@ -334,7 +334,7 @@ SECTION "Pal Common", WRAM0
 
 ; Used to begin a palette fade without blocking the main thread. Set to the
 ; desired fading mode.
-wPaletteThread::
+wPaletteState::
     ds 1
 
 SECTION UNION "Palettes", WRAM0

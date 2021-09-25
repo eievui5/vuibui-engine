@@ -61,7 +61,7 @@ UpdateActiveMap::
 	; Wait for the palettes to fade out
 .waitPalFade
 	halt
-	ld a, [wPaletteThread]
+	ld a, [wPaletteState]
 	and a, a
 	jr nz, .waitPalFade
 
@@ -226,7 +226,7 @@ UpdateActiveMap::
     call LoadMapData
 
     ld a, PALETTE_STATE_RESET
-    ld [wPaletteThread], a
+    ld [wPaletteState], a
 
 	ld a, [hLCDCBuffer]
 	ldh [rLCDC], a
@@ -537,7 +537,7 @@ ReloadMapGraphics::
 .cgbSkip
 
     ld a, PALETTE_STATE_RESET
-    ld [wPaletteThread], a
+    ld [wPaletteState], a
 
     ldh a, [hCurrentBank]
     ld [rROMB0], a

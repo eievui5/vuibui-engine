@@ -234,12 +234,12 @@ ScriptFade:
     load_hl_scriptpointer
     inc hl
     ld a, [hli]
-    ld [wPaletteThread], a
+    ld [wPaletteState], a
     jp ScriptExitStub
 
 ScriptWaitFade:
 	halt
-	ld a, [wPaletteThread]
+	ld a, [wPaletteState]
 	and a, a
 	jr nz, ScriptWaitFade
     jp ScriptNull
