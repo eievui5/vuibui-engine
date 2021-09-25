@@ -31,18 +31,22 @@ UpdatePalettes::
     scf
     rra
     ldh [rOBP0], a
+    ld b, a
     ldh a, [rOBP1]
     scf
     rra
     scf
     rra
     ldh [rOBP1], a
+    and a, b
+    ld b, a
     ldh a, [rBGP]
     scf
     rra
     scf
     rra
     ldh [rBGP], a
+    and a, b
     cp a, $FF
     ret nz
     xor a, a
@@ -54,24 +58,21 @@ UpdatePalettes::
     ret nz
 
     ldh a, [rOBP0]
-    rla
-    res 0, a
-    rla
-    res 0, a
+    add a, a ; a << 1
+    add a, a ; a << 2
     ldh [rOBP0], a
+    ld b, a
     ldh a, [rOBP1]
-    rla
-    res 0, a
-    rla
-    res 0, a
+    add a, a ; a << 1
+    add a, a ; a << 2
     ldh [rOBP1], a
+    or a, b
+    ld b, a
     ldh a, [rBGP]
-    rla
-    res 0, a
-    rla
-    res 0, a
+    add a, a ; a << 1
+    add a, a ; a << 2
     ldh [rBGP], a
-    and a, a
+    or a, b
     ret nz
     xor a, a
     ld [wPaletteThread], a
