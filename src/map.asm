@@ -35,17 +35,17 @@ UpdateActiveMap::
     ld [wOctaviaSpellActive], a
     
     ; Clear entity array
-    ld c, sizeof_Entity * MAX_ENTITIES
+    ld c, sizeof_Entity * NB_ENTITIES
     ld hl, wEntityArray
     rst memset_small
 
     ; Clear entity fields
-    ld c, sizeof_Entity * MAX_ENTITIES
+    ld c, sizeof_Entity * NB_ENTITIES
     ld hl, wEntityFieldArray
     rst memset_small
 
     ; Clear NPC array
-    ld c, sizeof_NPC * MAX_NPCS
+    ld c, sizeof_NPC * NB_NPCS
     ld hl, wNPCArray
     rst memset_small
 

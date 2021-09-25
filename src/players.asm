@@ -347,11 +347,11 @@ PlayerDamage::
 PlayerDeath::
     ; Clear enemies so that they don't appear during the animation.
     xor a, a
-    ld c, sizeof_Entity * MAX_ENTITIES
+    ld c, sizeof_Entity * NB_ENTITIES
     ld hl, wEntityArray
     rst memset_small
     ; Clear entity fields
-    ld c, sizeof_Entity * MAX_ENTITIES
+    ld c, sizeof_Entity * NB_ENTITIES
     ld hl, wEntityFieldArray
     rst memset_small
 

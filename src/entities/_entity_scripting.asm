@@ -581,7 +581,7 @@ SECTION "Entity Script Fields", WRAM0, ALIGN[8]
 ; Extra variables for entities to use. The first two bytes are used as a script
 ; pointer if the entity has a script.
 wEntityFieldArray::
-    ds sizeof_Entity * MAX_ENTITIES
+    ds sizeof_Entity * NB_ENTITIES
 
 SECTION "Script Offset Byte", HRAM
 

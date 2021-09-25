@@ -4,7 +4,7 @@ DEF NPCS_INC EQU 1
 
 INCLUDE "include/structs.inc"
 
-DEF MAX_NPCS EQU 4
+DEF NB_NPCS EQU 4
 
     ; Used to define an NPC tile. NPCs are like entities, but cannot move. They only
     ; face towards the player and contain a script for when they're interacted with.

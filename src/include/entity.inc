@@ -55,7 +55,7 @@ DEF ENTITY_DETECTION_SIZE EQU 8 ; (8 * 8) = 16 / (16 - 2)
 DEF BOUNDING_BOX_X EQU 6 ; A bit smaller than 16*16, because that feel/looks better.
 DEF BOUNDING_BOX_Y EQU 6
 
-DEF MAX_ENTITIES EQU 8 ; Max entities cannot go higher than 16.
-ASSERT MAX_ENTITIES <= 16
+DEF NB_ENTITIES EQU 8 ; Max entities cannot go higher than 16.
+ASSERT NB_ENTITIES <= 16
 
     ENDC

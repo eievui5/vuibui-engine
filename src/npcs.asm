@@ -71,7 +71,7 @@ RenderNPCs::
     ldh a, [hNPCArrayIndex]
     add a, sizeof_NPC
     ; If we've gone past 4 entities it's time to return
-    cp a, MAX_NPCS * sizeof_NPC
+    cp a, NB_NPCS * sizeof_NPC
     ret z
     ; Otherwise save index and loop.
     ldh [hNPCArrayIndex], a
@@ -81,7 +81,7 @@ RenderNPCs::
 SECTION "NPC Array", WRAM0, ALIGN[8]
 
 wNPCArray::
-    dstructs MAX_NPCS, NPC, wNPC
+    dstructs NB_NPCS, NPC, wNPC
 
 SECTION UNION "Volatile", HRAM
 

@@ -28,7 +28,7 @@ HandleEntities::
     sub a, c
     ld b, a
     ld a, c
-    cp a, low(sizeof_Entity * MAX_ENTITIES)
+    cp a, low(sizeof_Entity * NB_ENTITIES)
     ret z ; Return if we've reached the end of the array
 .skip
     ld hl, wEntityArray
@@ -64,7 +64,7 @@ RenderEntities::
     ld a, sizeof_Entity
     ; Add `a` to `bc`
     add a, c
-    cp a, LOW(sizeof_Entity * MAX_ENTITIES)
+    cp a, LOW(sizeof_Entity * NB_ENTITIES)
     ret z ; Return if we've reached the end of the array
     ld c, a
 .skip
@@ -106,7 +106,7 @@ RenderEntities::
 SpawnEntity::
     push bc
     push de
-    ld d, MAX_ENTITIES + 1
+    ld d, NB_ENTITIES + 1
     ld bc, sizeof_Entity
     ld hl, wEntityArray - sizeof_Entity
 .loop
@@ -362,7 +362,7 @@ MoveNoClip::
 ; @ hl: self
 GetEntityDistance::
     ; We use B here, but zeroing it restores the pointer
-    ASSERT sizeof_Entity * MAX_ENTITIES < 256
+    ASSERT sizeof_Entity * NB_ENTITIES < 256
     ; Distance = target - self.
     ld a, [hli] ; Self Y
     ld b, a
@@ -517,10 +517,10 @@ DetectEntity::
     ld c, sizeof_Entity
     add hl, bc
     ld a, h
-    cp a, high(sizeof_Entity * MAX_ENTITIES)
+    cp a, high(sizeof_Entity * NB_ENTITIES)
     jr nz, .continue ; Skip if there's no match
     ld a, l
-    cp a, low(sizeof_Entity * MAX_ENTITIES)
+    cp a, low(sizeof_Entity * NB_ENTITIES)
     jr nz, .continue ; Return if we've reached the end of the array 
     pop bc ; throw away source index.
     xor a, a ; ld a, 0
@@ -628,8 +628,8 @@ ENDR
 
 SECTION "Entity Array", WRAM0, ALIGN[8]
 wEntityArray::
-    ; define an array of `MAX_ENTITIES` Entities, each named wEntityXX
-    dstructs MAX_ENTITIES, Entity, wEntity
+    ; define an array of `NB_ENTITIES` Entities, each named wEntityXX
+    dstructs NB_ENTITIES, Entity, wEntity
 
 SECTION UNION "Volatile", HRAM
 hRenderByte: ; currently stores the entity's invtimer to find out if it should blink
