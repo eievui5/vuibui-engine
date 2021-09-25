@@ -12,6 +12,9 @@ INCLUDE "include/scripting.inc"
 INCLUDE "include/text.inc"
 INCLUDE "include/tiledata.inc"
 
+DEF DEATH_SPIN_SPEED EQU 2
+DEF DEATH_SPIN_COUNT EQU 5
+
 SECTION "Player Functions", ROM0
 
 ; Run once per frame, handling player logic and special states such as the
@@ -366,12 +369,63 @@ PlayerDeath::
 .disableOthers
     inc hl
     dec c ; Must check this first since the active player may be skipped.
-    jr z, .loadScript
+    jr z, .loadFadeOut
     dec b
     jr z, .disableOthers
     ld [hl], a ; Set disabled flag for this player
     jr .disableOthers
+
+.loadFadeOut
+    ; Set target palettes and fade (we use a bit of custom logic here so we
+    ; won't offload this to the script).
+
+    ; CGB fading supports excluding objects natively, but for the DMG we'll just
+    ; handle this manually.
+    ldh a, [hSystem]
+    and a, a
+    jr nz, .cgbFade
+.waitVBlank
+            xor a, a
+            ld [wNewFrame], a
+            ; When main is unhalted we ensure that it will not loop.
+            halt
+            ld a, [wNewFrame]
+            and a, a
+            jr z, .waitVBlank
+        ld a, [wFrameTimer]
+        and a, %11 ; every 4th frame
+        jr nz, .waitVBlank
+        
+        ldh a, [rBGP]
+        add a, a ; a << 1
+        add a, a ; a << 2
+        ldh [rBGP], a
+        and a, a
+        jr z, .loadScript
+        jr .waitVBlank
+.cgbFade
+        ; Here we can just take advantage of our CGB fading system.
+        ld a, $FF
+        ld hl, wBCPDTarget
+        ld c, sizeof_PALETTE * 8
+        rst memset_small
+        ; Copy the Objects; we don't want them to change.
+        ld c, sizeof_PALETTE * 8
+        ld de, wOCPDTarget
+        ld hl, wOCPD
+        rst memcopy_small
+        ld a, PALETTE_STATE_FADE
+        ld [wPaletteThread], a
+
 .loadScript
+
+    ASSERT DIR_DOWN == 0
+    xor a, a
+    ld [wOctavia_InvTimer], a
+    ld [wPoppy_InvTimer], a
+    ld [wTiber_InvTimer], a
+    ld [wScriptVars + 0], a
+
     ld hl, wActiveScriptPointer
     ld a, BANK(xPlayerDeathScript)
     ld [hli], a
@@ -387,16 +441,58 @@ SECTION "Player Death Script", ROMX
 ; Scripted portion of death animation.
 xPlayerDeathScript:
     pause
-    octavia_text .deathText
-    fade PALETTE_STATE_FADE_LIGHT
+    set_pointer wScriptVars + 1, 0
+.down
+    set_pointer wScriptVars + 0, 0
+    set_pointer wOctavia_Direction, DIR_DOWN
+    set_pointer wPoppy_Direction, DIR_DOWN
+    set_pointer wTiber_Direction, DIR_DOWN
+    add_pointer wScriptVars + 1, 1
+    branch wScriptVars + 1, DEATH_SPIN_COUNT, .fall
+.downWait
+    add_pointer wScriptVars + 0, 1
+    branch wScriptVars + 0, DEATH_SPIN_SPEED * 1, .left
+    jump .downWait
+
+.left
+    set_pointer wOctavia_Direction, DIR_LEFT
+    set_pointer wPoppy_Direction, DIR_LEFT
+    set_pointer wTiber_Direction, DIR_LEFT
+.leftWait
+    add_pointer wScriptVars + 0, 1
+    branch wScriptVars + 0, DEATH_SPIN_SPEED * 2, .up
+    jump .leftWait
+
+.up
+    set_pointer wOctavia_Direction, DIR_UP
+    set_pointer wPoppy_Direction, DIR_UP
+    set_pointer wTiber_Direction, DIR_UP
+.upWait
+    add_pointer wScriptVars + 0, 1
+    branch wScriptVars + 0, DEATH_SPIN_SPEED * 3, .right
+    jump .upWait
+
+.right
+    set_pointer wOctavia_Direction, DIR_RIGHT
+    set_pointer wPoppy_Direction, DIR_RIGHT
+    set_pointer wTiber_Direction, DIR_RIGHT
+.rightWait
+    add_pointer wScriptVars + 0, 1
+    branch wScriptVars + 0, DEATH_SPIN_SPEED * 4, .down
+    jump .rightWait
+.fall
+    call_function .fadeFully
     wait_fade
     end_script
 
-.deathText
-    say "Ow I have\n"
-    say "die."
-    end_text
-
+.fadeFully
+    ld a, $FF
+    ld hl, wOCPDTarget
+    ld c, sizeof_PALETTE * 8
+    rst memset_small
+    ld a, PALETTE_STATE_FADE_LIGHT
+    ld [wPaletteThread], a
+    ret
 
 POPS
 

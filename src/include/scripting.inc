@@ -18,7 +18,8 @@ INCLUDE "include/enum.inc"
         enum UNPAUSE
         enum FADE
         enum WAIT_FADE
-        enum CLEAR_SPRITES
+        enum JUMP
+        enum ADD_POINTER
     end_enum
 
 ; Returns to normal processing
@@ -33,9 +34,7 @@ ENDM
 ; Pauses the script to open a text box
 ; @ display_text TextPointer
 MACRO display_text
-    IF _NARG != 1
-        FAIL "Expected 1 arg"
-    ENDC
+    ASSERT _NARG == 1, "Expected 1 arg"
     db SCRIPT_TEXT
     db bank(\1)
     dw \1
@@ -127,9 +126,20 @@ MACRO wait_fade
     db SCRIPT_WAIT_FADE
 ENDM
 
-; Clear all sprites on screen.
-MACRO clear_sprites
-    db SCRIPT_CLEAR_SPRITES
+; Move the script pointer, or in other words, jump!
+MACRO jump
+    db SCRIPT_JUMP
+    ASSERT BANK(@) == BANK(\1), "`jump` can only jump to scripts in the same bank!"
+    dw \1
+ENDM
+
+; Adds `value` to `pointer`.
+; @ add_pointer Pointer, Value
+MACRO add_pointer
+    ASSERT _NARG == 2, "Expected 2 args"
+    db SCRIPT_ADD_POINTER
+    dw \1
+    db \2
 ENDM
 
 ; ################# Pseudo-Scripts
@@ -153,4 +163,13 @@ ENDM
 MACRO tiber_text
     text_color GradientRed
     display_text \1
+ENDM
+
+; Subtracts `value` from `pointer`.
+; @ sub_pointer Pointer, Value
+MACRO sub_pointer
+    ASSERT _NARG == 2, "Expected 2 args"
+    db SCRIPT_ADD_POINTER
+    dw \1
+    db -(\2)
 ENDM

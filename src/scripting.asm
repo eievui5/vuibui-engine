@@ -61,8 +61,10 @@ HandleScript::
         dw ScriptFade
         ASSERT SCRIPT_WAIT_FADE == 12
         dw ScriptWaitFade
-        ASSERT SCRIPT_CLEAR_SPRITES == 13
-        dw ScriptClearSprites
+        ASSERT SCRIPT_JUMP == 13
+        dw ScriptJump
+        ASSERT SCRIPT_ADD_POINTER == 14
+        dw ScriptAddPointer
 
 ; End of script!
 ScriptEnd:
@@ -242,9 +244,28 @@ ScriptWaitFade:
 	jr nz, ScriptWaitFade
     jp ScriptNull
 
-ScriptClearSprites:
-    call CleanOAM
-    jp ScriptNull
+; Move the script pointer to jump to another location.
+ScriptJump:
+    load_hl_scriptpointer
+    inc hl
+    ld a, [hli]
+    ld [wActiveScriptPointer + 1], a
+    ld a, [hl]
+    ld [wActiveScriptPointer + 2], a
+    ret
+
+ScriptAddPointer:
+    load_hl_scriptpointer
+    inc hl
+    ld a, [hli]
+    ld e, a
+    ld a, [hli]
+    ld d, a
+    ld a, [de]
+    add a, [hl]
+    ld [de], a
+    inc hl
+    jp ScriptExitStub
 
 ; Save some space with a tail call.
 ScriptExitStub:
@@ -255,3 +276,7 @@ SECTION "Script Variables", WRAM0
 
 wActiveScriptPointer::
     ds 3 ; bank, little endian pointer
+
+; 16 general-purpose bytes intended for use by script commands.
+wScriptVars::
+    ds 16

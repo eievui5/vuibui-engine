@@ -263,7 +263,7 @@ InitializeGameplay::
     rst memset_small
 
 ; Player health
-    ld a, 10
+    ld a, 1
     ld hl, wPlayerMaxHealth
     ld [hli], a
     ld [hli], a
