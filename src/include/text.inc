@@ -22,7 +22,7 @@ MACRO say
     db \1
 ENDM
 
-; Types an "@"
+; NULL-ternimates a string
 MACRO end_text
     db SPCHAR_TERMINATE
 ENDM

@@ -24,9 +24,14 @@ ENDM
 SECTION "Script Handlers", ROM0
 
 HandleScript::
-    rst SwapBank
 .nextByte
-    load_hl_scriptpointer
+    ld hl, wActiveScriptPointer
+    ld a, [hli]
+    rst SwapBank
+    ld a, [hli]
+    ld h, [hl]
+    ld l, a
+
     ; [hl] -> Script Byte
     ld a, [hl]
     call HandleJumpTable
@@ -52,6 +57,12 @@ HandleScript::
         dw ScriptPause
         ASSERT SCRIPT_UNPAUSE == 10
         dw ScriptUnpause
+        ASSERT SCRIPT_FADE == 11
+        dw ScriptFade
+        ASSERT SCRIPT_WAIT_FADE == 12
+        dw ScriptWaitFade
+        ASSERT SCRIPT_CLEAR_SPRITES == 13
+        dw ScriptClearSprites
 
 ; End of script!
 ScriptEnd:
@@ -139,7 +150,7 @@ ScriptBranch:
     ; Skip pointer
     inc hl
     inc hl
-    jr ScriptExitStub
+    jp ScriptExitStub
 
 
 ScriptSetPointer:
@@ -151,7 +162,7 @@ ScriptSetPointer:
     ld d, a
     ld a, [hli]
     ld [de], a
-    jr ScriptExitStub
+    jp ScriptExitStub
 
 ScriptFunction:
     load_hl_scriptpointer
@@ -217,6 +228,23 @@ ScriptUnpause:
     ldh [hPaused], a
     jp ScriptNull
 
+ScriptFade:
+    load_hl_scriptpointer
+    inc hl
+    ld a, [hli]
+    ld [wPaletteThread], a
+    jp ScriptExitStub
+
+ScriptWaitFade:
+	halt
+	ld a, [wPaletteThread]
+	and a, a
+	jr nz, ScriptWaitFade
+    jp ScriptNull
+
+ScriptClearSprites:
+    call CleanOAM
+    jp ScriptNull
 
 ; Save some space with a tail call.
 ScriptExitStub:

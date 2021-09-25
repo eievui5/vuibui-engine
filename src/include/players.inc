@@ -79,7 +79,6 @@ DEF TIBER_SWORD_DAMAGE EQU 2
         enum ITEM1
         enum ITEM2
         enum ITEM3
-        enum DEAD
     end_enum
 
 ; Items

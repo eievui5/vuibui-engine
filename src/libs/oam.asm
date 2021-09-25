@@ -49,6 +49,7 @@ ResetOAM::
     ld hl, wShadowOAM
     rst memset_small
     ret
+
 ; Reset wShadowOAM and wOAMIndex to 0.
 CleanOAM::
     xor a, a

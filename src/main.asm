@@ -32,8 +32,9 @@ Main::
 Gameplay:
 
     ; Check if a script is currently running
-    ld a, [wActiveScriptPointer]
-    and a, a
+    ld hl, wActiveScriptPointer + 1
+    ld a, [hli]
+    or a, [hl]
     call nz, HandleScript
     
     ; Check if we're paused.

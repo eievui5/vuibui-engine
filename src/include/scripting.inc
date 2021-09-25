@@ -16,6 +16,9 @@ INCLUDE "include/enum.inc"
         enum SET_TEXT_GRADIENT
         enum PAUSE
         enum UNPAUSE
+        enum FADE
+        enum WAIT_FADE
+        enum CLEAR_SPRITES
     end_enum
 
 ; Returns to normal processing
@@ -68,9 +71,7 @@ ENDM
 ; Sets the reffered `pointer` to `value`
 ; @ set_pointer Pointer, Value
 MACRO set_pointer
-    IF _NARG != 2
-        FAIL "Expected 2 args"
-    ENDC
+    ASSERT _NARG == 2, "Expected 2 args"
     db SCRIPT_SET_POINTER
     dw \1
     db \2
@@ -79,9 +80,7 @@ ENDM
 ; Calls a block of code.
 ; @ call_function Pointer
 MACRO call_function
-    IF _NARG != 1
-        FAIL "Expected 1 arg"
-    ENDC
+    ASSERT _NARG == 1, "Expected 1 arg"
     db SCRIPT_FUNCTION
     dw \1
 ENDM
@@ -100,9 +99,7 @@ ENDM
 ; Update text box gradient.
 ; @ text_color Gradient
 MACRO text_color
-    IF _NARG != 1
-        FAIL "Expected 1 arg"
-    ENDC
+    ASSERT _NARG == 1, "Expected 1 arg"
     db SCRIPT_SET_TEXT_GRADIENT
     db BANK(\1)
     dw \1
@@ -116,6 +113,23 @@ ENDM
 ; Unpause the game
 MACRO unpause
     db SCRIPT_UNPAUSE
+ENDM
+
+; Fade palettes.
+MACRO fade
+    ASSERT _NARG == 1, "Expected 1 arg"
+    ASSERT \1 <= PALETTE_STATE_FADE
+    db SCRIPT_FADE, \1
+ENDM
+
+; Lock the script until palettes are done fading.
+MACRO wait_fade
+    db SCRIPT_WAIT_FADE
+ENDM
+
+; Clear all sprites on screen.
+MACRO clear_sprites
+    db SCRIPT_CLEAR_SPRITES
 ENDM
 
 ; ################# Pseudo-Scripts

@@ -60,8 +60,6 @@ OctaviaPlayerLogic::
         dw OctaviaRod.shock
         ASSERT PLAYER_STATE_ITEM3 == 5
         dw OctaviaRod.heal
-        ASSERT PLAYER_STATE_DEAD == 6
-        dw OctaviaRod.fire
 
 /*
 

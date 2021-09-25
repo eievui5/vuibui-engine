@@ -8,7 +8,8 @@ INCLUDE "include/hardware.inc"
 INCLUDE "include/map.inc"
 INCLUDE "include/npc.inc"
 INCLUDE "include/players.inc"
-INCLUDE "include/switch.inc"
+INCLUDE "include/scripting.inc"
+INCLUDE "include/text.inc"
 INCLUDE "include/tiledata.inc"
 
 SECTION "Player Functions", ROM0
@@ -322,19 +323,9 @@ PlayerDamage::
     ld [hli], a ; Seek to health
     ld a, [hl]
     sub a, d
-    jr z, .dead
-    jr nc, .storeHealth ; If damage < health, we're not dead!
-.dead
-    ld a, Entity_State
-    add a, c
-    ld l, a
-    ld a, PLAYER_STATE_DEAD
-    ld [hl], a
-    ld a, Entity_Health
-    add a, c
-    ld l, a
-    xor a, a ; Force to 0 if health becomes negative
-.storeHealth
+    jr z, PlayerDeath ; TODO: is there a better way to combine these?
+    jr c, PlayerDeath
+    ; If damage < health, we're not dead!
     ld [hl], a
 .timer
     ld a, Entity_Timer
@@ -351,6 +342,63 @@ PlayerDamage::
     ld hl, wPlayerArray
     add hl, bc
     jp PlayerMoveAndSlide
+
+; Handle the player death animation, including a scripted cutscene section.
+PlayerDeath::
+    ; Clear enemies so that they don't appear during the animation.
+    xor a, a
+    ld c, sizeof_Entity * MAX_ENTITIES
+    ld hl, wEntityArray
+    rst memset_small
+    ; Clear entity fields
+    ld c, sizeof_Entity * MAX_ENTITIES
+    ld hl, wEntityFieldArray
+    rst memset_small
+
+    ; Keep track of the active player so that we can skip them.
+    ld a, [wActivePlayer]
+    inc a ; Increase by one so that we can use `dec` in a loop.
+    ld b, a
+    ld c, 3 + 1
+    ; Since wActivePlayer will never be -1, we know `a` is "true" right now :)
+    ld hl, wPlayerDisabled - 1
+    ; Also hide the other players.
+.disableOthers
+    inc hl
+    dec c ; Must check this first since the active player may be skipped.
+    jr z, .loadScript
+    dec b
+    jr z, .disableOthers
+    ld [hl], a ; Set disabled flag for this player
+    jr .disableOthers
+.loadScript
+    ld hl, wActiveScriptPointer
+    ld a, BANK(xPlayerDeathScript)
+    ld [hli], a
+    ld a, LOW(xPlayerDeathScript)
+    ld [hli], a
+    ld a, HIGH(xPlayerDeathScript)
+    ld [hli], a
+    ret
+
+PUSHS
+
+SECTION "Player Death Script", ROMX
+; Scripted portion of death animation.
+xPlayerDeathScript:
+    pause
+    octavia_text .deathText
+    fade PALETTE_STATE_FADE_LIGHT
+    wait_fade
+    end_script
+
+.deathText
+    say "Ow I have\n"
+    say "die."
+    end_text
+
+
+POPS
 
 ; Generic "Follow the active player state." Does not move the Ally, only sets
 ; velocity and direction.
@@ -1020,6 +1068,9 @@ PlayerDialogueLookup:
     far_pointer PoppyGeneric
 .tiber
     far_pointer TiberGeneric
+
+SECTION "Player Death", ROMX
+
 
 SECTION "Player Variables", WRAM0
 
