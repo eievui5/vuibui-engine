@@ -2,7 +2,6 @@ INCLUDE "include/directions.inc"
 INCLUDE "include/entity.inc"
 INCLUDE "include/players.inc"
 INCLUDE "include/scripting.inc"
-INCLUDE "include/switch.inc"
 INCLUDE "include/text.inc"
 
 SECTION "Poppy AI", ROMX
@@ -36,14 +35,22 @@ PoppyPlayerLogic::
 .noDamage
 .activeControl
     ld a, [wPoppy_State]
-    switch
-        case PLAYER_STATE_NORMAL, PoppyActiveNormal
-        case PLAYER_STATE_HURT, PoppyDamage
-        case PLAYER_STATE_ITEM0, PoppyBow
-        case PLAYER_STATE_ITEM1, PoppyBow
-        case PLAYER_STATE_ITEM2, PoppyBow
-        case PLAYER_STATE_ITEM3, PoppyBow
-    end_switch
+    ld hl, .stateJumpTable
+    jp HandleJumpTable
+
+.stateJumpTable
+    ASSERT PLAYER_STATE_NORMAL == 0
+    dw PoppyActiveNormal
+    ASSERT PLAYER_STATE_HURT == 1
+    dw PoppyDamage
+    ASSERT PLAYER_STATE_ITEM0 == 2
+    dw PoppyBow
+    ASSERT PLAYER_STATE_ITEM1 == 3
+    dw PoppyBow
+    ASSERT PLAYER_STATE_ITEM2 == 4
+    dw PoppyBow
+    ASSERT PLAYER_STATE_ITEM3 ==5
+    dw PoppyBow
 
 PoppyActiveNormal: ; How to move.
 
@@ -59,9 +66,12 @@ PoppyActiveNormal: ; How to move.
     cp a, b
     ret nz
     ld a, [wAllyLogicMode]
-    switch
-        case ALLY_MODE_FOLLOW, PoppyAIFollow
-    end_switch
+    ld hl, .aiStateTable
+    jp HandleJumpTable
+
+.aiStateTable
+    ASSERT ALLY_MODE_FOLLOW == 0
+    dw PoppyAIFollow
     
 .skipAISwitch
     ld hl, wPoppy_State

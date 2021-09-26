@@ -2,7 +2,6 @@ INCLUDE "include/directions.inc"
 INCLUDE "include/entity.inc"
 INCLUDE "include/players.inc"
 INCLUDE "include/scripting.inc"
-INCLUDE "include/switch.inc"
 INCLUDE "include/text.inc"
 
 RSSET 4
@@ -42,14 +41,22 @@ TiberPlayerLogic::
 .noDamage
 .activeControl
     ld a, [wTiber_State]
-    switch
-        case PLAYER_STATE_NORMAL, TiberActiveNormal
-        case PLAYER_STATE_HURT, TiberDamage
-        case PLAYER_STATE_ITEM0, TiberSword
-        case PLAYER_STATE_ITEM1, TiberSword
-        case PLAYER_STATE_ITEM2, TiberSword
-        case PLAYER_STATE_ITEM3, TiberSword
-    end_switch
+    ld hl, .stateTable
+    jp HandleJumpTable
+
+.stateTable
+    ASSERT PLAYER_STATE_NORMAL == 0
+    dw TiberActiveNormal
+    ASSERT PLAYER_STATE_HURT == 1
+    dw TiberDamage
+    ASSERT PLAYER_STATE_ITEM0 == 2
+    dw TiberSword
+    ASSERT PLAYER_STATE_ITEM1 == 3
+    dw TiberSword
+    ASSERT PLAYER_STATE_ITEM2 == 4
+    dw TiberSword
+    ASSERT PLAYER_STATE_ITEM3 == 5
+    dw TiberSword
 
 TiberActiveNormal: ; How to move.
 
@@ -64,9 +71,12 @@ TiberActiveNormal: ; How to move.
     cp a, b
     ret nz
     ld a, [wAllyLogicMode]
-    switch
-        case ALLY_MODE_FOLLOW, TiberAIFollow
-    end_switch
+    ld hl, .aiStateTable
+    jp HandleJumpTable
+
+.aiStateTable
+    ASSERT ALLY_MODE_FOLLOW == 0
+    dw TiberAIFollow
     
 .skipAISwitch
     ld hl, wTiber_State

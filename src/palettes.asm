@@ -1,8 +1,6 @@
-
 INCLUDE "include/engine.inc"
 INCLUDE "include/hardware.inc"
 INCLUDE "include/graphics.inc"
-INCLUDE "include/switch.inc"
 
 SECTION "Update Palettes", ROM0
 

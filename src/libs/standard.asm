@@ -53,13 +53,27 @@ SwapBank::
     ldh [hCurrentBank], a
     ret
 
+SECTION "Far Call", ROM0[$0028]
+; Calls a function in another bank
+; @ b:  Target bank
+; @ hl: Target function.
+FarCall::
+    ld a, [hCurrentBank]
+    push af
+    ld a, b
+    rst SwapBank
+    rst CallHL
+    pop af
+    jr SwapBank
+
 SECTION "Crash Handler", ROM0[$0038]
 crash:
     ld b, b
     di
-    halt
+.loop
+    jr .loop
 
-SECTION "Overwrite Bytes", ROM0
+SECTION "Memory Set", ROM0
 
 ; Overwrites a certain amount of bytes with a single byte. Destination is offset
 ; by length, in case you want to overwrite with different values.
@@ -102,14 +116,12 @@ memcopy::
     ret
 
 SECTION "Jump Table", ROM0
-
 ; Jumps the the `a`th pointer. 128 pointers max. Place pointers after the call
 ; using `dw`. This function is faster than a decrement table if there are 8 or
 ; more destinations, and is always smaller.
-; @ a: Jump Offset
+; @ a:  Jump Offset.
+; @ hl: Jump Table Pointer.
 HandleJumpTable::
-    ; Restore Pointer to jump table
-    pop hl
     ; a * 2 (pointers are 2 bytes!)
     add a, a
     ; add hl, a
@@ -125,15 +137,13 @@ HandleJumpTable::
     ; Now jump!
     jp hl
 
-SECTION "Call de", ROM0
-
+SECTION "Call DE", ROM0
 ; Calls the value in `de` by pushing it and returning
 CallDE::
     push de
     ret
 
-SECTION "LCD Memory", ROM0
-
+SECTION "VRAM Memory Set", ROM0
 ; Waits for VRAM access before setting data.
 ; @ d:  source (is preserved)
 ; @ bc: length
@@ -156,6 +166,7 @@ vmemset::
     jr nz, .loadByte
     ret
 
+SECTION "VRAM Memory Copy", ROM0
 ; Waits for VRAM access before copying data.
 ; @ bc: length
 ; @ de: destination
@@ -178,47 +189,16 @@ vmemcopy::
     jr nz, .loop
     ret
 
-; Waits for VRAM access before copying data.
+SECTION "VRAM Small Memory Copy", ROM0
+; Waits for VRAM access before copying data. Slightly faster than vmemcopy with
+; less setup, but can only copy 256 bytes at a time.
 ; @ c:  length
 ; @ de: destination
 ; @ hl: source
 vmemcopy_small::
-
     ld a, [hli]
     ld [de], a
     inc de
     dec c
     jr nz, vmemcopy_small
     ret
-
-SECTION "Stack Slide", ROM0
-; @ c:  Length / 2; each repetition is two bytes
-; @ de: Source word
-; @ hl: Destination (End of block; stack goes down!)
-PushSlide::
-    ld [wSlideStack], sp
-    di ; Stack is about to die, disable interrupts
-
-    ld sp, hl
-.loop
-    push de
-    dec c
-    jr nz, .loop
-
-    ld hl, wSlideStack
-    ld b, b
-    ld a, [hli]
-    ld h, [hl]
-    ld l, a
-    ld sp, hl
-    ei ; Stack is back, enable.
-    ret
-
-SECTION "Slide Stack", WRAM0
-wSlideStack::
-    ds 2
-
-SECTION "Farcall Byte", HRAM
-
-hFarCallByte:
-    ds 1

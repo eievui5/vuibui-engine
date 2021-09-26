@@ -4,19 +4,7 @@ INCLUDE "include/graphics.inc"
 INCLUDE "include/hardware.inc"
 INCLUDE "include/lb.inc"
 INCLUDE "include/stat.inc"
-INCLUDE "include/switch.inc"
 INCLUDE "include/text.inc"
-
-/* text.asm
-
-    Functions related to the handling of the on-screen textbox, including
-    dialogue choices.
-
-    HandleTextbox
-        - Initiallize, render, and close the textbox. Run once per frame from
-        VBlank
-
-*/
 
 SECTION "Text Box", ROM0
 

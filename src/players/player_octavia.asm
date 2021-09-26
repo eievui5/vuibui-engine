@@ -4,7 +4,6 @@ INCLUDE "include/graphics.inc"
 INCLUDE "include/players.inc"
 INCLUDE "include/scripting.inc"
 INCLUDE "include/sfx.inc"
-INCLUDE "include/switch.inc"
 INCLUDE "include/text.inc"
 
 /*  Octavia's functions.
@@ -48,19 +47,22 @@ OctaviaPlayerLogic::
 .activeControl
 
     ld a, [wOctavia_State]
-    call HandleJumpTable
-        ASSERT PLAYER_STATE_NORMAL == 0
-        dw OctaviaActiveNormal
-        ASSERT PLAYER_STATE_HURT == 1
-        dw OctaviaDamage
-        ASSERT PLAYER_STATE_ITEM0 == 2
-        dw OctaviaRod.fire
-        ASSERT PLAYER_STATE_ITEM1 == 3
-        dw OctaviaRod.ice
-        ASSERT PLAYER_STATE_ITEM2 == 4
-        dw OctaviaRod.shock
-        ASSERT PLAYER_STATE_ITEM3 == 5
-        dw OctaviaRod.heal
+    ld hl, .stateJumpTable
+    jp HandleJumpTable
+
+.stateJumpTable
+    ASSERT PLAYER_STATE_NORMAL == 0
+    dw OctaviaActiveNormal
+    ASSERT PLAYER_STATE_HURT == 1
+    dw OctaviaDamage
+    ASSERT PLAYER_STATE_ITEM0 == 2
+    dw OctaviaRod.fire
+    ASSERT PLAYER_STATE_ITEM1 == 3
+    dw OctaviaRod.ice
+    ASSERT PLAYER_STATE_ITEM2 == 4
+    dw OctaviaRod.shock
+    ASSERT PLAYER_STATE_ITEM3 == 5
+    dw OctaviaRod.heal
 
 /*
 
@@ -100,9 +102,12 @@ OctaviaActiveNormal:
     cp a, b
     ret nz
     ld a, [wAllyLogicMode]
-    switch
-        case ALLY_MODE_FOLLOW, OctaviaAIFollow
-    end_switch
+    ld hl, .aiModesTable
+    jp HandleJumpTable
+
+.aiModesTable
+    ASSERT ALLY_MODE_FOLLOW == 0
+    dw OctaviaAIFollow
 
 .skipAISwitch
     ld hl, wOctavia

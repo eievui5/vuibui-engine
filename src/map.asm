@@ -5,7 +5,6 @@ INCLUDE "include/graphics.inc"
 INCLUDE "include/hardware.inc"
 INCLUDE "include/map.inc"
 INCLUDe "include/npc.inc"
-INCLUDE "include/switch.inc"
 INCLUDE "include/tiledata.inc"
 
 ; Keep these all in the same bank.
