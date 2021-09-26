@@ -263,11 +263,12 @@ InitializeGameplay::
     rst memset_small
 
 ; Player health
-    ld a, 1
+    ld a, 10
     ld hl, wPlayerMaxHealth
     ld [hli], a
     ld [hli], a
     ld [hli], a
+    ld a, 2
     ld [wOctavia_Health], a
     ld [wPoppy_Health], a
     ld [wTiber_Health], a

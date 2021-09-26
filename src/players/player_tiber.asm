@@ -1,8 +1,9 @@
-
 INCLUDE "include/directions.inc"
 INCLUDE "include/entity.inc"
 INCLUDE "include/players.inc"
+INCLUDE "include/scripting.inc"
 INCLUDE "include/switch.inc"
+INCLUDE "include/text.inc"
 
 RSSET 4
 DEF SWORD_WINDUP_TIME RB 4
@@ -182,6 +183,44 @@ TiberAIFollow:
     ld hl, wTiber
     jp MoveAndSlide
 
+SECTION "Tiber Dialogue", ROMX
+
+TiberGeneric::
+    pause
+    jump_if wPlayerWaitLink.tiber, wActivePlayer, \
+        .waitDialogue
+
+.followDialogue
+    tiber_text .followText
+    question_branch .end
+    call_function PlayerSetWaitLink.tiber
+    end_script
+
+.waitDialogue
+    tiber_text .waitText
+    question_branch .end
+    set_pointer wPlayerWaitLink.tiber, PLAYER_TIBER
+.end
+    end_script
+
+
+.waitText
+    say "What do you\n"
+    say "need?\n"
+
+    ask "Nothing.\n"
+    ask "Wait here."
+    end_ask
+
+.followText
+    say "Come on, let's\n"
+    say "go.\n"
+
+    ask "Not yet.\n"
+    ask "Follow me."
+    end_ask
+
+    
 SECTION UNION "Volatile", HRAM
 hCurrentTile:
     ds 1
