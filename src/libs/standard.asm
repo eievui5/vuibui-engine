@@ -1,4 +1,3 @@
-INCLUDE "include/banks.inc"
 INCLUDE "include/hardware.inc"
 
 SECTION "Null", ROM0[$0000]
@@ -202,3 +201,7 @@ vmemcopy_small::
     dec c
     jr nz, vmemcopy_small
     ret
+
+SECTION "Current Bank", HRAM
+hCurrentBank::
+    ds 1

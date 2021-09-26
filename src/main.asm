@@ -99,9 +99,6 @@ hPaused::
 hSystem::
     ds 1
 
-hCurrentBank::
-    ds 1
-
 ; Stack Allocation
 DEF STACK_SIZE EQU 32 * 2
 SECTION "Stack", WRAMX[$E000 - STACK_SIZE]
