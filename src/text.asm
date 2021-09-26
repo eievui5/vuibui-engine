@@ -57,7 +57,7 @@ HandleTextbox::
     ld bc, sizeof_TILE * 32
     ld hl, _VRAM + $1500
     ld d, $FF
-    call LCDMemset
+    call vmemset
 
 ; Show Textbox
     ld a, 144 - 40

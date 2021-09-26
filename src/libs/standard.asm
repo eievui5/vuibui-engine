@@ -101,8 +101,6 @@ memcopy::
     jr nz, .loop
     ret
 
-
-
 SECTION "Jump Table", ROM0
 
 ; Jumps the the `a`th pointer. 128 pointers max. Place pointers after the call
@@ -137,25 +135,10 @@ CallDE::
 SECTION "LCD Memory", ROM0
 
 ; Waits for VRAM access before setting data.
-; @ b:  source
-; @ c:  length
-; @ hl: destination
-LCDMemsetSmall::
-	ldh a, [rSTAT]
-	and STATF_BUSY
-	jr nz, LCDMemsetSmall
-
-	ld a, b
-	ld [hli], a
-	dec c
-	jr nz, LCDMemsetSmall
-	ret
-
-; Waits for VRAM access before setting data.
 ; @ d:  source (is preserved)
 ; @ bc: length
 ; @ hl: destination
-LCDMemset::
+vmemset::
     inc b
     inc c
     jr .decCounter
@@ -174,19 +157,38 @@ LCDMemset::
     ret
 
 ; Waits for VRAM access before copying data.
-; @ c:  length
+; @ bc: length
 ; @ de: destination
 ; @ hl: source
-LCDMemcopySmall::
+vmemcopy::
+    dec bc
+    inc b
+    inc c
+.loop:
     ldh a, [rSTAT]
     and STATF_BUSY
-    jr nz, LCDMemcopySmall
+    jr nz, .loop
 
     ld a, [hli]
     ld [de], a
     inc de
     dec c
-    jr nz, LCDMemcopySmall
+    jr nz, .loop
+    dec b
+    jr nz, .loop
+    ret
+
+; Waits for VRAM access before copying data.
+; @ c:  length
+; @ de: destination
+; @ hl: source
+vmemcopy_small::
+
+    ld a, [hli]
+    ld [de], a
+    inc de
+    dec c
+    jr nz, vmemcopy_small
     ret
 
 SECTION "Stack Slide", ROM0

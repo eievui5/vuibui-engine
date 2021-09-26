@@ -32,17 +32,7 @@ LDFLAGS  = -p $(PADVALUE)
 FIXFLAGS = -p $(PADVALUE) -v -i "$(GAMEID)" -k "$(LICENSEE)" -l $(OLDLIC) -m $(MBC) -n $(VERSION) -r $(SRAMSIZE) -t $(TITLE)
 
 # The list of "root" ASM files that RGBASM will be invoked on
-SRCS =  $(wildcard $(SRCDIR)/*.asm) \
-	$(wildcard $(SRCDIR)/entities/*.asm) \
-	$(wildcard $(SRCDIR)/libs/*.asm) \
-	$(wildcard $(SRCDIR)/menus/*.asm) \
-	$(wildcard $(SRCDIR)/res/*.asm) \
-	$(wildcard $(SRCDIR)/res/gfx/*.asm) \
-	$(wildcard $(SRCDIR)/res/maps/*.asm) \
-	$(wildcard $(SRCDIR)/res/metasprites/*.asm) \
-	$(wildcard $(SRCDIR)/res/panorama/*.asm) \
-	$(wildcard $(SRCDIR)/res/tilesets/*.asm) \
-	$(wildcard $(SRCDIR)/scripts/*.asm) \
+SRCS := $(shell find $(SRCDIR) -name '*.asm')
 
 ## Project-specific configuration
 # Use this to override the above
@@ -116,14 +106,14 @@ VPATH := $(SRCDIR)
 
 # Define how to compress files using the PackBits16 codec
 # Compressor script requires Python 3
-$(RESDIR)/%.pb16: ./tools/pb16.py $(RESDIR)/%.2bpp
+$(RESDIR)/%.pb16: $(RESDIR)/%.2bpp
 	@mkdir -p $(@D)
-	$^ $@
+	python3 tools/pb16.py $^ $@
 
 # Convert .png files into .2bpp files.
 $(RESDIR)/%.2bpp: $(RESDIR)/%.png
 	@mkdir -p $(@D)
-	$(RGBGFX) -o $@ $^
+	$(RGBGFX) -u -o $@ $^
 
 # Convert .png files into .1bpp files.
 $(RESDIR)/%.1bpp: $(RESDIR)/%.png
@@ -149,6 +139,10 @@ $(RESDIR)/%.pal: $(RESDIR)/%.png
 $(RESDIR)/%.tilemap: $(RESDIR)/%.json
 	@mkdir -p $(@D)
 	python ./tools/tiledbin.py $^ $@
+
+$(RESDIR)/%.tilemap: $(RESDIR)/%.png
+	@mkdir -p $(@D)
+	$(RGBGFX) -u -t $@ $^
 
 # Catch non-existent files
 # KEEP THIS LAST!!

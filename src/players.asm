@@ -483,6 +483,7 @@ xPlayerDeathScript:
 .fall
     call_function .fadeFully
     wait_fade
+    call_function .startMenu
     end_script
 
 .fadeFully
@@ -493,6 +494,14 @@ xPlayerDeathScript:
     ld a, PALETTE_STATE_FADE_LIGHT
     ld [wPaletteState], a
     ret
+
+.startMenu
+    ld a, ENGINE_STATE_MENU
+    ldh [hEngineState], a
+    ld de, xGameOverHeader
+    ld b, BANK(xGameOverHeader)
+    call AddMenu
+    jp Main.end
 
 POPS
 
