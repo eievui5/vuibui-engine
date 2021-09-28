@@ -144,6 +144,8 @@ CgbReset:
 
     dec c
     jr nz, .objectLoop
+    xor a, a
+    ld [wPaletteState], a
     ret
 
 CgbFade:

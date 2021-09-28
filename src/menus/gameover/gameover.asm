@@ -1,5 +1,7 @@
 INCLUDE "include/engine.inc"
+INCLUDE "include/graphics.inc"
 INCLUDE "include/hardware.inc"
+INCLUDE "include/lb.inc"
 
 SECTION "Game Over menu", ROMX
 
@@ -11,7 +13,7 @@ xGameOverHeader::
     ; Auto-repeat
     db 0
     ; Button functions
-    dw null, null, null, null, null, null, null, null
+    dw null, xHandleBPress, null, null, null, null, null, null
     db 0 ; Last selected item
     ; Allow wrapping
     db 1
@@ -20,9 +22,9 @@ xGameOverHeader::
     ; Number of items in the menu
     db 2
     ; Redraw
-    dw xGameOverRedraw
+    dw null
     ; Private Items Pointer
-    dw 0
+    dw null
     ; Close Function
     dw Initialize
 
@@ -39,18 +41,46 @@ xGameOverInit:
     ld de, xGameOverMap
     ld b, 18
     call ScreenCopy
-    xor a, a
-    ldh [hSCXBuffer], a
-    ldh [hSCYBuffer], a
-    halt
+    ; Set DMG Pal state, overwrite it if on CGB
     ld a, PALETTE_STATE_RESET
     ld [wPaletteState], a
-    ;ret
-
-xGameOverRedraw:
+    ; Do CGB stuff.
+    ldh a, [hSystem]
+    and a, a
+    jr z, .skipCgb
+        ; Set screen to palette 0
+        ld a, 1
+        ldh [rVBK], a
+        ld hl, $9800
+        lb bc, 0, 18
+        call ScreenSet
+        xor a, a
+        ldh [rVBK], a
+        ; Set palettes and fade.
+        ld de, wBCPDTarget
+        ld hl, xGameOverPal
+        ld c, sizeof_PALETTE
+        rst memcopy_small
+        ld a, PALETTE_STATE_FADE
+        ld [wPaletteState], a
+.skipCgb
     xor a, a
     ldh [hSCXBuffer], a
     ldh [hSCYBuffer], a
+    ret
+
+xHandleBPress:
+    ld a, $FF
+    ld hl, wBCPDTarget
+    ld c, sizeof_PALETTE
+    rst memset_small
+    ld a, PALETTE_STATE_FADE_LIGHT
+    ld [wPaletteState], a
+.waitFade
+    halt
+	ld a, [wPaletteState]
+	and a, a
+	jr nz, .waitFade
     ret
 
 xGameOverTiles:
@@ -60,3 +90,9 @@ xGameOverTiles:
 xGameOverMap:
     INCBIN "res/gfx/ui/gameover.tilemap"
 .end
+
+xGameOverPal:
+    rgb 31, 0, 31
+    rgb 16, 0, 16
+    rgb 5, 0, 5
+    rgb 2, 0, 2
