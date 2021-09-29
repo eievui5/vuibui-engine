@@ -90,12 +90,24 @@ OctaviaSpellLogic::
     call CheckAllyCollision
     inc a
     ret z ; If a == $FF, exit!
+    ; Get target's max health.
+    add a, LOW(wPlayerMaxHealth - 1)
+    ld e, a
+    adc a, HIGH(wPlayerMaxHealth - 1)
+    sub a, e
+    ld d, a
+    ld a, [de]
+    ld b, a ; save for compare
+    ; Get the target's health field.
     ld a, Entity_Health - Entity_DataPointer
     add a, l
     ld l, a
-    ld a, [wOctaviaSpell_CollisionData]
-    add a, [hl] ; TODO: This need to check the player's max health
-    ld [hl], a
+    ; Increment target's health.
+    ld a, [hl] ; TODO: This needs to check the player's max health
+    cp a, b
+    jr nc, .skipInc
+    inc [hl]
+.skipInc
     ld a, Entity_InvTimer - Entity_Health
     add a, l
     ld l, a
