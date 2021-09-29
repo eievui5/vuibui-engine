@@ -915,7 +915,8 @@ HandleAPress:
     ret z ; Exit menu if on the first option
     cp a, 1 | COLUMN_1
     jr z, .save ; Or save the game to SRAM.
-    ; cp a, 2 | COLUMN_1 (save + quit)
+    cp a, 2 | COLUMN_1
+    jr z, .saveAndExit ; Or exit to the title!
     bit 7, a
     jr nz, .exit ; Do nothing else (yet) if on the second column
 
@@ -993,8 +994,25 @@ HandleAPress:
     ld b, BANK(xStoreSaveFile)
     ld de, sSave0
     ld hl, xStoreSaveFile
-    call FarCall
+    rst FarCall
     ret
+
+.saveAndExit
+    call .save
+    ld a, $FF
+    ld bc, sizeof_PALETTE * 16
+    ld hl, wBCPDTarget
+    rst memset_small
+    ; Fade out before we turn off the screen
+    ld a, PALETTE_STATE_FADE_LIGHT
+    ld [wPaletteState], a
+
+.waitFade
+    halt
+    ld a, [wPaletteState]
+    and a, a
+    jr nz, .waitFade
+    jp Initialize
 
 HandleBPress:
     ld hl, sp+2
