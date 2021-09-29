@@ -235,14 +235,6 @@ InitializeGameplay::
     rst memset_small
     ld [wPoppyActiveArrows], a
 
-    ld a, ITEMF_FIRE_WAND | ITEMF_SHOCK_WAND | ITEMF_ICE_WAND | ITEMF_HEAL_WAND
-    ld [wItems.octavia], a
-    ld a, ITEMF_SWORD
-    ld [wItems.poppy], a
-    ld [wItems.tiber], a
-    ld a, ITEM_FIRE_WAND | ITEM_ICE_WAND << 4
-    ld [wPlayerEquipped.octavia], a
-
     ; Set up players and clear array.
     ld hl, wOctavia
     ld a, HIGH(PlayerOctavia)
@@ -268,17 +260,6 @@ InitializeGameplay::
     xor a, a
     ld c, sizeof_Entity - 2
     rst memset_small
-
-; Player health
-    ld a, 10
-    ld hl, wPlayerMaxHealth
-    ld [hli], a
-    ld [hli], a
-    ld [hli], a
-    ld a, 2
-    ld [wOctavia_Health], a
-    ld [wPoppy_Health], a
-    ld [wTiber_Health], a
 
 ; Load the player's graphics
     call LoadStandardGraphics

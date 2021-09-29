@@ -1,4 +1,5 @@
 INCLUDE "include/hardware.inc"
+INCLUDE "include/players.inc"
 INCLUDE "include/save.inc"
 
 SECTION "Save Functions", ROM0
@@ -124,6 +125,37 @@ xLoadSaveFile::
     ld c, sizeof_RespawnPoint
     rst memcopy_small
 
+    ; Load Max health values
+    ASSERT sizeof_RespawnPoint == Save_OctaviaMaxHealth
+    ld a, [hli]
+    ld [wOctavia_Health], a
+    ld [wPlayerMaxHealth.octavia], a
+    ld a, [hli]
+    ld [wPoppy_Health], a
+    ld [wPlayerMaxHealth.poppy], a
+    ld a, [hli]
+    ld [wTiber_Health], a
+    ld [wPlayerMaxHealth.tiber], a
+
+    ASSERT Save_OctaviaMaxHealth + 3 == Save_OctaviaUnlockedItems
+    ld a, [hli]
+    ld [wItems.octavia], a
+    ld a, [hli]
+    ld [wItems.poppy], a
+    ld a, [hli]
+    ld [wItems.tiber], a
+
+    ASSERT Save_OctaviaUnlockedItems + 3 == Save_OctaviaEquippedItems
+    ld a, [hli]
+    ld [wPlayerEquipped.octavia], a
+    ld a, [hli]
+    ld [wPlayerEquipped.poppy], a
+    ld a, [hli]
+    ld [wPlayerEquipped.tiber], a
+
+    ; Assert that this function is up-to-date with the save file.
+    ASSERT Save_OctaviaEquippedItems + 3 == sizeof_Save
+
     ; Disable External Save RAM
     xor a, a
     ld [rRAMG], a
@@ -141,6 +173,43 @@ xStoreSaveFile::
     ld c, sizeof_RespawnPoint
     rst memcopy_small
 
+    ; Load Max health values
+    ASSERT sizeof_RespawnPoint == Save_OctaviaMaxHealth
+    ld a, [wPlayerMaxHealth.octavia]
+    ld [de], a
+    inc de
+    ld a, [wPlayerMaxHealth.poppy]
+    ld [de], a
+    inc de
+    ld a, [wPlayerMaxHealth.tiber]
+    ld [de], a
+    inc de
+
+    ASSERT Save_OctaviaMaxHealth + 3 == Save_OctaviaUnlockedItems
+    ld a, [wItems.octavia]
+    ld [de], a
+    inc de
+    ld a, [wItems.poppy]
+    ld [de], a
+    inc de
+    ld a, [wItems.tiber]
+    ld [de], a
+    inc de
+
+    ASSERT Save_OctaviaUnlockedItems + 3 == Save_OctaviaEquippedItems
+    ld a, [wPlayerEquipped.octavia]
+    ld [de], a
+    inc de
+    ld a, [wPlayerEquipped.poppy]
+    ld [de], a
+    inc de
+    ld a, [wPlayerEquipped.tiber]
+    ld [de], a
+    inc de
+
+    ; Assert that this function is up-to-date with the save file.
+    ASSERT Save_OctaviaEquippedItems + 3 == sizeof_Save
+
     ; Disable External Save RAM
     xor a, a
     ld [rRAMG], a
@@ -156,11 +225,18 @@ xSaveCheckString:
 SECTION "Template Saves", ROMX
 
     dstruct Save, xDefaultSaveFile, \
-    0,        \ ; World Map
-    0, 0,     \ ; World Map Position
-    128, 128, \ ; Octavia Position
-    112, 128, \ ; Poppy Position
-    144, 128    ; Tiber Position
+    0,          \ ; World Map.
+    0, 0,       \ ; World Map Position.
+    128, 128,   \ ; Octavia Position.
+    112, 128,   \ ; Poppy Position.
+    144, 128,   \ ; Tiber Position.
+    10, 10, 10, \ ; Max healths.
+    ITEMF_FIRE_WAND | ITEMF_HEAL_WAND, \ ; Octavia items.
+    ITEMF_BOW, \ ; Poppy items.
+    ITEMF_SWORD, \ ; Tiber items.
+    ITEMF_FIRE_WAND, \ ; Octavia equipped.
+    ITEMF_BOW, \ ; Poppy equipped.
+    ITEMF_SWORD \ ; Tiber equipped.
 
 ASSERT @ - xDefaultSaveFile == sizeof_Save, "Incorrect save file size!"
 
