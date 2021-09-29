@@ -4,7 +4,8 @@ INCLUDE "include/entity.inc"
 INCLUDE "include/graphics.inc"
 INCLUDE "include/hardware.inc"
 INCLUDE "include/map.inc"
-INCLUDe "include/npc.inc"
+INCLUDE "include/npc.inc"
+INCLUDE "include/save.inc"
 INCLUDE "include/tiledata.inc"
 
 ; Keep these all in the same bank.
@@ -264,6 +265,10 @@ UpdateActiveMap::
     ASSERT MAPDATA_NPC == 4
     dec a
     jr z, MapdataNPC
+    ASSERT MAPDATA_SET_RESPAWN == 5
+    dec a
+    jr z, MapdataSetRespawn
+    rst crash
 
 MapdataEntity:
     ldh a, [hRespawnEntitiesFlag]
@@ -377,6 +382,13 @@ MapdataNPC:
     ld [bc], a ; Load an NPC tile onto the map.
 
     jr UpdateActiveMap.nextData
+
+MapdataSetRespawn:
+    ld b, b
+    ld de, wRespawnPoint
+    ld c, sizeof_RespawnPoint
+    rst memcopy_small
+    jp UpdateActiveMap.nextData
 
 ; Returns the active Map in `hl`, and its data in `bc`.
 ; Used to copy map into wMetatileMap and spawn entities/run scripts.

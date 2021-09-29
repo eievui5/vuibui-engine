@@ -115,6 +115,13 @@ Initialize::
         ld [hli], a
         ld [hli], a
     ; VRAM
+        ld a, 1
+        ldh [rVBK], a
+        xor a, a
+        ld hl, _VRAM
+        ld bc, $2000
+        call memset
+        ldh [rVBK], a
         ld hl, _VRAM
         ld bc, $2000
         call memset

@@ -913,7 +913,8 @@ HandleAPress:
     ld a, [hl]
     cp a, 0 | COLUMN_1
     ret z ; Exit menu if on the first option
-    ; cp a, 1 | COLUMN_1 (save)
+    cp a, 1 | COLUMN_1
+    jr z, .save ; Or save the game to SRAM.
     ; cp a, 2 | COLUMN_1 (save + quit)
     bit 7, a
     jr nz, .exit ; Do nothing else (yet) if on the second column
@@ -986,6 +987,13 @@ HandleAPress:
 
     xor a, a
     ld [wMenuAction], a
+    ret
+
+.save
+    ld b, BANK(xStoreSaveFile)
+    ld de, sSave0
+    ld hl, xStoreSaveFile
+    call FarCall
     ret
 
 HandleBPress:

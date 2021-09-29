@@ -66,7 +66,7 @@ FarCall::
     jr SwapBank
 
 SECTION "Crash Handler", ROM0[$0038]
-crash:
+crash::
     ld b, b
     di
 .loop

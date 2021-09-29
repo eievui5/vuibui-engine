@@ -2,6 +2,7 @@
 INCLUDE "include/map.inc"
 INCLUDE "include/graphics.inc"
 INCLUDE "include/tiledata.inc"
+INCLUDE "include/save.inc"
 
 SECTION "Beach Map", ROMX
 
@@ -14,7 +15,15 @@ BeachMap::
 .map
     dw Beach
 .data
-    dw NullMapData
+    dw .mapData
+
+.mapData
+    set_respawn \
+        1, 0, 0, \
+        128, 128, \
+        144, 128, \
+        112, 128
+    end_mapdata
 
 pb16_BeachTiles: INCBIN "res/maps/beach/beach_tiles.pb16"
 BeachPalettes:
@@ -63,6 +72,3 @@ BeachMetatiles:
     ds 12, TILEDATA_CLEAR
 
 Beach: INCBIN "res/maps/beach/beach_map.tilemap"
-
-NullMapData:
-    end_mapdata

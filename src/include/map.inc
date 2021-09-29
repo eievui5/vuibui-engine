@@ -109,6 +109,15 @@ MACRO create_npc
     dw \6 ; Script
 ENDM
 
+MACRO set_respawn
+    ASSERT _NARG == sizeof_RespawnPoint && sizeof_RespawnPoint == 9
+    db MAPDATA_SET_RESPAWN
+    FOR i, _NARG
+        db \1
+        SHIFT 1
+    ENDR
+ENDM
+
 ; Macro Data enumerations
     start_enum MAPDATA
         enum END
@@ -116,6 +125,7 @@ ENDM
         enum ALLY_MODE
         enum SET_WARP
         enum NPC
+        enum SET_RESPAWN
     end_enum
 
 ; Map enumerations

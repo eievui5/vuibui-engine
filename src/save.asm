@@ -50,7 +50,7 @@ SECTION "Manage Save File", ROMX
 ; Updates the position data based on the current game state. This is used to
 ; create respawn locations.
 xUpdateRepawnPoint::
-    ld hl, wRepawnPoint
+    ld hl, wRespawnPoint
     ASSERT Save_WorldMapID == 0
     ld a, [wActiveWorldMap]
     ld [hli], a
@@ -82,7 +82,7 @@ xUpdateRepawnPoint::
 
 ; Update the map and player positions to match the last saved respawn point.
 xLoadRepawnPoint::
-    ld hl, wRepawnPoint
+    ld hl, wRespawnPoint
     ASSERT Save_WorldMapID == 0
     ld a, [hli]
     ld [wActiveWorldMap], a
@@ -120,7 +120,24 @@ xLoadSaveFile::
     ld [rRAMG], a
 
     ; Copy the respawn position from the save file.
-    ld de, wRepawnPoint
+    ld de, wRespawnPoint
+    ld c, sizeof_RespawnPoint
+    rst memcopy_small
+
+    ; Disable External Save RAM
+    xor a, a
+    ld [rRAMG], a
+    ret
+
+; Store a save file to SRAM.
+; @ de:  Pointer to save file
+xStoreSaveFile::
+    ; Enable External Save RAM
+    ld a, CART_SRAM_ENABLE
+    ld [rRAMG], a
+
+    ; Copy the respawn position to the save file.
+    ld hl, wRespawnPoint
     ld c, sizeof_RespawnPoint
     rst memcopy_small
 
@@ -151,7 +168,7 @@ SECTION "Save Position Data", WRAM0
 
 ; The position of the players. Used for respawning and is merged into the save
 ; file when the players save the game.
-    dstruct RespawnPoint, wRepawnPoint
+    dstruct RespawnPoint, wRespawnPoint
 
 SECTION "Save Data", SRAM
 
