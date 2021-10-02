@@ -4,21 +4,13 @@ INCLUDE "include/hardware.inc"
 INCLUDE "include/lb.inc"
 INCLUDE "include/menu.inc"
 INCLUDE "include/text.inc"
+INCLUDE "include/valloc.inc"
 
-    start_enum M, $80
-        enum BKG
-        enum POINTER
-        enum S
-        enum t
-        enum a
-        enum r
-        enum O
-        enum p
-        enum i
-        enum o
-        enum n
-        enum s
-    end_enum
+SECTION UNION "VRAM", VRAM[$8800]
+    dtile Blank
+    dtile Pointer
+    dtile StartStr, STRLEN("Start") + 1
+    dtile OptionsStr, STRLEN("Options") + 1
 
 DEF POINTER_ANIM_MAX EQU 2
 DEF POINTER_ANIM_POINT EQU 16
@@ -71,29 +63,27 @@ TestMenuInit:
 ; Load tiles
     ld a, BANK(obpp_Pointer)
     ld hl, obpp_Pointer
-    get_tile de, M_POINTER
+    ld de, vPointer
     ld c, 8
     call Unback1bppBanked
 
-
-    get_tile de, M_S
-
-    ld hl, TestMenuString
-    call LoadCharacters
-
     ld hl, _SCRN1
-    lb bc, M_BKG, SCRN_Y_B
+    lb bc, idof_Blank, SCRN_Y_B
     call ScreenSet
 
-    get_tilemap hl, _SCRN1, 0, 10
-    ld de, TestMenuStartRow
-    ld b, 1
-    call ScreenCopy
-    
-    get_tilemap hl, _SCRN1, 0, 12
-    ld de, TestMenuOptionsRow
-    ld b, 1
-    call ScreenCopy
+    ld a, idof_StartStr
+    ldh [hDrawStringTileBase], a
+    ld bc, MenuString.start
+    ld de, vStartStr + 1
+    get_tilemap hl, _SCRN1, 5, 10
+    call DrawString
+
+    ld a, idof_OptionsStr
+    ldh [hDrawStringTileBase], a
+    ld bc, MenuString.options
+    ld de, vOptionsStr + 1
+    get_tilemap hl, _SCRN1, 5, 12
+    call DrawString
 
     ; Load palettes
     ldh a, [hSystem]
@@ -213,20 +203,17 @@ HandleAPress:
     ld [wMenuAction], a
     ret
 
-TestMenuString:
-    db "StarOpions", 0
-
-TestMenuStartRow:
-    db M_BKG, M_BKG, M_BKG, M_BKG, M_BKG, M_S, M_t, M_a, M_r, M_t, M_BKG, M_BKG, M_BKG, M_BKG, M_BKG, M_BKG, M_BKG, M_BKG, M_BKG, M_BKG
-
-TestMenuOptionsRow:
-    db M_BKG, M_BKG, M_BKG, M_BKG, M_BKG, M_O, M_p, M_t, M_i, M_o, M_n, M_s, M_BKG, M_BKG, M_BKG, M_BKG, M_BKG, M_BKG, M_BKG, M_BKG
+MenuString:
+.start
+    db "Start!", 0
+.options
+    db "Options", 0
 
 TestMenuSprites:
 .start
-    db $B * 8, $4 * 8, M_POINTER, 0
+    db $B * 8, $4 * 8, idof_Pointer, 0
 .options
-    db $D * 8, $4 * 8, M_POINTER, 0
+    db $D * 8, $4 * 8, idof_Pointer, 0
 
 SECTION "Test Menu Vars", WRAM0
 wPointerDir:

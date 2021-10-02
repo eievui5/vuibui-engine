@@ -1236,7 +1236,7 @@ DrawEquipped:
     ld [hli], a
     ret
 
-SECTION "Inventory Data", ROMX, BANK[2]
+SECTION "Inventory Data", ROMX
 
 InventoryMap:
     INCBIN "menus/inventory.tilemap"

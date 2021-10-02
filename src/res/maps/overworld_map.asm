@@ -2,7 +2,7 @@
 INCLUDE "include/map.inc"
 
 ; TODO: Remove hard-coded bank test
-SECTION "Overworld Map", ROMX, BANK[3]
+SECTION "Overworld Map", ROMX
 
 OverworldMap::
     define_map \

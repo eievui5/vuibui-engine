@@ -384,7 +384,6 @@ MapdataNPC:
     jr UpdateActiveMap.nextData
 
 MapdataSetRespawn:
-    ld b, b
     ld de, wRespawnPoint
     ld c, sizeof_RespawnPoint
     rst memcopy_small

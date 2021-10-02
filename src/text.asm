@@ -258,11 +258,61 @@ LoadCharacters::
     pop hl
     jr LoadCharacters
 
+; Simplified version of LoadCharacters that draws the string on the screen.
+; @ hDrawStringTileBase: ID of VRAM tile destination.
+; @ bc: Null-terminated string.
+; @ de: VRAM tile destination.
+; @ hl: Tilemap destination.
+DrawString::
+    ldh a, [hCurrentBank]
+    ldh [hDrawStringBank], a
+.loop
+    ldh a, [hDrawStringBank]
+    rst SwapBank
+    ld a, [bc]
+    and a, a
+    ret z
+    inc bc
+    push bc
+    push hl
+        ; We start on " " (space), so we need to subtract " " * 8 as an offset.
+        ; `a` still needs to be multiplied to get to 8, so divide the
+        ; address by 8 and adjust it later.
+        ; 8 * (a + GameFont / 8) == 8a + GameFont
+        add a, LOW(GameFont / 8 - " " + 1)
+        ld l, a
+        adc a, HIGH(GameFont / 8 - " " + 1)
+        sub a, l
+        ld h, a
+        ; Now do the last of the multiplication.
+        add hl, hl ; a * 2
+        add hl, hl ; a * 4
+        add hl, hl ; a * 8
+        dec hl
+        dec hl
+
+        ld a, BANK(GameFont)
+        rst SwapBank
+
+        ld c, 8 ; Load 8 bytes
+        call Unpack1bpp
+    pop hl
+    pop bc
+    ; Now write the string to the tilemap.
+.waitVRAM
+    ldh a, [rSTAT]
+    and a, STATF_BUSY
+    jr nz, .waitVRAM
+
+    ldh a, [hDrawStringTileBase]
+    ld [hli], a
+    inc a
+    ldh [hDrawStringTileBase], a
+    jr .loop
 
 SECTION "Dialogue", ROMX
-
 ; Used to design the textbox.
-TextboxMap::
+TextboxMap:: ; this is so dumb I have no words.
     db $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F
     db $7F, $7F, $50, $51, $52, $53, $54, $55, $56, $57, $58, $59, $5A, $5B, $5C, $5D, $5E, $5F, $7F, $7F
     db $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F
@@ -270,7 +320,6 @@ TextboxMap::
     db $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F
 
 SECTION "Text Variables", WRAM0
-
 ; See text.inc TEXT_* constants. Set to TEXT_START to draw from wTextPointer
 wTextState::
     ds 1
@@ -287,4 +336,11 @@ wTextScreenIndex::
 
 ; What's the answer to the current question? (0 or 1)
 wTextAnswer::
+    ds 1
+
+SECTION "Draw String", HRAM
+; The ID of the VRAM tile destination for DrawString.
+hDrawStringTileBase::
+    ds 1
+hDrawStringBank:
     ds 1
