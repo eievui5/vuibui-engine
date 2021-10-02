@@ -4,6 +4,8 @@ INCLUDE "include/players.inc"
 INCLUDE "include/scripting.inc"
 INCLUDE "include/text.inc"
 
+DEF ARROW_SPEED EQU 5
+
 SECTION "Poppy AI", ROMX
 
 PoppyPlayerLogic::
@@ -163,22 +165,22 @@ PoppyBow:
     jr z, .right
     ASSERT DIR_LEFT == 3
 .left
-    ld a, -4
+    ld a, -ARROW_SPEED
     ld [hl], a
     ld b, DIR_LEFT
     jr .storeFrameDec
 .down
-    ld a, 4
+    ld a, ARROW_SPEED
     ld [hl], a
     ld b, DIR_DOWN
     jr .storeFrame
 .up
-    ld a, -4
+    ld a, -ARROW_SPEED
     ld [hl], a
     ld b, DIR_UP
     jr .storeFrame
 .right
-    ld a, 4
+    ld a, ARROW_SPEED
     ld [hl], a
     ld b, DIR_RIGHT
 .storeFrameDec
