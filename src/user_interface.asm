@@ -1,12 +1,12 @@
-INCLUDE "include/banks.inc"
-INCLUDE "include/engine.inc"
-INCLUDE "include/entity.inc"
-INCLUDE "include/graphics.inc"
-INCLUDE "include/hardware.inc"
-INCLUDE "include/lb.inc"
-INCLUDE "include/stat.inc"
-INCLUDE "include/text.inc"
-INCLUDE "include/tiledata.inc"
+INCLUDE "banks.inc"
+INCLUDE "engine.inc"
+INCLUDE "entity.inc"
+INCLUDE "graphics.inc"
+INCLUDE "hardware.inc"
+INCLUDE "lb.inc"
+INCLUDE "stat.inc"
+INCLUDE "text.inc"
+INCLUDE "tiledata.inc"
 
 DEF vPrintBar EQU $9F40
 DEF vHUD EQU $9F60

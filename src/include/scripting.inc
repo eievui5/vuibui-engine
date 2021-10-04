@@ -2,7 +2,7 @@
     IF !DEF(SCRIPTING_INC)
 DEF SCRIPTING_INC EQU 1
     
-INCLUDE "include/enum.inc"
+INCLUDE "enum.inc"
 
     start_enum SCRIPT 
         enum END

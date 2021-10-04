@@ -1,5 +1,5 @@
 
-INCLUDE "include/flags.inc"
+INCLUDE "flags.inc"
 
 SECTION "Bitfield Functions", ROM0
 

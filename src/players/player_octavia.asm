@@ -1,10 +1,10 @@
-INCLUDE "include/directions.inc"
-INCLUDE "include/entity.inc"
-INCLUDE "include/graphics.inc"
-INCLUDE "include/players.inc"
-INCLUDE "include/scripting.inc"
-INCLUDE "include/sfx.inc"
-INCLUDE "include/text.inc"
+INCLUDE "directions.inc"
+INCLUDE "entity.inc"
+INCLUDE "graphics.inc"
+INCLUDE "players.inc"
+INCLUDE "scripting.inc"
+INCLUDE "sfx.inc"
+INCLUDE "text.inc"
 
 /*  Octavia's functions.
 

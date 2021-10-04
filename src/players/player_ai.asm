@@ -1,7 +1,7 @@
-INCLUDE "include/directions.inc"
-INCLUDE "include/entity.inc"
-INCLUDE "include/hardware.inc"
-INCLUDE "include/players.inc"
+INCLUDE "directions.inc"
+INCLUDE "entity.inc"
+INCLUDE "hardware.inc"
+INCLUDE "players.inc"
 
 SECTION "Player Input Movement", ROM0
 

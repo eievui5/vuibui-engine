@@ -1,13 +1,13 @@
-INCLUDE "include/banks.inc"
-INCLUDE "include/engine.inc"
-INCLUDE "include/entity.inc"
-INCLUDE "include/graphics.inc"
-INCLUDE "include/hardware.inc"
-INCLUDE "include/lb.inc"
-INCLUDE "include/map.inc"
-INCLUDE "include/npc.inc"
-INCLUDE "include/save.inc"
-INCLUDE "include/tiledata.inc"
+INCLUDE "banks.inc"
+INCLUDE "engine.inc"
+INCLUDE "entity.inc"
+INCLUDE "graphics.inc"
+INCLUDE "hardware.inc"
+INCLUDE "lb.inc"
+INCLUDE "map.inc"
+INCLUDE "npc.inc"
+INCLUDE "save.inc"
+INCLUDE "tiledata.inc"
 
 ; Keep these all in the same bank.
 SECTION "Map Lookup", ROM0

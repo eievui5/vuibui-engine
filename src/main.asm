@@ -1,4 +1,4 @@
-INCLUDE "include/engine.inc"
+INCLUDE "engine.inc"
 
 SECTION "Null Handler", ROM0[$0000]
     nop

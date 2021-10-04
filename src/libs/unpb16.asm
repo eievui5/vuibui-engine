@@ -25,7 +25,7 @@
 ; This software has been modified by Eievui
 ; - MBC5 bank trampoline function
 
-INCLUDE "include/hardware.inc"
+INCLUDE "hardware.inc"
 
 section "pb16 temp byte", HRAM
 

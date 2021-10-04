@@ -1,8 +1,8 @@
 
-INCLUDE "include/map.inc"
-INCLUDE "include/graphics.inc"
-INCLUDE "include/tiledata.inc"
-INCLUDE "include/save.inc"
+INCLUDE "map.inc"
+INCLUDE "graphics.inc"
+INCLUDE "tiledata.inc"
+INCLUDE "save.inc"
 
 SECTION "Beach Map", ROMX
 

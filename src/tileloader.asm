@@ -1,8 +1,8 @@
-INCLUDE "include/directions.inc"
-INCLUDE "include/engine.inc"
-INCLUDE "include/hardware.inc"
-INCLUDE "include/lb.inc"
-INCLUDE "include/tiledata.inc"
+INCLUDE "directions.inc"
+INCLUDE "engine.inc"
+INCLUDE "hardware.inc"
+INCLUDE "lb.inc"
+INCLUDE "tiledata.inc"
 
 SECTION "Tileloader", ROM0 
 

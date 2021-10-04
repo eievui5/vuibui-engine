@@ -1,7 +1,7 @@
 
-INCLUDE "include/banks.inc"
-INCLUDE "include/enum.inc"
-INCLUDE "include/structs.inc"
+INCLUDE "banks.inc"
+INCLUDE "enum.inc"
+INCLUDE "structs.inc"
 
 DEF MAP_SIZE EQU 16 * 16
 

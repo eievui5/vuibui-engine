@@ -1,6 +1,6 @@
 
-INCLUDE "include/directions.inc"
-INCLUDE "include/entity.inc"
+INCLUDE "directions.inc"
+INCLUDE "entity.inc"
 
 SECTION "Hit Dummy", ROMX
 

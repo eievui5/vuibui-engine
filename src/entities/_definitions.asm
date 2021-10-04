@@ -1,5 +1,5 @@
-INCLUDE "include/banks.inc"
-INCLUDE "include/entity.inc"
+INCLUDE "banks.inc"
+INCLUDE "entity.inc"
 
 /* Entity Class format
 EntityName::

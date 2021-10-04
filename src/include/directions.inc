@@ -1,5 +1,5 @@
 
-INCLUDE "include/enum.inc"
+INCLUDE "enum.inc"
 
     IF !DEF(DIRECTIONS_INC)
 DEF DIRECTIONS_INC EQU 1

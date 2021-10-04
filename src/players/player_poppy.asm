@@ -1,8 +1,8 @@
-INCLUDE "include/directions.inc"
-INCLUDE "include/entity.inc"
-INCLUDE "include/players.inc"
-INCLUDE "include/scripting.inc"
-INCLUDE "include/text.inc"
+INCLUDE "directions.inc"
+INCLUDE "entity.inc"
+INCLUDE "players.inc"
+INCLUDE "scripting.inc"
+INCLUDE "text.inc"
 
 DEF ARROW_SPEED EQU 5
 

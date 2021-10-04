@@ -1,5 +1,5 @@
-INCLUDE "include/entity.inc"
-INCLUDE "include/entity_script.inc"
+INCLUDE "entity.inc"
+INCLUDE "entity_script.inc"
 
 SECTION "Entity Script Handler", ROM0
 

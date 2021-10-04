@@ -1,10 +1,10 @@
-INCLUDE "include/engine.inc"
-INCLUDE "include/graphics.inc"
-INCLUDE "include/hardware.inc"
-INCLUDE "include/lb.inc"
-INCLUDE "include/menu.inc"
-INCLUDE "include/text.inc"
-INCLUDE "include/valloc.inc"
+INCLUDE "engine.inc"
+INCLUDE "graphics.inc"
+INCLUDE "hardware.inc"
+INCLUDE "lb.inc"
+INCLUDE "menu.inc"
+INCLUDE "text.inc"
+INCLUDE "valloc.inc"
 
 SECTION UNION "VRAM", VRAM[$8800]
     dtile Blank

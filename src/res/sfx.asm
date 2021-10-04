@@ -1,5 +1,5 @@
 
-INCLUDE "include/sfx.inc"
+INCLUDE "sfx.inc"
 
 ; 7654 3210  Segment header ($00-$EF)
 ; |||| ++++- segment duration (0: 1 frame; 15: 16 frames)

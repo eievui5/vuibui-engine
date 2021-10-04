@@ -1,10 +1,10 @@
-INCLUDE "include/directions.inc"
-INCLUDE "include/engine.inc"
-INCLUDE "include/entity.inc"
-INCLUDE "include/graphics.inc"
-INCLUDE "include/hardware.inc"
-INCLUDE "include/players.inc"
-INCLUDE "include/scripting.inc"
+INCLUDE "directions.inc"
+INCLUDE "engine.inc"
+INCLUDE "entity.inc"
+INCLUDE "graphics.inc"
+INCLUDE "hardware.inc"
+INCLUDE "players.inc"
+INCLUDE "scripting.inc"
 
 DEF DEATH_SPIN_SPEED EQU 2
 DEF DEATH_SPIN_COUNT EQU 5

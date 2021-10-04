@@ -1,7 +1,7 @@
-INCLUDE "include/engine.inc"
-INCLUDE "include/graphics.inc"
-INCLUDE "include/hardware.inc"
-INCLUDE "include/lb.inc"
+INCLUDE "engine.inc"
+INCLUDE "graphics.inc"
+INCLUDE "hardware.inc"
+INCLUDE "lb.inc"
 
 SECTION "Game Over menu", ROMX
 

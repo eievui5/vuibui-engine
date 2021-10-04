@@ -2,8 +2,8 @@
     IF !DEF(ENTITIES_INC)
 DEF ENTITIES_INC EQU 1
 
-INCLUDE "include/enum.inc"
-INCLUDE "include/structs.inc"
+INCLUDE "enum.inc"
+INCLUDE "structs.inc"
 
     struct Entity
         ; Public - Engine relies on these values.

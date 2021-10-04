@@ -21,7 +21,7 @@
 ; 3. This notice may not be removed or altered from any source distribution.
 ;
 
-INCLUDE "include/hardware.inc"
+INCLUDE "hardware.inc"
 
 SECTION "OAM DMA routine", ROM0
 ; Code for OAM DMA. Do not call this function directly; it must be copied to and

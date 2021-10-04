@@ -1,7 +1,7 @@
     IF !DEF(STAT_INC)
 DEF STAT_INC EQU 1
 
-INCLUDE "include/enum.inc"
+INCLUDE "enum.inc"
 
     start_enum STATIC_FX
         enum NONE

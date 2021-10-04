@@ -2,7 +2,7 @@
     IF !DEF(TEXT_INC)
 DEF TEXT_INC EQU 1
 
-INCLUDE "include/enum.inc"
+INCLUDE "enum.inc"
 
     start_enum SPCHAR
         enum TERMINATE

@@ -1,9 +1,9 @@
-INCLUDE "include/banks.inc"
-INCLUDE "include/directions.inc"
-INCLUDE "include/engine.inc"
-INCLUDE "include/hardware.inc"
-INCLUDE "include/players.inc"
-INCLUDE "include/text.inc"
+INCLUDE "banks.inc"
+INCLUDE "directions.inc"
+INCLUDE "engine.inc"
+INCLUDE "hardware.inc"
+INCLUDE "players.inc"
+INCLUDE "text.inc"
 
 SECTION "VBlank Interrupt", ROM0[$40]
     ; Save register state

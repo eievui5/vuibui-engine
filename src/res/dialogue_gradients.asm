@@ -1,5 +1,5 @@
 
-INCLUDE "include/graphics.inc"
+INCLUDE "graphics.inc"
 
 SECTION "Dialogue Gradients", ROMX
 

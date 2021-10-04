@@ -1,10 +1,10 @@
-INCLUDE "include/banks.inc"
-INCLUDE "include/engine.inc"
-INCLUDE "include/graphics.inc"
-INCLUDE "include/hardware.inc"
-INCLUDE "include/lb.inc"
-INCLUDE "include/stat.inc"
-INCLUDE "include/text.inc"
+INCLUDE "banks.inc"
+INCLUDE "engine.inc"
+INCLUDE "graphics.inc"
+INCLUDE "hardware.inc"
+INCLUDE "lb.inc"
+INCLUDE "stat.inc"
+INCLUDE "text.inc"
 
 SECTION "Text Box", ROM0
 

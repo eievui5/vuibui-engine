@@ -1,5 +1,5 @@
-INCLUDE "include/graphics.inc"
-INCLUDE "include/hardware.inc"
+INCLUDE "graphics.inc"
+INCLUDE "hardware.inc"
 
 SECTION "Tiber Metasprites", ROMX
 

@@ -1,6 +1,6 @@
 
-INCLUDE "include/graphics.inc"
-INCLUDE "include/players.inc"
+INCLUDE "graphics.inc"
+INCLUDE "players.inc"
 
 SECTION "Player Graphics", ROMX
     GfxOctavia:: 

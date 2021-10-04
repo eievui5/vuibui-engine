@@ -1,6 +1,6 @@
-INCLUDE "include/engine.inc"
-INCLUDE "include/hardware.inc"
-INCLUDE "include/graphics.inc"
+INCLUDE "engine.inc"
+INCLUDE "hardware.inc"
+INCLUDE "graphics.inc"
 
 SECTION "Update Palettes", ROM0
 

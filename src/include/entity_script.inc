@@ -1,7 +1,7 @@
     IF !DEF(ENTITY_SCRIPT_INC)
 DEF ENITITY_SCRIPT_INC EQU 1
 
-INCLUDE "include/enum.inc"
+INCLUDE "enum.inc"
 
 ; Reduce this reserve fields for scripting.
 DEF MAX_FIELDS EQU 14

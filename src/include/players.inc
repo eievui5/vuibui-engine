@@ -1,5 +1,5 @@
 
-INCLUDE "include/enum.inc"
+INCLUDE "enum.inc"
 
     IF !DEF(PLAYERS_INC)
 DEF PLAYERS_INC EQU 1

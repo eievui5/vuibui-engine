@@ -1,7 +1,7 @@
 
-INCLUDE "include/enum.inc"
-INCLUDE "include/graphics.inc"
-INCLUDE "include/tiledata.inc"
+INCLUDE "enum.inc"
+INCLUDE "graphics.inc"
+INCLUDE "tiledata.inc"
 
 CLEAR_TILE EQU $80
 BLACK_TILE EQU $81

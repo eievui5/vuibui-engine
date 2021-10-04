@@ -1,4 +1,4 @@
-INCLUDE "include/graphics.inc"
+INCLUDE "graphics.inc"
 
 SECTION "Beach Panorama", ROMX
     BeachPanorama::

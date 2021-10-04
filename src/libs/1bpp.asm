@@ -21,7 +21,7 @@
 ; 3. This notice may not be removed or altered from any source distribution.
 ;
 
-INCLUDE "include/hardware.inc"
+INCLUDE "hardware.inc"
 
 SECTION "One Bit Per Pixel", ROM0
 

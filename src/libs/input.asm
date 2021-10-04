@@ -23,7 +23,7 @@
 ;    misrepresented as being the original software.
 ; 3. This notice may not be removed or altered from any source distribution.
 ;
-INCLUDE "include/hardware.inc"
+INCLUDE "hardware.inc"
 
 DAS_DELAY equ 15
 DAS_SPEED equ 3

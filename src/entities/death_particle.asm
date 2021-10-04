@@ -1,7 +1,7 @@
-INCLUDE "include/banks.inc"
-INCLUDE "include/entity.inc"
-INCLUDE "include/entity_script.inc"
-INCLUDE "include/graphics.inc"
+INCLUDE "banks.inc"
+INCLUDE "entity.inc"
+INCLUDE "entity_script.inc"
+INCLUDE "graphics.inc"
 
 SECTION "Death Particle Definition", ROM0
 

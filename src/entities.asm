@@ -1,9 +1,9 @@
-INCLUDE "include/banks.inc"
-INCLUDE "include/directions.inc"
-INCLUDE "include/entity.inc"
-INCLUDE "include/hardware.inc"
-INCLUDE "include/graphics.inc"
-INCLUDE "include/tiledata.inc"
+INCLUDE "banks.inc"
+INCLUDE "directions.inc"
+INCLUDE "entity.inc"
+INCLUDE "hardware.inc"
+INCLUDE "graphics.inc"
+INCLUDE "tiledata.inc"
 
 ; Entities are stored in wEntityArray, which includes a 2-byte pointer to the
 ; entity's data, and then additional info, listed in entities.inc

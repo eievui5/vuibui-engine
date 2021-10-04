@@ -1,8 +1,8 @@
-INCLUDE "include/banks.inc"
-INCLUDE "include/engine.inc"
-INCLUDE "include/graphics.inc"
-INCLUDE "include/hardware.inc"
-INCLUDE "include/stat.inc"
+INCLUDE "banks.inc"
+INCLUDE "engine.inc"
+INCLUDE "graphics.inc"
+INCLUDE "hardware.inc"
+INCLUDE "stat.inc"
 
 SECTION "Stat Interrupt", ROM0[$48]
     ; Save register state

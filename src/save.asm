@@ -1,7 +1,7 @@
-INCLUDE "include/hardware.inc"
-INCLUDE "include/lb.inc"
-INCLUDE "include/players.inc"
-INCLUDE "include/save.inc"
+INCLUDE "hardware.inc"
+INCLUDE "lb.inc"
+INCLUDE "players.inc"
+INCLUDE "save.inc"
 
 SECTION "Save Functions", ROM0
 

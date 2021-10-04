@@ -1,6 +1,6 @@
-INCLUDE "include/banks.inc"
-INCLUDE "include/entity.inc"
-INCLUDE "include/graphics.inc"
+INCLUDE "banks.inc"
+INCLUDE "entity.inc"
+INCLUDE "graphics.inc"
 
 ; Renderers expect `bc` as a struct offset, as in regular logic.
 ; Since metasprites are stored in ROMX, common rendering functions are located

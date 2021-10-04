@@ -1,8 +1,8 @@
 ; ISSOtm's Menu System, adapted for use in the VuiBui engine.
 
-INCLUDE "include/banks.inc"
-INCLUDE "include/hardware.inc"
-INCLUDE "include/menu.inc"
+INCLUDE "banks.inc"
+INCLUDE "hardware.inc"
+INCLUDE "menu.inc"
 
 SECTION "Menu system", ROM0
 

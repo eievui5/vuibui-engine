@@ -1,7 +1,7 @@
     IF !DEF(FLAGS_INC)
 DEF FLAGS_INC EQU 1
 
-INCLUDE "include/enum.inc"
+INCLUDE "enum.inc"
 
     start_enum FLAG
 

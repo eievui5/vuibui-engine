@@ -26,8 +26,8 @@
 ;
 ; Additionally, the `audio_update` function was updated to swap to the SFX bank
 
-INCLUDE "include/banks.inc"
-INCLUDE "include/hardware.inc"
+INCLUDE "banks.inc"
+INCLUDE "hardware.inc"
 
 LOG_SIZEOF_CHANNEL equ 3
 LOG_SIZEOF_SFX equ 2

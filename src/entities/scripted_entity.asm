@@ -1,9 +1,9 @@
-INCLUDE "include/banks.inc"
-INCLUDE "include/directions.inc"
-INCLUDE "include/entity.inc"
-INCLUDE "include/entity_script.inc"
-INCLUDE "include/graphics.inc"
-INCLUDE "include/hardware.inc"
+INCLUDE "banks.inc"
+INCLUDE "directions.inc"
+INCLUDE "entity.inc"
+INCLUDE "entity_script.inc"
+INCLUDE "graphics.inc"
+INCLUDE "hardware.inc"
 
 DEF STARTING_HEALTH EQU 4
 

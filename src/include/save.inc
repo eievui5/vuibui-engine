@@ -2,7 +2,7 @@
     IF !DEF(SAVE_INC)
 DEF SAVE_INC EQU 1
 
-INCLUDE "include/structs.inc"
+INCLUDE "structs.inc"
 
 DEF SAVE_VERSION EQU 0
 

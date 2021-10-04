@@ -1,10 +1,10 @@
-INCLUDE "include/banks.inc"
-INCLUDE "include/directions.inc"
-INCLUDE "include/engine.inc"
-INCLUDE "include/entity.inc"
-INCLUDE "include/players.inc"
-INCLUDE "include/scripting.inc"
-INCLUDE "include/text.inc"
+INCLUDE "banks.inc"
+INCLUDE "directions.inc"
+INCLUDE "engine.inc"
+INCLUDE "entity.inc"
+INCLUDE "players.inc"
+INCLUDE "scripting.inc"
+INCLUDE "text.inc"
 
 MACRO load_hl_scriptpointer
     ld a, [wActiveScriptPointer + 1]

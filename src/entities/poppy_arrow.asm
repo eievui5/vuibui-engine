@@ -1,7 +1,7 @@
-INCLUDE "include/entity.inc"
-INCLUDE "include/hardware.inc"
-INCLUDE "include/graphics.inc"
-INCLUDE "include/tiledata.inc"
+INCLUDE "entity.inc"
+INCLUDE "hardware.inc"
+INCLUDE "graphics.inc"
+INCLUDE "tiledata.inc"
 
 SECTION "Poppy Arrow", ROMX 
 

@@ -1,12 +1,12 @@
 
-INCLUDE "include/banks.inc"
-INCLUDE "include/engine.inc"
-INCLUDE "include/enum.inc"
-INCLUDE "include/graphics.inc"
-INCLUDE "include/hardware.inc"
-INCLUDE "include/lb.inc"
-INCLUDE "include/map.inc"
-INCLUDE "include/menu.inc"
+INCLUDE "banks.inc"
+INCLUDE "engine.inc"
+INCLUDE "enum.inc"
+INCLUDE "graphics.inc"
+INCLUDE "hardware.inc"
+INCLUDE "lb.inc"
+INCLUDE "map.inc"
+INCLUDE "menu.inc"
 
 ; I hate this enum
 

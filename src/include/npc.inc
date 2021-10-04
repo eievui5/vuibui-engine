@@ -2,7 +2,7 @@
     IF !DEF(NPCS_INC)
 DEF NPCS_INC EQU 1
 
-INCLUDE "include/structs.inc"
+INCLUDE "structs.inc"
 
 DEF NB_NPCS EQU 4
 

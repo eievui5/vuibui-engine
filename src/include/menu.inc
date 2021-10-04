@@ -1,8 +1,8 @@
         IF !DEF(MENU_INC)
 DEF MENU_INC EQU 1
 
-INCLUDE "include/enum.inc"
-INCLUDE "include/structs.inc"
+INCLUDE "enum.inc"
+INCLUDE "structs.inc"
 
 DEF MENU_STACK_CAPACITY equ 10
 

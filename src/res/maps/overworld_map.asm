@@ -1,5 +1,5 @@
 
-INCLUDE "include/map.inc"
+INCLUDE "map.inc"
 
 ; TODO: Remove hard-coded bank test
 SECTION "Overworld Map", ROMX

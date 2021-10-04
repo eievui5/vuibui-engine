@@ -1,4 +1,4 @@
-INCLUDE "include/npc.inc"
+INCLUDE "npc.inc"
 
 ; TODO: NPCs should look at the player when talked to.
 
