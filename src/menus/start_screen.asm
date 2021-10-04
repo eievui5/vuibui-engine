@@ -89,10 +89,11 @@ TestMenuInit:
     ldh a, [hSystem]
     and a, a
     jr z, .cgbSkip
+
         ld hl, PalGrey
         ld de, wBCPD
-        ld c, sizeof_PALETTE
-        rst memcopy_small
+        lb bc, BANK(PalGrey), sizeof_PALETTE
+        call MemCopyFar
 
         ld a, PALETTE_STATE_RESET
         call UpdatePalettes
@@ -137,7 +138,7 @@ TestMenuRedraw:
     .multSkip
     ld de, wShadowOAM
     ld c, 4
-    rst memcopy_small
+    rst MemCopySmall
 
     ld hl, wShadowOAM
     ld a, [wPointerYPos]

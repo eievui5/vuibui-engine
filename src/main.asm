@@ -1,5 +1,13 @@
 INCLUDE "include/engine.inc"
 
+; @ TODO: Make a proper crash handler.
+SECTION "Crash Handler", ROM0[$0038]
+crash::
+    ld b, b
+    di
+.loop
+    jr .loop
+
 SECTION "Main Loop", ROM0
 
 ; Split these up into an engine state jump table.

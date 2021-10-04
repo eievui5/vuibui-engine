@@ -43,7 +43,7 @@ AddMenu::
 
     xor a
     ld c, sizeof_Menu - Menu_ROMSize
-    rst memset_small
+    rst MemSetSmall
 
     pop hl
     ld a, [hli] ; Get bank

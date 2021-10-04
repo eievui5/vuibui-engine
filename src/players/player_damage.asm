@@ -51,11 +51,11 @@ PlayerDeath::
     xor a, a
     ld c, sizeof_Entity * NB_ENTITIES
     ld hl, wEntityArray
-    rst memset_small
+    rst MemSetSmall
     ; Clear entity fields
     ld c, sizeof_Entity * NB_ENTITIES
     ld hl, wEntityFieldArray
-    rst memset_small
+    rst MemSetSmall
 
     ; Keep track of the active player so that we can skip them.
     ld a, [wActivePlayer]
@@ -107,12 +107,12 @@ PlayerDeath::
         ld a, $FF
         ld hl, wBCPDTarget
         ld c, sizeof_PALETTE * 8
-        rst memset_small
+        rst MemSetSmall
         ; Copy the Objects; we don't want them to change.
         ld c, sizeof_PALETTE * 8
         ld de, wOCPDTarget
         ld hl, wOCPD
-        rst memcopy_small
+        rst MemCopySmall
         ld a, PALETTE_STATE_FADE
         ld [wPaletteState], a
 
@@ -187,7 +187,7 @@ xPlayerDeathScript:
     ld a, $FF
     ld hl, wOCPDTarget
     ld c, sizeof_PALETTE * 8
-    rst memset_small
+    rst MemSetSmall
     ld a, PALETTE_STATE_FADE_LIGHT
     ld [wPaletteState], a
     ret

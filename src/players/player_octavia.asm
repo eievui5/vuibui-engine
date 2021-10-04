@@ -191,7 +191,7 @@ OctaviaRod:
     push de
     ld c, 32 ; Size of 2 tiles
     ld de, VRAM_TILES_OBJ + TILE_PLAYER_SPELL * $10
-    call vmemcopy_small
+    call VRAMCopySmall
     pop bc
     pop de
 .skipInit

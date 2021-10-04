@@ -28,7 +28,7 @@ ROM = $(BINDIR)/$(ROMNAME).$(ROMEXT)
 INCDIRS  = $(SRCDIR)/ $(SRCDIR)/include/
 WARNINGS = all extra
 ASFLAGS  = -p $(PADVALUE) $(addprefix -i,$(INCDIRS)) $(addprefix -W,$(WARNINGS))
-LDFLAGS  = -p $(PADVALUE)
+LDFLAGS  = -p $(PADVALUE) -S romx=64
 FIXFLAGS = -p $(PADVALUE) -v -i "$(GAMEID)" -k "$(LICENSEE)" -l $(OLDLIC) -m $(MBC) -n $(VERSION) -r $(SRAMSIZE) -t $(TITLE)
 
 # The list of "root" ASM files that RGBASM will be invoked on

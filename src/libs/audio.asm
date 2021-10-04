@@ -77,7 +77,7 @@ audio_init::
   xor a
   ld hl,audio_channels
   ld bc,NUM_CHANNELS << LOG_SIZEOF_CHANNEL
-  jp memset
+  jp MemSet
 
 ;;
 ; Plays sound effect A.

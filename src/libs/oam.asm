@@ -42,12 +42,12 @@ ResetOAM::
     xor a, a
     ld c, wShadowOAM.end - wShadowOAM
     ld hl, _OAMRAM
-    rst memset_small
+    rst MemSetSmall
     xor a, a
     ldh [hOAMIndex], a ; Reset the OAM index.
     ld c, wShadowOAM.end - wShadowOAM
     ld hl, wShadowOAM
-    rst memset_small
+    rst MemSetSmall
     ret
 
 ; Reset wShadowOAM and wOAMIndex to 0.

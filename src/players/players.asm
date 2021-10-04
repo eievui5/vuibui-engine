@@ -301,7 +301,7 @@ NPCInteractionCheck::
 
     ld c, 3
     ld de, wActiveScriptPointer
-    rst memcopy_small
+    rst MemCopySmall
 
     pop hl ; Super ret !
     ret
@@ -333,7 +333,7 @@ PlayerInteractionCheck::
 
     ld c, 3 ; bank + pointer
     ld de, wActiveScriptPointer
-    rst memcopy_small
+    rst MemCopySmall
 
     pop hl ; Super ret!
     ret

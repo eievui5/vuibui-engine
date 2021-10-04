@@ -74,7 +74,7 @@ ResetHUD::
     ld h, a 
     ld de, wBCPD + sizeof_PALETTE * 7
     ld c, sizeof_PALETTE
-    rst memcopy_small
+    rst MemCopySmall
 
 
 
@@ -190,7 +190,7 @@ UpdateHUD::
     ld h, a 
     ld de, wBCPD + sizeof_PALETTE * 7
     ld c, sizeof_PALETTE
-    rst memcopy_small
+    rst MemCopySmall
     
     ld a, PALETTE_STATE_RESET
     ld [wPaletteState], a
@@ -363,7 +363,7 @@ UpdatePrint::
     ld hl, vPrintBar - 32
     ld a, TILE_BLACK
     ld c, 32
-    rst memset_small
+    rst MemSetSmall
 
     ; Clear the printing row.
     ld hl, vPrintBar
@@ -397,7 +397,7 @@ UpdatePrint::
 
     ld a, $FF
     ld c, 16 * 4
-    rst memset_small
+    rst MemSetSmall
 
     ld a, [wHUDPrintIndex]
     add a, 4
@@ -491,7 +491,7 @@ UpdatePrint::
 
     ld a, $FF
     ld c, 16
-    rst memset_small
+    rst MemSetSmall
 
     ld a, [wPrintWaitTimer]
     dec a

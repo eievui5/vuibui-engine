@@ -36,7 +36,7 @@ xGameOverInit:
     ld bc, xGameOverTiles.end - xGameOverTiles
     ld de, $9000
     ld hl, xGameOverTiles
-    call vmemcopy
+    call VRAMCopy
     ld hl, $9800
     ld de, xGameOverMap
     ld b, 18
@@ -60,7 +60,7 @@ xGameOverInit:
         ld de, wBCPDTarget
         ld hl, xGameOverPal
         ld c, sizeof_PALETTE
-        rst memcopy_small
+        rst MemCopySmall
         ld a, PALETTE_STATE_FADE
         ld [wPaletteState], a
 .skipCgb
@@ -73,7 +73,7 @@ xHandleBPress:
     ld a, $FF
     ld hl, wBCPDTarget
     ld c, sizeof_PALETTE
-    rst memset_small
+    rst MemSetSmall
     ld a, PALETTE_STATE_FADE_LIGHT
     ld [wPaletteState], a
 .waitFade

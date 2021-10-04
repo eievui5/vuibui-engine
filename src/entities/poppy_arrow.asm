@@ -80,7 +80,7 @@ PoppyArrowLogic::
     add hl, bc
     ld c, sizeof_Entity
     xor a, a
-    rst memset_small
+    rst MemSetSmall
     ld hl, wPoppyActiveArrows
     dec [hl]
     ret

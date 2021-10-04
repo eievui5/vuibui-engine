@@ -82,7 +82,7 @@ OctaviaSpellLogic::
     ld hl, wOctaviaSpell
     ld c, sizeof_Entity
     xor a, a
-    rst memset_small
+    rst MemSetSmall
     ld [wOctaviaSpellActive], a
     ret
 

@@ -3,6 +3,7 @@ INCLUDE "include/engine.inc"
 INCLUDE "include/entity.inc"
 INCLUDE "include/graphics.inc"
 INCLUDE "include/hardware.inc"
+INCLUDE "include/lb.inc"
 INCLUDE "include/map.inc"
 INCLUDE "include/players.inc"
 INCLUDE "include/stat.inc"
@@ -91,17 +92,17 @@ Initialize::
         ; Clear Raster Array
         ld hl, wRasterFX
         ld c, 80
-        rst memset_small
+        rst MemSetSmall
         ; Clear Static FX
         ld [wStaticFX], a
         ; Clear palettes and target palettes
         ld hl, wBCPD
         ld c, sizeof_PALETTE * 16
-        rst memset_small
+        rst MemSetSmall
         ; Seed the randstate
         ld hl, randstate
         ld c, 4
-        rst memset_small
+        rst MemSetSmall
         ld [wPaletteState], a
         ld [wNbMenus], a
         ld [wRoomTransitionDirection], a
@@ -120,11 +121,11 @@ Initialize::
         xor a, a
         ld hl, _VRAM
         ld bc, $2000
-        call memset
+        call MemSet
         ldh [rVBK], a
         ld hl, _VRAM
         ld bc, $2000
-        call memset
+        call MemSet
     ; SRAM
         call VerifySRAM
 
@@ -132,7 +133,7 @@ Initialize::
     ld a, $FF
     ld hl, wBCPDTarget
     ld bc, sizeof_PALETTE * 16
-    rst memset_small
+    rst MemSetSmall
     
     ld a, 16
     ld [wFadeSpeed], a
@@ -169,7 +170,7 @@ Initialize::
     ; Black
     ld a, $FF
     ld c, sizeof_TILE
-    rst memset_small
+    rst MemSetSmall
 
 ; Configure audio
     call audio_init
@@ -188,14 +189,11 @@ Initialize::
     jr .palReset
 .cgbPal
 
-    ld a, BANK(PalOctavia)
-    rst SwapBank
-
     ; Copy the four default object palettes
-    ld hl, PalPlayers
-    ld c, sizeof_PALETTE * 4
+    lb bc, BANK(PalPlayers), sizeof_PALETTE * 4
     ld de, wOCPD
-    rst memcopy_small
+    ld hl, PalPlayers
+    call MemCopyFar
 .palReset
     ; Force-update while the screen is off
     ld a, PALETTE_STATE_RESET
@@ -232,7 +230,7 @@ InitializeGameplay::
     ; Until there is a save file, just zero-init the player variables
     ld c, SIZEOF("Player Variables")
     ld hl, STARTOF("Player Variables")
-    rst memset_small
+    rst MemSetSmall
     ld [wPoppyActiveArrows], a
 
     ; Set up players and clear array.
@@ -243,7 +241,7 @@ InitializeGameplay::
     ld [hli], a
     xor a, a
     ld c, sizeof_Entity - 2
-    rst memset_small
+    rst MemSetSmall
 
     ld a, HIGH(PlayerPoppy)
     ld [hli], a
@@ -251,7 +249,7 @@ InitializeGameplay::
     ld [hli], a
     xor a, a
     ld c, sizeof_Entity - 2
-    rst memset_small
+    rst MemSetSmall
 
     ld a, HIGH(PlayerTiber)
     ld [hli], a
@@ -259,7 +257,7 @@ InitializeGameplay::
     ld [hli], a
     xor a, a
     ld c, sizeof_Entity - 2
-    rst memset_small
+    rst MemSetSmall
 
 ; Load the player's graphics
     call LoadStandardGraphics
@@ -321,14 +319,16 @@ InitializeGameplay::
     ret
 
 LoadStandardGraphics::
+    ld a, [hCurrentBank]
+    push af
+
     ld a, BANK(GfxOctavia)
     rst SwapBank
-
     ; Load player graphics
     ld hl, GfxOctavia
     ld de, VRAM_TILES_OBJ + TILE_OCTAVIA_DOWN_1 * $10
     ld bc, (GfxOctavia.end - GfxOctavia) * 3
-    call memcopy
+    call MemCopy
 
     ld a, BANK(pb16_GfxArrow)
     rst SwapBank
@@ -349,4 +349,8 @@ LoadStandardGraphics::
     ld hl, _VRAM + (TILE_SPARKLE_LEFT * $10)
     ld de, pb16_GfxSparkle
     ld b, 4
-    jp pb16_unpack_block
+    call pb16_unpack_block
+
+    pop af
+    rst SwapBank
+    ret

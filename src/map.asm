@@ -3,6 +3,7 @@ INCLUDE "include/engine.inc"
 INCLUDE "include/entity.inc"
 INCLUDE "include/graphics.inc"
 INCLUDE "include/hardware.inc"
+INCLUDE "include/lb.inc"
 INCLUDE "include/map.inc"
 INCLUDE "include/npc.inc"
 INCLUDE "include/save.inc"
@@ -31,23 +32,23 @@ UpdateActiveMap::
     ASSERT wOctaviaSpell + sizeof_Entity == wPoppyArrow0
     ld c, sizeof_Entity * 3
     xor a, a
-    rst memset_small
+    rst MemSetSmall
     ld [wOctaviaSpellActive], a
     
     ; Clear entity array
     ld c, sizeof_Entity * NB_ENTITIES
     ld hl, wEntityArray
-    rst memset_small
+    rst MemSetSmall
 
     ; Clear entity fields
     ld c, sizeof_Entity * NB_ENTITIES
     ld hl, wEntityFieldArray
-    rst memset_small
+    rst MemSetSmall
 
     ; Clear NPC array
     ld c, sizeof_NPC * NB_NPCS
     ld hl, wNPCArray
-    rst memset_small
+    rst MemSetSmall
 
 	bit UPDATE_TILEMAP_B, d
 	jp z, .skipNewTileMap
@@ -128,20 +129,19 @@ UpdateActiveMap::
         ld h, [hl]
         ld l, a
 
-        ld a, b
-        rst SwapBank
-
         ; Copy palettes to the fade target
         ld c, MAP_BKG_PALS * sizeof_PALETTE
         ld de, wBCPD
-        rst memcopy_small
+        call MemCopyFar
         ld c, MAP_OBJ_PALS * sizeof_PALETTE
-        ld de, wOCPD + (sizeof_PALETTE * (8 - MAP_OBJ_PALS)) ; Skip the players' reserved palettes
-        rst memcopy_small
-        ld c, 4 * sizeof_PALETTE
+        ; Skip the players' reserved palettes
+        ld de, wOCPD + (sizeof_PALETTE * (8 - MAP_OBJ_PALS))
+        call MemCopyFar
+
+        lb bc, BANK(PalPlayers), sizeof_PALETTE * 4
         ld de, wOCPD
         ld hl, PalPlayers
-        rst memcopy_small
+        call MemCopyFar
     pop hl
     jr .palFinish
 
@@ -168,7 +168,7 @@ UpdateActiveMap::
 		ld de, wMetatileDefinitions
 		ldh a, [hMetatileBankBuffer]
 		rst SwapBank
-		rst memcopy_small
+		rst MemCopySmall
 	pop hl
 	inc hl ; Seek to attributes
 
@@ -184,7 +184,7 @@ UpdateActiveMap::
 		ld de, wMetatileAttributes
 		ldh a, [hMetatileBankBuffer]
 		rst SwapBank
-		rst memcopy_small
+		rst MemCopySmall
 	pop hl
 	inc hl ; Seek to Data
 
@@ -201,14 +201,14 @@ UpdateActiveMap::
 	ld de, wMetatileData
 	ldh a, [hMetatileBankBuffer]
 	rst SwapBank
-	rst memcopy_small
+	rst MemCopySmall
     
     call GetActiveMap
 	push bc ; Save the data pointer
 		; Copy the map data
 		ld bc, MAP_SIZE
 		ld de, wMetatileMap
-		call memcopy
+		call MemCopy
 		call LoadMapData
 
     ld a, 1
@@ -241,7 +241,7 @@ UpdateActiveMap::
 		; Copy the map data
 		ld bc, MAP_SIZE
 		ld de, wMetatileMap
-		call memcopy
+		call MemCopy
         ;call ScrollLoader
 		call LoadMapData
 .skipDoubleLoad
@@ -327,7 +327,7 @@ MapdataSetWarp:
     ld [hl], a
     pop hl
     ld c, sizeof_WarpData
-    rst memcopy_small
+    rst MemCopySmall
     jr UpdateActiveMap.nextData
 
 MapdataNPC:
@@ -344,7 +344,7 @@ MapdataNPC:
     ld d, HIGH(wNPCArray)
 
     ld c, sizeof_NPC
-    rst memcopy_small
+    rst MemCopySmall
 
     ; Switch to using `de`, the location of the entity in RAM. This allows us to
     ; only use `e` for seeking, and not worry about correcting `hl`
@@ -386,7 +386,7 @@ MapdataNPC:
 MapdataSetRespawn:
     ld de, wRespawnPoint
     ld c, sizeof_RespawnPoint
-    rst memcopy_small
+    rst MemCopySmall
     jp UpdateActiveMap.nextData
 
 ; Returns the active Map in `hl`, and its data in `bc`.
@@ -535,14 +535,15 @@ ReloadMapGraphics::
 
     ld c, MAP_BKG_PALS * sizeof_PALETTE
     ld de, wBCPD
-    rst memcopy_small
+    rst MemCopySmall
     ld c, MAP_OBJ_PALS * sizeof_PALETTE
     ld de, wOCPD + (sizeof_PALETTE * (8 - MAP_OBJ_PALS)) ; Skip the players' reserved palettes
-    rst memcopy_small
-    ld c, 4 * sizeof_PALETTE
+    rst MemCopySmall
+    
+    lb bc, BANK(PalPlayers), sizeof_PALETTE * 4
     ld de, wOCPD
     ld hl, PalPlayers
-    rst memcopy_small
+    call MemCopyFar
 
 .cgbSkip
 

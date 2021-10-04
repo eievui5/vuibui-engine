@@ -1,5 +1,5 @@
 
-Currently being built on RGBDS 0.5.1
+Currently being built on the master branch of RGBDS, version 0.5.1
 
 Requires a POSIX environment with GNU make and Python to build.
 

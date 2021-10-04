@@ -260,7 +260,7 @@ InventoryInit:
     ld hl, PalGrey
     ld de, wBCPD + sizeof_PALETTE * 6
     ld c, sizeof_PALETTE
-    rst memcopy_small
+    rst MemCopySmall
 
     ld a, [wActivePlayer]
     ASSERT sizeof_PALETTE == 12
@@ -276,13 +276,13 @@ InventoryInit:
     sub a, l
     ld h, a 
     ld c, sizeof_PALETTE
-    rst memcopy_small
+    rst MemCopySmall
 
     ; Load player pals
-    ld c, 3 * sizeof_PALETTE
+    lb bc, BANK(PalPlayers), sizeof_PALETTE * 4
     ld de, wOCPD
     ld hl, PalPlayers
-    rst memcopy_small
+    call MemCopyFar
 
 .cgbSkip
 
@@ -348,7 +348,7 @@ InventoryInit:
     ld h, a 
     get_tilemap de, _SCRN1, 9, 9
     ld c, 7
-    rst memcopy_small
+    rst MemCopySmall
 
     ; Lookup the active map's panorama
     ld a, [wActiveWorldMap]
@@ -430,7 +430,7 @@ InventoryInit:
     ld l, a
     ld de, wBCPD
     ld c, sizeof_PALETTE * 6
-    rst memcopy_small
+    rst MemCopySmall
 
 .cgbPanSkip
     
@@ -760,7 +760,7 @@ InventoryClose:
     ld a, $FF
     ld bc, sizeof_PALETTE * 16
     ld hl, wBCPDTarget
-    rst memset_small
+    rst MemSetSmall
     ; Fade out before we turn off the screen
     ld a, PALETTE_STATE_FADE_LIGHT
     ld [wPaletteState], a
@@ -1002,7 +1002,7 @@ HandleAPress:
     ld a, $FF
     ld bc, sizeof_PALETTE * 16
     ld hl, wBCPDTarget
-    rst memset_small
+    rst MemSetSmall
     ; Fade out before we turn off the screen
     ld a, PALETTE_STATE_FADE_LIGHT
     ld [wPaletteState], a

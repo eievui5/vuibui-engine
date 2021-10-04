@@ -1,4 +1,5 @@
 INCLUDE "include/hardware.inc"
+INCLUDE "include/lb.inc"
 INCLUDE "include/players.inc"
 INCLUDE "include/save.inc"
 
@@ -31,15 +32,13 @@ VerifySRAM::
     ld hl, xSaveCheckString
     ld de, sCheckString
     ld c, xSaveCheckString.end - xSaveCheckString
-    rst memcopy_small
+    rst MemCopySmall
 
     ; Initiallize save file
-    ld a, BANK(xDefaultSaveFile)
-    rst SwapBank
     ld hl, xDefaultSaveFile
     ld de, sSave0
-    ld c, sizeof_Save
-    rst memcopy_small
+    lb bc, BANK(xDefaultSaveFile), sizeof_Save
+    call MemCopyFar
 
     ; Disable External Save RAM
     xor a, a
@@ -123,7 +122,7 @@ xLoadSaveFile::
     ; Copy the respawn position from the save file.
     ld de, wRespawnPoint
     ld c, sizeof_RespawnPoint
-    rst memcopy_small
+    rst MemCopySmall
 
     ; Load Max health values
     ASSERT sizeof_RespawnPoint == Save_OctaviaMaxHealth
@@ -171,7 +170,7 @@ xStoreSaveFile::
     ; Copy the respawn position to the save file.
     ld hl, wRespawnPoint
     ld c, sizeof_RespawnPoint
-    rst memcopy_small
+    rst MemCopySmall
 
     ; Load Max health values
     ASSERT sizeof_RespawnPoint == Save_OctaviaMaxHealth
