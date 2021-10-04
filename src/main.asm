@@ -1,5 +1,10 @@
 INCLUDE "include/engine.inc"
 
+SECTION "Null Handler", ROM0[$0000]
+    nop
+    nop
+    rst crash
+
 ; @ TODO: Make a proper crash handler.
 SECTION "Crash Handler", ROM0[$0038]
 crash::
