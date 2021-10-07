@@ -89,9 +89,8 @@ UpdatePalettes::
 Cgb:
     ld a, b
     cp a, PALETTE_STATE_RESET
-    jr z, CgbReset
-    jr CgbFade
-
+    jr nz, CgbFade
+    ; Fallthrough
 CgbReset:
     ld hl, wBCPD
     ld c, 8 * 4 ; Number of colors
@@ -259,8 +258,6 @@ FadeToColor:
     ; Check for overflow
     cp a, b
     jr c, .store
-    jr .overflow
-
 ; Load the target color into the current color
 .overflow
     ld [hl], a

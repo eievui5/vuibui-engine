@@ -39,7 +39,7 @@ SECTION "Far Call", ROM0[$0028]
 ; @ b:  Target bank
 ; @ hl: Target function.
 FarCall::
-    ld a, [hCurrentBank]
+    ldh a, [hCurrentBank]
     push af
     ld a, b
     rst SwapBank
@@ -54,7 +54,7 @@ SECTION "Memory Copy Far", ROM0
 ; @ de: destination
 ; @ hl: source
 MemCopyFar::
-    ld a, [hCurrentBank]
+    ldh a, [hCurrentBank]
     push af
     ld a, b
     rst SwapBank

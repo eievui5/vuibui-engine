@@ -632,7 +632,7 @@ PlayerSetWaitLink:
     jr .store
 .tiber::
     ld a, PLAYER_TIBER
-    jr .store
+    ; Fallthrough
 .store
     ; Add `a` to `wPlayerWaitLink` and store in `hl`
     add a, LOW(wPlayerWaitLink)

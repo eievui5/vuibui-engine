@@ -116,13 +116,14 @@ TextboxPalette:
     ld a, $80 | (7 * 8) + 6
     ldh [rBCPS], a
 
-    ld a, [wTextboxPalsBank]
+    ld hl, wTextboxPalsBank
+    ASSERT wTextboxPalsBank + 1 == wTextboxPalettes
+    ld a, [hli]
     rst SwapBank
 
-    ld a, [wTextboxPalettes]
+    ld a, [hli]
+    ld l, [hl]
     ld h, a
-    ld a, [wTextboxPalettes + 1]
-    ld l, a
     ld a, [wTextboxFadeProgress]
     ASSERT sizeof_COLOR == 3
     ld d, a
@@ -167,8 +168,7 @@ TextboxPalette:
     ldh [rSCY], a
     xor a, a
     ldh [rSCX], a
-    jr ExitStat
-
+    ; Fallthrough
 ExitStat:
     ; Restore register state
     ld a, [wInterruptBankBuffer]

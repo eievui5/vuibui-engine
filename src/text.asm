@@ -149,13 +149,15 @@ HandleTextbox::
     bit PADB_A, a
     jr z, :- ; No input? Keep waiting...
 
-    ld a, [wTextBank]
+    ld hl, wTextBank
+    ASSERT wTextBank + 1 == wTextPointer
+    ld a, [hli]
     rst SwapBank
 
-    ld a, [wTextPointer]
+    ; hl = wTextPointer
+    ld a, [hli]
+    ld l, [hl]
     ld h, a
-    ld a, [wTextPointer + 1]
-    ld l, a
     dec hl ; Check what character got us here.
     ld a, [hl]
     ASSERT SPCHAR_TERMINATE == 0

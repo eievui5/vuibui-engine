@@ -140,8 +140,7 @@ Initialize::
 
 ; Load OAM Routine into HRAM
 	ld hl, OAMDMA
-	ld b, OAMDMA.end - OAMDMA 
-    ld c, LOW(hOAMDMA)
+	lb bc, OAMDMA.end - OAMDMA, LOW(hOAMDMA)
 .copyOAMDMA
 	ld a, [hli]
 	ldh [c], a
@@ -213,12 +212,12 @@ Initialize::
 InitializeGameplay::
 
 .waitVBlank
-    ld a, [rLY]
+    ldh a, [rLY]
     cp a, SCRN_Y
     jr c, .waitVBlank
 
     xor a, a
-    ld [rLCDC], a
+    ldh [rLCDC], a
 
     ldh a, [hCurrentBank]
     push af
@@ -305,9 +304,9 @@ InitializeGameplay::
     ldh [hSCYBuffer], a
 
     ld a, SCREEN_NORMAL
-    ld [hLCDCBuffer], a
+    ldh [hLCDCBuffer], a
     ld a, SKIP_FRAME
-    ld [rLCDC], a
+    ldh [rLCDC], a
 
     ASSERT ENGINE_STATE_GAMEPLAY == 0
     xor a, a
@@ -319,7 +318,7 @@ InitializeGameplay::
     ret
 
 LoadStandardGraphics::
-    ld a, [hCurrentBank]
+    ldh a, [hCurrentBank]
     push af
 
     ld a, BANK(GfxOctavia)

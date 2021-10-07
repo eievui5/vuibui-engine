@@ -76,9 +76,9 @@ IncrementScriptPointer:
     ld e, a
     adc a, d
     sub a, e
-    ld d, a
+    ;ld d, a
     ; Store pointer
-    ld a, d
+    ;ld a, d
     ld [hld], a
     ld [hl], e
     ret

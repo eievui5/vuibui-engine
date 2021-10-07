@@ -1,6 +1,7 @@
 INCLUDE "directions.inc"
 INCLUDE "entity.inc"
 INCLUDE "graphics.inc"
+INCLUDE "lb.inc"
 INCLUDE "players.inc"
 INCLUDE "scripting.inc"
 INCLUDE "sfx.inc"
@@ -143,24 +144,19 @@ OctaviaDamage:
 
 OctaviaRod:
 .heal
-    ld d, 1
-    ld e, SPELL_HEAL
-    ld b, 1 ; b is true if the spell should heal players.
-    ld c, 1
+    lb de, 1, SPELL_HEAL
+    lb bc, 1, 1 ; b is true if the spell should heal players.
     jr .shootHeal
 .fire
-    ld d, DAMAGE_EFFECT_FIRE | OCTAVIA_FIRE_DAMAGE
-    ld e, SPELL_FIRE
+    lb de, DAMAGE_EFFECT_FIRE | OCTAVIA_FIRE_DAMAGE, SPELL_FIRE
     ld c, 0
     jr .shoot
 .ice
-    ld d, DAMAGE_EFFECT_ICE | OCTAVIA_ICE_DAMAGE
-    ld e, SPELL_ICE
+    lb de, DAMAGE_EFFECT_ICE | OCTAVIA_ICE_DAMAGE, SPELL_ICE
     ld c, 2
     jr .shoot
 .shock
-    ld d, DAMAGE_EFFECT_SHOCK | OCTAVIA_SHOCK_DAMAGE
-    ld e, SPELL_SHOCK
+    lb de, DAMAGE_EFFECT_SHOCK | OCTAVIA_SHOCK_DAMAGE, SPELL_SHOCK
     ld c, 1
 .shoot
     ld b, 0 ; b is false if the spell should hurt enemies.

@@ -137,9 +137,9 @@ ProcessMenus::
     ld a, l
     add a, 2 * 8 ; Get to the end of the ButtonHooks buffer
     ld l, a
-    jr nc, .nocarry
-    inc h
-.nocarry
+    adc a, h
+    sub a, l
+    ld h, a
     
     ; Save currently selected item
     inc hl ; Skip prev

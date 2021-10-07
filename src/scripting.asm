@@ -7,10 +7,10 @@ INCLUDE "scripting.inc"
 INCLUDE "text.inc"
 
 MACRO load_hl_scriptpointer
-    ld a, [wActiveScriptPointer + 1]
+    ld hl, wActiveScriptPointer + 1
+    ld a, [hli]
+    ld h, [hl]
     ld l, a
-    ld a, [wActiveScriptPointer + 2]
-    ld h, a
 ENDM
 
 MACRO load_scriptpointer_hl

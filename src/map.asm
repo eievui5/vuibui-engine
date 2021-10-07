@@ -115,7 +115,7 @@ UpdateActiveMap::
 		call pb16_unpack_block
 	pop hl
 
-    ld a, [hSystem]
+    ldh a, [hSystem]
     and a, a
     jr z, .palSkip
 
@@ -172,7 +172,7 @@ UpdateActiveMap::
 	pop hl
 	inc hl ; Seek to attributes
 
-	ld a, [hMapBankBuffer]
+	ldh a, [hMapBankBuffer]
 	rst SwapBank
 
 	; Attributes
@@ -188,7 +188,7 @@ UpdateActiveMap::
 	pop hl
 	inc hl ; Seek to Data
 
-	ld a, [hMapBankBuffer]
+	ldh a, [hMapBankBuffer]
 	rst SwapBank
 
 	; Data
@@ -228,7 +228,7 @@ UpdateActiveMap::
     ld a, PALETTE_STATE_RESET
     ld [wPaletteState], a
 
-	ld a, [hLCDCBuffer]
+	ldh a, [hLCDCBuffer]
 	ldh [rLCDC], a
     
     jr .skipDoubleLoad
@@ -519,7 +519,7 @@ ReloadMapGraphics::
 
     pop hl
 
-    ld a, [hSystem]
+    ldh a, [hSystem]
     and a, a
     jr z, .cgbSkip
 

@@ -101,7 +101,6 @@ InventoryHeader::
     dw InventoryClose
 
 InventoryInit:
-
 ; Fade out before we turn off the screen
     ld a, PALETTE_STATE_FADE_LIGHT
     ld [wPaletteState], a
@@ -803,9 +802,7 @@ InventoryClose:
     ldh [hLCDCBuffer], a
     ldh [rLCDC], a
 
-    ei
-
-    ret
+    reti
 
 MoveRight:
     xor a, a
@@ -1241,6 +1238,20 @@ SECTION "Inventory Data", ROMX
 InventoryMap:
     INCBIN "menus/inventory.tilemap"
 .end
+
+InventoryText:
+.save
+    db "Save", 0
+.andExit
+    db "& Exit", 0
+.close
+    db "Close", 0
+.octavia
+    db "Octavia", 0
+.poppy
+    db "Poppy", 0
+.tiber
+    db "Tiber", 0
 
 InventoryLetters:
     db "Save&xitClos", 0

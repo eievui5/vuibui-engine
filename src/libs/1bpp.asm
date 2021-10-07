@@ -1,4 +1,3 @@
-
 ;
 ; 1BPP graphics functions.
 ;

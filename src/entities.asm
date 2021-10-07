@@ -1,8 +1,9 @@
 INCLUDE "banks.inc"
 INCLUDE "directions.inc"
 INCLUDE "entity.inc"
-INCLUDE "hardware.inc"
 INCLUDE "graphics.inc"
+INCLUDE "hardware.inc"
+INCLUDE "lb.inc"
 INCLUDE "tiledata.inc"
 
 ; Entities are stored in wEntityArray, which includes a 2-byte pointer to the
@@ -513,8 +514,7 @@ DetectEntity::
     ; Increment the array index
     ld h, b ; Swap over to hl for some math
     ld l, c
-    ld b, 0
-    ld c, sizeof_Entity
+    lb bc, 0, sizeof_Entity
     add hl, bc
     ld a, h
     cp a, high(sizeof_Entity * NB_ENTITIES)

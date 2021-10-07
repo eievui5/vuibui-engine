@@ -44,9 +44,8 @@ VBlank:
 ; Redraw the HUD and print function
     ld a, [wEnableHUD]
     and a, a
-    jr z, .input
-    call UpdatePrint
-
+    call nz, UpdatePrint
+    ; Fallthrough
 .input
     call UpdateInput
     call audio_update

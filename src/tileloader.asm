@@ -331,7 +331,6 @@ VBlankScrollLoader::
 
     ; Load a metatile if needed
     ld a, [wVBlankMapLoadPosition]
-    ld b, a
     ld b, TILES_PER_FRAME ; Save the index up here so that we can push in the loop
     and a, a
     jr nz, .skipFirst
@@ -348,7 +347,7 @@ VBlankScrollLoader::
     ld bc, $0000
     ld hl, wMetatileDefinitions
     call LoadMetatile
-    ld a, [hSystem]
+    ldh a, [hSystem]
     and a, a
     jr z, :+
     ; If not on DMG, load attributes
@@ -395,9 +394,8 @@ VBlankScrollLoader::
     jr .loadTile
 .loadDown
     inc b
-    jr z, .endLoad
-    jr .loadTile
-
+    jr nz, .loadTile
+    ; Fallthrough
 .endLoad
     xor a
     ld [wRoomTransitionDirection], a

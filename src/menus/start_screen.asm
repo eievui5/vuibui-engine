@@ -103,9 +103,7 @@ TestMenuInit:
     ldh [rLCDC], a
     ldh [hLCDCBuffer], a
 
-    ei
-
-    ret
+    reti
 
 TestMenuRedraw:
     ldh a, [rSTAT]

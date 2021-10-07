@@ -106,7 +106,7 @@ RenderMetasprite::
     ld [de], a
     inc de
     ; Load attributes.
-    ld a, [hRenderByte]
+    ldh a, [hRenderByte]
     bit 2, a ; Every 8/60 second, set pallet!
     ld a, [hl]
     jr z, .skipFlip
