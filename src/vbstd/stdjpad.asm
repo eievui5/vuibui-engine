@@ -1,7 +1,7 @@
 
-; This version of input.asm has been modified by Eievui to fit VuiBui's
-; naming conventions. (ex: hCurKeys rather than cur_keys)
-
+; This version of input.asm has been modified by Eievui to fit the VuiBui
+; standard library, and renamed to stdpad.asm
+;
 ;
 ; Controller reading for Game Boy and Super Game Boy
 ;

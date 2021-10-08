@@ -1,3 +1,7 @@
+
+
+; Eievui - swapped bc, d with de, b so that the function was cheaper to entities
+; (which rely on c) and rewrote the description.
 ;
 ; Pseudorandom number generator
 ;
@@ -19,9 +23,6 @@
 ;    misrepresented as being the original software.
 ; 3. This notice may not be removed or altered from any source distribution.
 ;
-
-; Eievui - swapped bc, d with de, b so that the function was cheaper to entities
-; (which rely on c) and rewrote the description
 
 section "rand_ram",WRAM0
 randstate:: ds 4
