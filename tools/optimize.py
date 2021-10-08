@@ -55,8 +55,7 @@ patterns = {
 	# Bad: ld b, b (or other identical registers)
 	# Meh: nop
 	# Good: omit (unless you need it for timing)
-	(lambda line1, prev: re.match(r'ld ([abcdehl]), \1$', line1.code)
-		or line1.code == 'nop'),
+	(lambda line1, prev: re.match(r'ld ([abcdehl]), \1$', line1.code)),
 ],
 'Inefficient HRAM load': [
 	# Bad: ld a, [hFoo] (or [rFoo])
@@ -67,7 +66,8 @@ patterns = {
 	# Bad: ld [hFoo], a (or [rFoo])
 	# Good: ldh [hFoo], a
 	(lambda line1, prev: re.match(r'ld \[[hr][^l]', line1.code)
-		and line1.code.endswith(', a')),
+		and line1.code.endswith(', a') and not line1.code in {'ld [rROMB0], a',
+		'ld [rROMB1], a', 'ld [rRAMG], a', 'ld [rRAMB], a'}),
 ],
 # 'a = 0': [
 # 	# Bad: ld a, 0
@@ -442,17 +442,17 @@ patterns = {
 		and (prev[0].code == 'ret' or
 			line2.code.split()[-1].lstrip('n') == prev[0].code.split()[-1].lstrip('n'))),
 ],
-'Stub function': [
-	# Bad: call [z|nz|c|nc,] Foo / ... / Foo: / ret
-	# Good: (do nothing)
-	#
-	# Bad: jr|jp [z|nz|c|nc,] Foo / ... / Foo: / ret
-	# Good: ret [z|nz|c|nc]
-	(lambda line1, prev: re.match(r'[A-Za-z_\.]', line1.text[0])
-		and ' ' not in line1.code
-		and line1.code.lower() not in {'endc', 'endr', 'endm'}),
-	(lambda line2, prev: line2.code == 'ret'),
-],
+#'Stub function': [
+#	# Bad: call [z|nz|c|nc,] Foo / ... / Foo: / ret
+#	# Good: (do nothing)
+#	#
+#	# Bad: jr|jp [z|nz|c|nc,] Foo / ... / Foo: / ret
+#	# Good: ret [z|nz|c|nc]
+#	(lambda line1, prev: re.match(r'[A-Za-z_\.]', line1.text[0])
+#		and ' ' not in line1.code
+#		and line1.code.lower() not in {'endc', 'endr', 'endm'}),
+#	(lambda line2, prev: line2.code == 'ret'),
+#],
 'Stub jump': [
 	# Bad: call [z|nz|c|nc,] Foo / ... / Foo: / jr Bar
 	# Good: call [z|nz|c|nc,] Bar
