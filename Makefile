@@ -25,7 +25,7 @@ RGBGFX  := $(RGBDS)rgbgfx
 ROM = $(BINDIR)/$(ROMNAME).$(ROMEXT)
 
 # Argument constants
-INCDIRS  = $(SRCDIR)/ $(SRCDIR)/include/
+INCDIRS  = $(SRCDIR)/ $(SRCDIR)/include/ $(SRCDIR)/vbstd/
 WARNINGS = all extra
 ASFLAGS  = -p $(PADVALUE) $(addprefix -i,$(INCDIRS)) $(addprefix -W,$(WARNINGS))
 LDFLAGS  = -p $(PADVALUE) -S romx=64
