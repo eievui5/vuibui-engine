@@ -1,6 +1,7 @@
 INCLUDE "engine.inc"
 INCLUDE "hardware.inc"
 INCLUDE "graphics.inc"
+INCLUDE "stdopt.inc"
 
 SECTION "Update Palettes", ROM0
 
@@ -90,7 +91,8 @@ Cgb:
     ld a, b
     cp a, PALETTE_STATE_RESET
     jr nz, CgbFade
-    ; Fallthrough
+    fall CgbReset
+    
 CgbReset:
     ld hl, wBCPD
     ld c, 8 * 4 ; Number of colors

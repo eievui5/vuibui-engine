@@ -4,6 +4,7 @@ INCLUDE "engine.inc"
 INCLUDE "entity.inc"
 INCLUDE "players.inc"
 INCLUDE "scripting.inc"
+INCLUDE "stdopt.inc"
 INCLUDE "text.inc"
 
 MACRO load_hl_scriptpointer
@@ -267,7 +268,7 @@ ScriptAddPointer:
     add a, [hl]
     ld [de], a
     inc hl
-    jp ScriptExitStub
+    fall ScriptExitStub
 
 ; Save some space with a tail call.
 ScriptExitStub:

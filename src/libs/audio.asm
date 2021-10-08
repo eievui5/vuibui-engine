@@ -296,7 +296,7 @@ set_pitch_hl_to_d:
 ; @param C deep parameter if valid
 ; @param D current pitch
 channel_writing_jumptable:
-  jr update_pulse1
+  jr update_pulse1 ; no-optimize Stub jump
   jr update_pulse2
   jr update_wave
   jr update_noise

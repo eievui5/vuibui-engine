@@ -268,7 +268,7 @@ UpdateActiveMap::
     ASSERT MAPDATA_SET_RESPAWN == 5
     dec a
     jr z, MapdataSetRespawn
-    rst crash
+    rst CrashHandler
 
 MapdataEntity:
     ldh a, [hRespawnEntitiesFlag]

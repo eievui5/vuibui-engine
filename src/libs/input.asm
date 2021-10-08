@@ -87,8 +87,9 @@ UpdateInput::
 .onenibble:
   ldh [rP1],a     ; switch the key matrix
   call .knownret  ; burn 10 cycles calling a known ret
-  ldh a,[rP1]     ; ignore value while waiting for the key matrix to settle
-  ldh a,[rP1]
+  ; ignore value while waiting for the key matrix to settle
+  ldh a,[rP1] ; no-optimize Useless loads.
+  ldh a,[rP1] ; no-optimize Useless loads.
   ldh a,[rP1]     ; this read counts
   or $F0   ; A7-4 = 1; A3-0 = unpressed keys
 .knownret:

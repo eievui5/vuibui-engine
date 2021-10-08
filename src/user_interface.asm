@@ -355,8 +355,7 @@ UpdatePrint::
     jp z, .wait
     dec a
     jp z, .slideOut
-    ld b, b
-    ret
+    rst CrashHandler
 
 .start
 

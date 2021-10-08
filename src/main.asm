@@ -3,15 +3,11 @@ INCLUDE "engine.inc"
 SECTION "Null Handler", ROM0[$0000]
     nop
     nop
-    rst crash
+    rst CrashHandler
 
 ; @ TODO: Make a proper crash handler.
 SECTION "Crash Handler", ROM0[$0038]
-crash::
-    ld b, b
-    di
-.loop
-    jr .loop
+CrashHandler::
 
 SECTION "Main Loop", ROM0
 
@@ -30,7 +26,7 @@ Main::
     ASSERT ENGINE_STATE_MENU == 2
     dec a
     jr z, Menu
-    ld b, b
+    rst CrashHandler
 
 .end::
     xor a, a

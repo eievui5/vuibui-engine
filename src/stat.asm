@@ -3,6 +3,7 @@ INCLUDE "engine.inc"
 INCLUDE "graphics.inc"
 INCLUDE "hardware.inc"
 INCLUDE "stat.inc"
+INCLUDE "stdopt.inc"
 
 SECTION "Stat Interrupt", ROM0[$48]
     ; Save register state
@@ -35,8 +36,7 @@ Stat:
     dec a
     jr z, TextboxPalette
 
-    ld b, b
-    jp ExitStat
+    rst CrashHandler
 
 
 FXMode:
@@ -64,8 +64,8 @@ FXMode:
     and a, a
     jp z, ExitStat
 
-    ld b, b ; Error - invalid state
-    jp ExitStat
+    ; Error - invalid state
+    rst CrashHandler
 
 ShowHUD:    
     ; Wait for safe VRAM access
@@ -168,7 +168,8 @@ TextboxPalette:
     ldh [rSCY], a
     xor a, a
     ldh [rSCX], a
-    ; Fallthrough
+    fall ExitStat
+
 ExitStat:
     ; Restore register state
     ld a, [wInterruptBankBuffer]

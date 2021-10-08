@@ -247,12 +247,12 @@ ScrollLoader::
 :
 
     ld a, c
-    sub a, 1 ; dec 1 + carry flag
+    sub a, 1 ; no-optimize a++|a-- ; dec 1 + carry flag
     ld c, a
     jr nc, .start
     ld c, 15
     ld a, b
-    sub a, 1
+    sub a, 1 ; no-optimize a++|a--
     ld b, a
     jr nc, .start
     
@@ -268,7 +268,7 @@ ScrollLoader::
     ldh [hSCYBuffer], a
 :
     ld a, b
-    sub a, 1 ; dec 1 + carry flag
+    sub a, 1 ; no-optimize a++|a-- ; dec 1 + carry flag
     ld b, a
     jr nc, .start
     ld b, 15
@@ -289,12 +289,12 @@ ScrollLoader::
     ldh [hSCYBuffer], a
 :
     ld a, b
-    sub a, 1 ; dec 1 + carry flag
+    sub a, 1 ; no-optimize a++|a-- ; dec 1 + carry flag
     ld b, a
     jp nc, .start
     ld b, 15
     ld a, c
-    sub a, 1
+    sub a, 1 ; no-optimize a++|a--
     ld c, a
     jp nc, .start
     
@@ -311,7 +311,7 @@ ScrollLoader::
 :
 
     ld a, c
-    sub a, 1 ; dec 1 + carry flag
+    sub a, 1 ; no-optimize a++|a-- ; dec 1 + carry flag
     ld c, a
     jp nc, .start
     ld c, 15
@@ -395,7 +395,6 @@ VBlankScrollLoader::
 .loadDown
     inc b
     jr nz, .loadTile
-    ; Fallthrough
 .endLoad
     xor a
     ld [wRoomTransitionDirection], a

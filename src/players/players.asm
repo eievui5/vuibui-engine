@@ -1,14 +1,10 @@
-INCLUDE "banks.inc"
-INCLUDE "directions.inc"
 INCLUDE "engine.inc"
 INCLUDE "entity.inc"
-INCLUDE "enum.inc"
-INCLUDE "graphics.inc"
 INCLUDE "hardware.inc"
 INCLUDE "map.inc"
 INCLUDE "npc.inc"
 INCLUDE "players.inc"
-INCLUDE "text.inc"
+INCLUDE "stdopt.inc"
 INCLUDE "tiledata.inc"
 
 SECTION "Player Functions", ROM0
@@ -632,7 +628,7 @@ PlayerSetWaitLink:
     jr .store
 .tiber::
     ld a, PLAYER_TIBER
-    ; Fallthrough
+    fall .store
 .store
     ; Add `a` to `wPlayerWaitLink` and store in `hl`
     add a, LOW(wPlayerWaitLink)

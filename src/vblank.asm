@@ -45,7 +45,7 @@ VBlank:
     ld a, [wEnableHUD]
     and a, a
     call nz, UpdatePrint
-    ; Fallthrough
+
 .input
     call UpdateInput
     call audio_update

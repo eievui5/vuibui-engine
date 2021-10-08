@@ -182,7 +182,7 @@ InventoryInit:
     jr z, .octaviaItems
     dec a
     jr z, .poppyItems
-    ; fallthrough...
+
 ; Tiber items
     ld de, pb16_Sword
     get_tile hl, TILE_ITEM_0_0
