@@ -38,27 +38,27 @@ DeathParticleScript::
     endfor
 
     kill
-    
+
 DeathParticleMetasprites:
-    dw .start
-    dw .alt
-    dw .single
+    DW .start
+    DW .alt
+    DW .single
 
 .start
-    db -16, -16, TILE_SPARKLE_LEFT, 2
-    db -16, -8, TILE_SPARKLE_RIGHT, 2
-    db 0, 0, TILE_SPARKLE_LEFT, 2
-    db 0, 8, TILE_SPARKLE_RIGHT, 2
-    db METASPRITE_END
+    DB -16, -16, TILE_SPARKLE_LEFT, 2
+    DB -16, -8, TILE_SPARKLE_RIGHT, 2
+    DB 0, 0, TILE_SPARKLE_LEFT, 2
+    DB 0, 8, TILE_SPARKLE_RIGHT, 2
+    DB METASPRITE_END
 
 .alt
-    db 0, -16, TILE_SPARKLE_LEFT, 2
-    db 0, -8, TILE_SPARKLE_RIGHT, 2
-    db -16, 0, TILE_SPARKLE_LEFT, 2
-    db -16, 8, TILE_SPARKLE_RIGHT, 2
-    db METASPRITE_END
+    DB 0, -16, TILE_SPARKLE_LEFT, 2
+    DB 0, -8, TILE_SPARKLE_RIGHT, 2
+    DB -16, 0, TILE_SPARKLE_LEFT, 2
+    DB -16, 8, TILE_SPARKLE_RIGHT, 2
+    DB METASPRITE_END
 
 .single
-    db -8, -8, TILE_SPARKLE_LEFT, 2
-    db -8, 0, TILE_SPARKLE_RIGHT, 2
-    db METASPRITE_END
+    DB -8, -8, TILE_SPARKLE_LEFT, 2
+    DB -8, 0, TILE_SPARKLE_RIGHT, 2
+    DB METASPRITE_END

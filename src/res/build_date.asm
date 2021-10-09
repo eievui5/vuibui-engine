@@ -1,7 +1,7 @@
 
 SECTION "Build date", ROM0
 
-    db "Built "
+    DB "Built "
 BuildDate::
-    db __ISO_8601_UTC__
-    db 0
+    DB __ISO_8601_UTC__
+    DB 0

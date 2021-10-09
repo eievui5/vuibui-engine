@@ -28,11 +28,11 @@ AddMenu::
     dec a
     jr nz, .mult
 .skipMult
-    
+
     push hl
 
     ld c, Menu_ROMSize
-    
+
     ; Changed this to a standalone loop for now. My func is reversed.
 .copy
     ld a, [de]
@@ -70,7 +70,7 @@ ProcessMenus::
     ld hl, wMenu0
     ld bc, sizeof_Menu
     dec a
-    
+
     jr z, .skipMult
 .mult
     add hl, bc
@@ -140,7 +140,7 @@ ProcessMenus::
     adc a, h
     sub a, l
     ld h, a
-    
+
     ; Save currently selected item
     inc hl ; Skip prev
     inc hl ; Skip flags
@@ -247,16 +247,16 @@ ProcessMenus::
 
 
 .menuActions
-    dw MenuMoveDown  ; DOWN
-    dw MenuMoveUp    ; UP
-    dw MenuDoNothing ; LEFT
-    dw MenuDoNothing ; RIGHT
-    dw MenuDoNothing ; START
-    dw MenuDoNothing ; SELECT
-    dw MenuCancel    ; B
-    dw MenuValidate  ; A
+    DW MenuMoveDown  ; DOWN
+    DW MenuMoveUp    ; UP
+    DW MenuDoNothing ; LEFT
+    DW MenuDoNothing ; RIGHT
+    DW MenuDoNothing ; START
+    DW MenuDoNothing ; SELECT
+    DW MenuCancel    ; B
+    DW MenuValidate  ; A
 
-    dw MenuAddNew
+    DW MenuAddNew
 
 
 MenuMoveDown:
@@ -296,7 +296,7 @@ MenuValidate:
     ld a, [hl] ; Current item
     ld [wPreviousMenuItem], a
     ld a, MENU_VALIDATED
-    db $11 ; ld de, XXXX
+    DB $11 ; ld de, XXXX
 MenuCancel:
     ld a, MENU_CANCELLED
     ld [wMenuClosingReason], a
@@ -324,7 +324,7 @@ ForceMenuValidation::
     ld a, MENU_ACTION_VALIDATE
     ld [wMenuAction], a
     ret
- 
+
 PreventMenuAction::
     xor a
     ld [wMenuAction], a
@@ -339,8 +339,8 @@ wNbMenus::
 
 ; What action to take after processing the menu
 wMenuAction::
-    db ; Action type
-    ds 3 ; Action args
+    DB ; Action type
+    DS 3 ; Action args
 ; The reason why this menu should be closed
 wMenuClosingReason::
     db

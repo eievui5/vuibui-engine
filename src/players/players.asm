@@ -24,7 +24,7 @@ HandlePlayers::
     jr nz, .checkPoppy
     ld a, BANK(OctaviaPlayerLogic)
     rst SwapBank
-    call OctaviaPlayerLogic 
+    call OctaviaPlayerLogic
     ld a, [wOctaviaSpellActive]
     and a, a
     ld a, BANK(OctaviaSpellLogic)
@@ -34,7 +34,7 @@ HandlePlayers::
 .checkPoppy
     ld a, PLAYER_POPPY
     call PlayerActivityCheck.disabled ; If rooms do not match or player is disabled, skip.
-    jr nz, .checkTiber    
+    jr nz, .checkTiber
     ld a, BANK(PoppyPlayerLogic)
     rst SwapBank
     call PoppyPlayerLogic
@@ -150,7 +150,7 @@ CyclePlayers:
     ld l, a
     adc a, HIGH(wPlayerWaitLink)
     sub a, l
-    ld h, a 
+    ld h, a
     ld b, [hl]
     ld hl, wPlayerWaitLink
 .waitLoop
@@ -165,7 +165,7 @@ CyclePlayers:
     jr nz, .waitLoop
     ret
 
-; Various logic checks to determine the activity of players. Z is set if the 
+; Various logic checks to determine the activity of players. Z is set if the
 ; checks all pass. `a: Player Index`
 ; @ In order of sensitivity, the different modes are:
 ; @ .waiting: `z = !(wPlayerWaitlink[a] == wActivePlayer || wPlayerDisabled[a] || (wWorldMapPosition == wPlayerRoom[a]))`
@@ -179,7 +179,7 @@ PlayerActivityCheck::
     ld l, a
     adc a, HIGH(wPlayerWaitLink)
     sub a, l
-    ld h, a 
+    ld h, a
     ld a, [wActivePlayer]
     cp a, [hl]
     ret nz
@@ -192,7 +192,7 @@ PlayerActivityCheck::
     ld l, a
     adc a, HIGH(wPlayerDisabled)
     sub a, l
-    ld h, a 
+    ld h, a
     ld a, [hl]
     and a, a
     ret nz
@@ -204,7 +204,7 @@ PlayerActivityCheck::
     ld l, a
     adc a, HIGH(wPlayerRoom)
     sub a, l
-    ld h, a 
+    ld h, a
     ld a, [wWorldMapPositionY]
     cp a, [hl]
     ret nz ; If the rooms match, call normally.
@@ -244,7 +244,7 @@ UseItemCheck::
 
 ; Check if a player is trying to talk to an NPC. If this succeeds a super return
 ; is performed, and player logic will end.
-; @ `hl`: Pointer to Player. 
+; @ `hl`: Pointer to Player.
 NPCInteractionCheck::
     ldh a, [hNewKeys]
     bit PADB_A, a
@@ -254,7 +254,7 @@ NPCInteractionCheck::
     ; Divide X by 16
     ld a, e
     ; Weird offset! I clearly screwed up entity positions...
-    sub a, $F 
+    sub a, $F
     and a, $F0
     swap a
     ; Add X to wMapData, store in `bc`
@@ -302,9 +302,9 @@ NPCInteractionCheck::
     pop hl ; Super ret !
     ret
 
-; Check if the players are trying to talk. If this succeeds a super return is 
+; Check if the players are trying to talk. If this succeeds a super return is
 ; performed, and player logic will end.
-; @ `hl`: Pointer to Player. 
+; @ `hl`: Pointer to Player.
 PlayerInteractionCheck::
     ldh a, [hNewKeys]
     bit PADB_A, a
@@ -319,7 +319,7 @@ PlayerInteractionCheck::
     ld l, a
     adc a, HIGH(PlayerDialogueLookup)
     sub a, l
-    ld h, a 
+    ld h, a
     ld a, [hli]
     ld h, [hl]
     ld l, a
@@ -359,7 +359,7 @@ GetEntityTargetPosition::
 .left
     ld a, -16
     jr .storeX
-.right 
+.right
     ld a, 16
 .storeX
     add a, [hl]
@@ -370,7 +370,7 @@ GetEntityTargetPosition::
 .down
     ld a, 16
     jr .storeY
-.up 
+.up
     ld a, -16
 .storeY
     add a, [hl]
@@ -389,7 +389,7 @@ PlayerTransitionMovement::
     ld l, a
     adc a, HIGH(wPlayerArray + Entity_YPos)
     sub a, l
-    ld h, a 
+    ld h, a
     ld a, [wRoomTransitionDirection]
     ASSERT TRANSDIR_DOWN == 1
     dec a
@@ -410,7 +410,7 @@ PlayerTransitionMovement::
     ; These location checks are slightly off, since sprites are not centered.
     cp a, 56 ; stops on the third tile
     jr z, .updateAllyPositions ; Are we already there?
-    inc [hl] ; No? Then move down    
+    inc [hl] ; No? Then move down
     jr .animatePlayerY
 .up
     ld a, [hl]
@@ -451,7 +451,7 @@ PlayerTransitionMovement::
     ld l, a
     adc a, HIGH(wPlayerArray + Entity_YPos)
     sub a, l
-    ld h, a 
+    ld h, a
     ld d, [hl] ; Store active Y
     inc l
     ld e, [hl] ; Store active X
@@ -488,7 +488,7 @@ PlayerTransitionMovement::
     ld l, a
     adc a, HIGH(wPlayerArray)
     sub a, l
-    ld h, a 
+    ld h, a
     call MoveNoClip
 
 .updateAllyPositionsDecrement
@@ -504,7 +504,7 @@ PlayerTransitionMovement::
 ScreenTransitionCheck::
     ; Check if we are within the transition tiles.
     ASSERT TILEDATA_TRANSITION_LEFT - TILEDATA_TRANSITION_DOWN == 3
-    ; We don't *actually* want this to be one lower, but the transition routine 
+    ; We don't *actually* want this to be one lower, but the transition routine
     ; expects DIR + 1
     sub a, TILEDATA_TRANSITION_DOWN - 1
     ; And we *do* want this 1 higher, but we need to offset the - we just did.
@@ -565,7 +565,7 @@ WarpTileCheck::
     ld l, a
     adc a, HIGH(wWarpData0)
     sub a, l
-    ld h, a 
+    ld h, a
     ld a, [hli]
     ld [wActiveWorldMap], a
     ld a, [hli]
@@ -593,7 +593,7 @@ WarpTileCheck::
     ; End the frame early.
     ld sp, wStackOrigin
     jp Main.end
-    
+
 
 PlayerUpdateMapPosition:
     ld a, [wActivePlayer]
@@ -601,7 +601,7 @@ PlayerUpdateMapPosition:
 
     ld hl, wPlayerRoom - 2
     ld de, wPlayerWaitLink
-    ld c, 3 + 1 
+    ld c, 3 + 1
 .waitLoop
     inc hl
     inc hl
@@ -635,7 +635,7 @@ PlayerSetWaitLink:
     ld l, a
     adc a, HIGH(wPlayerWaitLink)
     sub a, l
-    ld h, a 
+    ld h, a
     ld a, [wActivePlayer]
     ld [hl], a
     ret
@@ -723,7 +723,7 @@ CheckAllyCollision::
     dec a
     jr z, .tiberSkip
     ; if we already know octavia is the active player, we don't need to check poppy
-.poppySkip 
+.poppySkip
     ld hl, wPoppy
     call CheckEntityCollision
     xor a, a
@@ -760,7 +760,7 @@ CheckAllyCollision::
 
 ; Used to lookup the dialogue corresponding to the current room.
 PlayerDialogueLookup:
-    dw .octavia, .poppy, .tiber ; faster I guess?
+    DW .octavia, .poppy, .tiber ; faster I guess?
 .octavia
     far_pointer OctaviaGeneric
 .poppy
@@ -774,65 +774,65 @@ wPlayerVariables::
 
 ; The Character currently being controlled by the player. Used as an offset.
 wActivePlayer::
-    ds 1
+    DS 1
 
 ; Make sure we only transition upon *entering* a transition tile.
 wTransitionBuffer::
-    ds 1
+    DS 1
 
 ; Used to adjust entity logic based on the layout of the current room
 wAllyLogicMode::
-    ds 1
+    DS 1
 
 ; Player Max Health
 wPlayerMaxHealth::
     .octavia::
-        ds 1
+        DS 1
     .poppy::
-        ds 1
+        DS 1
     .tiber::
-        ds 1
+        DS 1
 
 ; Player disablers
 wPlayerDisabled::
     .octavia::
-        ds 1
+        DS 1
     .poppy::
-        ds 1
+        DS 1
     .tiber::
-        ds 1
+        DS 1
 
-; Player waiting and linking. If the value does not match that of the active 
+; Player waiting and linking. If the value does not match that of the active
 ; player they should wait. This is important because it means switching players
 ; will follow each other independantly; switching from an active player to a
 ; waiting player will cause the other group to wait.
 wPlayerWaitLink::
     .octavia::
-        ds 1
+        DS 1
     .poppy::
-        ds 1
+        DS 1
     .tiber::
-        ds 1 
+        DS 1
 
 ; Player world map Position. Used to keep track of which room an inactive
 ; player is waiting in.
 wPlayerRoom::
     .octavia::
-        ds 2
+        DS 2
     .poppy::
-        ds 2
+        DS 2
     .tiber::
-        ds 2
+        DS 2
 
 ; The currently equipped items.
 ; Lower Nibble = A, Upper Nibble = B
 wPlayerEquipped::
     .octavia::
-        ds 1
+        DS 1
     .poppy::
-        ds 1
+        DS 1
     .tiber::
-        ds 1
+        DS 1
 
 ; The player's unlocked items.
 ; @ bit 0: Item 0
@@ -841,11 +841,11 @@ wPlayerEquipped::
 ; @ bit 3: Item 3
 wItems::
     .octavia::
-        ds 1
+        DS 1
     .poppy::
-        ds 1
+        DS 1
     .tiber::
-        ds 1
+        DS 1
 
 wPlayerVariablesEnd::
 
@@ -860,4 +860,4 @@ wPlayerArray::
 
 SECTION UNION "Volatile", HRAM
 hLastBank:
-    ds 1
+    DS 1

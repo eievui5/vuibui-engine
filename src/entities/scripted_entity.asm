@@ -111,30 +111,30 @@ ScriptedEntityScript:
 SlimeMetasprites:
     DEF FRAME_NORMAL EQU 0
     ; Normal sprite
-    dw .normal
-    dw .flip
-    dw .normal
-    dw .flip
+    DW .normal
+    DW .flip
+    DW .normal
+    DW .flip
     DEF FRAME_BOUNCE EQU 4
     ; Smaller, "squished" sprite
-    dw .bounce
-    dw .bounceFlip
-    dw .bounce
-    dw .bounceFlip
+    DW .bounce
+    DW .bounceFlip
+    DW .bounce
+    DW .bounceFlip
 
 .normal
-    db -8, -8, $86, OAMF_XFLIP
-    db -8, 0, $84, OAMF_XFLIP
-    db METASPRITE_END
+    DB -8, -8, $86, OAMF_XFLIP
+    DB -8, 0, $84, OAMF_XFLIP
+    DB METASPRITE_END
 .bounce
-    db -8, -8, $8A, OAMF_XFLIP
-    db -8, 0, $88, OAMF_XFLIP
-    db METASPRITE_END
+    DB -8, -8, $8A, OAMF_XFLIP
+    DB -8, 0, $88, OAMF_XFLIP
+    DB METASPRITE_END
 .flip
-    db -8, -8, $84, 0
-    db -8, 0, $86, 0
-    db METASPRITE_END
+    DB -8, -8, $84, 0
+    DB -8, 0, $86, 0
+    DB METASPRITE_END
 .bounceFlip
-    db -8, -8, $88, 0
-    db -8, 0, $8A, 0
-    db METASPRITE_END
+    DB -8, -8, $88, 0
+    DB -8, 0, $8A, 0
+    DB METASPRITE_END

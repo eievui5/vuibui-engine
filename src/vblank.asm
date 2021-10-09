@@ -68,7 +68,7 @@ VBlank:
 SECTION "VBlank Vars", WRAM0
 
 wInterruptBankBuffer::
-    ds 1
+    DS 1
 
 ; Used to store Gameplay scroll values during menus
 wGameplaySC::
@@ -78,15 +78,15 @@ wGameplaySC::
 ; Just a global frame timer
 ; Could be used for delays such as the health bar or for tracking playtime
 wFrameTimer::
-    ds 1
+    DS 1
 
 SECTION "Register Buffers", HRAM
 
 hSCXBuffer::
-    ds 1
+    DS 1
 
 hSCYBuffer::
-    ds 1
+    DS 1
 
 hLCDCBuffer::
-    ds 1
+    DS 1

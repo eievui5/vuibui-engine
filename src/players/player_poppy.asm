@@ -26,7 +26,7 @@ PoppyPlayerLogic::
     and a, a
     jr z, .noDamage
     ld a, PLAYER_STATE_HURT
-    ld [wPoppy_State], a 
+    ld [wPoppy_State], a
     ld a, KNOCK_FRAMES
     ld [wPoppy_Timer], a
     ; Next, set the timer. This falls through.
@@ -42,17 +42,17 @@ PoppyPlayerLogic::
 
 .stateJumpTable
     ASSERT PLAYER_STATE_NORMAL == 0
-    dw PoppyActiveNormal
+    DW PoppyActiveNormal
     ASSERT PLAYER_STATE_HURT == 1
-    dw PoppyDamage
+    DW PoppyDamage
     ASSERT PLAYER_STATE_ITEM0 == 2
-    dw PoppyBow
+    DW PoppyBow
     ASSERT PLAYER_STATE_ITEM1 == 3
-    dw PoppyBow
+    DW PoppyBow
     ASSERT PLAYER_STATE_ITEM2 == 4
-    dw PoppyBow
+    DW PoppyBow
     ASSERT PLAYER_STATE_ITEM3 ==5
-    dw PoppyBow
+    DW PoppyBow
 
 PoppyActiveNormal: ; How to move.
 
@@ -73,8 +73,8 @@ PoppyActiveNormal: ; How to move.
 
 .aiStateTable
     ASSERT ALLY_MODE_FOLLOW == 0
-    dw PoppyAIFollow
-    
+    DW PoppyAIFollow
+
 .skipAISwitch
     ld hl, wPoppy_State
     call UseItemCheck
@@ -144,7 +144,7 @@ PoppyBow:
     ld [hli], a
     ld a, [wPoppy_XPos]
     ld [hli], a
-    inc l 
+    inc l
     inc l
     ld a, POPPY_ARROW_DAMAGE ; Poppy's arrow Damage
     ld [hld], a
@@ -201,7 +201,7 @@ PoppyAIFollow:
     ld bc, PLAYER_POPPY * sizeof_Entity
     ld e, FOLLOW_CLOSE ; Poppy should always be close.
     call PlayerAIFollow
-    
+
     ld hl, wPoppy
     jp MoveAndSlide
 
@@ -244,8 +244,8 @@ PoppyGeneric::
 SECTION "Poppy Vars", WRAM0
 ; Used to keep track of how many arrows are active at a time.
 wPoppyActiveArrows::
-    ds 1
+    DS 1
 
 SECTION UNION "Volatile", HRAM
 hCurrentTile:
-    ds 1
+    DS 1

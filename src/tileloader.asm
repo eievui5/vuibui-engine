@@ -4,7 +4,7 @@ INCLUDE "hardware.inc"
 INCLUDE "lb.inc"
 INCLUDE "tiledata.inc"
 
-SECTION "Tileloader", ROM0 
+SECTION "Tileloader", ROM0
 
 ; Automatically loads the entire tilemap. Screen must be off.
 ; @ hl: Metatiles definitions pointer
@@ -104,7 +104,7 @@ LoadMetatile::
     add hl, hl
     ld b, h
     ld c, l
-    
+
     pop hl ; Definition target
     add hl, bc
     ; [hl] is now the metatile data to copy.
@@ -154,7 +154,7 @@ LoadMetatileData::
     ld l, a
     adc a, HIGH(wMetatileData)
     sub a, l
-    ld h, a 
+    ld h, a
     ld a, [hl] ; Load that tile's data.
     ld hl, wMapData
     add hl, de
@@ -188,7 +188,7 @@ ScrollLoader::
     jr z, .start
     ASSERT DIR_LEFT == 3
     lb bc, 15, 15
-    
+
 .start ; Scrolling loop
     ; Load 8 tiles per frame.
     ldh a, [hHaltAlternate]
@@ -255,7 +255,7 @@ ScrollLoader::
     sub a, 1 ; no-optimize a++|a--
     ld b, a
     jr nc, .start
-    
+
     ret
 .down
     ld a, c
@@ -297,7 +297,7 @@ ScrollLoader::
     sub a, 1 ; no-optimize a++|a--
     ld c, a
     jp nc, .start
-    
+
     ret
 .right
     ld a, b
@@ -403,7 +403,7 @@ VBlankScrollLoader::
     ; Don't worry about overwriting it if it's already there.
     ld bc, $0000
     ld hl, wMetatileDefinitions
-    call LoadMetatile    
+    call LoadMetatile
     ldh a, [hSystem]
     and a, a
     jr z, :+
@@ -415,7 +415,7 @@ VBlankScrollLoader::
         call LoadMetatile
         xor a, a ; Return to bank 0
         ldh [rVBK], a
-:  
+:
 
     xor a, a
     ldh [hEngineState], a ; Reset engine
@@ -457,14 +457,14 @@ VBlankScrollLoader::
 :
 
     ; We can load more than one tile, so lets see how many are left.
-    pop bc ; Remember the tile index? 
+    pop bc ; Remember the tile index?
     dec b
     jp nz, .skipFirst ; Still more? Keep going!
     ld a, [wVBlankMapLoadPosition]
     ; Only move the player/screen after the first row is done.
     and a, %11110000
     ret z
-    cp a, $F0 
+    cp a, $F0
     ret z
 
     ; Scrolling logic, then fall through ↓
@@ -588,42 +588,42 @@ ScreenSet::
     ld h, a
     jr ScreenSet
 
-SECTION "Metatile Definitions", WRAM0 
+SECTION "Metatile Definitions", WRAM0
 wMetatileDefinitions::
     ; 2 * 2 Tiles
-    ds 4 * MAX_METATILES
+    DS 4 * MAX_METATILES
 wMetatileAttributes::
     ; 2 * 2 Attributes
-    ds 4 * MAX_METATILES
+    DS 4 * MAX_METATILES
 wMetatileData::
     ; 1 data byte per tile.
-    ds MAX_METATILES
+    DS MAX_METATILES
 
 SECTION "Tilemap", WRAM0
 wMetatileMap::
-    ds 16 * 16
+    DS 16 * 16
 
-SECTION "Map Data", WRAM0 
+SECTION "Map Data", WRAM0
 
-; Like the tile map, but for data. Collision, pits, water. 
-; Storing this (redundant) map isn't great, but it allows me to update collision 
-; manually without doing something weird to the tilemap. If I ever need RAM, 
+; Like the tile map, but for data. Collision, pits, water.
+; Storing this (redundant) map isn't great, but it allows me to update collision
+; manually without doing something weird to the tilemap. If I ever need RAM,
 ; this is an easy 256 bytes.
-wMapData:: 
-    ds 16 * 16
+wMapData::
+    DS 16 * 16
 
 SECTION "Scroll Loader Vars", WRAM0
 
 ; 4.4 positional vector keeping track of the current tile to load.
 wVBlankMapLoadPosition::
-    ds 1
+    DS 1
 
 ; Which way to scroll? TRANSDIR is DIR + 1, since 0 means no scroll.
 wRoomTransitionDirection::
     ; 0 == inactive
     ; FACING_ENUMS slide the camera and load the room.
-    ds 1
+    DS 1
 
 SECTION UNION "Volatile", HRAM
 hHaltAlternate:
-    ds 1
+    DS 1

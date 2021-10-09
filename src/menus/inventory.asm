@@ -73,32 +73,32 @@ DEF SEL_PAL EQU 7
 SECTION "Inventory", ROM0
 
 ; The inventory uses custom selection logic so that it may have 2 dimensions.
-; SelectedItem treats bit 7 as the column, and the lower bits are used for 
+; SelectedItem treats bit 7 as the column, and the lower bits are used for
 ; vertical position
 
 InventoryHeader::
-    db BANK("Inventory")
-    dw InventoryInit
+    DB BANK("Inventory")
+    DW InventoryInit
     ; Used Buttons
-    db PADF_A | PADF_B | PADF_SELECT | PADF_START | PADF_RIGHT | PADF_LEFT | PADF_UP | PADF_DOWN
+    DB PADF_A | PADF_B | PADF_SELECT | PADF_START | PADF_RIGHT | PADF_LEFT | PADF_UP | PADF_DOWN
     ; Auto-repeat
-    db 0
+    DB 0
     ; Button functions
     ; A, B, Sel, Start, Right, Left, Up, Down
-    dw HandleAPress, HandleBPress, HandleStartPress, HandleStartPress, MoveRight, MoveLeft, MoveUp, MoveDown
-    db 0 ; Last selected item
+    DW HandleAPress, HandleBPress, HandleStartPress, HandleStartPress, MoveRight, MoveLeft, MoveUp, MoveDown
+    DB 0 ; Last selected item
     ; Allow wrapping
-    db 0
+    DB 0
     ; Default selected item
-    db 0
+    DB 0
     ; Number of items in the menu
-    db 2
+    DB 2
     ; Redraw
-    dw InventoryRedraw
+    DW InventoryRedraw
     ; Private Items Pointer
-    dw null
+    DW null
     ; Close Function
-    dw InventoryClose
+    DW InventoryClose
 
 InventoryInit:
 ; Fade out before we turn off the screen
@@ -146,7 +146,7 @@ InventoryInit:
     ld l, a
     adc a, HIGH(OctaviaLetters)
     sub a, l
-    ld h, a 
+    ld h, a
     get_tile de, TILE_NAME
     call LoadCharacters
 
@@ -155,7 +155,7 @@ InventoryInit:
     get_tile de, TILE_POINT
     ld c, 8
     call Unback1bppBanked
-    
+
     ld a, BANK(obpp_ItemSelection)
     ld hl, obpp_ItemSelection
     get_tile de, TILE_SELECTION
@@ -176,7 +176,7 @@ InventoryInit:
     get_tile hl, TILE_A_TOP
     ld b, 4
     call pb16_unpack_block
-    
+
     ld a, [wActivePlayer]
     and a, a
     jr z, .octaviaItems
@@ -188,17 +188,17 @@ InventoryInit:
     get_tile hl, TILE_ITEM_0_0
     ld b, 4
     call pb16_unpack_block
-    
+
     ld de, pb16_Shield
     get_tile hl, TILE_ITEM_1_0
     ld b, 4
     call pb16_unpack_block
-    
+
     ld de, pb16_Hammer
     get_tile hl, TILE_ITEM_2_0
     ld b, 4
     call pb16_unpack_block
-    
+
     ld de, pb16_Glove
     get_tile hl, TILE_ITEM_3_0
     ld b, 4
@@ -210,17 +210,17 @@ InventoryInit:
     get_tile hl, TILE_ITEM_0_0
     ld b, 4
     call pb16_unpack_block
-    
+
     ld de, pb16_Knife
     get_tile hl, TILE_ITEM_1_0
     ld b, 4
     call pb16_unpack_block
-    
+
     ld de, pb16_Cloak
     get_tile hl, TILE_ITEM_2_0
     ld b, 4
     call pb16_unpack_block
-    
+
     ld de, pb16_Placeholder
     get_tile hl, TILE_ITEM_3_0
     ld b, 4
@@ -232,17 +232,17 @@ InventoryInit:
     get_tile hl, TILE_ITEM_0_0
     ld b, 4
     call pb16_unpack_block
-    
+
     ld de, pb16_IceSpell
     get_tile hl, TILE_ITEM_1_0
     ld b, 4
     call pb16_unpack_block
-    
+
     ld de, pb16_ShockSpell
     get_tile hl, TILE_ITEM_2_0
     ld b, 4
     call pb16_unpack_block
-    
+
     ld de, pb16_HealSpell
     get_tile hl, TILE_ITEM_3_0
     ld b, 4
@@ -273,7 +273,7 @@ InventoryInit:
     ld l, a
     adc a, HIGH(PalOctavia)
     sub a, l
-    ld h, a 
+    ld h, a
     ld c, sizeof_PALETTE
     rst MemCopySmall
 
@@ -344,7 +344,7 @@ InventoryInit:
     ld l, a
     adc a, HIGH(OctaviaString)
     sub a, l
-    ld h, a 
+    ld h, a
     get_tilemap de, _SCRN1, 9, 9
     ld c, 7
     rst MemCopySmall
@@ -359,7 +359,7 @@ InventoryInit:
     ld l, a
     adc a, HIGH(PanoramaLookup)
     sub a, l
-    ld h, a 
+    ld h, a
 
     ; Load the active map's panorama
     ld a, [hli]
@@ -432,7 +432,7 @@ InventoryInit:
     rst MemCopySmall
 
 .cgbPanSkip
-    
+
     ; Both systems need this reset
     ld a, PALETTE_STATE_RESET
     call UpdatePalettes
@@ -444,7 +444,7 @@ InventoryInit:
     ld l, a
     adc a, HIGH(wItems)
     sub a, l
-    ld h, a 
+    ld h, a
     ld b, [hl]
 
     ; Item 0
@@ -531,7 +531,7 @@ InventoryRedraw:
     dec hl
     dec hl
     dec hl
-    
+
     bit 7, [hl]
     jr nz, .cgbSkip ; Skip if we're on the wrong column
 
@@ -558,7 +558,7 @@ InventoryRedraw:
     ld h, a
     dec b
     jr nz, .cleanAttributesLoop
-    
+
     ; Grab the UI pointer off the stack.
     ld hl, sp+2
     ld a, [hli]
@@ -620,7 +620,7 @@ InventoryRedraw:
     ld l, a
     adc a, HIGH(.metaspriteLookup)
     sub a, l
-    ld h, a 
+    ld h, a
     ld a, [hli]
     rst SwapBank
     ld a, [hli]
@@ -683,7 +683,7 @@ InventoryRedraw:
     ; Save selection in `b`
     ld b, [hl]
     bit 7, [hl]
-    jr nz, .options ; if bit 7 is set, 
+    jr nz, .options ; if bit 7 is set,
     ; Otherwise, draw the item cursor.
 
     ldh a, [hOAMIndex]
@@ -875,7 +875,7 @@ MoveDown:
     ld l, a
     adc a, HIGH(wItems)
     sub a, l
-    ld h, a 
+    ld h, a
     ; Check each item slot
     ld a, 3
     bit 3, [hl]
@@ -970,7 +970,7 @@ HandleAPress:
     ld l, a
     adc a, HIGH(wItems)
     sub a, l
-    ld h, a 
+    ld h, a
 
     ld a, b
     and a, [hl]
@@ -1079,7 +1079,7 @@ HandleBPress:
     ld l, a
     adc a, HIGH(wItems)
     sub a, l
-    ld h, a 
+    ld h, a
 
     ld a, b
     and a, [hl]
@@ -1138,7 +1138,7 @@ DrawEquipped:
     ld h, a
     dec b
     jr nz, .cleanLoop
-    
+
 
     ld a, [wActivePlayer]
     ; Add `a` to `wPlayerEquipped` and store in `hl`
@@ -1146,7 +1146,7 @@ DrawEquipped:
     ld l, a
     adc a, HIGH(wPlayerEquipped)
     sub a, l
-    ld h, a 
+    ld h, a
     ld b, [hl]
 
     ; Draw A button
@@ -1241,45 +1241,45 @@ InventoryMap:
 
 InventoryText:
 .save
-    db "Save", 0
+    DB "Save", 0
 .andExit
-    db "& Exit", 0
+    DB "& Exit", 0
 .close
-    db "Close", 0
+    DB "Close", 0
 .octavia
-    db "Octavia", 0
+    DB "Octavia", 0
 .poppy
-    db "Poppy", 0
+    DB "Poppy", 0
 .tiber
-    db "Tiber", 0
+    DB "Tiber", 0
 
 InventoryLetters:
-    db "Save&xitClos", 0
+    DB "Save&xitClos", 0
 OctaviaLetters:
-    db "Oc ", 0
+    DB "Oc ", 0
 PoppyLetters:
-    db "Ppy", 0
+    DB "Ppy", 0
 TiberLetters:
-    db "Tbr", 0
+    DB "Tbr", 0
 
 ; These must be 7 bytes.
 OctaviaString:
-    db TILE_O, TILE_c, TILE_t, TILE_a, TILE_v, TILE_i,     TILE_a
+    DB TILE_O, TILE_c, TILE_t, TILE_a, TILE_v, TILE_i,     TILE_a
 PoppyString:
-    db TILE_P, TILE_o, TILE_p, TILE_p, TILE_y, TILE_CLEAR, TILE_CLEAR
+    DB TILE_P, TILE_o, TILE_p, TILE_p, TILE_y, TILE_CLEAR, TILE_CLEAR
 TiberString:
-    db TILE_T, TILE_i, TILE_b, TILE_e, TILE_r, TILE_CLEAR, TILE_CLEAR
+    DB TILE_T, TILE_i, TILE_b, TILE_e, TILE_r, TILE_CLEAR, TILE_CLEAR
 
 SECTION "Inventory Variables", WRAM0
 
 ; Which direction is the doll facing?
 wPlayerDollDirection:
-    ds 1
+    DS 1
 
 ; Step and directory timer
 wPlayerDollTimer:
-    ds 1
+    DS 1
 
 ; The return position when going between columns
 wLastSelectedItem:
-    ds 1
+    DS 1

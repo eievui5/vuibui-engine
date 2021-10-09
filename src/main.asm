@@ -45,7 +45,7 @@ Gameplay:
     ld a, [hli]
     or a, [hl]
     call nz, HandleScript
-    
+
     ; Check if we're paused.
     ldh a, [hPaused]
     and a, a
@@ -87,7 +87,7 @@ SECTION "Main Vars", WRAM0
 
 ; if != 0, restart main loop
 wNewFrame::
-    ds 1
+    DS 1
 
 ; Used by menus to manipulate hSCBuffer without changing the gameplay camera.
 wGameplayScrollBuffer::
@@ -96,20 +96,20 @@ wGameplayScrollBuffer::
 
 SECTION "Engine Flags", HRAM
 hEngineState::
-    ds 1 
+    DS 1
 
 hPaused::
-    ds 1
+    DS 1
 
 ; The system we're running on. See engine.inc for constants.
 ; @ 0: DMG
 ; @ 1: CGB
 ; @ 2: AGB
 hSystem::
-    ds 1
+    DS 1
 
 ; Stack Allocation
 DEF STACK_SIZE EQU 32 * 2
 SECTION "Stack", WRAMX[$E000 - STACK_SIZE]
-    ds STACK_SIZE
+    DS STACK_SIZE
 wStackOrigin::

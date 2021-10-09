@@ -20,13 +20,13 @@ DEF UPDATE_TILEMAP_B EQU 1
 MACRO define_map
     ; MapData_Width
 .width
-    db (2) * \1
+    DB (2) * \1
     ; MapData_Size
 .size
-    db (2 * \1) * \2
+    DB (2 * \1) * \2
     ; MapData_TilesetSize
 .tilesetSize
-    db \3
+    DB \3
     ; MapData_TilesetBank, MapData_Tileset
 .tileset
     far_pointer \4
@@ -35,24 +35,24 @@ MACRO define_map
     far_pointer \5
     ; MapData_MetatileSize
 .metatileSize
-    db \6.end - \6
+    DB \6.end - \6
     ; MapData_MetatileBank
 .metatileBank
-    db BANK(\6)
+    DB BANK(\6)
     ; MapData_MetatileDefinitions
 .metatileDefinitions
-    dw \6.definitions
+    DW \6.definitions
     ; MapData_MetatileAttributes
 .metatileAttributes
-    dw \6.attributes
+    DW \6.attributes
     ; MapData_MetatileData
 .metatileData
-    dw \6.data
+    DW \6.data
 ENDM
 
 ; Ends a mapdata definition
 MACRO end_mapdata
-    db MAPDATA_END
+    DB MAPDATA_END
 ENDM
 
 ; Spawns entity when entering a given room
@@ -61,9 +61,9 @@ MACRO create_entity
     IF _NARG != 3
         FAIL "Expected 3 args."
     ENDC
-    db MAPDATA_ENTITY
-    dw \1
-    db \2, \3
+    DB MAPDATA_ENTITY
+    DW \1
+    DB \2, \3
 ENDM
 DEF sizeof_create_entity EQU 4
 
@@ -73,8 +73,8 @@ MACRO ally_mode
     IF _NARG != 1
         FAIL "Expected 1 arg."
     ENDC
-    db MAPDATA_ALLY_MODE
-    db \1
+    DB MAPDATA_ALLY_MODE
+    DB \1
 ENDM
 
 ; Stores a WarpData in ram for the given tile.
@@ -85,10 +85,10 @@ MACRO set_warp
     ELIF \1 > 3
         FAIL "Warp tile index cannot be greater than 3."
     ENDC
-    db MAPDATA_SET_WARP
-    db \1 ; Index
-    db \2, \3 ; Tile Position
-    db \4, \5, \6, \7, \8 ; Warp Data
+    DB MAPDATA_SET_WARP
+    DB \1 ; Index
+    DB \2, \3 ; Tile Position
+    DB \4, \5, \6, \7, \8 ; Warp Data
 ENDM
 
 ; Spawn an NPC when entering a given room.
@@ -99,21 +99,21 @@ MACRO create_npc
     ELIF \1 > 3
         FAIL "Entity ID cannot be greater than 3."
     ENDC
-    db MAPDATA_NPC
-    db \1 ; ID
-    db BANK(\2)
-    dw \2 ; Metasprites
-    db \3 ; Direction
-    db (\5 << 4) | \4 ; X and Y
-    db BANK(\6)
-    dw \6 ; Script
+    DB MAPDATA_NPC
+    DB \1 ; ID
+    DB BANK(\2)
+    DW \2 ; Metasprites
+    DB \3 ; Direction
+    DB (\5 << 4) | \4 ; X and Y
+    DB BANK(\6)
+    DW \6 ; Script
 ENDM
 
 MACRO set_respawn
     ASSERT _NARG == sizeof_RespawnPoint && sizeof_RespawnPoint == 9
-    db MAPDATA_SET_RESPAWN
+    DB MAPDATA_SET_RESPAWN
     FOR i, _NARG
-        db \1
+        DB \1
         SHIFT 1
     ENDR
 ENDM

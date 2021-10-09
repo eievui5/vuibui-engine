@@ -71,7 +71,7 @@ ResetHUD::
     ld l, a
     adc a, HIGH(PalOctavia)
     sub a, l
-    ld h, a 
+    ld h, a
     ld de, wBCPD + sizeof_PALETTE * 7
     ld c, sizeof_PALETTE
     rst MemCopySmall
@@ -102,7 +102,7 @@ UpdateHUD::
     ld l, a
     adc a, HIGH(wPlayerArray + Entity_Health)
     sub a, l
-    ld h, a 
+    ld h, a
     ld b, [hl]
     ; Get the last value we checked for health
     ld a, [wActivePlayer]
@@ -111,7 +111,7 @@ UpdateHUD::
     ld l, a
     adc a, HIGH(wHUDPlayerHealthBuffer)
     sub a, l
-    ld h, a 
+    ld h, a
     ld a, [hl]
     cp a, b ; Compare last value to current value
     ret z ; return if no change is needed
@@ -146,7 +146,7 @@ UpdateHUD::
     cp a, 10 + 1
     ld hl, vHeartBar - 1
     jr c, .skipBottom
-    sub a, 10 
+    sub a, 10
     ld hl, vHeartBar + 32 - 1
 .skipBottom
     ; Add `a` to `hl`
@@ -187,11 +187,11 @@ UpdateHUD::
     ld l, a
     adc a, HIGH(PalOctavia)
     sub a, l
-    ld h, a 
+    ld h, a
     ld de, wBCPD + sizeof_PALETTE * 7
     ld c, sizeof_PALETTE
     rst MemCopySmall
-    
+
     ld a, PALETTE_STATE_RESET
     ld [wPaletteState], a
 
@@ -207,7 +207,7 @@ UpdateHUD::
     ld l, a
     adc a, HIGH(wPlayerMaxHealth)
     sub a, l
-    ld h, a 
+    ld h, a
     ld c, [hl]
     sra c ; Each tile is 2 health, so divide by 2
     ld hl, vHeartBar
@@ -216,7 +216,7 @@ UpdateHUD::
 :   ldh a, [rSTAT]
     and a, STATF_BUSY
     jr nz, :-
-    
+
     ld a, TILE_HEART_EMPTY
     ld [hli], a
     dec b
@@ -233,7 +233,7 @@ UpdateHUD::
 :   ldh a, [rSTAT]
     and a, STATF_BUSY
     jr nz, :-
-    
+
     ld a, TILE_HEART_EMPTY
     ld [hli], a
     dec c
@@ -248,7 +248,7 @@ UpdateHUD::
     ld l, a
     adc a, HIGH(wPlayerArray + Entity_Health)
     sub a, l
-    ld h, a 
+    ld h, a
     ld b, [hl] ; save health for just a bit
 
     ld a, e ; make sure to store in the correct buffer
@@ -257,7 +257,7 @@ UpdateHUD::
     ld l, a
     adc a, HIGH(wHUDPlayerHealthBuffer)
     sub a, l
-    ld h, a 
+    ld h, a
     ld [hl], b ; set health buffer to the current player's health
     ld a, b
 
@@ -295,7 +295,7 @@ UpdateHUD::
     ld l, a
     adc a, HIGH(vHeartBar - 1)
     sub a, l
-    ld h, a 
+    ld h, a
 .bottomSetUp
     ld a, c
     and a, a
@@ -310,9 +310,9 @@ UpdateHUD::
     ld l, a
     adc a, HIGH(vHeartBar + 32 - 1)
     sub a, l
-    ld h, a 
+    ld h, a
 .heartBottomLoop
-    
+
 :   ldh a, [rSTAT]
     and a, STATF_BUSY
     jr nz, :-
@@ -329,7 +329,7 @@ UpdateHUD::
 :   ldh a, [rSTAT]
     and a, STATF_BUSY
     jr nz, :-
-    
+
     ld a, TILE_HEART
     ld [hld], a
     dec c
@@ -447,7 +447,7 @@ UpdatePrint::
     call DrawCharacter
     inc c
     ret nz
-    
+
     ; We hit a 0! Clean up!
     ld a, 32
     ld [wPrintWaitTimer], a
@@ -499,7 +499,7 @@ UpdatePrint::
 
     ; We did all 32? disappear then
 
-    xor a, a  
+    xor a, a
     ld [wPrintWaitTimer], a
     ld a, PRINT_STATE_SLIDE_OUT
     ld [wPrintState], a
@@ -595,45 +595,45 @@ PrintNotification::
     ret
 
 TestPrintString::
-    db "Hello World! --- "
-    db "These messages can be arbitrarily long! "
-    db "( As long as they fit in a single bank :P ) "
-    db 0
+    DB "Hello World! --- "
+    DB "These messages can be arbitrarily long! "
+    DB "( As long as they fit in a single bank :P ) "
+    DB 0
 
 SECTION "HUD Variables", WRAM0
 
 wEnableHUD::
-    ds 1
+    DS 1
 
 ; The player that was active last time we updated the HUD, used for health bars
 ; Any value other than 0, 1, 2 is a reset.
 wHUDActivePlayerBuffer:
-    ds 1
+    DS 1
 
 wHUDPlayerHealthBuffer:
 .octavia
-    ds 1
+    DS 1
 .poppy
-    ds 1
+    DS 1
 .tiber
-    ds 1
+    DS 1
 
 wPrintState::
-    ds 1
+    DS 1
 
 ; Where is the print handler drawing from? (Bank, then LE pointer)
 ; This is incremented as chars draw, so serves as the index as well.
 wHUDPrintTarget::
-    ds 3 ; Bank, LE
+    DS 3 ; Bank, LE
 
 ; Which tile is next to draw?
 wHUDPrintIndex:
-    ds 1
+    DS 1
 
 ; How far to scroll during HBlank?
 wHUDPrintScroll::
-    ds 1
+    DS 1
 
 ; Wait 32 frames before hiding (could also be used for a pop in/out?)
 wPrintWaitTimer:
-    ds 1
+    DS 1

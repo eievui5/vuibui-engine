@@ -151,4 +151,4 @@ RenderMetaspriteDirection::
 
 SECTION "Render Info", HRAM
 hRenderByte:: ; currently stores the entity's invtimer to find out if it should blink
-    ds 1
+    DS 1

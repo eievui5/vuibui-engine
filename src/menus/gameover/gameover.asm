@@ -6,27 +6,27 @@ INCLUDE "lb.inc"
 SECTION "Game Over menu", ROMX
 
 xGameOverHeader::
-    db BANK("Game Over menu")
-    dw xGameOverInit
+    DB BANK("Game Over menu")
+    DW xGameOverInit
     ; Used Buttons
-    db PADF_B
+    DB PADF_B
     ; Auto-repeat
-    db 0
+    DB 0
     ; Button functions
-    dw null, xHandleBPress, null, null, null, null, null, null
-    db 0 ; Last selected item
+    DW null, xHandleBPress, null, null, null, null, null, null
+    DB 0 ; Last selected item
     ; Allow wrapping
-    db 1
+    DB 1
     ; Default selected item
-    db 0
+    DB 0
     ; Number of items in the menu
-    db 2
+    DB 2
     ; Redraw
-    dw null
+    DW null
     ; Private Items Pointer
-    dw null
+    DW null
     ; Close Function
-    dw Initialize
+    DW Initialize
 
 xGameOverInit:
     call CleanOAM

@@ -3,7 +3,7 @@ INCLUDE "hardware.inc"
 INCLUDE "graphics.inc"
 INCLUDE "tiledata.inc"
 
-SECTION "Poppy Arrow", ROMX 
+SECTION "Poppy Arrow", ROMX
 
 PoppyArrowLogic::
     ld hl, wPoppyArrow0 + Entity_XVel
@@ -48,7 +48,7 @@ PoppyArrowLogic::
     ; Seek to both Entity_YPos
     ld hl, wPoppyArrow0 + Entity_YPos
     add hl, bc
-    ld a, Entity_YPos - Entity_CollisionData 
+    ld a, Entity_YPos - Entity_CollisionData
     add a, e
     ld e, a
     ; Save our Position
@@ -56,17 +56,17 @@ PoppyArrowLogic::
     ld l, [hl] ; store X
     ld h, a ; store Y
     ; Target Position
-    ld a, [de] 
+    ld a, [de]
     ld b, a ; save Y
     inc e
-    ld a, [de] 
+    ld a, [de]
     ld d, b ; store Y
     ld e, a ; store X
     ld b, $00 ; Fix B (upper byte will always be 0 for the arrows.)
     call VectorFromHLToDE
     ; Lets load the knockback vector into the Target
     pop de
-    ld a, Entity_YVel - Entity_CollisionData 
+    ld a, Entity_YVel - Entity_CollisionData
     add a, e
     ld e, a
     ld a, h
@@ -90,45 +90,45 @@ PoppyArrowLogic::
     ret
 
 ArrowMetasprites::
-    dw .down
-    dw .up
-    dw .right
-    dw .left
+    DW .down
+    DW .up
+    DW .right
+    DW .left
     .down
-        db -8 ; y
-        db -4 ; x
-        db TILE_ARROW_DOWN ; Tile ID
-        db OAMF_PAL0 | OAMF_BANK0 | OAMF_YFLIP ; Flags
-        
-        db METASPRITE_END
+        DB -8 ; y
+        DB -4 ; x
+        DB TILE_ARROW_DOWN ; Tile ID
+        DB OAMF_PAL0 | OAMF_BANK0 | OAMF_YFLIP ; Flags
+
+        DB METASPRITE_END
     .up
-        db -8 ; y
-        db -4 ; x
-        db TILE_ARROW_DOWN ; Tile ID
-        db OAMF_PAL0 | OAMF_BANK0 ; Flags
+        DB -8 ; y
+        DB -4 ; x
+        DB TILE_ARROW_DOWN ; Tile ID
+        DB OAMF_PAL0 | OAMF_BANK0 ; Flags
 
-        db METASPRITE_END
+        DB METASPRITE_END
     .right
-        db -8 ; y
-        db -8 ; x
-        db TILE_ARROW_RIGHT_FLETCH; Tile ID
-        db OAMF_PAL0 | OAMF_BANK0 ; Flags
+        DB -8 ; y
+        DB -8 ; x
+        DB TILE_ARROW_RIGHT_FLETCH; Tile ID
+        DB OAMF_PAL0 | OAMF_BANK0 ; Flags
 
-        db -8 ; y
-        db 0 ; x
-        db TILE_ARROW_RIGHT_POINT; Tile ID
-        db OAMF_PAL0 | OAMF_BANK0 ; Flags
+        DB -8 ; y
+        DB 0 ; x
+        DB TILE_ARROW_RIGHT_POINT; Tile ID
+        DB OAMF_PAL0 | OAMF_BANK0 ; Flags
 
-        db METASPRITE_END
+        DB METASPRITE_END
     .left
-        db -8 ; y
-        db -8 ; x
-        db TILE_ARROW_RIGHT_POINT; Tile ID
-        db OAMF_PAL0 | OAMF_BANK0 | OAMF_XFLIP ; Flags
+        DB -8 ; y
+        DB -8 ; x
+        DB TILE_ARROW_RIGHT_POINT; Tile ID
+        DB OAMF_PAL0 | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
-        db -8 ; y
-        db 0 ; x
-        db TILE_ARROW_RIGHT_FLETCH; Tile ID
-        db OAMF_PAL0 | OAMF_BANK0 | OAMF_XFLIP ; Flags
+        DB -8 ; y
+        DB 0 ; x
+        DB TILE_ARROW_RIGHT_FLETCH; Tile ID
+        DB OAMF_PAL0 | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
-        db METASPRITE_END
+        DB METASPRITE_END

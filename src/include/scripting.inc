@@ -1,10 +1,10 @@
 
     IF !DEF(SCRIPTING_INC)
 DEF SCRIPTING_INC EQU 1
-    
+
 INCLUDE "enum.inc"
 
-    start_enum SCRIPT 
+    start_enum SCRIPT
         enum END
         enum NULL
         enum TEXT
@@ -24,20 +24,20 @@ INCLUDE "enum.inc"
 
 ; Returns to normal processing
 MACRO end_script
-    db SCRIPT_END
+    DB SCRIPT_END
 ENDM
 
 MACRO pass
-    db SCRIPT_NULL
+    DB SCRIPT_NULL
 ENDM
 
 ; Pauses the script to open a text box
 ; @ display_text TextPointer
 MACRO display_text
     ASSERT _NARG == 1, "Expected 1 arg"
-    db SCRIPT_TEXT
-    db bank(\1)
-    dw \1
+    DB SCRIPT_TEXT
+    DB bank(\1)
+    DW \1
 ENDM
 
 ; Sets the given player's position and direction. Will not scroll the camera (yet) and thus has weird effects.
@@ -46,10 +46,10 @@ MACRO setpos_player
     IF _NARG != 4
         FAIL "Expected 4 args"
     ENDC
-    db SCRIPT_SETPOS_PLAYER
-    db \1 ; Player
-    db \2, \3 ; Position
-    db \4 ; Direction
+    DB SCRIPT_SETPOS_PLAYER
+    DB \1 ; Player
+    DB \2, \3 ; Position
+    DB \4 ; Direction
 ENDM
 
     ENDC
@@ -61,27 +61,27 @@ ENDM
 ; @ .label: Location to jump to if the check succeeds.
 MACRO branch
     ASSERT _NARG == 3, "Expected 3 args"
-    db SCRIPT_BRANCH
-    dw \1, 
-    db \2
-    dw \3
+    DB SCRIPT_BRANCH
+    DW \1,
+    DB \2
+    DW \3
 ENDM
 
 ; Sets the reffered `pointer` to `value`
 ; @ set_pointer Pointer, Value
 MACRO set_pointer
     ASSERT _NARG == 2, "Expected 2 args"
-    db SCRIPT_SET_POINTER
-    dw \1
-    db \2
+    DB SCRIPT_SET_POINTER
+    DW \1
+    DB \2
 ENDM
 
 ; Calls a block of code.
 ; @ call_function Pointer
 MACRO call_function
     ASSERT _NARG == 1, "Expected 1 arg"
-    db SCRIPT_FUNCTION
-    dw \1
+    DB SCRIPT_FUNCTION
+    DW \1
 ENDM
 
 ; Jump if two pointers are equal
@@ -91,55 +91,55 @@ ENDM
 ; @ .label0: Location to jump to if the check succeeds.
 MACRO jump_if
     ASSERT _NARG == 3, "Expected 3 args"
-    db SCRIPT_COMPARE
-    dw \1, \2, \3
+    DB SCRIPT_COMPARE
+    DW \1, \2, \3
 ENDM
 
 ; Update text box gradient.
 ; @ text_color Gradient
 MACRO text_color
     ASSERT _NARG == 1, "Expected 1 arg"
-    db SCRIPT_SET_TEXT_GRADIENT
-    db BANK(\1)
-    dw \1
+    DB SCRIPT_SET_TEXT_GRADIENT
+    DB BANK(\1)
+    DW \1
 ENDM
 
 ; Pause the game
 MACRO pause
-    db SCRIPT_PAUSE
+    DB SCRIPT_PAUSE
 ENDM
 
 ; Unpause the game
 MACRO unpause
-    db SCRIPT_UNPAUSE
+    DB SCRIPT_UNPAUSE
 ENDM
 
 ; Fade palettes.
 MACRO fade
     ASSERT _NARG == 1, "Expected 1 arg"
     ASSERT \1 <= PALETTE_STATE_FADE
-    db SCRIPT_FADE, \1
+    DB SCRIPT_FADE, \1
 ENDM
 
 ; Lock the script until palettes are done fading.
 MACRO wait_fade
-    db SCRIPT_WAIT_FADE
+    DB SCRIPT_WAIT_FADE
 ENDM
 
 ; Move the script pointer, or in other words, jump!
 MACRO jump
-    db SCRIPT_JUMP
+    DB SCRIPT_JUMP
     ASSERT BANK(@) == BANK(\1), "`jump` can only jump to scripts in the same bank!"
-    dw \1
+    DW \1
 ENDM
 
 ; Adds `value` to `pointer`.
 ; @ add_pointer Pointer, Value
 MACRO add_pointer
     ASSERT _NARG == 2, "Expected 2 args"
-    db SCRIPT_ADD_POINTER
-    dw \1
-    db \2
+    DB SCRIPT_ADD_POINTER
+    DW \1
+    DB \2
 ENDM
 
 ; ################# Pseudo-Scripts
@@ -169,7 +169,7 @@ ENDM
 ; @ sub_pointer Pointer, Value
 MACRO sub_pointer
     ASSERT _NARG == 2, "Expected 2 args"
-    db SCRIPT_ADD_POINTER
-    dw \1
-    db -(\2)
+    DB SCRIPT_ADD_POINTER
+    DW \1
+    DB -(\2)
 ENDM

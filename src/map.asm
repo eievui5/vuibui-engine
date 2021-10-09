@@ -12,7 +12,7 @@ INCLUDE "tiledata.inc"
 ; Keep these all in the same bank.
 SECTION "Map Lookup", ROM0
 
-; Updates the active map, loads map data, and runs initiallization scripts, 
+; Updates the active map, loads map data, and runs initiallization scripts,
 ; such as spawning entities and updating player logic. Also clears player
 ; projectiles.
 ; @ a: Boolean flags - see map.inc
@@ -34,7 +34,7 @@ UpdateActiveMap::
     xor a, a
     rst MemSetSmall
     ld [wOctaviaSpellActive], a
-    
+
     ; Clear entity array
     ld c, sizeof_Entity * NB_ENTITIES
     ld hl, wEntityArray
@@ -87,7 +87,7 @@ UpdateActiveMap::
     ld l, a
     adc a, HIGH(MapLookup)
     sub a, l
-    ld h, a 
+    ld h, a
 
     ld a, [hli] ; Load target bank.
 	ldh [hMapBankBuffer], a ; Save bank for later
@@ -102,7 +102,7 @@ UpdateActiveMap::
 
 	ld a, [hli] ; Load no. of tiles
 	ld b, a
-	ld a, [hli] ; Load target bank. 
+	ld a, [hli] ; Load target bank.
 	ld c, a
 	ld a, [hli] ; Load first pointer byte
 	ld e, a
@@ -202,7 +202,7 @@ UpdateActiveMap::
 	ldh a, [hMetatileBankBuffer]
 	rst SwapBank
 	rst MemCopySmall
-    
+
     call GetActiveMap
 	push bc ; Save the data pointer
 		; Copy the map data
@@ -220,7 +220,7 @@ UpdateActiveMap::
 
     xor a, a
     ldh [rVBK], a
-    
+
     ld hl, wMetatileDefinitions
     call LoadMetatileMap ; Force-load the entire map.
     call LoadMapData
@@ -230,7 +230,7 @@ UpdateActiveMap::
 
 	ldh a, [hLCDCBuffer]
 	ldh [rLCDC], a
-    
+
     jr .skipDoubleLoad
 
 .skipNewTileMap
@@ -290,7 +290,7 @@ MapdataAllyLogic:
     ld a, [hli]
     ld [wAllyLogicMode], a
     jr UpdateActiveMap.nextData
-    
+
 MapdataSetWarp:
     ld a, [hli]
     ldh [hWarpDataIndex], a ; Save the tile index.
@@ -301,7 +301,7 @@ MapdataSetWarp:
     adc a, HIGH(wWarpData0)
     sub a, e
     ld d, a
- 
+
     ld a, [hli]
     ld b, a
     ld a, [hli]
@@ -314,7 +314,7 @@ MapdataSetWarp:
     ld l, a
     adc a, HIGH(wMapData)
     sub a, l
-    ld h, a 
+    ld h, a
     ld a, c
     ; Add `a` to `hl`
     add a, l
@@ -337,7 +337,7 @@ MapdataNPC:
     add a, a ; a * 2
     add a, a ; a * 4
     add a, a ; a * 8
-    
+
     ; Load NPC array
     ASSERT LOW(wNPCArray) == 0
     ld e, a
@@ -401,7 +401,7 @@ GetActiveMap::
     ld l, a
     adc a, HIGH(MapLookup)
     sub a, l
-    ld h, a 
+    ld h, a
 
     ld a, [hli] ; Load target bank.
 	ldh [hMapBankBuffer], a ; Save bank for later
@@ -435,8 +435,8 @@ GetActiveMap::
     ld a, [wWorldMapPositionY]
     and a, a ; If y = 0 just skip.
     jr z, .skipY
-    ld b, a 
-    ld a, c 
+    ld b, a
+    ld a, c
 .multLoop ; Multiply c (width) * b (ypos) and add the result to hl
     ; Add `a` to `hl`
     add a, l
@@ -486,7 +486,7 @@ ReloadMapGraphics::
     ld l, a
     adc a, HIGH(MapLookup)
     sub a, l
-    ld h, a 
+    ld h, a
 
     ld a, [hli]
     ldh [hMapBankBuffer], a
@@ -539,7 +539,7 @@ ReloadMapGraphics::
     ld c, MAP_OBJ_PALS * sizeof_PALETTE
     ld de, wOCPD + (sizeof_PALETTE * (8 - MAP_OBJ_PALS)) ; Skip the players' reserved palettes
     rst MemCopySmall
-    
+
     lb bc, BANK(PalPlayers), sizeof_PALETTE * 4
     ld de, wOCPD
     ld hl, PalPlayers
@@ -570,30 +570,30 @@ PanoramaLookup::
 SECTION "Active Map Variables", WRAM0
 
 ; Which map are we on?
-wActiveWorldMap:: 
-    ds 1
+wActiveWorldMap::
+    DS 1
 
 ; How many tiles have been loaded so far?
 wTileLoadingProgress::
-    ds 1
+    DS 1
 
 ; Which room are we in?
-wWorldMapPositionX:: 
-    ds 1
+wWorldMapPositionX::
+    DS 1
 
-wWorldMapPositionY:: 
-    ds 1
+wWorldMapPositionY::
+    DS 1
 
     dstructs 4, WarpData, wWarpData
 
 SECTION UNION "Volatile", HRAM
 ; Boolean value, set when entities should be respawned
 hRespawnEntitiesFlag:
-    ds 1
+    DS 1
 hWarpDataIndex:
 hNPCIndex:
 hLCDCBuffer:
-    ds 1
+    DS 1
 hMapBankBuffer:
 	ds 1
 hMetatileBankBuffer:

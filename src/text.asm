@@ -16,7 +16,7 @@ HandleTextbox::
     ; Hide HUD
     ld a, 143
     ldh [rLYC], a
-    
+
 ; Clean VRAM
 
     ld a, BANK(TextboxMap)
@@ -315,34 +315,34 @@ DrawString::
 SECTION "Dialogue", ROMX
 ; Used to design the textbox.
 TextboxMap:: ; this is so dumb I have no words.
-    db $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F
-    db $7F, $7F, $50, $51, $52, $53, $54, $55, $56, $57, $58, $59, $5A, $5B, $5C, $5D, $5E, $5F, $7F, $7F
-    db $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F
-    db $7F, $7F, $60, $61, $62, $63, $64, $65, $66, $67, $68, $69, $6A, $6B, $6C, $6D, $6E, $6F, $7F, $7F
-    db $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F
+    DB $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F
+    DB $7F, $7F, $50, $51, $52, $53, $54, $55, $56, $57, $58, $59, $5A, $5B, $5C, $5D, $5E, $5F, $7F, $7F
+    DB $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F
+    DB $7F, $7F, $60, $61, $62, $63, $64, $65, $66, $67, $68, $69, $6A, $6B, $6C, $6D, $6E, $6F, $7F, $7F
+    DB $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F
 
 SECTION "Text Variables", WRAM0
 ; See text.inc TEXT_* constants. Set to TEXT_START to draw from wTextPointer
 wTextState::
-    ds 1
+    DS 1
 
 ; Pointer to the next character.
 wTextBank::
-    ds 1
+    DS 1
 wTextPointer::
-    ds 2
+    DS 2
 
 ; Where are we on the screen?
 wTextScreenIndex::
-    ds 1
+    DS 1
 
 ; What's the answer to the current question? (0 or 1)
 wTextAnswer::
-    ds 1
+    DS 1
 
 SECTION "Draw String", HRAM
 ; The ID of the VRAM tile destination for DrawString.
 hDrawStringTileBase::
-    ds 1
+    DS 1
 hDrawStringBank:
-    ds 1
+    DS 1

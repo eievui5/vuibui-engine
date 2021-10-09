@@ -27,7 +27,7 @@ GetBitfieldMask::
     ; Get the proper bitmask Using the lower 3 bits.
     ld a, b
     and a, %00000111
-    
+
 ; Returns the mask of the input value
 ; @ input:
 ; @ a:  Value
@@ -58,4 +58,4 @@ GetBitA::
 SECTION "Flag Bitfield", WRAM0
 
 wBitfield::
-    ds (FLAG_MAX + 7)/8 ; Define enough bytes for every flag in "flags.inc"
+    DS (FLAG_MAX + 7)/8 ; Define enough bytes for every flag in "flags.inc"

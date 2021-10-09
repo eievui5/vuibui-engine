@@ -36,7 +36,7 @@ OctaviaPlayerLogic::
     and a, a
     jr z, .noDamage
     ld a, PLAYER_STATE_HURT
-    ld [wOctavia_State], a 
+    ld [wOctavia_State], a
     ld a, KNOCK_FRAMES
     ld [wOctavia_Timer], a
     ; Next, set the timer. This falls through.
@@ -53,17 +53,17 @@ OctaviaPlayerLogic::
 
 .stateJumpTable
     ASSERT PLAYER_STATE_NORMAL == 0
-    dw OctaviaActiveNormal
+    DW OctaviaActiveNormal
     ASSERT PLAYER_STATE_HURT == 1
-    dw OctaviaDamage
+    DW OctaviaDamage
     ASSERT PLAYER_STATE_ITEM0 == 2
-    dw OctaviaRod.fire
+    DW OctaviaRod.fire
     ASSERT PLAYER_STATE_ITEM1 == 3
-    dw OctaviaRod.ice
+    DW OctaviaRod.ice
     ASSERT PLAYER_STATE_ITEM2 == 4
-    dw OctaviaRod.shock
+    DW OctaviaRod.shock
     ASSERT PLAYER_STATE_ITEM3 == 5
-    dw OctaviaRod.heal
+    DW OctaviaRod.heal
 
 /*
 
@@ -75,7 +75,7 @@ WHAT SHOULD DYING DO?
         Health can be made lower
     Cons
         Makes you rapidly switch upon death; may be dissorienting.
-        Could be frustrating to die often if health is low, 
+        Could be frustrating to die often if health is low,
         or unbalanced to have 3x as many chances if health is high
         Doesn't work right if players are in different rooms or disabled.
  - Game over if any player dies
@@ -108,7 +108,7 @@ OctaviaActiveNormal:
 
 .aiModesTable
     ASSERT ALLY_MODE_FOLLOW == 0
-    dw OctaviaAIFollow
+    DW OctaviaAIFollow
 
 .skipAISwitch
     ld hl, wOctavia
@@ -266,7 +266,7 @@ OctaviaAIFollow:
 .follow
     ld bc, PLAYER_OCTAVIA * sizeof_Entity
     call PlayerAIFollow
-    
+
     ld hl, wOctavia
     jp MoveAndSlide
 
@@ -320,13 +320,13 @@ SECTION "Octavia Vars", WRAM0
 
 ; Is there a spell active?
 wOctaviaSpellActive::
-    ds 1
+    DS 1
 
 SECTION UNION "Volatile", HRAM
 hCurrentTile:
-    ds 1
+    DS 1
 ; Used to cache damage and frame of the current spell
 hSpellDamage:
-    ds 1
+    DS 1
 hSpellFrame:
-    ds 1
+    DS 1

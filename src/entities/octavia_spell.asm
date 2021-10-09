@@ -4,12 +4,12 @@ INCLUDE "hardware.inc"
 INCLUDE "graphics.inc"
 INCLUDE "tiledata.inc"
 
-/* 
-    A generic spell entity. Copies its collision data onto the target, 
+/*
+    A generic spell entity. Copies its collision data onto the target,
     which allows multiple spells to share this entity.
 */
 
-SECTION "Octavia Spell", ROMX 
+SECTION "Octavia Spell", ROMX
 
 OctaviaSpellLogic::
     ld hl, wOctaviaSpell_InvTimer
@@ -52,7 +52,7 @@ OctaviaSpellLogic::
     push de
     ; Seek to both Entity_YPos
     ld hl, wOctaviaSpell_YPos
-    ld a, Entity_YPos - Entity_CollisionData 
+    ld a, Entity_YPos - Entity_CollisionData
     add a, e
     ld e, a
     ; Save our Position
@@ -60,16 +60,16 @@ OctaviaSpellLogic::
     ld l, [hl] ; store X
     ld h, a ; store Y
     ; Target Position
-    ld a, [de] 
+    ld a, [de]
     ld b, a ; save Y
     inc e
-    ld a, [de] 
+    ld a, [de]
     ld d, b ; store Y
     ld e, a ; store X
     call VectorFromHLToDE
     ; Lets load the knockback vector into the Target
     pop de
-    ld a, Entity_YVel - Entity_CollisionData 
+    ld a, Entity_YVel - Entity_CollisionData
     add a, e
     ld e, a
     ld a, h
@@ -122,38 +122,38 @@ dw .red
 dw .green
 dw .blue
 .red
-    db -8 ; y
-    db -8 ; x
-    db TILE_PLAYER_SPELL ; Tile ID
-    db OAMF_PAL0 | OAMF_GBCPAL2 | OAMF_BANK0 ; Flags
+    DB -8 ; y
+    DB -8 ; x
+    DB TILE_PLAYER_SPELL ; Tile ID
+    DB OAMF_PAL0 | OAMF_GBCPAL2 | OAMF_BANK0 ; Flags
 
-    db -8 ; y
-    db 0 ; x
-    db TILE_PLAYER_SPELL ; Tile ID
-    db OAMF_PAL0 | OAMF_GBCPAL2 | OAMF_BANK0 | OAMF_XFLIP ; Flags
+    DB -8 ; y
+    DB 0 ; x
+    DB TILE_PLAYER_SPELL ; Tile ID
+    DB OAMF_PAL0 | OAMF_GBCPAL2 | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
-    db METASPRITE_END
+    DB METASPRITE_END
 .green
-    db -8 ; y
-    db -8 ; x
-    db TILE_PLAYER_SPELL ; Tile ID
-    db OAMF_PAL0 | OAMF_GBCPAL1 | OAMF_BANK0 ; Flags
+    DB -8 ; y
+    DB -8 ; x
+    DB TILE_PLAYER_SPELL ; Tile ID
+    DB OAMF_PAL0 | OAMF_GBCPAL1 | OAMF_BANK0 ; Flags
 
-    db -8 ; y
-    db 0 ; x
-    db TILE_PLAYER_SPELL ; Tile ID
-    db OAMF_PAL0 | OAMF_GBCPAL1 | OAMF_BANK0 | OAMF_XFLIP ; Flags
+    DB -8 ; y
+    DB 0 ; x
+    DB TILE_PLAYER_SPELL ; Tile ID
+    DB OAMF_PAL0 | OAMF_GBCPAL1 | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
-    db METASPRITE_END
+    DB METASPRITE_END
 .blue
-    db -8 ; y
-    db -8 ; x
-    db TILE_PLAYER_SPELL ; Tile ID
-    db OAMF_PAL0 | OAMF_GBCPAL0 | OAMF_BANK0 ; Flags
+    DB -8 ; y
+    DB -8 ; x
+    DB TILE_PLAYER_SPELL ; Tile ID
+    DB OAMF_PAL0 | OAMF_GBCPAL0 | OAMF_BANK0 ; Flags
 
-    db -8 ; y
-    db 0 ; x
-    db TILE_PLAYER_SPELL ; Tile ID
-    db OAMF_PAL0 | OAMF_GBCPAL0 | OAMF_BANK0 | OAMF_XFLIP ; Flags
+    DB -8 ; y
+    DB 0 ; x
+    DB TILE_PLAYER_SPELL ; Tile ID
+    DB OAMF_PAL0 | OAMF_GBCPAL0 | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
-    db METASPRITE_END
+    DB METASPRITE_END

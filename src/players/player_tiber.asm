@@ -30,7 +30,7 @@ TiberPlayerLogic::
     and a, a
     jr z, .noDamage
     ld a, PLAYER_STATE_HURT
-    ld [wTiber_State], a 
+    ld [wTiber_State], a
     ld a, KNOCK_FRAMES
     ld [wTiber_Timer], a
     ; Next, set the timer. This falls through.
@@ -46,17 +46,17 @@ TiberPlayerLogic::
 
 .stateTable
     ASSERT PLAYER_STATE_NORMAL == 0
-    dw TiberActiveNormal
+    DW TiberActiveNormal
     ASSERT PLAYER_STATE_HURT == 1
-    dw TiberDamage
+    DW TiberDamage
     ASSERT PLAYER_STATE_ITEM0 == 2
-    dw TiberSword
+    DW TiberSword
     ASSERT PLAYER_STATE_ITEM1 == 3
-    dw TiberSword
+    DW TiberSword
     ASSERT PLAYER_STATE_ITEM2 == 4
-    dw TiberSword
+    DW TiberSword
     ASSERT PLAYER_STATE_ITEM3 == 5
-    dw TiberSword
+    DW TiberSword
 
 TiberActiveNormal: ; How to move.
 
@@ -76,8 +76,8 @@ TiberActiveNormal: ; How to move.
 
 .aiStateTable
     ASSERT ALLY_MODE_FOLLOW == 0
-    dw TiberAIFollow
-    
+    DW TiberAIFollow
+
 .skipAISwitch
     ld hl, wTiber_State
     call UseItemCheck
@@ -110,7 +110,7 @@ TiberDamage:
     ld bc, PLAYER_TIBER * sizeof_Entity
     jp PlayerDamage
 
-TiberSword:    
+TiberSword:
     ld a, [wTiber_Flags]
     and a, a
     jr nz, .skipInit ; Are the flags == 0? initiallize!
@@ -189,7 +189,7 @@ TiberAIFollow:
 .follow
     ld bc, PLAYER_TIBER * sizeof_Entity
     call PlayerAIFollow
-    
+
     ld hl, wTiber
     jp MoveAndSlide
 
@@ -230,7 +230,7 @@ TiberGeneric::
     ask "Follow me."
     end_ask
 
-    
+
 SECTION UNION "Volatile", HRAM
 hCurrentTile:
-    ds 1
+    DS 1

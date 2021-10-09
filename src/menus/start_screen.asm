@@ -18,27 +18,27 @@ DEF POINTER_ANIM_POINT EQU 16
 SECTION "Menu Test", ROMX
 
 TestMenuHeader::
-    db BANK("Menu Test")
-    dw TestMenuInit
+    DB BANK("Menu Test")
+    DW TestMenuInit
     ; Used Buttons
-    db PADF_A | PADF_UP | PADF_DOWN
+    DB PADF_A | PADF_UP | PADF_DOWN
     ; Auto-repeat
-    db 0
+    DB 0
     ; Button functions
-    dw HandleAPress, null, null, null, null, null, null, null
-    db 0 ; Last selected item
+    DW HandleAPress, null, null, null, null, null, null, null
+    DB 0 ; Last selected item
     ; Allow wrapping
-    db 1
+    DB 1
     ; Default selected item
-    db 0
+    DB 0
     ; Number of items in the menu
-    db 2
+    DB 2
     ; Redraw
-    dw TestMenuRedraw
+    DW TestMenuRedraw
     ; Private Items Pointer
-    dw 0
+    DW 0
     ; Close Function
-    dw InitializeGameplay ; Initiallize gameplay when this menu closes
+    DW InitializeGameplay ; Initiallize gameplay when this menu closes
 
 TestMenuInit:
 ; Wait for VRAM access
@@ -179,7 +179,7 @@ TestMenuRedraw:
         sra a
         sra a
         sra a
-    
+
     add a, [hl]
     ld [hl], a
 
@@ -204,20 +204,20 @@ HandleAPress:
 
 MenuString:
 .start
-    db "Start!", 0
+    DB "Start!", 0
 .options
-    db "Options", 0
+    DB "Options", 0
 
 TestMenuSprites:
 .start
-    db $B * 8, $4 * 8, idof_Pointer, 0
+    DB $B * 8, $4 * 8, idof_Pointer, 0
 .options
-    db $D * 8, $4 * 8, idof_Pointer, 0
+    DB $D * 8, $4 * 8, idof_Pointer, 0
 
 SECTION "Test Menu Vars", WRAM0
 wPointerDir:
-    ds 1
+    DS 1
 wPointerOffset:
-    ds 1
+    DS 1
 wPointerYPos:
-    ds 1
+    DS 1

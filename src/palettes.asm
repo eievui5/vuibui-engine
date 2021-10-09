@@ -92,7 +92,7 @@ Cgb:
     cp a, PALETTE_STATE_RESET
     jr nz, CgbFade
     fall CgbReset
-    
+
 CgbReset:
     ld hl, wBCPD
     ld c, 8 * 4 ; Number of colors
@@ -232,7 +232,7 @@ FadeToColor:
     ; Offset to current color.
     ld de, (wBCPD - wBCPDTarget) - 1
     add hl, de
-    
+
     ; Load target color and compare to current
     ld a, b
     cp a, [hl]
@@ -250,7 +250,7 @@ FadeToColor:
     cp a, b
     jr nc, .store
     jr .overflow
-    
+
 
 .down
     sub a, b
@@ -334,43 +334,43 @@ SECTION "Pal Common", WRAM0
 ; Used to begin a palette fade without blocking the main thread. Set to the
 ; desired fading mode.
 wPaletteState::
-    ds 1
+    DS 1
 
 SECTION UNION "Palettes", WRAM0
 ; DMG Pals
 wBGP::
-    ds 1
+    DS 1
 wOBP0::
-    ds 1
+    DS 1
 wOBP1::
-    ds 1
+    DS 1
 
 SECTION UNION "Palettes", WRAM0
 ; CGB Pals
 
 ; Used to store the current background palettes in 24-bit color format.
 wBCPD::
-    ds sizeof_PALETTE * 8
+    DS sizeof_PALETTE * 8
 ; Used to store the current object palettes in 24-bit color format.
 wOCPD::
-    ds sizeof_PALETTE * 8
+    DS sizeof_PALETTE * 8
 ; The target background palettes for a fade
 wBCPDTarget::
-    ds sizeof_PALETTE * 8
+    DS sizeof_PALETTE * 8
 ; The target object palettes for a fade
 wOCPDTarget::
-    ds sizeof_PALETTE * 8
+    DS sizeof_PALETTE * 8
 
 ; Used to control the speed of a palette fade. Should be a common factor of the
 ; difference between all current and target colors.
 wFadeSpeed::
-    ds 1
+    DS 1
 
 ; Used to keep track of how many shades have fully faded.
 ; 16 Palettes = 64 Colors = 192 Shades.
 wFadedShadeCount:
-    ds 1
+    DS 1
 
 ; Temporarily store the target color to check for overflows.
 wTargetColor:
-    ds 1
+    DS 1

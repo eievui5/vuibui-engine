@@ -218,7 +218,7 @@ SECTION "Save Verification", ROMX
 
 ; Used to verify that the save file is not corrupted or uninitiallized.
 xSaveCheckString:
-    db "This is a VuiBui engine save file. Do not edit this corruption test string. All save data will be overwritten if it does not match.\n"
+    DB "This is a VuiBui engine save file. Do not edit this corruption test string. All save data will be overwritten if it does not match.\n"
 .end
 
 SECTION "Template Saves", ROMX
@@ -249,7 +249,7 @@ SECTION "Save Data", SRAM
 
 ; Used to verify that the save file is not corrupted or uninitiallized.
 sCheckString:
-    ds xSaveCheckString.end - xSaveCheckString
+    DS xSaveCheckString.end - xSaveCheckString
 
 SECTION "Save Files", SRAM
 

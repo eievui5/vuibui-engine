@@ -57,7 +57,7 @@ FXMode:
     ld l, a
     adc a, HIGH(wRasterFX)
     sub a, l
-    ld h, a 
+    ld h, a
     ld a, [hl]
 
     ; If no FX is loaded, exit!
@@ -67,7 +67,7 @@ FXMode:
     ; Error - invalid state
     rst CrashHandler
 
-ShowHUD:    
+ShowHUD:
     ; Wait for safe VRAM access
 :   ld a, [rSTAT]
     and a, STATF_BUSY
@@ -183,21 +183,21 @@ SECTION "Stat Data", WRAM0
 
 ; Whether or not to use FX Mode. Requires rLYC to be reset to 1
 wStatFXMode::
-    ds 1
+    DS 1
 
 ; An array of 80 bytes, each able to play an effect on every odd scan line.
 wRasterFX::
-    ds 160/2
+    DS 160/2
 
 ; Single FX byte for regular STAT processing
 wStaticFX::
-    ds 1
+    DS 1
 
 ; A pointer to the current text's precomputed palette design
 wTextboxPalsBank::
-    ds 1
+    DS 1
 wTextboxPalettes::
-    ds 2
+    DS 2
 ; How far along the palette design are we?
 wTextboxFadeProgress::
-    ds 1
+    DS 1

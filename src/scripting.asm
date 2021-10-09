@@ -39,35 +39,35 @@ HandleScript::
 
 ScriptBytecodeJumpTable:
     ASSERT SCRIPT_END == 0
-    dw ScriptEnd
+    DW ScriptEnd
     ASSERT SCRIPT_NULL == 1
-    dw ScriptNull
+    DW ScriptNull
     ASSERT SCRIPT_TEXT == 2
-    dw ScriptText
+    DW ScriptText
     ASSERT SCRIPT_SETPOS_PLAYER == 3
-    dw ScriptSetposPlayer
+    DW ScriptSetposPlayer
     ASSERT SCRIPT_BRANCH == 4
-    dw ScriptBranch
+    DW ScriptBranch
     ASSERT SCRIPT_SET_POINTER == 5
-    dw ScriptSetPointer
+    DW ScriptSetPointer
     ASSERT SCRIPT_FUNCTION == 6
-    dw ScriptFunction
+    DW ScriptFunction
     ASSERT SCRIPT_COMPARE == 7
-    dw ScriptCompare
+    DW ScriptCompare
     ASSERT SCRIPT_SET_TEXT_GRADIENT == 8
-    dw ScriptSetTextGradient
+    DW ScriptSetTextGradient
     ASSERT SCRIPT_PAUSE == 9
-    dw ScriptPause
+    DW ScriptPause
     ASSERT SCRIPT_UNPAUSE == 10
-    dw ScriptUnpause
+    DW ScriptUnpause
     ASSERT SCRIPT_FADE == 11
-    dw ScriptFade
+    DW ScriptFade
     ASSERT SCRIPT_WAIT_FADE == 12
-    dw ScriptWaitFade
+    DW ScriptWaitFade
     ASSERT SCRIPT_JUMP == 13
-    dw ScriptJump
+    DW ScriptJump
     ASSERT SCRIPT_ADD_POINTER == 14
-    dw ScriptAddPointer
+    DW ScriptAddPointer
 
 ; End of script!
 ScriptEnd:
@@ -99,8 +99,8 @@ ScriptText:
     ld [wTextPointer], a
     call HandleTextbox
     load_hl_scriptpointer
-    inc hl 
-    inc hl 
+    inc hl
+    inc hl
     inc hl
     inc hl
     jp ScriptExitStub
@@ -278,8 +278,8 @@ ScriptExitStub:
 SECTION "Script Variables", WRAM0
 
 wActiveScriptPointer::
-    ds 3 ; bank, little endian pointer
+    DS 3 ; bank, little endian pointer
 
 ; 16 general-purpose bytes intended for use by script commands.
 wScriptVars::
-    ds 16
+    DS 16

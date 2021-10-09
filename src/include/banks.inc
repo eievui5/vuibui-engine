@@ -6,8 +6,8 @@ MACRO far_pointer
     IF _NARG != 1
         FAIL "Expected 1 argument!"
     ENDC
-    db BANK(\1)
-    dw \1
+    DB BANK(\1)
+    DW \1
 ENDM
 
 ENDC

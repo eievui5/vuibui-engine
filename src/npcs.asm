@@ -86,4 +86,4 @@ wNPCArray::
 SECTION UNION "Volatile", HRAM
 
 hNPCArrayIndex:
-    ds 1
+    DS 1

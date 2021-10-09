@@ -59,7 +59,7 @@ ENDM
 MACRO rgb
     ASSERT _NARG == 3, "Expected 3 args!"
     ASSERT !(\1 > 31 || \2 > 31 || \3 > 31), "Colors must be between 0 and 31"
-    db (\1) << 3, (\2) << 3, (\3) << 3
+    DB (\1) << 3, (\2) << 3, (\3) << 3
 ENDM
 
 MACRO pal
@@ -127,7 +127,7 @@ ENDM
         enum SWORD_RIGHT_HANDLE
         enum SWORD_RIGHT_POINT
         enum SWORD_SWOOSH
-    
+
         enum SPARKLE_LEFT
         enum SPARKLE_RIGHT
     end_enum

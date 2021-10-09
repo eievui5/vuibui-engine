@@ -115,7 +115,7 @@ SpawnEntity::
     jr z, .break
     add hl, bc
     ld a, [hl]
-    ; Check the first script byte. 
+    ; Check the first script byte.
     ; Since all Entities exist off the main bank, this will never be $00
     cp a, $00
     jr nz, .loop ; if a == 0, loop
@@ -136,7 +136,7 @@ SpawnEntity::
     pop bc
     ; Since spawning scripts may want to overwrite some stats, we let them know
     ; if the spawn failed using hl.
-    ld hl, null 
+    ld hl, null
     ret
 
 ; Expanded version of MoveAndSlide which performs corner checks and only
@@ -180,9 +180,9 @@ PlayerMoveAndSlide::
     jr nc, .yMovement
     ; Handle movement
     ld a, d
-    ld [hl], a ; Update X Pos. 
-    ; Check for corners. 
-    ; This is only really needed for the players and 
+    ld [hl], a ; Update X Pos.
+    ; Check for corners.
+    ; This is only really needed for the players and
     ; could be avoided for others to save *lots* of time
 .xTopCornerCheck
     push hl ; These two need to be saved. D is no longer important
@@ -196,7 +196,7 @@ PlayerMoveAndSlide::
     pop hl
     cp a, TILEDATA_COLLISION
     ; If a < TILEDATA_COLLISION, don't slide out.
-    jr c, .xBottomCornerCheck 
+    jr c, .xBottomCornerCheck
     inc l
     dec [hl] ; Slide out
     dec l
@@ -215,7 +215,7 @@ PlayerMoveAndSlide::
     inc l
     inc [hl] ; Slide out
     dec l
-    
+
 ; WARNING!!! This is a disgusting copy/paste rather than a loop.
 .yMovement
     inc l ; Seek to YVel
@@ -307,7 +307,7 @@ MoveAndSlide::
     jr nc, .yMovement
     ; Handle movement
     ld a, d
-    ld [hl], a ; Update X Pos. 
+    ld [hl], a ; Update X Pos.
 .yMovement
     inc l ; Seek to YVel
     ld a, [hld] ; Seek to XPos
@@ -431,8 +431,8 @@ GetDistanceDirection::
 ; @ c:  X position
 LookupMapData::
 
-    ; This is weird. 
-    ; I don't have the time or care to look into it, but the X and Y need an offset. 
+    ; This is weird.
+    ; I don't have the time or care to look into it, but the X and Y need an offset.
     ; Maybe just a result of my weird method of multiplication and division?
     ld a, b
     sub a, 16
@@ -441,7 +441,7 @@ LookupMapData::
     ; This *is* neccassary. Sprites cannot be centered, so lets correct that a bit.
     ; Partially why I don't mind leaving this part in, though dec c would be faster.
     ld a, c
-    sub a, 9 
+    sub a, 9
     ld c, a
 
     ld hl, wMapData
@@ -501,7 +501,7 @@ CheckEntityCollision::
     ld hl, $0000
     ret
 
-; Returns The index of the first entity to collide with a location in bc. 
+; Returns The index of the first entity to collide with a location in bc.
 ; If a returns 0, no entity was found.
 ; @ d:  Y position
 ; @ e:  X position
@@ -521,10 +521,10 @@ DetectEntity::
     jr nz, .continue ; Skip if there's no match
     ld a, l
     cp a, low(sizeof_Entity * NB_ENTITIES)
-    jr nz, .continue ; Return if we've reached the end of the array 
+    jr nz, .continue ; Return if we've reached the end of the array
     pop bc ; throw away source index.
     xor a, a ; ld a, 0
-    ret 
+    ret
 .continue
     ld b, h
     ld c, l
@@ -552,7 +552,7 @@ DetectEntity::
     ; abs
     bit 7, a
     jr z, .absSkipY
-    cpl 
+    cpl
     inc a
 .absSkipY
     ; let's compare. c is >
@@ -583,8 +583,8 @@ DetectEntity::
     ld a, 1
     ret
 
-; Find the angle to `de` from `hl`. 
-; Returns a normalized (0 or 2) vector in `hl` 
+; Find the angle to `de` from `hl`.
+; Returns a normalized (0 or 2) vector in `hl`
 ; (2 is used because it's a more comman value and takes nothing extra to load)
 VectorFromHLToDE::
 REPT 2
@@ -633,4 +633,4 @@ wEntityArray::
 
 SECTION UNION "Volatile", HRAM
 hRenderByte: ; currently stores the entity's invtimer to find out if it should blink
-    ds 1
+    DS 1

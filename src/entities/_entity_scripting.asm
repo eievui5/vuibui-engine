@@ -20,41 +20,41 @@ HandleEntityScript::
 
 EntityScriptJumpTable:
     ASSERT ENTITY_SCRIPT_YIELD == 0
-    dw ScriptYield
+    DW ScriptYield
     ASSERT ENTITY_SCRIPT_JUMP == 1
-    dw ScriptJump
+    DW ScriptJump
     ASSERT ENTITY_SCRIPT_SETA == 2
-    dw ScriptSetArray
+    DW ScriptSetArray
     ASSERT ENTITY_SCRIPT_SETF == 3
-    dw ScriptSetField
+    DW ScriptSetField
     ASSERT ENTITY_SCRIPT_SETM == 4
-    dw ScriptSetMemory
+    DW ScriptSetMemory
     ASSERT ENTITY_SCRIPT_KILL == 5
-    dw ScriptKill
+    DW ScriptKill
     ASSERT ENTITY_SCRIPT_ADDA == 6
-    dw ScriptAddArray
+    DW ScriptAddArray
     ASSERT ENTITY_SCRIPT_ADDF == 7
-    dw ScriptAddField
+    DW ScriptAddField
     ASSERT ENTITY_SCRIPT_MOVE == 8
-    dw ScriptMove
+    DW ScriptMove
     ASSERT ENTITY_SCRIPT_GETM == 9
-    dw ScriptGetMemory
+    DW ScriptGetMemory
     ASSERT ENTITY_SCRIPT_CHASE_PLAYER == 10
-    dw ScriptChasePlayer
+    DW ScriptChasePlayer
     ASSERT ENTITY_SCRIPT_ANIMATE == 11
-    dw ScriptAnimate
+    DW ScriptAnimate
     ASSERT ENTITY_SCRIPT_INLINE == 12
-    dw ScriptInline
+    DW ScriptInline
     ASSERT ENTITY_SCRIPT_FOR == 13
-    dw ScriptFor
+    DW ScriptFor
     ASSERT ENTITY_SCRIPT_RAND == 14
-    dw ScriptRandom
+    DW ScriptRandom
     ASSERT ENTITY_SCRIPT_ATTACK_PLAYER == 15
-    dw ScriptAttackPlayer
+    DW ScriptAttackPlayer
     ASSERT ENTITY_SCRIPT_IF_NEG == 16
-    dw ScriptIfNegative
+    DW ScriptIfNegative
     ASSERT ENTITY_SCRIPT_DEATH_PARTICLES == 17
-    dw ScriptDeathParticles
+    DW ScriptDeathParticles
 
 ; Script handlers. Each takes `bc` as input.
 
@@ -584,9 +584,9 @@ SECTION "Entity Script Fields", WRAM0, ALIGN[8]
 ; Extra variables for entities to use. The first two bytes are used as a script
 ; pointer if the entity has a script.
 wEntityFieldArray::
-    ds sizeof_Entity * NB_ENTITIES
+    DS sizeof_Entity * NB_ENTITIES
 
 SECTION "Script Offset Byte", HRAM
 
 hScriptOffset:
-    ds 1
+    DS 1

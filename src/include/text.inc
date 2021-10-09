@@ -19,12 +19,12 @@ MACRO say
             FAIL "Line is longer than 15 characters!"
         ENDC
     ENDC
-    db \1
+    DB \1
 ENDM
 
 ; NULL-ternimates a string
 MACRO end_text
-    db SPCHAR_TERMINATE
+    DB SPCHAR_TERMINATE
 ENDM
 
 MACRO ask
@@ -37,11 +37,11 @@ MACRO ask
             FAIL "Question is longer than 13 characters!"
         ENDC
     ENDC
-    db "  ", \1
+    DB "  ", \1
 ENDM
 
 MACRO end_ask
-    db SPCHAR_QUESTION
+    DB SPCHAR_QUESTION
 ENDM
 
 ; Loads a font character into `hl`
