@@ -2,5 +2,6 @@
 /obj/
 /dep/
 /res/
-*.task
 /.vscode/
+*.task
+*.tiled-session
