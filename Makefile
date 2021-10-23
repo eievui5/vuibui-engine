@@ -7,32 +7,25 @@
 #                                              #
 ################################################
 
-# Directory constants
-SRCDIR := src
-BINDIR := bin
-OBJDIR := obj
-DEPDIR := dep
-RESDIR := res
-
 # Program constants
-RGBDS   := 
+RGBDS   :=
 
 RGBASM  := $(RGBDS)rgbasm
 RGBLINK := $(RGBDS)rgblink
 RGBFIX  := $(RGBDS)rgbfix
 RGBGFX  := $(RGBDS)rgbgfx
 
-ROM = $(BINDIR)/$(ROMNAME).$(ROMEXT)
+ROM = bin/$(ROMNAME).$(ROMEXT)
 
 # Argument constants
-INCDIRS  = $(SRCDIR)/ $(SRCDIR)/include/ $(SRCDIR)/vbstd/
+INCDIRS  = src/ src/include/ src/vbstd/
 WARNINGS = all extra
-ASFLAGS  = -p $(PADVALUE) $(addprefix -i,$(INCDIRS)) $(addprefix -W,$(WARNINGS))
+ASFLAGS  = -p $(PADVALUE) $(addprefix -i, $(INCDIRS)) $(addprefix -W, $(WARNINGS))
 LDFLAGS  = -p $(PADVALUE) -S romx=64
 FIXFLAGS = -p $(PADVALUE) -v -i "$(GAMEID)" -k "$(LICENSEE)" -l $(OLDLIC) -m $(MBC) -n $(VERSION) -r $(SRAMSIZE) -t $(TITLE)
 
 # The list of "root" ASM files that RGBASM will be invoked on
-SRCS := $(shell find $(SRCDIR) -name '*.asm')
+SRCS := $(shell find src -name '*.asm')
 
 ## Project-specific configuration
 # Use this to override the above
@@ -50,10 +43,10 @@ all: $(ROM)
 
 # `clean`: Clean temp and bin files
 clean:
-	rm -rf $(BINDIR)
-	rm -rf $(OBJDIR)
-	rm -rf $(DEPDIR)
-	rm -rf $(RESDIR)
+	rm -rf bin
+	rm -rf obj
+	rm -rf dep
+	rm -rf res
 .PHONY: clean
 
 # `rebuild`: Build everything from scratch
@@ -70,26 +63,26 @@ rebuild:
 ###############################################
 
 # How to build a ROM
-$(BINDIR)/%.$(ROMEXT) $(BINDIR)/%.sym $(BINDIR)/%.map: $(patsubst $(SRCDIR)/%.asm,$(OBJDIR)/%.o,$(SRCS))
+bin/%.$(ROMEXT) bin/%.sym bin/%.map: $(patsubst src/%.asm, obj/%.o, $(SRCS))
 	@mkdir -p $(@D)
-	$(RGBLINK) $(LDFLAGS) -m $(BINDIR)/$*.map -n $(BINDIR)/$*.sym -o $(BINDIR)/$*.$(ROMEXT) $^ \
-	&& $(RGBFIX) -v $(FIXFLAGS) $(BINDIR)/$*.$(ROMEXT)
+	$(RGBLINK) $(LDFLAGS) -m bin/$*.map -n bin/$*.sym -o bin/$*.$(ROMEXT) $^ \
+	&& $(RGBFIX) -v $(FIXFLAGS) bin/$*.$(ROMEXT)
 ifneq ($(OS),Windows_NT)
-	./tools/romusage $(BINDIR)/$(ROMNAME).map -g
+	./tools/romusage bin/$(ROMNAME).map -g
 else
-	./tools/romusage.exe $(BINDIR)/$(ROMNAME).map -g
+	./tools/romusage.exe bin/$(ROMNAME).map -g
 endif
 
 # `.mk` files are auto-generated dependency lists of the "root" ASM files, to save a lot of hassle.
 # Also add all obj dependencies to the dep file too, so Make knows to remake it
 # Caution: some of these flags were added in RGBDS 0.4.0, using an earlier version WILL NOT WORK
 # (and produce weird errors)
-$(OBJDIR)/%.o $(DEPDIR)/%.mk: $(SRCDIR)/%.asm
-	@mkdir -p $(patsubst %/,%,$(dir $(OBJDIR)/$* $(DEPDIR)/$*))
-	$(RGBASM) $(ASFLAGS) -M $(DEPDIR)/$*.mk -MG -MP -MQ $(OBJDIR)/$*.o -MQ $(DEPDIR)/$*.mk -o $(OBJDIR)/$*.o $<
+obj/%.o dep/%.mk: src/%.asm
+	@mkdir -p $(patsubst %/, %, $(dir obj/$* dep/$*))
+	$(RGBASM) $(ASFLAGS) -M dep/$*.mk -MG -MP -MQ obj/$*.o -MQ dep/$*.mk -o obj/$*.o $<
 
 ifneq ($(MAKECMDGOALS),clean)
--include $(patsubst $(SRCDIR)/%.asm,$(DEPDIR)/%.mk,$(SRCS))
+-include $(patsubst src/%.asm, dep/%.mk, $(SRCS))
 endif
 
 ################################################
@@ -102,47 +95,56 @@ endif
 # By default, asset recipes convert files in `res/` into other files in `res/`
 # This line causes assets not found in `res/` to be also looked for in `src/res/`
 # "Source" assets can thus be safely stored there without `make clean` removing them
-VPATH := $(SRCDIR)
+VPATH := src
 
 # Define how to compress files using the PackBits16 codec
 # Compressor script requires Python 3
-$(RESDIR)/%.pb16: $(RESDIR)/%.2bpp
+res/%.pb16: res/%.2bpp
 	@mkdir -p $(@D)
 	python3 tools/pb16.py $^ $@
 
 # Convert .png files into .2bpp files.
-$(RESDIR)/%.2bpp: $(RESDIR)/%.png
+res/%.2bpp: res/%.png
 	@mkdir -p $(@D)
 	$(RGBGFX) -u -o $@ $^
 
 # Convert .png files into .1bpp files.
-$(RESDIR)/%.1bpp: $(RESDIR)/%.png
+res/%.1bpp: res/%.png
 	@mkdir -p $(@D)
 	$(RGBGFX) -d 1 -o $@ $^
 
-# Convert .png files into .h.2bpp files (-h flag)
-$(RESDIR)/%.h.2bpp: $(RESDIR)/%.png
+# Convert .png files into .h.2bpp files (-h flag).
+res/%.h.2bpp: res/%.png
 	@mkdir -p $(@D)
 	$(RGBGFX) -h -o $@ $^
 
-# Convert .png files into .h.1bpp files (-h flag)
-$(RESDIR)/%.h.1bpp: $(RESDIR)/%.png
+# Convert .png files into .h.1bpp files (-h flag).
+res/%.h.1bpp: res/%.png
 	@mkdir -p $(@D)
 	$(RGBGFX) -d 1 -h -o $@ $^
 
-# Convert .png files into .pal files
-$(RESDIR)/%.pal: $(RESDIR)/%.png
+# Convert .png files into .pal files.
+res/%.pal: res/%.png
 	@mkdir -p $(@D)
 	$(RGBGFX) -p $@ $^
 
-# Convert .json files into .tilemap files
-$(RESDIR)/%.tilemap: $(RESDIR)/%.json
+# Convert .json files into .tilemap files.
+res/%.tilemap: res/%.json
 	@mkdir -p $(@D)
-	python ./tools/tiledbin.py $^ $@
+	python3 ./tools/tiledbin.py $^ $@
 
-$(RESDIR)/%.tilemap: $(RESDIR)/%.png
+res/%.tilemap: res/%.png
 	@mkdir -p $(@D)
 	$(RGBGFX) -u -t $@ $^
+
+# Metatile data conversion.
+res/%.mtiledata: res/%.png
+#	Do not optimize these 2bpp files. `metamaker` relies on unoptimized tiles to
+#	create the output data, and will output an optimized 2bpp file to match.
+	$(RGBGFX) -o $(patsubst src/res/%.png, res/%.2bpp, $^) $^
+#	The width flag should be changed to 1 in the future. For now, it is 3.
+	./tools/metamaker -m $@ -o $(patsubst src/res/%.png, res/%.2bpp, $^) -w 3 -O 128 -i $(patsubst src/res/%.png, res/%.2bpp, $^)
+
 
 # Catch non-existent files
 # KEEP THIS LAST!!
