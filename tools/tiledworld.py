@@ -96,6 +96,10 @@ def __main__():
 		new_room.json = json.loads(open(get_path(infile.name) + new_room.path, "r").read())
 		new_room.x = room["x"] // 256
 		new_room.y = room["y"] // 256
+		if room["x"] % 256 != 0 or room["y"] % 256 != 0:
+			error(f"Room position of {new_room.path} must be a multiple of 256.")
+		if (room["width"] != 256 or room["height"] != 256):
+			error(f"Width and height of {new_room.path} must be 256.")
 		rooms.append(new_room)
 
 	outfile.write(
@@ -179,11 +183,10 @@ f"""
 	outfile.write(
 f"""
 x{map_name}:
-    define_map \\
-	    {get_width(rooms)}, {get_width(rooms) * get_height(rooms)}, \\ ; Width, Size
-		{name_from_path(tileset_path)}_tileset, \\ ; Tileset
-		{name_from_path(tileset_path)}_palettes, \\ ; Palettes - TODO
-		{name_from_path(tileset_path)}, \\ ; Metatile data
+    DB {get_width(rooms)}, {get_width(rooms) * get_height(rooms)} ; Width, Size
+	DW {name_from_path(tileset_path)}_tileset ; Tileset
+	DW {name_from_path(tileset_path)}_palettes ; Palettes - TODO
+	DW {name_from_path(tileset_path)} ; Metatile data
 .map""")
 
 	# Output room matrix.
@@ -204,12 +207,10 @@ x{map_name}:
 		for x in range(get_width(rooms)):
 			room = get_room(x, y, rooms)
 
-			if room is None:
+			if room is None or not room.has_script:
 				outfile.write("null, ")
-			elif room.has_script:
-				outfile.write(f"{name_from_path(room.name)}_script, ")
 			else:
-				outfile.write("null, ")
+				outfile.write(f"{name_from_path(room.name)}_script, ")
 
 if __name__ == "__main__":
 	__main__()
