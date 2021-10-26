@@ -16,38 +16,36 @@ DEF SPAWN_ENTITIES_B EQU 0
 DEF UPDATE_TILEMAP_B EQU 1
 
 ; Defines a new map struct, leaving room at the bottom for the layout and data
-; @ define_map width, height, tile_amount, pb16_tileset, metatiles
+; @ define_map width, height, tileset, palettes, metatiles
 MACRO define_map
+    ASSERT _NARG == 5, "Expected 5 arguments!"
     ; MapData_Width
 .width
     DB (2) * \1
     ; MapData_Size
 .size
     DB (2 * \1) * \2
-    ; MapData_TilesetSize
-.tilesetSize
-    DB \3
     ; MapData_TilesetBank, MapData_Tileset
 .tileset
-    far_pointer \4
+    far_pointer \3
     ; MapData_PalettesBank, MapData_Palettes
 .palettes
-    far_pointer \5
+    far_pointer \4
     ; MapData_MetatileSize
 .metatileSize
-    DB \6.end - \6
+    DB \5.end - \5
     ; MapData_MetatileBank
 .metatileBank
-    DB BANK(\6)
+    DB BANK(\5)
     ; MapData_MetatileDefinitions
 .metatileDefinitions
-    DW \6.definitions
+    DW \5.definitions
     ; MapData_MetatileAttributes
 .metatileAttributes
-    DW \6.attributes
+    DW \5.attributes
     ; MapData_MetatileData
 .metatileData
-    DW \6.data
+    DW \5.data
 ENDM
 
 ; Ends a mapdata definition
@@ -138,7 +136,6 @@ ENDM
         bytes 1, Width
         bytes 1, Size
 
-        bytes 1, TilesetSize ; How many tiles?
         bytes 1, TilesetBank
         words 1, Tileset
 

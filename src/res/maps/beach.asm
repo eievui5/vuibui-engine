@@ -9,7 +9,7 @@ SECTION "Beach Map", ROMX
 BeachMap::
     define_map \
     1, 1, \ ; Size
-    18, pb16_BeachTiles, \ ; Tileset
+    BeachTiles, \ ; Tileset
     BeachPalettes, \
     BeachMetatiles
 .map
@@ -25,9 +25,11 @@ BeachMap::
         112, 128
     end_mapdata
 
-pb16_BeachTiles: INCBIN "res/maps/beach/beach_tiles.pb16"
+BeachTiles: INCBIN "res/maps/beach/beach_tiles.2bpp"
+
 BeachPalettes:
     pal_blank
+
 BeachMetatiles:
 .definitions
     DB $80, $80

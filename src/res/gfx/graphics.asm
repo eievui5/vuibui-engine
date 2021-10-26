@@ -3,7 +3,7 @@ INCLUDE "graphics.inc"
 INCLUDE "players.inc"
 
 SECTION "Player Graphics", ROMX
-    GfxOctavia:: 
+    GfxOctavia::
         INCBIN "res/gfx/chars/octavia.h.2bpp"
     .end::
     GfxPoppy::
@@ -32,30 +32,30 @@ SECTION "User Interface", ROMX
     INCBIN "res/gfx/font/buttons.pb16"
 
 SECTION "Item Icons", ROMX
-    pb16_FireSpell::
-        INCBIN "res/gfx/ui/items/fire_spell.pb16"
-    pb16_IceSpell::
-        INCBIN "res/gfx/ui/items/ice_spell.pb16"
-    pb16_ShockSpell::
-        INCBIN "res/gfx/ui/items/shock_spell.pb16"
-    pb16_HealSpell::
-        INCBIN "res/gfx/ui/items/heal_spell.pb16"
-    pb16_Bow::
-        INCBIN "res/gfx/ui/items/bow.pb16"
-    pb16_Knife::
-        INCBIN "res/gfx/ui/items/knife.pb16"
-    pb16_Cloak::
-        INCBIN "res/gfx/ui/items/cloak.pb16"
-    pb16_Placeholder::
-        INCBIN "res/gfx/ui/items/placeholder.pb16"
-    pb16_Sword::
-        INCBIN "res/gfx/ui/items/sword.pb16"
-    pb16_Shield::
-        INCBIN "res/gfx/ui/items/shield.pb16"
-    pb16_Hammer::
-        INCBIN "res/gfx/ui/items/hammer.pb16"
-    pb16_Glove::
-        INCBIN "res/gfx/ui/items/glove.pb16"
+    GfxFireSpell::
+        INCBIN "res/gfx/ui/items/fire_spell.2bpp"
+    GfxIceSpell::
+        INCBIN "res/gfx/ui/items/ice_spell.2bpp"
+    GfxShockSpell::
+        INCBIN "res/gfx/ui/items/shock_spell.2bpp"
+    GfxHealSpell::
+        INCBIN "res/gfx/ui/items/heal_spell.2bpp"
+    GfxBow::
+        INCBIN "res/gfx/ui/items/bow.2bpp"
+    GfxKnife::
+        INCBIN "res/gfx/ui/items/knife.2bpp"
+    GfxCloak::
+        INCBIN "res/gfx/ui/items/cloak.2bpp"
+    GfxPlaceholder::
+        INCBIN "res/gfx/ui/items/placeholder.2bpp"
+    GfxSword::
+        INCBIN "res/gfx/ui/items/sword.2bpp"
+    GfxShield::
+        INCBIN "res/gfx/ui/items/shield.2bpp"
+    GfxHammer::
+        INCBIN "res/gfx/ui/items/hammer.2bpp"
+    GfxGlove::
+        INCBIN "res/gfx/ui/items/glove.2bpp"
 
 SECTION "Font", ROMX
     GameFont::

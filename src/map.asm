@@ -100,8 +100,6 @@ UpdateActiveMap::
 	inc hl ; Skip Width
 	inc hl ; Skip Size, now on tileset
 
-	ld a, [hli] ; Load no. of tiles
-	ld b, a
 	ld a, [hli] ; Load target bank.
 	ld c, a
 	ld a, [hli] ; Load first pointer byte
@@ -109,18 +107,24 @@ UpdateActiveMap::
 	ld a, [hli] ; Load second pointer byte
 	ld d, a ; de is now the tileset pointer
 	push hl
-		ld hl, VRAM_TILES_SHARED
+        ; Swap to the bank of the source tiles.
 		ld a, c
 		rst SwapBank
-		call pb16_unpack_block
+        ; Set up arguments.
+        ld h, d
+        ld l, e
+        ld bc, 128 * sizeof_TILE
+		ld de, VRAM_TILES_SHARED
+		call VRAMCopy ; Set to static size & change to uncompressed copy. How to handle entities vs tiles?
 	pop hl
+
+    ; Return to map bank.
+	ldh a, [hMapBankBuffer]
+	rst SwapBank
 
     ldh a, [hSystem]
     and a, a
     jr z, .palSkip
-
-	ldh a, [hMapBankBuffer]
-	rst SwapBank
 
         ld a, [hli] ; Load Palette Bank
         ld b, a
@@ -150,9 +154,6 @@ UpdateActiveMap::
     inc hl
 .palFinish
     inc hl ; The last read did not include a post-inc
-
-	ldh a, [hMapBankBuffer]
-	rst SwapBank
 
 	ld a, [hli] ; Load metatile size
 	ld b, a

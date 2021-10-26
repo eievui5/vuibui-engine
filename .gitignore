@@ -3,5 +3,5 @@
 /dep/
 /res/
 /.vscode/
-*.task
+TODO*
 *.tiled-session

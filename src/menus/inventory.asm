@@ -7,6 +7,9 @@ INCLUDE "hardware.inc"
 INCLUDE "lb.inc"
 INCLUDE "map.inc"
 INCLUDE "menu.inc"
+INCLUDE "valloc.inc"
+
+SECTION UNION "VRAM", VRAM[$8800]
 
 ; I hate this enum
 
@@ -184,69 +187,27 @@ InventoryInit:
     jr z, .poppyItems
 
 ; Tiber items
-    ld de, pb16_Sword
+    ld de, GfxSword
     get_tile hl, TILE_ITEM_0_0
-    ld b, 4
-    call pb16_unpack_block
-
-    ld de, pb16_Shield
-    get_tile hl, TILE_ITEM_1_0
-    ld b, 4
-    call pb16_unpack_block
-
-    ld de, pb16_Hammer
-    get_tile hl, TILE_ITEM_2_0
-    ld b, 4
-    call pb16_unpack_block
-
-    ld de, pb16_Glove
-    get_tile hl, TILE_ITEM_3_0
-    ld b, 4
-    call pb16_unpack_block
+    ASSERT sizeof_TILE * 4 * 4 == 256
+    ld c, 0 ; 0 is 256 bytes.
+    call VRAMCopySmall
     jr .reloadPalettes
 
 .poppyItems
-    ld de, pb16_Bow
+    ld de, GfxBow
     get_tile hl, TILE_ITEM_0_0
-    ld b, 4
-    call pb16_unpack_block
-
-    ld de, pb16_Knife
-    get_tile hl, TILE_ITEM_1_0
-    ld b, 4
-    call pb16_unpack_block
-
-    ld de, pb16_Cloak
-    get_tile hl, TILE_ITEM_2_0
-    ld b, 4
-    call pb16_unpack_block
-
-    ld de, pb16_Placeholder
-    get_tile hl, TILE_ITEM_3_0
-    ld b, 4
-    call pb16_unpack_block
+    ASSERT sizeof_TILE * 4 * 4 == 256
+    ld c, 0 ; 0 is 256 bytes.
+    call VRAMCopySmall
     jr .reloadPalettes
 
 .octaviaItems
-    ld de, pb16_FireSpell
+    ld de, GfxFireSpell
     get_tile hl, TILE_ITEM_0_0
-    ld b, 4
-    call pb16_unpack_block
-
-    ld de, pb16_IceSpell
-    get_tile hl, TILE_ITEM_1_0
-    ld b, 4
-    call pb16_unpack_block
-
-    ld de, pb16_ShockSpell
-    get_tile hl, TILE_ITEM_2_0
-    ld b, 4
-    call pb16_unpack_block
-
-    ld de, pb16_HealSpell
-    get_tile hl, TILE_ITEM_3_0
-    ld b, 4
-    call pb16_unpack_block
+    ASSERT sizeof_TILE * 4 * 4 == 256
+    ld c, 0 ; 0 is 256 bytes.
+    call VRAMCopySmall
 
 .reloadPalettes
 
