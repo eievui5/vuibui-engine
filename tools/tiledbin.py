@@ -40,7 +40,7 @@ def main():
         # Convert tiles to binary map
         if layer['type'] == 'tilelayer':
             # Have we already converted a map?
-            if converted_tiles: 
+            if converted_tiles:
                 print("WARN: Too many tile layers! Ignoring...")
                 continue
             # Ensure that the map is of the proper size.
@@ -54,17 +54,16 @@ def main():
             for byte in layer['data']:
                 tilemap.append(byte - 1)
             output.write(bytearray(tilemap))
-            print("Successfully wrote tile layer to \"%s\"!" % sys.argv[2])
             converted_tiles = True
-        
+
         # Convert objects to map metadata
         elif layer['type'] == 'objectgroup':
             print("WARN: Object Layer is currently unsupported. Ignoring...")
-        
+
         # Warn on unknown layers.
-        else: 
+        else:
             print(
-            "WARN: Unsupported or Unknown Layer type \"%s\"! Ignoring..." % 
+            "WARN: Unsupported or Unknown Layer type \"%s\"! Ignoring..." %
             layer['type'])
     return
 
