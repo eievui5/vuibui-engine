@@ -23,7 +23,7 @@ freely, subject to the following restrictions:
 import json
 import sys
 
-def main():
+def __main__():
 
     # Validate the command-line arguments
     if len(sys.argv) > 3:
@@ -67,4 +67,5 @@ def main():
             layer['type'])
     return
 
-main()
+if __name__ == "__main__":
+    __main__()

@@ -56,8 +56,9 @@ rebuild:
 	$(MAKE) all
 .PHONY: rebuild
 
-usage:
+usage: all
 	./tools/romusage bin/$(ROMNAME).map -g
+.PHONY: usage
 
 ###############################################
 #                                             #

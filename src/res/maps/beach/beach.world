@@ -1,0 +1,20 @@
+{
+    "maps": [
+        {
+            "fileName": "beach_map.json",
+            "height": 256,
+            "width": 256,
+            "x": 0,
+            "y": 0
+        },
+        {
+            "fileName": "beach2.json",
+            "height": 256,
+            "width": 256,
+            "x": 256,
+            "y": 0
+        }
+    ],
+    "onlyShowAdjacentMaps": false,
+    "type": "world"
+}
