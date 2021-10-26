@@ -56,6 +56,9 @@ rebuild:
 	$(MAKE) all
 .PHONY: rebuild
 
+usage:
+	./tools/romusage bin/$(ROMNAME).map -g
+
 ###############################################
 #                                             #
 #                 COMPILATION                 #
@@ -67,11 +70,6 @@ bin/%.$(ROMEXT) bin/%.sym bin/%.map: $(patsubst src/%.asm, obj/%.o, $(SRCS))
 	@mkdir -p $(@D)
 	$(RGBLINK) $(LDFLAGS) -m bin/$*.map -n bin/$*.sym -o bin/$*.$(ROMEXT) $^ \
 	&& $(RGBFIX) -v $(FIXFLAGS) bin/$*.$(ROMEXT)
-ifneq ($(OS),Windows_NT)
-	./tools/romusage bin/$(ROMNAME).map -g
-else
-	./tools/romusage.exe bin/$(ROMNAME).map -g
-endif
 
 # `.mk` files are auto-generated dependency lists of the "root" ASM files, to save a lot of hassle.
 # Also add all obj dependencies to the dep file too, so Make knows to remake it
@@ -138,12 +136,14 @@ res/%.tilemap: res/%.png
 	$(RGBGFX) -u -t $@ $^
 
 # Metatile data conversion.
-res/%.mtiledata: res/%.png
+res/%.mtile res/%.mtiledata: res/%.png
+	@mkdir -p $(@D)
 #	Do not optimize these 2bpp files. `metamaker` relies on unoptimized tiles to
-#	create the output data, and will output an optimized 2bpp file to match.
-	$(RGBGFX) -o $(patsubst src/res/%.png, res/%.2bpp, $^) $^
+#	create the output data. RGBGFX will output the data that metamaker expects,
+#	so this is fine.
+	$(RGBGFX) -o $(patsubst src/res/%.png, res/%.mtile, $^) $^
 #	The width flag should be changed to 1 in the future. For now, it is 3.
-	./tools/metamaker -m $@ -o $(patsubst src/res/%.png, res/%.2bpp, $^) -w 3 -O 128 -i $(patsubst src/res/%.png, res/%.2bpp, $^)
+	./tools/metamaker -m $@ -w 3 -O 128 -i $(patsubst src/res/%.png, res/%.mtile, $^)
 
 
 # Catch non-existent files
