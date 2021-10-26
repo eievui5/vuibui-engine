@@ -134,7 +134,7 @@ Initialize::
     ld hl, wBCPDTarget
     ld bc, sizeof_PALETTE * 16
     rst MemSetSmall
-    
+
     ld a, 16
     ld [wFadeSpeed], a
 
@@ -263,12 +263,12 @@ InitializeGameplay::
 
 ; UI graphics
     ; Heart graphics
-    ld a, BANK(pb16_Heart)
+    ld a, BANK(GfxHeart)
     rst SwapBank
-    ld de, pb16_Heart
-    ld hl, VRAM_TILES_BG + TILE_HEART * 16
-    ld b, 3 ; 2 tiles
-    call pb16_unpack_block
+    ld c, GfxHeart.end - GfxHeart
+    ld de, VRAM_TILES_BG + TILE_HEART * 16
+    ld hl, GfxHeart
+    call VRAMCopySmall
     ; Button hints
     ld a, BANK(GameFont)
     rst SwapBank
@@ -329,26 +329,26 @@ LoadStandardGraphics::
     ld bc, (GfxOctavia.end - GfxOctavia) * 3
     call MemCopy
 
-    ld a, BANK(pb16_GfxArrow)
+    ld a, BANK(GfxArrow)
     rst SwapBank
-    ld hl, _VRAM + (TILE_ARROW_DOWN * $10)
-    ld de, pb16_GfxArrow
-    ld b, 6
-    call pb16_unpack_block
-    
-    ld a, BANK(pb16_GfxSword)
-    rst SwapBank
-    ld hl, _VRAM + (TILE_SWORD_UP * $10)
-    ld de, pb16_GfxSword
-    ld b, 8
-    call pb16_unpack_block
+    ld c, GfxArrow.end - GfxArrow
+    ld de, _VRAM + (TILE_ARROW_DOWN * $10)
+    ld hl, GfxArrow
+    call VRAMCopySmall
 
-    ld a, BANK(pb16_GfxSparkle)
+    ld a, BANK(GfxSword)
     rst SwapBank
-    ld hl, _VRAM + (TILE_SPARKLE_LEFT * $10)
-    ld de, pb16_GfxSparkle
-    ld b, 4
-    call pb16_unpack_block
+    ld c, GfxSword.end - GfxSword
+    ld de, _VRAM + (TILE_SWORD_UP * $10)
+    ld hl, GfxSword
+    call VRAMCopySmall
+
+    ld a, BANK(GfxSparkle)
+    rst SwapBank
+    ld c, GfxSparkle.end - GfxSparkle
+    ld de, _VRAM + (TILE_SPARKLE_LEFT * $10)
+    ld hl, GfxSparkle
+    call VRAMCopySmall
 
     pop af
     rst SwapBank

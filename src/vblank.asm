@@ -16,6 +16,8 @@ SECTION "VBlank Interrupt", ROM0[$40]
 SECTION "VBlank", ROM0
 ; Vertical Screen Blanking
 VBlank:
+    ldh a, [hCurrentBank]
+    ld [wInterruptBankBuffer], a
 
     ldh a, [hLCDCBuffer]
     ldh [rLCDC], a
@@ -57,8 +59,8 @@ VBlank:
     ld [wNewFrame], a
 
     ; Restore register state
-    ldh a, [hCurrentBank]
-    ld [rROMB0], a
+    ld a, [wInterruptBankBuffer]
+    rst SwapBank
     pop hl
     pop de
     pop bc

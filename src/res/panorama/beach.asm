@@ -3,24 +3,22 @@ INCLUDE "graphics.inc"
 SECTION "Beach Panorama", ROMX
     BeachPanorama::
         ; DMG
-        DB 22 ; no of tiles
-        DW pb16_DMGBeachPanoramaTiles
+        DW GfxDMGBeachPanoramaTiles
         DW BeachPanoramaMap
         ; CGB
-        DB 22 ; no of tiles
-        DW pb16_CGBBeachPanoramaTiles
+        DW GfxCGBBeachPanoramaTiles
         DW BeachPanoramaMap
         DW BeachPanoramaAttributes
         DW BeachPanoramaPalettes
-    pb16_DMGBeachPanoramaTiles::
-        INCBIN "res/panorama/beach/dmg_beach_tiles.pb16"
-    pb16_CGBBeachPanoramaTiles::
-        INCBIN "res/panorama/beach/cgb_beach_tiles.pb16"
-    BeachPanoramaMap::
+    GfxDMGBeachPanoramaTiles:
+        INCBIN "res/panorama/beach/dmg_beach_tiles.2bpp"
+    GfxCGBBeachPanoramaTiles:
+        INCBIN "res/panorama/beach/cgb_beach_tiles.2bpp"
+    BeachPanoramaMap:
         INCBIN "res/panorama/beach/beach_map.tilemap"
-    BeachPanoramaAttributes::
+    BeachPanoramaAttributes:
         INCBIN "res/panorama/beach/beach_map.attrmap"
-    BeachPanoramaPalettes::
+    BeachPanoramaPalettes:
         pal 31, 31, 31, \
             16, 16, 31, \
              0,  0,  0, \

@@ -3,17 +3,15 @@ INCLUDE "graphics.inc"
 SECTION "Night Panorama", ROMX
     NightPanorama::
         ; DMG
-        DB 45 ; no of tiles
-        DW pb16_NightPanoramaTiles
+        DW GfxNightPanoramaTiles
         DW NightPanoramaMap
         ; CGB
-        DB 45 ; no of tiles
-        DW pb16_NightPanoramaTiles
+        DW GfxNightPanoramaTiles
         DW NightPanoramaMap
         DW NightPanoramaAttributes
         DW NightPanoramaPalettes
-    pb16_NightPanoramaTiles::
-        INCBIN "res/panorama/night/night_tiles.pb16"
+    GfxNightPanoramaTiles::
+        INCBIN "res/panorama/night/night_tiles.2bpp"
     NightPanoramaMap::
         INCBIN "res/panorama/night/night_map.tilemap"
     NightPanoramaAttributes::

@@ -477,6 +477,8 @@ GetActiveMap::
 ; Used to reload the active map's tiles if they were changed for any reason.
 ; Must occur during VBlank, and expects interrupts to be off.
 ReloadMapGraphics::
+    ldh a, [hCurrentBank]
+    push af
 
     ld a, [wActiveWorldMap]
     ld b, a
@@ -491,7 +493,7 @@ ReloadMapGraphics::
 
     ld a, [hli]
     ldh [hMapBankBuffer], a
-    ld [rROMB0], a
+    rst SwapBank
 
     ld a, [hli]
     ld h, [hl]
@@ -501,23 +503,20 @@ ReloadMapGraphics::
     inc hl
     inc hl
     ld a, [hli]
-    ld b, a
-    ld a, [hli]
     ld c, a
     ld a, [hli]
 
     push hl
+        ld h, [hl]
+        ld l, a
+        ld a, c
+        rst SwapBank
+        ld bc, 128 * sizeof_TILE
+        ld de, VRAM_TILES_SHARED
+        call VRAMCopy
 
-    ld d, [hl]
-    ld e, a
-    ld a, c
-    ld [rROMB0], a
-    ld hl, VRAM_TILES_SHARED
-    call pb16_unpack_block
-
-    ldh a, [hMapBankBuffer]
-    ld [rROMB0], a
-
+        ldh a, [hMapBankBuffer]
+        rst SwapBank
     pop hl
 
     ldh a, [hSystem]
@@ -532,7 +531,7 @@ ReloadMapGraphics::
     ld h, [hl]
     ld l, a
     ld a, b
-    ld [rROMB0], a
+    rst SwapBank
 
     ld c, MAP_BKG_PALS * sizeof_PALETTE
     ld de, wBCPD
@@ -551,9 +550,9 @@ ReloadMapGraphics::
     ld a, PALETTE_STATE_RESET
     ld [wPaletteState], a
 
-    ldh a, [hCurrentBank]
-    ld [rROMB0], a
-
+    ; Restore bank
+    pop af
+    rst SwapBank
     ret
 
 ; Used to check which World Map we're referencing (Overworld, Dungeon, etc...)

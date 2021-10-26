@@ -12,24 +12,32 @@ SECTION "Player Graphics", ROMX
     GfxTiber::
         INCBIN "res/gfx/chars/tiber.h.2bpp"
     .end::
-    pb16_GfxArrow::
-        INCBIN "res/gfx/misc/arrow.h.pb16"
-    pb16_GfxSword::
-        INCBIN "res/gfx/misc/sword.h.pb16"
-    pb16_GfxSparkle::
-        INCBIN "res/gfx/misc/sparkle.h.pb16"
+    GfxArrow::
+        INCBIN "res/gfx/misc/arrow.h.2bpp"
+    .end::
+    GfxSword::
+        INCBIN "res/gfx/misc/sword.h.2bpp"
+    .end::
+    GfxSparkle::
+        INCBIN "res/gfx/misc/sparkle.h.2bpp"
+    .end::
 
 SECTION "User Interface", ROMX
-    pb16_Heart::
-        INCBIN "res/gfx/ui/heart.pb16"
-    pb16_MenuSeperators::
-        INCBIN "res/gfx/ui/menu_seperators.pb16"
+    GfxHeart::
+        INCBIN "res/gfx/ui/heart.2bpp"
+    .end::
+    GfxMenuSeperators::
+        INCBIN "res/gfx/ui/menu_seperators.2bpp"
+    .end::
     obpp_Pointer::
         INCBIN "res/gfx/ui/pointer.1bpp"
+    .end::
     obpp_ItemSelection::
         INCBIN "res/gfx/ui/item_selection.h.1bpp"
-    pb16_Buttons::
-    INCBIN "res/gfx/font/buttons.pb16"
+    .end::
+    GfxButtons::
+        INCBIN "res/gfx/font/buttons.2bpp"
+    .end::
 
 SECTION "Item Icons", ROMX
     GfxFireSpell::
@@ -48,7 +56,7 @@ SECTION "Item Icons", ROMX
         INCBIN "res/gfx/ui/items/cloak.2bpp"
     GfxPlaceholder::
         INCBIN "res/gfx/ui/items/placeholder.2bpp"
-    GfxSword::
+    GfxSwordIcon::
         INCBIN "res/gfx/ui/items/sword.2bpp"
     GfxShield::
         INCBIN "res/gfx/ui/items/shield.2bpp"

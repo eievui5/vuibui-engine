@@ -125,12 +125,12 @@ InventoryInit:
 
 ; Load inventory graphics
     ; Unpack seperators
-    ld a, BANK(pb16_MenuSeperators)
+    ld a, BANK(GfxMenuSeperators)
     rst SwapBank
-    ld de, pb16_MenuSeperators
-    get_tile hl, TILE_CLEAR
-    ld b, 4
-    call pb16_unpack_block
+    ld c, GfxMenuSeperators.end - GfxMenuSeperators
+    get_tile de, TILE_CLEAR
+    ld hl, GfxMenuSeperators
+    call VRAMCopySmall
 
     ; Default letters
     ld a, BANK(InventoryLetters)
@@ -175,10 +175,10 @@ InventoryInit:
     rst SwapBank
 
     ; Load the button hints
-    ld de, pb16_Buttons
-    get_tile hl, TILE_A_TOP
-    ld b, 4
-    call pb16_unpack_block
+    ld c, GfxButtons.end - GfxButtons
+    get_tile de, TILE_A_TOP
+    ld hl, GfxButtons
+    call VRAMCopySmall
 
     ld a, [wActivePlayer]
     and a, a
@@ -187,7 +187,7 @@ InventoryInit:
     jr z, .poppyItems
 
 ; Tiber items
-    ld de, GfxSword
+    ld de, GfxSwordIcon
     get_tile hl, TILE_ITEM_0_0
     ASSERT sizeof_TILE * 4 * 4 == 256
     ld c, 0 ; 0 is 256 bytes.
@@ -333,7 +333,7 @@ InventoryInit:
     and a, a
     jr z, .skipColorOffset
     ; Offset to CGB stuff
-    ld a, Panorama_CGBSize
+    ld a, Panorama_CGBTiles
     ; Add `a` to `hl`
     add a, l
     ld l, a
@@ -344,13 +344,12 @@ InventoryInit:
 
     ; Load the active map's panorama's tiles
     ld a, [hli]
-    ld b, a ; Load number of tiles
-    ld a, [hli]
     push hl
-        ld d, [hl]
-        ld e, a
-        ld hl, VRAM_TILES_BG
-        call pb16_unpack_block
+        ld bc, sizeof_TILE * 64
+        ld de, VRAM_TILES_BG
+        ld h, [hl]
+        ld l, a
+        call VRAMCopy
     pop hl
     inc hl
 

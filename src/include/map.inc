@@ -161,11 +161,9 @@ ENDM
     end_struct
 
     struct Panorama
-        bytes 1, DMGSize
         words 1, DMGTiles
         words 1, DMGMap
 
-        bytes 1, CGBSize
         words 1, CGBTiles
         words 1, CGBMap
         words 1, Attributes
