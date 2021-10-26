@@ -560,7 +560,7 @@ ReloadMapGraphics::
 MapLookup:
     ; World Map 0
     far_pointer OverworldMap
-    far_pointer BeachMap
+    far_pointer xBeach
 
 PanoramaLookup::
     ; World Map 0

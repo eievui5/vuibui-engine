@@ -71,8 +71,8 @@ def get_room(x, y, rooms):
 			return room
 	return None
 
-def get_path(path):
-	return path[0:path.find(os.path.basename(path))]
+def get_path(path, exclude_src = False):
+	return path[4 if path.startswith("src") and exclude_src else 0:path.find(os.path.basename(path))]
 
 def name_from_path(path):
 	return os.path.basename(path).split('.', 1)[0].capitalize()
@@ -114,12 +114,12 @@ SECTION \"{map_name} World Map\", ROMX
 	outfile.write("; --- Maps ---\n")
 	for room in rooms:
 		outfile.write(f"{room.name}:\n")
-		outfile.write(f"    INCBIN \"{get_path(infile.name) + room.path.split('.', 1)[0] + '.tilemap'}\"\n")
+		outfile.write(f"    INCBIN \"{get_path(infile.name, True) + room.path.split('.', 1)[0] + '.tilemap'}\"\n")
 
 	outfile.write("\n; --- Scripts ---\n")
 	for room in rooms:
 		try:
-			script_path = get_path(infile.name) + room.name.split('.', 1)[0] + '.roomscript'
+			script_path = get_path(infile.name) + room.path.split('.', 1)[0] + '.roomscript'
 			open(script_path)
 			room.has_script = True
 			outfile.write(f"{name_from_path(room.name)}_script:\n    INCLUDE \"{script_path}\"\n")
@@ -146,7 +146,7 @@ SECTION \"{map_name} World Map\", ROMX
 f"""
 ; --- Tileset ---
 {name_from_path(tileset_path)}_tileset:
-    INCBIN \"{tileset.split('.', 1)[0] + '.2bpp'}\"
+    INCBIN \"{tileset[4 if tileset.startswith("src") else 0:].split('.', 1)[0] + '.2bpp'}\"
 """)
 
 	# Include the palettes.
@@ -163,7 +163,7 @@ f"""
 ; --- Metatiles ---
 {name_from_path(tileset_path)}:
 .definitions
-    INCBIN \"{tileset.split('.', 1)[0] + '.mtiledata'}\"
+    INCLUDE \"{tileset[4 if tileset.startswith("src") else 0:].split('.', 1)[0] + '.mtiledata'}\"
 .end
 .attributes
     DS 12 * 4, 0 ; TODO
@@ -182,11 +182,12 @@ f"""
 	# Prepare world structure.
 	outfile.write(
 f"""
-x{map_name}:
-    DB {get_width(rooms)}, {get_width(rooms) * get_height(rooms)} ; Width, Size
-	DW {name_from_path(tileset_path)}_tileset ; Tileset
-	DW {name_from_path(tileset_path)}_palettes ; Palettes - TODO
-	DW {name_from_path(tileset_path)} ; Metatile data
+x{map_name}::
+	define_map \\
+        {get_width(rooms)}, {get_height(rooms)}, \\ ; Width, Size
+	    {name_from_path(tileset_path)}_tileset, \\ ; Tileset
+	    {name_from_path(tileset_path)}_palettes, \\ ; Palettes - TODO
+	    {name_from_path(tileset_path)} ; Metatile data
 .map""")
 
 	# Output room matrix.

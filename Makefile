@@ -140,6 +140,9 @@ res/%.mtile res/%.mtiledata: res/%.png
 #	The width flag should be changed to 1 in the future. For now, it is 3.
 	./tools/metamaker -m $@ -w 3 -O 128 -i $(patsubst src/res/%.png, res/%.mtile, $^)
 
+res/%.asm: res/%.world
+	@mkdir -p $(@D)
+	python3 tools/tiledworld.py -o $@ $^
 
 # Catch non-existent files
 # KEEP THIS LAST!!
