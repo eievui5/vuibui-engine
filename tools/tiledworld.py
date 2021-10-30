@@ -41,7 +41,7 @@ def error(string):
 def warn(string):
 	print(f"WARN: {string}")
 
-def get_height(rooms):
+def get_height_range(rooms):
 	lowest = 0
 	highest = 0
 
@@ -51,9 +51,13 @@ def get_height(rooms):
 		elif room.y > highest:
 			highest = room.y
 
+	return (lowest, highest)
+
+def get_height(rooms):
+	(lowest, highest) = get_height_range(rooms)
 	return abs(lowest) + abs(highest) + 1
 
-def get_width(rooms):
+def get_width_range(rooms):
 	lowest = 0
 	highest = 0
 
@@ -63,6 +67,10 @@ def get_width(rooms):
 		elif room.x > highest:
 			highest = room.x
 
+	return (lowest, highest)
+
+def get_width(rooms):
+	(lowest, highest) = get_width_range(rooms)
 	return abs(lowest) + abs(highest) + 1
 
 def get_room(x, y, rooms):
@@ -191,9 +199,12 @@ x{map_name}::
 .map""")
 
 	# Output room matrix.
-	for y in range(get_height(rooms)):
+	(lowest_height, highest_height) = get_height_range(rooms)
+	(lowest_width, highest_width) = get_width_range(rooms)
+
+	for y in range(lowest_height, highest_height + 1):
 		outfile.write("\n    DW ")
-		for x in range(get_width(rooms)):
+		for x in range(lowest_width, highest_width + 1):
 			room = get_room(x, y, rooms)
 
 			if room is None:
@@ -203,9 +214,9 @@ x{map_name}::
 
 	# And finally, output room script matrix.
 	outfile.write("\n.data")
-	for y in range(get_height(rooms)):
+	for y in range(lowest_height, highest_height + 1):
 		outfile.write("\n    DW ")
-		for x in range(get_width(rooms)):
+		for x in range(lowest_width, highest_width + 1):
 			room = get_room(x, y, rooms)
 
 			if room is None or not room.has_script:
