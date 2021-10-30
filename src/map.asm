@@ -386,7 +386,16 @@ MapdataNPC:
 
 MapdataSetRespawn:
     ld de, wRespawnPoint
-    ld c, sizeof_RespawnPoint
+    ld a, [wActiveWorldMap]
+    ld [de], a
+    inc de
+    ld a, [wWorldMapPositionX]
+    ld [de], a
+    inc de
+    ld a, [wWorldMapPositionY]
+    ld [de], a
+    inc de
+    ld c, sizeof_RespawnPoint - 3
     rst MemCopySmall
     jp UpdateActiveMap.nextData
 

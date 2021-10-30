@@ -1,5 +1,6 @@
 INCLUDE "hardware.inc"
 INCLUDE "lb.inc"
+INCLUDE "map.inc"
 INCLUDE "players.inc"
 INCLUDE "save.inc"
 
@@ -89,9 +90,15 @@ xLoadRepawnPoint::
     ASSERT Save_WorldMapX == 1
     ld a, [hli]
     ld [wWorldMapPositionX], a
+    ld [wPlayerRoom.octavia + 1], a
+    ld [wPlayerRoom.poppy + 1], a
+    ld [wPlayerRoom.tiber + 1], a
     ASSERT Save_WorldMapY == 2
     ld a, [hli]
     ld [wWorldMapPositionY], a
+    ld [wPlayerRoom.octavia], a
+    ld [wPlayerRoom.poppy], a
+    ld [wPlayerRoom.tiber], a
     ASSERT Save_OctaviaPosX == 3
     ld a, [hli]
     ld [wOctavia_XPos], a
@@ -224,7 +231,7 @@ xSaveCheckString:
 SECTION "Template Saves", ROMX
 
     dstruct Save, xDefaultSaveFile, \
-    0,          \ ; World Map.
+    MAP_OVERWORLD, \ ; World Map.
     0, 0,       \ ; World Map Position.
     128, 128,   \ ; Octavia Position.
     112, 128,   \ ; Poppy Position.

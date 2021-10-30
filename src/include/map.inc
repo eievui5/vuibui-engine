@@ -108,7 +108,7 @@ MACRO create_npc
 ENDM
 
 MACRO set_respawn
-    ASSERT _NARG == sizeof_RespawnPoint && sizeof_RespawnPoint == 9
+    ASSERT _NARG == (sizeof_RespawnPoint - 3) && sizeof_RespawnPoint == 9
     DB MAPDATA_SET_RESPAWN
     FOR i, _NARG
         DB \1

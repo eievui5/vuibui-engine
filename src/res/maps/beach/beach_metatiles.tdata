@@ -3,25 +3,25 @@
 ; Ground
     clear
 ; Shore
-    clear
+    collision
 ; Water
-    clear
+    collision
 ; Tree
-    clear
+    collision
 ; Stump
-    clear
+    collision
 ; Peak Left
-    clear
+    collision
 ; Cliff Left
-    clear
+    collision
 ; Peak
-    clear
+    collision
 ; Cliff
-    clear
+    collision
 ; Peak Right
-    clear
+    collision
 ; Cliff Right
-    clear
+    collision
 ; Cave
     warp_0
 ; Up

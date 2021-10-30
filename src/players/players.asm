@@ -815,7 +815,7 @@ wPlayerWaitLink::
         DS 1
 
 ; Player world map Position. Used to keep track of which room an inactive
-; player is waiting in.
+; player is waiting in. Y, X order.
 wPlayerRoom::
     .octavia::
         DS 2

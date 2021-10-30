@@ -1,6 +1,5 @@
     set_respawn \
-        1, 0, 0, \
-        128, 128, \
-        144, 128, \
-        112, 128
+        128, 128, \ ; Octavia
+        144, 128, \ ; Poppy
+        112, 128    ; Tiber
     end_mapdata
