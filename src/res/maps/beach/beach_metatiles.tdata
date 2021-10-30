@@ -2,25 +2,33 @@
 
 ; Ground
     clear
-;
+; Shore
     clear
-;
+; Water
     clear
-;
+; Tree
     clear
-;
+; Stump
     clear
-;
+; Peak Left
     clear
-;
+; Cliff Left
     clear
-;
+; Peak
     clear
-;
+; Cliff
     clear
-;
+; Peak Right
     clear
-;
+; Cliff Right
     clear
-;
-    clear
+; Cave
+    warp_0
+; Up
+    transition_up
+; Right
+    transition_right
+; Down
+    transition_down
+; Left
+    transition_left

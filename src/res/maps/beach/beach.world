@@ -13,6 +13,13 @@
             "width": 256,
             "x": 256,
             "y": 0
+        },
+        {
+            "fileName": "beach3.json",
+            "height": 256,
+            "width": 256,
+            "x": 256,
+            "y": -256
         }
     ],
     "onlyShowAdjacentMaps": false,

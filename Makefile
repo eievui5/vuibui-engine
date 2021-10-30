@@ -137,8 +137,7 @@ res/%.mtile res/%.mtiledata: res/%.png
 #	create the output data. RGBGFX will output the data that metamaker expects,
 #	so this is fine.
 	$(RGBGFX) -o $(patsubst src/res/%.png, res/%.mtile, $^) $^
-#	The width flag should be changed to 1 in the future. For now, it is 3.
-	./tools/metamaker -m $@ -w 3 -O 128 -i $(patsubst src/res/%.png, res/%.mtile, $^)
+	./tools/metamaker -m $@ -w 1 -O 128 -i $(patsubst src/res/%.png, res/%.mtile, $^)
 
 res/%.asm: res/%.world
 	@mkdir -p $(@D)
