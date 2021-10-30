@@ -1,8 +1,8 @@
 INCLUDE "engine.inc"
 INCLUDE "graphics.inc"
 INCLUDE "hardware.inc"
-INCLUDE "lb.inc"
 INCLUDE "menu.inc"
+INCLUDE "stdopt.inc"
 INCLUDE "text.inc"
 INCLUDE "valloc.inc"
 

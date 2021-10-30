@@ -2,8 +2,8 @@ INCLUDE "banks.inc"
 INCLUDE "engine.inc"
 INCLUDE "graphics.inc"
 INCLUDE "hardware.inc"
-INCLUDE "lb.inc"
 INCLUDE "stat.inc"
+INCLUDE "stdopt.inc"
 INCLUDE "text.inc"
 
 SECTION "Text Box", ROM0

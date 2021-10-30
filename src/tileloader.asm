@@ -1,7 +1,7 @@
 INCLUDE "directions.inc"
 INCLUDE "engine.inc"
 INCLUDE "hardware.inc"
-INCLUDE "lb.inc"
+INCLUDE "stdopt.inc"
 INCLUDE "tiledata.inc"
 
 SECTION "Tileloader", ROM0

@@ -1,10 +1,10 @@
 INCLUDE "directions.inc"
 INCLUDE "entity.inc"
 INCLUDE "graphics.inc"
-INCLUDE "lb.inc"
 INCLUDE "players.inc"
 INCLUDE "scripting.inc"
 INCLUDE "sfx.inc"
+INCLUDE "stdopt.inc"
 INCLUDE "text.inc"
 
 /*  Octavia's functions.

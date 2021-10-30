@@ -3,7 +3,7 @@ INCLUDE "directions.inc"
 INCLUDE "entity.inc"
 INCLUDE "graphics.inc"
 INCLUDE "hardware.inc"
-INCLUDE "lb.inc"
+INCLUDE "stdopt.inc"
 INCLUDE "tiledata.inc"
 
 ; Entities are stored in wEntityArray, which includes a 2-byte pointer to the

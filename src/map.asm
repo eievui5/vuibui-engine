@@ -3,10 +3,10 @@ INCLUDE "engine.inc"
 INCLUDE "entity.inc"
 INCLUDE "graphics.inc"
 INCLUDE "hardware.inc"
-INCLUDE "lb.inc"
 INCLUDE "map.inc"
 INCLUDE "npc.inc"
 INCLUDE "save.inc"
+INCLUDE "stdopt.inc"
 INCLUDE "tiledata.inc"
 
 ; Keep these all in the same bank.

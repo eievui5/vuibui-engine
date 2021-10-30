@@ -4,9 +4,9 @@ INCLUDE "engine.inc"
 INCLUDE "enum.inc"
 INCLUDE "graphics.inc"
 INCLUDE "hardware.inc"
-INCLUDE "lb.inc"
 INCLUDE "map.inc"
 INCLUDE "menu.inc"
+INCLUDE "stdopt.inc"
 INCLUDE "valloc.inc"
 
 SECTION UNION "VRAM", VRAM[$8800]

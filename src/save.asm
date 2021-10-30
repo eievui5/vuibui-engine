@@ -1,8 +1,8 @@
 INCLUDE "hardware.inc"
-INCLUDE "lb.inc"
 INCLUDE "map.inc"
 INCLUDE "players.inc"
 INCLUDE "save.inc"
+INCLUDE "stdopt.inc"
 
 SECTION "Save Functions", ROM0
 
