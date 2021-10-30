@@ -1,3 +1,4 @@
+INCLUDE "banks.inc"
 INCLUDE "directions.inc"
 INCLUDE "entity.inc"
 INCLUDE "players.inc"
@@ -9,6 +10,12 @@ DEF SWORD_WINDUP_TIME RB 4
 DEF SWORD_DRAW_TIME   RB 4
 DEF SWORD_OUTDEL_TIME RB 4
 DEF SWORD_DAMAGE_TIME RB 0
+
+SECTION "Tiber Definition", ROM0
+
+PlayerTiber::
+    far_pointer TiberPlayerLogic
+    far_pointer TiberMetasprites
 
 SECTION "Tiber AI", ROMX
 

@@ -1,4 +1,4 @@
-
+INCLUDE "banks.inc"
 INCLUDE "entity.inc"
 INCLUDE "hardware.inc"
 INCLUDE "graphics.inc"
@@ -8,6 +8,12 @@ INCLUDE "tiledata.inc"
     A generic spell entity. Copies its collision data onto the target,
     which allows multiple spells to share this entity.
 */
+
+SECTION "Octavia Spell Definition", ROM0
+
+OctaviaSpell::
+    far_pointer OctaviaSpellLogic
+    far_pointer OctaviaSpellMetasprites
 
 SECTION "Octavia Spell", ROMX
 

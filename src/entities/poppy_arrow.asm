@@ -1,7 +1,14 @@
+INCLUDE "banks.inc"
 INCLUDE "entity.inc"
 INCLUDE "hardware.inc"
 INCLUDE "graphics.inc"
 INCLUDE "tiledata.inc"
+
+SECTION "Poppy Arrow Definition", ROM0
+
+PoppyArrow::
+    far_pointer PoppyArrowLogic
+    far_pointer ArrowMetasprites
 
 SECTION "Poppy Arrow", ROMX
 

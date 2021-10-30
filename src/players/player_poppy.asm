@@ -1,3 +1,4 @@
+INCLUDE "banks.inc"
 INCLUDE "directions.inc"
 INCLUDE "entity.inc"
 INCLUDE "players.inc"
@@ -5,6 +6,12 @@ INCLUDE "scripting.inc"
 INCLUDE "text.inc"
 
 DEF ARROW_SPEED EQU 5
+
+SECTION "Poppy Definition", ROM0
+
+PlayerPoppy::
+    far_pointer PoppyPlayerLogic
+    far_pointer PoppyMetasprites
 
 SECTION "Poppy AI", ROMX
 

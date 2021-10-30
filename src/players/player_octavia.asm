@@ -1,3 +1,4 @@
+INCLUDE "banks.inc"
 INCLUDE "directions.inc"
 INCLUDE "entity.inc"
 INCLUDE "graphics.inc"
@@ -15,6 +16,11 @@ INCLUDE "text.inc"
     @ Rendering
 
 */
+SECTION "Octavia Definition", ROM0
+
+PlayerOctavia::
+    far_pointer OctaviaPlayerLogic
+    far_pointer OctaviaMetasprites
 
 SECTION "Octavia AI", ROMX
 
