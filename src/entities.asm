@@ -269,8 +269,9 @@ PlayerMoveAndSlide::
 ; collision greater than or equal to TILEDATA_ENTITY_COLLISION. Clobbers `bc`,
 ; so make sure to push/pop! Also returns success in the carry flag.
 ; @ hl: pointer to Entity. Returns Entity_YPos
-; @ carry: Set if movement succeded.
+; @ e: True if obstructed.
 MoveAndSlide::
+    ld e, 0 ; 0 - no obstruction
 .xMovement
     ; Seek to X Velocity
     ld a, Entity_XVel - Entity_DataPointer
@@ -295,7 +296,7 @@ MoveAndSlide::
     add a, -BOUNDING_BOX_X
 .xCheckCollision
     ld c, a
-    push de ; Save our target Location (d). Using ram may be better here.
+    push de ; Save our target Location (d), and obstruction flag (e)
     push hl ; Save our struct pointer
     push bc ; And save our test position, incase we need to slide around a corner.
     call LookupMapData
@@ -305,10 +306,13 @@ MoveAndSlide::
     pop hl
     pop de
     ; If a >= TILEDATA_COLLISION, skip movement
-    jr nc, .yMovement
+    jr nc, .xObstructed
     ; Handle movement
     ld a, d
     ld [hl], a ; Update X Pos.
+    jr .yMovement
+.xObstructed
+    ld e, 1
 .yMovement
     inc l ; Seek to YVel
     ld a, [hld] ; Seek to XPos
@@ -337,8 +341,11 @@ MoveAndSlide::
     pop hl
     pop de
     ; If a >= TILEDATA_COLLISION, skip movement
-    ret nc
+    jr nc, .yObstructed
     ld [hl], d ; Update Y Pos.
+    ret
+.yObstructed
+    ld e, 1
     ret
 
 ; Move the Entity based on its Velocity. Ignore Collision
@@ -633,5 +640,7 @@ wEntityArray::
     dstructs NB_ENTITIES, Entity, wEntity
 
 SECTION UNION "Volatile", HRAM
+; Set if either the X or Y movement was obstructed.
+hMoveAndSlideObstructed::
 hRenderByte: ; currently stores the entity's invtimer to find out if it should blink
     DS 1

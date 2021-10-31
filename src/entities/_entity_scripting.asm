@@ -61,6 +61,8 @@ EntityScriptJumpTable:
     DW ScriptTargetDirection
     ASSERT ENTITY_SCRIPT_IF_NONZERO == 19
     DW ScriptIfNotZero
+    ASSERT ENTITY_SCRIPT_CHECKED_MOVE == 20
+    DW ScriptCheckedMove
 
 ; Helper function to grab a member variable from either the fields or structure.
 ; @ bc: Entity Index
@@ -277,13 +279,12 @@ ScriptCheckedMove:
     ld l, c
     push bc
     call MoveAndSlide
-    ld a, 0
-    jr c, .skip
-    inc a
-.skip
-    ; store here plz
     pop bc
-    ld a, 1
+    push bc
+    call GetMemberArgument
+    ld [hl], e
+    pop bc
+    ld a, 2
     call IncrementScriptPointer
     jp HandleEntityScript
 

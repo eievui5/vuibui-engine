@@ -27,6 +27,7 @@ DEF MAX_FIELDS EQU 14
         enum DEATH_PARTICLES
         enum TARGET_DIRECTION
         enum IF_NONZERO
+        enum CHECKED_MOVE
     end_enum
 
 ; Create a new script.
@@ -118,6 +119,18 @@ ENDM
 ; @ move
 MACRO move
     DB ENTITY_SCRIPT_MOVE
+ENDM
+
+; Moves based on the current velocity, and return whether a wall was hit.
+; @ check_move
+MACRO checked_movef
+    ASSERT _NARG == 1, "Expected 1 argument!"
+    DB ENTITY_SCRIPT_CHECKED_MOVE, (\1 + 2)
+ENDM
+
+MACRO checked_movea
+    ASSERT _NARG == 1, "Expected 1 argument!"
+    DB ENTITY_SCRIPT_CHECKED_MOVE, 0 - (\1)
 ENDM
 
 ; Grabs a value from memory and stores it in a field

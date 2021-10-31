@@ -17,10 +17,63 @@ BeachCrab::
 
 SECTION "Beach Crab Logic", ROMX
 
+BeachCrabScript:
+
     define_fields
     field DAMAGE_ENABLE
     field COUNTER
     field ANIM
+    field HIT_WALL
+
+    new_script
+
+    ; Enable the entity to take damage.
+    setf DAMAGE_ENABLE, 1
+    seta Entity_Health, STARTING_HEALTH
+    seta Entity_Frame, 0
+
+.chase
+    randa Entity_Direction, %11
+    ; Wait some frames before moving.
+    randf COUNTER, %100100
+    forf COUNTER
+        target_dir
+        attack_player 2
+        animate ANIM, %1000, FRAME_LEFT, FRAME_RIGHT
+        checked_movef HIT_WALL
+        if_nzf HIT_WALL
+            jump .chase
+        endif
+        yield
+        attack_player 1
+        yield
+    endfor
+    randf COUNTER, %1001000
+    seta Entity_Frame, FRAME_NORMAL
+    forf COUNTER
+        animate ANIM, %10000000, FRAME_NORMAL, FRAME_BOTH
+        attack_player 1
+        yield
+    endfor
+    ; Loop.
+    jump .chase
+
+.damage
+    ; Get knocked back for 60 frames
+    setf DAMAGE_ENABLE, 0 ; Disable damage during knockback.
+    seta Entity_InvTimer, 12 ; Use InvTimer for automatic animation!
+    fora Entity_InvTimer
+        move ; Enemies set velocity to the knockback direction, so just move!
+        yield
+    endfor
+    setf DAMAGE_ENABLE, 1 ; Re-enable damage when done.
+    seta Entity_InvTimer, 0
+    if_nega Entity_Health
+        death_particles
+    endif
+    jump .chase ; Go back to chase when you're done.
+
+    end_script
 
 BeachCrabLogic:
     ; Check the Field array to see if we've initialized.
@@ -70,54 +123,6 @@ BeachCrabLogic:
     ld [hl], a ; Clear old damage.
     ; Run the script thread
     jp HandleEntityScript
-
-BeachCrabScript:
-    new_script
-
-    ; Enable the entity to take damage.
-    setf DAMAGE_ENABLE, 1
-    seta Entity_Health, STARTING_HEALTH
-	seta Entity_Frame, 0
-
-.chase
-	randa Entity_Direction, %11
-    ; Wait some frames before moving.
-    randf COUNTER, %100100
-    forf COUNTER
-		target_dir
-        attack_player 2
-        animate ANIM, %1000, FRAME_LEFT, FRAME_RIGHT
-		move
-        yield
-        attack_player 1
-        yield
-    endfor
-    randf COUNTER, %1001000
-    seta Entity_Frame, FRAME_NORMAL
-    forf COUNTER
-        animate ANIM, %10000000, FRAME_NORMAL, FRAME_BOTH
-        attack_player 1
-		yield
-    endfor
-    ; Loop.
-    jump .chase
-
-.damage
-    ; Get knocked back for 60 frames
-    setf DAMAGE_ENABLE, 0 ; Disable damage during knockback.
-    seta Entity_InvTimer, 12 ; Use InvTimer for automatic animation!
-    fora Entity_InvTimer
-        move ; Enemies set velocity to the knockback direction, so just move!
-        yield
-    endfor
-    setf DAMAGE_ENABLE, 1 ; Re-enable damage when done.
-    seta Entity_InvTimer, 0
-    if_nega Entity_Health
-        death_particles
-    endif
-    jump .chase ; Go back to chase when you're done.
-
-    end_script
 
 CrabMetasprites:
     DEF FRAME_NORMAL EQU 0
