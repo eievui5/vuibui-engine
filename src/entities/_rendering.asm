@@ -127,7 +127,7 @@ RenderMetasprite::
     jr nz, .pushSprite
     ret
 
-; Uses an entity's direction to offset its metasprites suring rendering.
+; Uses an entity's direction to offset its metasprites during rendering.
 RenderMetaspriteDirection::
 .native::
     ld hl, wEntityArray

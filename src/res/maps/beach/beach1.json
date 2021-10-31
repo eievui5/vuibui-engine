@@ -13,9 +13,44 @@
          "width":16,
          "x":0,
          "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":3,
+         "name":"Object Layer 1",
+         "objects":[
+                {
+                 "gid":17,
+                 "height":16,
+                 "id":9,
+                 "name":"BeachCrab",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":150,
+                 "y":86
+                }, 
+                {
+                 "gid":17,
+                 "height":16,
+                 "id":10,
+                 "name":"BeachCrab",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":200.666666666667,
+                 "y":118
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
         }],
- "nextlayerid":3,
- "nextobjectid":8,
+ "nextlayerid":4,
+ "nextobjectid":13,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.7.2",

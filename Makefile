@@ -124,7 +124,7 @@ res/%.pal: res/%.png
 # Convert .json files into .tilemap files.
 res/%.tilemap: res/%.json
 	@mkdir -p $(@D)
-	python3 ./tools/tiledbin.py $^ $@
+	python3 tools/tiledbin.py -d $(patsubst src/res/%.json, res/%.roomscript, $^) -o $@ $^
 
 res/%.tilemap: res/%.png
 	@mkdir -p $(@D)

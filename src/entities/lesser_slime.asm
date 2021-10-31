@@ -5,23 +5,24 @@ INCLUDE "entity_script.inc"
 INCLUDE "graphics.inc"
 INCLUDE "hardware.inc"
 
+DEF GRAPHICS_OFFSET EQU $84
 DEF STARTING_HEALTH EQU 4
 
-SECTION "Scripted Entity Definition", ROM0
+SECTION "Lesser Slime Definition", ROM0
 
-ScriptedEntity::
-    far_pointer ScriptedEntityLogic
+LesserSlime::
+    far_pointer LesserSlimeLogic
     far_pointer SlimeMetasprites
     far_pointer RenderMetaspriteDirection.native
 
-SECTION "Scripted Entity Logic", ROMX
+SECTION "Lesser Slime Logic", ROMX
 
     define_fields
     field DAMAGE_ENABLE
     field COUNTER
     field ANIM
 
-ScriptedEntityLogic:
+LesserSlimeLogic:
     ; Check the Field array to see if we've initialized.
     ld h, HIGH(wEntityFieldArray)
     ld l, c
@@ -30,9 +31,9 @@ ScriptedEntityLogic:
     or a, d
     jr nz, .skipInit
         ; Set Script
-        ld a, HIGH(ScriptedEntityScript)
+        ld a, HIGH(LesserSlimeScript)
         ld [hld], a
-        ld [hl], LOW(ScriptedEntityScript)
+        ld [hl], LOW(LesserSlimeScript)
         inc l
 .skipInit
     ASSERT DAMAGE_ENABLE == 0
@@ -57,9 +58,9 @@ ScriptedEntityLogic:
         ld [hld], a
         ld h, HIGH(wEntityFieldArray)
         ld l, c
-        ld a, LOW(ScriptedEntityScript.damage)
+        ld a, LOW(LesserSlimeScript.damage)
         ld [hli], a
-        ld [hl], HIGH(ScriptedEntityScript.damage)
+        ld [hl], HIGH(LesserSlimeScript.damage)
 .noDamage
     ld h, HIGH(wEntityArray)
     ld a, Entity_CollisionData
@@ -70,7 +71,7 @@ ScriptedEntityLogic:
     ; Run the script thread
     jp HandleEntityScript
 
-ScriptedEntityScript:
+LesserSlimeScript:
     ; Enable the entity to take damage.
     setf DAMAGE_ENABLE, 1
     seta Entity_Health, STARTING_HEALTH
@@ -123,18 +124,18 @@ SlimeMetasprites:
     DW .bounceFlip
 
 .normal
-    DB -8, -8, $86, OAMF_XFLIP
-    DB -8, 0, $84, OAMF_XFLIP
+    DB -8, -8, GRAPHICS_OFFSET + 2, OAMF_XFLIP
+    DB -8, 0, GRAPHICS_OFFSET, OAMF_XFLIP
     DB METASPRITE_END
 .bounce
-    DB -8, -8, $8A, OAMF_XFLIP
-    DB -8, 0, $88, OAMF_XFLIP
+    DB -8, -8, GRAPHICS_OFFSET + 6, OAMF_XFLIP
+    DB -8, 0, GRAPHICS_OFFSET + 4, OAMF_XFLIP
     DB METASPRITE_END
 .flip
-    DB -8, -8, $84, 0
-    DB -8, 0, $86, 0
+    DB -8, -8, GRAPHICS_OFFSET, 0
+    DB -8, 0, GRAPHICS_OFFSET + 2, 0
     DB METASPRITE_END
 .bounceFlip
-    DB -8, -8, $88, 0
-    DB -8, 0, $8A, 0
+    DB -8, -8, GRAPHICS_OFFSET + 4, 0
+    DB -8, 0, GRAPHICS_OFFSET + 6, 0
     DB METASPRITE_END

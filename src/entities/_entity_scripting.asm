@@ -1,3 +1,4 @@
+INCLUDE "directions.inc"
 INCLUDE "entity.inc"
 INCLUDE "entity_script.inc"
 
@@ -55,6 +56,8 @@ EntityScriptJumpTable:
     DW ScriptIfNegative
     ASSERT ENTITY_SCRIPT_DEATH_PARTICLES == 17
     DW ScriptDeathParticles
+    ASSERT ENTITY_SCRIPT_TARGET_DIRECTION == 18
+    DW ScriptTargetDirection
 
 ; Script handlers. Each takes `bc` as input.
 
@@ -578,6 +581,46 @@ ScriptDeathParticles:
     ld [hli], a
     ld [hl], HIGH(DeathParticleScript)
     ret
+
+ScriptTargetDirection:
+    ld h, HIGH(wEntityArray)
+    ld a, Entity_Direction
+    add a, c
+    ld l, a
+    ; Load frame and set velocity in accordance.
+    ld de, 0
+    ld a, [hl]
+    ASSERT DIR_DOWN == 0
+    and a, a
+    jr z, .down
+    ASSERT DIR_UP == 1
+    dec a
+    jr z, .up
+    ASSERT DIR_RIGHT == 2
+    dec a
+    jr z, .right
+    ASSERT DIR_LEFT == 3
+.left
+    ld e, -1
+    jr .store
+.right
+    ld e, 1
+    jr .store
+.up
+    ld d, -1
+    jr .store
+.down
+    ld d, 1
+.store
+    ld a, Entity_YVel
+    add a, c
+    ld l, a
+    ld a, d
+    ld [hli], a
+    ld [hl], e
+    ld a, 1
+    call IncrementScriptPointer
+    jp HandleEntityScript
 
 SECTION "Entity Script Fields", WRAM0, ALIGN[8]
 

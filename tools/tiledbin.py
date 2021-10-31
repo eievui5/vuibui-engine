@@ -20,22 +20,24 @@ freely, subject to the following restrictions:
    misrepresented as being the original software.
 3. This notice may not be removed or altered from any source distribution.
 """
+import argparse
 import json
 import sys
 
 def __main__():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-o", "--output", dest = "output", type = argparse.FileType('wb'), nargs = 1, required = True)
+    parser.add_argument("-d", "--data", dest = "data", type = str, nargs = 1, required = True)
+    parser.add_argument("input", type = argparse.FileType('r'), nargs = 1)
 
-    # Validate the command-line arguments
-    if len(sys.argv) > 3:
-        print("WARN: Too many command-line arguments. Excess will be ignored.")
-    elif len(sys.argv) < 3:
-        print("ERROR: Not enough command-line arguments.")
-        print("Usage: python tiledbin.py <input> <output>")
-        return
+    args = parser.parse_args()
+    infile = args.input[0]
+    outfile = args.output[0]
+    datafile = args.data[0]
 
     # Read i/o
     converted_tiles = False
-    for layer in json.loads(open(sys.argv[1], 'r').read())['layers']:
+    for layer in json.loads(infile.read())['layers']:
 
         # Convert tiles to binary map
         if layer['type'] == 'tilelayer':
@@ -46,25 +48,24 @@ def __main__():
             # Ensure that the map is of the proper size.
             if layer['height'] != 16 | layer['width'] != 16:
                 print("ERROR: Input map must be 16 by 16 tiles.")
-                return
+                sys.exit(1)
             # Write the map to the output file.
-            output = open(sys.argv[2], 'wb')
             tilemap = []
             # Tiled starts at 1, VuiBui starts at 0. Subtract 1.
             for byte in layer['data']:
                 tilemap.append(byte - 1)
-            output.write(bytearray(tilemap))
+            outfile.write(bytearray(tilemap))
             converted_tiles = True
 
         # Convert objects to map metadata
         elif layer['type'] == 'objectgroup':
-            print("WARN: Object Layer is currently unsupported. Ignoring...")
+            datafile = open(datafile, "w")
+            for i in layer['objects']:
+                datafile.write(f"    create_entity {i['name']}, {int(i['y'])}, {int(i['x'])}\n")
 
         # Warn on unknown layers.
         else:
-            print(
-            "WARN: Unsupported or Unknown Layer type \"%s\"! Ignoring..." %
-            layer['type'])
+            print(f"WARN: Unsupported or Unknown Layer type \"{layer['type']}\"! Ignoring...")
     return
 
 if __name__ == "__main__":

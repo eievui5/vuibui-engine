@@ -25,6 +25,7 @@ DEF MAX_FIELDS EQU 14
         enum ATTACK_PLAYER
         enum IF_NEG
         enum DEATH_PARTICLES
+        enum TARGET_DIRECTION
     end_enum
 
 ; Scripting functions:
@@ -119,7 +120,7 @@ ENDM
 ; local label for `endfor` to create a loop.
 ; @ forf field
 MACRO forf
-    ASSERT _NARG == 1, "Expected 1 arguments!"
+    ASSERT _NARG == 1, "Expected 1 or 2 arguments!"
 :   db ENTITY_SCRIPT_FOR, (\1 + 2)
     DW :+
 ENDM
@@ -198,6 +199,10 @@ ENDM
 ; Kills the entity and spawns death particles
 MACRO death_particles
     DB ENTITY_SCRIPT_DEATH_PARTICLES
+ENDM
+
+MACRO target_dir
+    DB ENTITY_SCRIPT_TARGET_DIRECTION
 ENDM
 
 ; Define fields:
