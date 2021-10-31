@@ -21,7 +21,6 @@ SECTION "Beach Crab Logic", ROMX
     field DAMAGE_ENABLE
     field COUNTER
     field ANIM
-    field ANIM_FLAG
 
 BeachCrabLogic:
     ; Check the Field array to see if we've initialized.
@@ -73,6 +72,8 @@ BeachCrabLogic:
     jp HandleEntityScript
 
 BeachCrabScript:
+    new_script
+
     ; Enable the entity to take damage.
     setf DAMAGE_ENABLE, 1
     seta Entity_Health, STARTING_HEALTH
@@ -82,7 +83,6 @@ BeachCrabScript:
 	randa Entity_Direction, %11
     ; Wait some frames before moving.
     randf COUNTER, %100100
-    randf ANIM_FLAG, 128
     forf COUNTER
 		target_dir
         attack_player 2
@@ -116,6 +116,8 @@ BeachCrabScript:
         death_particles
     endif
     jump .chase ; Go back to chase when you're done.
+
+    end_script
 
 CrabMetasprites:
     DEF FRAME_NORMAL EQU 0

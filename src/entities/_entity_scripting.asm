@@ -1,6 +1,7 @@
 INCLUDE "directions.inc"
 INCLUDE "entity.inc"
 INCLUDE "entity_script.inc"
+INCLUDE "stdopt.inc"
 
 SECTION "Entity Script Handler", ROM0
 
@@ -58,6 +59,32 @@ EntityScriptJumpTable:
     DW ScriptDeathParticles
     ASSERT ENTITY_SCRIPT_TARGET_DIRECTION == 18
     DW ScriptTargetDirection
+    ASSERT ENTITY_SCRIPT_IF_NONZERO == 19
+    DW ScriptIfNotZero
+
+; Helper function to grab a member variable from either the fields or structure.
+; @ bc: Entity Index
+; @ returns hl pointing to the member, and a contianing it.
+GetMemberArgument:
+    ld h, HIGH(wEntityFieldArray)
+    ld l, c
+    ld a, [hli]
+    ld h, [hl]
+    ld l, a
+    inc hl
+    ld a, [hl]
+    ld h, HIGH(wEntityFieldArray)
+    ; If argument is negative, find abs and index into entity array
+    bit 7, a
+    jr z, .field
+        cpl
+        inc a
+        ld h, HIGH(wEntityArray)
+.field
+    add a, c
+    ld l, a
+    ld a, [hl] ; Grab the value
+    ret
 
 ; Script handlers. Each takes `bc` as input.
 
@@ -134,7 +161,7 @@ ScriptSetArray:
     ld a, e
     ld [hli], a
     ld [hl], d
-    jr HandleEntityScript
+    jp HandleEntityScript
 
 ; Set a given member of the entity's fields.
 ScriptSetField:
@@ -239,6 +266,22 @@ ScriptMove:
     ld l, c
     push bc
     call MoveAndSlide
+    pop bc
+    ld a, 1
+    call IncrementScriptPointer
+    jp HandleEntityScript
+
+; Move and slide, but store the carry flag to see if the entity hit something.
+ScriptCheckedMove:
+    ld h, HIGH(wEntityArray)
+    ld l, c
+    push bc
+    call MoveAndSlide
+    ld a, 0
+    jr c, .skip
+    inc a
+.skip
+    ; store here plz
     pop bc
     ld a, 1
     call IncrementScriptPointer
@@ -521,32 +564,17 @@ ScriptAttackPlayer:
     jp HandleEntityScript
 
 ScriptIfNegative:
-    ld h, HIGH(wEntityFieldArray)
-    ld l, c
-    ld a, [hli]
-    ld h, [hl]
-    ld l, a
-    inc hl
-    ld a, [hl]
-    ld h, HIGH(wEntityFieldArray)
-    ; If argument is negative, find abs and index into entity array
-    bit 7, a
-    jr z, .field
-        cpl
-        inc a
-        ld h, HIGH(wEntityArray)
-.field
-    add a, c
-    ld l, a
-    ld a, [hl] ; Grab the value
+    call GetMemberArgument
     rla ; Check if negative
-    jr nc, .false
+    jr nc, IfJump
 ; true
     ; Continue if true
     ld a, 4
     call IncrementScriptPointer
     jp HandleEntityScript
-.false
+
+; Helper function for IF logic.
+IfJump:
     ; Jump if false
     ld h, HIGH(wEntityFieldArray)
     ld l, c
@@ -561,6 +589,16 @@ ScriptIfNegative:
     inc de
     ld a, [de]
     ld [hl], a
+    jp HandleEntityScript
+
+ScriptIfNotZero:
+    call GetMemberArgument
+    and a, a
+    jr z, IfJump
+; true
+    ; Continue if true
+    ld a, 4
+    call IncrementScriptPointer
     jp HandleEntityScript
 
 ScriptDeathParticles:

@@ -16,6 +16,8 @@ DeathParticleLogic:
     jp HandleEntityScript
 
 DeathParticleScript::
+    new_script
+
     define_fields
     field COUNTER
 
@@ -38,6 +40,8 @@ DeathParticleScript::
     endfor
 
     kill
+
+    end_script
 
 DeathParticleMetasprites:
     DW .start

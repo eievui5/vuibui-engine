@@ -72,6 +72,8 @@ LesserSlimeLogic:
     jp HandleEntityScript
 
 LesserSlimeScript:
+    new_script
+
     ; Enable the entity to take damage.
     setf DAMAGE_ENABLE, 1
     seta Entity_Health, STARTING_HEALTH
@@ -108,6 +110,8 @@ LesserSlimeScript:
         death_particles
     endif
     jump .chase ; Go back to chase when you're done.
+
+    end_script
 
 SlimeMetasprites:
     DEF FRAME_NORMAL EQU 0

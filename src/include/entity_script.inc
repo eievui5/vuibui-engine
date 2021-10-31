@@ -26,7 +26,36 @@ DEF MAX_FIELDS EQU 14
         enum IF_NEG
         enum DEATH_PARTICLES
         enum TARGET_DIRECTION
+        enum IF_NONZERO
     end_enum
+
+; Create a new script.
+MACRO new_script
+    ; This creates some defines which the scripting macros rely on.
+    ; Used by control structures to "request" a label, which will be provided
+    ; by an end block. This is the ID of the last created label.
+    DEF LABEL_ID SET 0
+    ; This is the "level" of the current label, or how deep in a structure it is
+    ; and is used to refer to labels in relativity.
+    DEF CURRENT_LABEL SET 0
+ENDM
+
+MACRO end_script
+    PURGE LABEL_ID
+    PURGE CURRENT_LABEL
+ENDM
+
+MACRO _request_label
+    REDEF CURRENT_LABEL SET CURRENT_LABEL + 1
+    DEF SCRLAB{d:CURRENT_LABEL} EQUS ".scrlab{d:LABEL_ID}"
+    REDEF LABEL_ID SET LABEL_ID + 1
+ENDM
+
+MACRO _fulfill_label
+SCRLAB{d:CURRENT_LABEL}
+    PURGE SCRLAB{d:CURRENT_LABEL}
+    REDEF CURRENT_LABEL SET CURRENT_LABEL - 1
+ENDM
 
 ; Scripting functions:
 
@@ -122,7 +151,8 @@ ENDM
 MACRO forf
     ASSERT _NARG == 1, "Expected 1 or 2 arguments!"
 :   db ENTITY_SCRIPT_FOR, (\1 + 2)
-    DW :+
+    _request_label
+    DW SCRLAB{d:CURRENT_LABEL}
 ENDM
 
 ; Decrements an array field and jumps to the next `endfor` if it is zero.
@@ -131,7 +161,8 @@ ENDM
 MACRO fora
     ASSERT _NARG == 1, "Expected 1 arguments!"
 :   db ENTITY_SCRIPT_FOR, 0 - (\1)
-    DW :+
+    _request_label
+    DW SCRLAB{d:CURRENT_LABEL}
 ENDM
 
 ; Creates an exit local label and a jump to the previous local label. Used to
@@ -139,7 +170,7 @@ ENDM
 ; @ endfor
 MACRO endfor
     jump :-
-:
+    _fulfill_label
 ENDM
 
 ; Generates an 8-bit random integer, `and`s it with the provided mask, and then
@@ -183,17 +214,33 @@ ENDM
 MACRO if_negf
     ASSERT _NARG == 1, "Expected 1 arguments!"
     DB ENTITY_SCRIPT_IF_NEG, (\1 + 2)
-    DW :+
+    _request_label
+    DW SCRLAB{d:CURRENT_LABEL}
 ENDM
 
 MACRO if_nega
     ASSERT _NARG == 1, "Expected 1 arguments!"
     DB ENTITY_SCRIPT_IF_NEG, 0 - (\1)
-    DW :+
+    _request_label
+    DW SCRLAB{d:CURRENT_LABEL}
+ENDM
+
+MACRO if_nzf
+    ASSERT _NARG == 1, "Expected 1 arguments!"
+    DB ENTITY_SCRIPT_IF_NONZERO, (\1 + 2)
+    _request_label
+    DW SCRLAB{d:CURRENT_LABEL}
+ENDM
+
+MACRO if_nza
+    ASSERT _NARG == 1, "Expected 1 arguments!"
+    DB ENTITY_SCRIPT_IF_NONZERO, 0 - (\1)
+    _request_label
+    DW SCRLAB{d:CURRENT_LABEL}
 ENDM
 
 MACRO endif
-:
+    _fulfill_label
 ENDM
 
 ; Kills the entity and spawns death particles

@@ -114,11 +114,11 @@ SpawnEntity::
     dec d
     jr z, .break
     add hl, bc
-    ld a, [hl]
-    ; Check the first script byte.
-    ; Since all Entities exist off the main bank, this will never be $00
-    cp a, $00
-    jr nz, .loop ; if a == 0, loop
+    ; Make sure the entity data is null.
+    inc l
+    ld a, [hld]
+    and a, [hl]
+    jr nz, .loop
     pop de
     pop bc
     ld a, d
@@ -267,8 +267,9 @@ PlayerMoveAndSlide::
 
 ; Move the Entity based on its Velocity. Slide along collision. Detects any
 ; collision greater than or equal to TILEDATA_ENTITY_COLLISION. Clobbers `bc`,
-; so make sure to push/pop!
+; so make sure to push/pop! Also returns success in the carry flag.
 ; @ hl: pointer to Entity. Returns Entity_YPos
+; @ carry: Set if movement succeded.
 MoveAndSlide::
 .xMovement
     ; Seek to X Velocity
