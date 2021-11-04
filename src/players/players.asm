@@ -408,25 +408,25 @@ PlayerTransitionMovement::
 .down
     ld a, [hl]
     ; These location checks are slightly off, since sprites are not centered.
-    cp a, 56 ; stops on the third tile
+    cp a, 72 ; stops on the third tile
     jr z, .updateAllyPositions ; Are we already there?
     inc [hl] ; No? Then move down
     jr .animatePlayerY
 .up
     ld a, [hl]
-    cp a, -24 ; Stop on the first tile
+    cp a, -40 ; Stop on the first tile
     jr z, .updateAllyPositions ; Are we already there?
     dec [hl] ; No? Then move up
     jr .animatePlayerY
 .right
     ld a, [hl]
-    cp a, 49 ; Stop on the first tile
+    cp a, 65 ; Stop on the first tile
     jr z, .updateAllyPositions ; Are we already there?
     inc [hl] ; No? Then move right
     jr .animatePlayerX
 .left
     ld a, [hl]
-    cp a, -31 ; Stop on the first tile
+    cp a, -47 ; Stop on the first tile
     jr z, .updateAllyPositions ; Are we already there?
     dec [hl] ; No? Then move left
 .animatePlayerX
@@ -465,31 +465,100 @@ PlayerTransitionMovement::
     call PlayerActivityCheck.waiting
     jr nz, .updateAllyPositionsDecrement ; Skip if the player is fully inactive
 
-    push bc
+    ld hl, 0
+
+    ld a, [wRoomTransitionDirection]
+    ASSERT TRANSDIR_DOWN == 1
+    dec a
+    jr z, .down2
+    ASSERT TRANSDIR_UP == 2
+    dec a
+    jr z, .up2
+    ASSERT TRANSDIR_RIGHT == 3
+    dec a
+    jr z, .right2
+    ASSERT TRANSDIR_LEFT == 4
+    dec a
+    jr z, .left2
+    ret
+.down2
+    ld h, -16
+    jr .storeAllyPosition
+.up2
+    ld h, 16
+    jr .storeAllyPosition
+.right2
+    ld l, -16
+    jr .storeAllyPosition
+.left2
+    ld l, 16
+.storeAllyPosition
 
     ld a, c
-    add a, a ; a * 2
-    inc a
-    ld e, a ; distance is (ID*2 + 1) (max of 5, min of 1)
-    ld a, c
+    cp a, PLAYER_TIBER
+    jr z, :+
+    ASSERT PLAYER_OCTAVIA == 0
+    and a, a
+    jr z, :++
+    ld a, [wActivePlayer]
+    cp a, PLAYER_TIBER
+    jr nz, :++
+:   add hl, hl
+
+:   ld a, c
+    push bc
     ASSERT sizeof_Entity == 16
     swap a ; a * 16
+    add a, LOW(wPlayerArray + Entity_YPos)
+    ld e, a
+    adc a, HIGH(wPlayerArray + Entity_YPos)
+    sub a, e
+    ld d, a
+
+    ld a, [wActivePlayer]
+    ASSERT sizeof_Entity == 16
+    swap a ; a * 16
+    add a, LOW(wPlayerArray + Entity_YPos)
     ld c, a
-    ld b, 0
-    call PlayerAIFollow
+    adc a, HIGH(wPlayerArray + Entity_YPos)
+    sub a, c
+    ld b, a
+
+    ; bc - Player
+    ; de - Ally
+    ; hl - Offset
+    ld a, [bc]
+    add a, h
+    ld [de], a
+    inc c
+    inc e
+    ld a, [bc]
+    add a, l
+    ld [de], a
+
+    ld h, a
+    dec e
+    ld a, [de]
+    add a, h
+    ld c, a ; Store combined position in c to bitcheck later.
+
+    ld a, Entity_Direction - Entity_YPos
+    add a, e
+    ld e, a
+    ld a, [wRoomTransitionDirection]
+
+    dec a
+    ld [de], a
+
+    ASSERT Entity_Direction + 1 == Entity_Frame
+    inc e
+    ld a, FRAMEOFF_NORMAL
+    bit 4, c
+    jr z, :+
+        ld a, FRAMEOFF_STEP
+:   ld [de], a
 
     pop bc
-
-    ld a, c
-    ASSERT sizeof_Entity == 16
-    swap a ; a * 16
-    ; Add `a` to `wPlayerArray` and store in `hl`
-    add a, LOW(wPlayerArray)
-    ld l, a
-    adc a, HIGH(wPlayerArray)
-    sub a, l
-    ld h, a
-    call MoveNoClip
 
 .updateAllyPositionsDecrement
     inc c

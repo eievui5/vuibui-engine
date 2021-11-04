@@ -267,7 +267,7 @@ PlayerMoveAndSlide::
 
 ; Move the Entity based on its Velocity. Slide along collision. Detects any
 ; collision greater than or equal to TILEDATA_ENTITY_COLLISION. Clobbers `bc`,
-; so make sure to push/pop! Also returns success in the carry flag.
+; so make sure to push/pop!
 ; @ hl: pointer to Entity. Returns Entity_YPos
 ; @ e: True if obstructed.
 MoveAndSlide::
