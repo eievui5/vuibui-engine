@@ -143,6 +143,17 @@ res/%.asm: res/%.world
 	@mkdir -p $(@D)
 	python3 tools/tiledworld.py -o $@ $^
 
+################################################
+#                                              #
+#                    TOOLS                     #
+#                                              #
+################################################
+
+tools: tools/metamaker
+
+tools/metamaker: tools/src/metamaker.cpp
+	g++ -std=c++17 -O3 -o $@ $^
+
 # Catch non-existent files
 # KEEP THIS LAST!!
 %:
