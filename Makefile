@@ -99,49 +99,49 @@ VPATH := src
 # Convert .png files into .2bpp files.
 res/%.2bpp: res/%.png
 	@mkdir -p $(@D)
-	$(RGBGFX) -u -o $@ $^
+	$(RGBGFX) -u -o $@ $<
 
 # Convert .png files into .1bpp files.
 res/%.1bpp: res/%.png
 	@mkdir -p $(@D)
-	$(RGBGFX) -d 1 -o $@ $^
+	$(RGBGFX) -d 1 -o $@ $<
 
 # Convert .png files into .h.2bpp files (-h flag).
 res/%.h.2bpp: res/%.png
 	@mkdir -p $(@D)
-	$(RGBGFX) -h -o $@ $^
+	$(RGBGFX) -h -o $@ $<
 
 # Convert .png files into .h.1bpp files (-h flag).
 res/%.h.1bpp: res/%.png
 	@mkdir -p $(@D)
-	$(RGBGFX) -d 1 -h -o $@ $^
+	$(RGBGFX) -d 1 -h -o $@ $<
 
 # Convert .png files into .pal files.
 res/%.pal: res/%.png
 	@mkdir -p $(@D)
-	$(RGBGFX) -p $@ $^
+	$(RGBGFX) -p $@ $<
 
 # Convert .json files into .tilemap files.
 res/%.tilemap: res/%.json
 	@mkdir -p $(@D)
-	python3 tools/tiledbin.py -d $(patsubst src/res/%.json, res/%.roomscript, $^) -o $@ $^
+	python3 tools/tiledbin.py -d $(patsubst src/res/%.json, res/%.roomscript, $<) -o $@ $<
 
 res/%.tilemap: res/%.png
 	@mkdir -p $(@D)
-	$(RGBGFX) -u -t $@ $^
+	$(RGBGFX) -u -t $@ $<
 
 # Metatile data conversion.
-res/%.mtile res/%.mtiledata: res/%.png
+res/%.mtile res/%.mtiledata: res/%.png bin/metamaker
 	@mkdir -p $(@D)
 #	Do not optimize these 2bpp files. `metamaker` relies on unoptimized tiles to
 #	create the output data. RGBGFX will output the data that metamaker expects,
 #	so this is fine.
-	$(RGBGFX) -o $(patsubst src/res/%.png, res/%.mtile, $^) $^
-	./tools/metamaker -m $@ -w 1 -O 128 -i $(patsubst src/res/%.png, res/%.mtile, $^)
+	$(RGBGFX) -o $(patsubst src/res/%.png, res/%.mtile, $<) $<
+	./bin/metamaker -m $@ -w 1 -O 128 -i $(patsubst src/res/%.png, res/%.mtile, $<)
 
 res/%.asm: res/%.world
 	@mkdir -p $(@D)
-	python3 tools/tiledworld.py -o $@ $^
+	python3 tools/tiledworld.py -o $@ $<
 
 ################################################
 #                                              #
@@ -149,10 +149,9 @@ res/%.asm: res/%.world
 #                                              #
 ################################################
 
-tools: tools/metamaker
-
-tools/metamaker: tools/src/metamaker.cpp
-	g++ -std=c++17 -O3 -o $@ $^
+bin/metamaker: tools/src/metamaker.cpp
+	@mkdir -p $(@D)
+	g++ -std=c++17 -O3 -o $@ $<
 
 # Catch non-existent files
 # KEEP THIS LAST!!

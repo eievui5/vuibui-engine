@@ -2,6 +2,7 @@
 /obj/
 /dep/
 /res/
+/tools/bin/
 /.vscode/
 TODO*
 *.tiled-session
