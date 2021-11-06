@@ -152,7 +152,7 @@ res/%.asm: res/%.world
 #                                              #
 ################################################
 
-bin/metamaker: tools/src/metamaker.cpp
+bin/metamaker: tools/metamaker.cpp
 	@mkdir -p $(@D)
 	g++ -std=c++17 -O3 -o $@ $<
 
