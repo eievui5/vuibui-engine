@@ -86,8 +86,8 @@ TiberActiveNormal: ; How to move.
     DW TiberAIFollow
 
 .skipAISwitch
-    ld hl, wTiber_State
-    call UseItemCheck
+    ld hl, wTiber
+    call PlayerInteractionCheck
 
     ld hl, wTiber
     call NPCInteractionCheck
@@ -95,8 +95,8 @@ TiberActiveNormal: ; How to move.
     ; Attack check
     ld a, [wPlayerEquipped.tiber]
     ld b, a
-    ld hl, wTiber
-    call PlayerInteractionCheck
+    ld hl, wTiber_State
+    call UseItemCheck
 .activeMove
     ld bc, PLAYER_TIBER * sizeof_Entity
     call PlayerInputMovement

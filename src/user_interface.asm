@@ -226,7 +226,6 @@ UpdateHUD::
     ld b, [hl]
 
     ; Check for equipped item in B.
-    ld b, b
     ld a, $F0
     and a, b
     jr z, .clearBItem
