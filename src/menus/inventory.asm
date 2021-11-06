@@ -7,7 +7,7 @@ INCLUDE "hardware.inc"
 INCLUDE "map.inc"
 INCLUDE "menu.inc"
 INCLUDE "stdopt.inc"
-INCLUDE "valloc.inc"
+INCLUDE "vdef.inc"
 
 SECTION UNION "VRAM", VRAM[$8800]
 

@@ -7,6 +7,7 @@ INCLUDE "stat.inc"
 INCLUDE "stdopt.inc"
 INCLUDE "text.inc"
 INCLUDE "tiledata.inc"
+INCLUDE "vdef.inc"
 
 DEF vPrintBar EQU $9F40
 DEF vHUD EQU $9F60

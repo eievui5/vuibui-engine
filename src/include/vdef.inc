@@ -1,5 +1,5 @@
-IF !DEF(VALLOC_INC)
-DEF VALLOC_INC EQU 1
+IF !DEF(VDEF_INC)
+DEF VDEF_INC EQU 1
 
 ; Define a tile in VRAM. Must provide a name for the tile, and optionally its
 ; size in tiles. This produces 2 constants, an address pointing to the beginning

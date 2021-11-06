@@ -4,7 +4,7 @@ INCLUDE "hardware.inc"
 INCLUDE "menu.inc"
 INCLUDE "stdopt.inc"
 INCLUDE "text.inc"
-INCLUDE "valloc.inc"
+INCLUDE "vdef.inc"
 
 SECTION UNION "VRAM", VRAM[$8800]
     dtile Blank
