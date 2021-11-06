@@ -43,11 +43,6 @@ VBlank:
 ; Load tiles during screen transition
     call VBlankScrollLoader
 
-; Redraw the HUD and print function
-    ld a, [wEnableHUD]
-    and a, a
-    call nz, UpdatePrint
-
 .input
     call UpdateInput
     call audio_update
