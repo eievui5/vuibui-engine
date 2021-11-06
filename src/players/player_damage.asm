@@ -94,7 +94,7 @@ PlayerDeath::
         ld a, [wFrameTimer]
         and a, %11 ; every 4th frame
         jr nz, .waitVBlank
-        
+
         ldh a, [rBGP]
         add a, a ; a << 1
         add a, a ; a << 2
@@ -179,8 +179,6 @@ xPlayerDeathScript:
     jump .rightWait
 .fall
     call_function .fadeFully
-    wait_fade
-    call_function .startMenu
     end_script
 
 .fadeFully
@@ -190,12 +188,14 @@ xPlayerDeathScript:
     rst MemSetSmall
     ld a, PALETTE_STATE_FADE_LIGHT
     ld [wPaletteState], a
-    ret
+.waitFade
+    halt
+    ld a, [wPaletteState]
+    and a, a
+    jr nz, .waitFade
 
-.startMenu
     ld a, ENGINE_STATE_MENU
     ldh [hEngineState], a
     ld de, xGameOverHeader
     ld b, BANK(xGameOverHeader)
-    call AddMenu
-    jp Main.end
+    jp AddMenu

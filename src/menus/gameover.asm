@@ -92,7 +92,7 @@ xGameOverMap:
 .end
 
 xGameOverPal:
-    rgb 31, 0, 31
-    rgb 16, 0, 16
-    rgb 5, 0, 5
-    rgb 2, 0, 2
+    rgb 24, 0, 20
+    rgb 12, 0, 9
+    rgb 5, 0, 3
+    rgb 2, 0, 1

@@ -15,6 +15,12 @@ SECTION "Main Loop", ROM0
 ; Engine should only call out so that code can be reused.
 Main::
 
+    ; Check if a script is currently running
+    ld hl, wActiveScriptPointer + 1
+    ld a, [hli]
+    or a, [hl]
+    call nz, HandleScript
+
     ; Check engine state
     ldh a, [hEngineState]
     ASSERT ENGINE_STATE_GAMEPLAY == 0
@@ -40,12 +46,6 @@ Main::
 
 Gameplay:
 
-    ; Check if a script is currently running
-    ld hl, wActiveScriptPointer + 1
-    ld a, [hli]
-    or a, [hl]
-    call nz, HandleScript
-
     ; Check if we're paused.
     ldh a, [hPaused]
     and a, a
@@ -62,9 +62,7 @@ Gameplay:
     ldh [hEngineState], a
     jr Menu
 .skipInventoryOpen
-
     call HandleEntities
-
 .pauseMode
     call CleanOAM
     ; Update the camera before rendering
