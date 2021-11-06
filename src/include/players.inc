@@ -4,7 +4,7 @@ INCLUDE "enum.inc"
     IF !DEF(PLAYERS_INC)
 DEF PLAYERS_INC EQU 1
 
-; Used to find a player's data at a given offset, storing it in hl. 
+; Used to find a player's data at a given offset, storing it in hl.
 ; @ bc: PLAYER enum * sizeof_Entity
 ; @ 3 bytes
 ; @ 5 cycles
@@ -13,7 +13,7 @@ MACRO find_player
         ld hl, wPlayerArray + \1
     ELSE
         ld hl, wPlayerArray
-    ENDC 
+    ENDC
     add hl, bc
 ENDM
 
@@ -64,7 +64,7 @@ DEF TIBER_SWORD_DAMAGE EQU 2
 ; Offset for player metasprites
     start_enum FRAMEOFF, 0, 4
         enum NORMAL
-        enum STEP 
+        enum STEP
         enum SWING
         enum GRAB
         enum SWORD
@@ -82,7 +82,8 @@ DEF TIBER_SWORD_DAMAGE EQU 2
     end_enum
 
 ; Items
-    start_enum ITEM, 1
+    start_enum ITEM,
+        enum NULL_ITEM
         enum FIRE_WAND, BOW, SWORD
         enum ICE_WAND
         enum SHOCK_WAND

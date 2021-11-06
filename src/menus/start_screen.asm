@@ -6,11 +6,12 @@ INCLUDE "stdopt.inc"
 INCLUDE "text.inc"
 INCLUDE "vdef.inc"
 
-SECTION UNION "VRAM", VRAM[$8800]
-    dtile Blank
-    dtile Pointer
-    dtile StartStr, STRLEN("Start") + 1
-    dtile OptionsStr, STRLEN("Options") + 1
+    dtile_section $8800
+
+    dtile vBlank
+    dtile vPointer
+    dtile vStartStr, STRLEN("Start") + 1
+    dtile vOptionsStr, STRLEN("Options") + 1
 
 DEF POINTER_ANIM_MAX EQU 2
 DEF POINTER_ANIM_POINT EQU 16
@@ -68,17 +69,17 @@ TestMenuInit:
     call Unback1bppBanked
 
     ld hl, _SCRN1
-    lb bc, idof_Blank, SCRN_Y_B
+    lb bc, idof_vBlank, SCRN_Y_B
     call ScreenSet
 
-    ld a, idof_StartStr
+    ld a, idof_vStartStr
     ldh [hDrawStringTileBase], a
     ld bc, MenuString.start
     ld de, vStartStr + 1
     get_tilemap hl, _SCRN1, 5, 10
     call DrawString
 
-    ld a, idof_OptionsStr
+    ld a, idof_vOptionsStr
     ldh [hDrawStringTileBase], a
     ld bc, MenuString.options
     ld de, vOptionsStr + 1
@@ -210,9 +211,9 @@ MenuString:
 
 TestMenuSprites:
 .start
-    DB $B * 8, $4 * 8, idof_Pointer, 0
+    DB $B * 8, $4 * 8, idof_vPointer, 0
 .options
-    DB $D * 8, $4 * 8, idof_Pointer, 0
+    DB $D * 8, $4 * 8, idof_vPointer, 0
 
 SECTION "Test Menu Vars", WRAM0
 wPointerDir:

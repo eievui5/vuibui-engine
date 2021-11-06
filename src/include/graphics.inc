@@ -4,13 +4,14 @@ DEF GRAPHICS_INC EQU 1
 
 INCLUDE "enum.inc"
 INCLUDE "hardware.inc"
+INCLUDE "vdef.inc"
 
 ; Metasprite end byte
 DEF METASPRITE_END EQU 128
 
-DEF VRAM_TILES_OBJ EQU $8000
-DEF VRAM_TILES_SHARED EQU $8800
-DEF VRAM_TILES_BG EQU $9000
+DEF _VRAM_OBJ EQU $8000
+DEF _VRAM_SHARED EQU $8800
+DEF _VRAM_BG EQU $9000
 
 DEF sizeof_COLOR EQU 3
 DEF sizeof_PALETTE EQU sizeof_COLOR * 4
@@ -38,9 +39,9 @@ MACRO get_tile
         FAIL "Expected 2 args!"
     ENDC
     IF \2 < $80
-        ld \1, VRAM_TILES_BG + (\2 * sizeof_TILE)
+        ld \1, _VRAM_BG + (\2 * sizeof_TILE)
     ELSE
-        ld \1, VRAM_TILES_SHARED + ((\2 - $80) * sizeof_TILE)
+        ld \1, _VRAM_SHARED + ((\2 - $80) * sizeof_TILE)
     ENDC
 ENDM
 
@@ -50,9 +51,9 @@ MACRO get_object
         FAIL "Expected 2 args!"
     ENDC
     IF \2 < $80
-        ld \1, VRAM_TILES_OBJ + (\2 * sizeof_TILE)
+        ld \1, _VRAM_OBJ + (\2 * sizeof_TILE)
     ELSE
-        ld \1, VRAM_TILES_SHARED + (\2 * sizeof_TILE)
+        ld \1, _VRAM_SHARED + (\2 * sizeof_TILE)
     ENDC
 ENDM
 
@@ -134,21 +135,5 @@ ENDM
 
 DEF vTextTiles EQU $9500
 DEF TILE_TEXT_START EQU $50
-
-DEF vPlainTiles EQU $97D0
-
-    start_enum TILE, $80 - 9
-        enum HEART, UI_START
-        enum HEART_HALF
-        enum HEART_EMPTY
-        enum A_CHAR
-        enum B_CHAR
-        enum WHITE
-        enum LIGHT
-        enum DARK
-        enum BLACK
-    end_enum
-
-
 
     ENDC

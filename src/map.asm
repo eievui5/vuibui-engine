@@ -114,7 +114,7 @@ UpdateActiveMap::
         ld h, d
         ld l, e
         ld bc, 128 * sizeof_TILE
-		ld de, VRAM_TILES_SHARED
+		ld de, _VRAM_SHARED
 		call VRAMCopy ; Set to static size & change to uncompressed copy. How to handle entities vs tiles?
 	pop hl
 
@@ -521,7 +521,7 @@ ReloadMapGraphics::
         ld a, c
         rst SwapBank
         ld bc, 128 * sizeof_TILE
-        ld de, VRAM_TILES_SHARED
+        ld de, _VRAM_SHARED
         call VRAMCopy
 
         ldh a, [hMapBankBuffer]

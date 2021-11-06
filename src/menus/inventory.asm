@@ -7,9 +7,6 @@ INCLUDE "hardware.inc"
 INCLUDE "map.inc"
 INCLUDE "menu.inc"
 INCLUDE "stdopt.inc"
-INCLUDE "vdef.inc"
-
-SECTION UNION "VRAM", VRAM[$8800]
 
 ; I hate this enum
 
@@ -167,8 +164,8 @@ InventoryInit:
 
     ; Load a line into VRAM to use as a dash
     ld a, %01111110
-    ld [VRAM_TILES_SHARED + ((TILE_DASH - $80) * sizeof_TILE) + 16-2], a
-    ld [VRAM_TILES_SHARED + ((TILE_DASH - $80) * sizeof_TILE) + 16-1], a
+    ld [_VRAM_SHARED + ((TILE_DASH - $80) * sizeof_TILE) + 16-2], a
+    ld [_VRAM_SHARED + ((TILE_DASH - $80) * sizeof_TILE) + 16-1], a
 
     ; Load the player's items
     ld a, BANK("Item Icons")
@@ -346,7 +343,7 @@ InventoryInit:
     ld a, [hli]
     push hl
         ld bc, sizeof_TILE * 64
-        ld de, VRAM_TILES_BG
+        ld de, _VRAM_BG
         ld h, [hl]
         ld l, a
         call VRAMCopy

@@ -7,15 +7,15 @@
 ; Memory functions which wait for VRAM access before writing.
 ;
 ; Copyright 2021 Eievui
-; 
+;
 ; This software is provided 'as-is', without any express or implied
 ; warranty.  In no event will the authors be held liable for any damages
 ; arising from the use of this software.
-; 
+;
 ; Permission is granted to anyone to use this software for any purpose,
 ; including commercial applications, and to alter it and redistribute it
 ; freely, subject to the following restrictions:
-; 
+;
 ; 1. The origin of this software must not be misrepresented; you must not
 ;    claim that you wrote the original software. If you use this software
 ;    in a product, an acknowledgment in the product documentation would be
@@ -56,6 +56,9 @@ SECTION "VRAM Small Memory Copy", ROM0
 ; @ de: destination
 ; @ hl: source
 VRAMCopySmall::
+    ldh a, [rSTAT]
+    and STATF_BUSY
+    jr nz, VRAMCopySmall
     ld a, [hli]
     ld [de], a
     inc de
@@ -84,4 +87,19 @@ VRAMSet::
     jr nz, .loadByte
     dec b
     jr nz, .loadByte
+    ret
+
+SECTION "VRAM Memory Set Small", ROM0
+; Waits for VRAM access before setting data.
+; @ d:  source (is preserved)
+; @ bc: length
+; @ hl: destination
+VRAMSetSmall::
+    ldh a, [rSTAT]
+    and STATF_BUSY
+    jr nz, VRAMSetSmall
+
+    ld [hli], a
+    dec c
+    jr nz, VRAMSetSmall
     ret

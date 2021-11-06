@@ -9,19 +9,25 @@ INCLUDE "text.inc"
 INCLUDE "tiledata.inc"
 INCLUDE "vdef.inc"
 
-DEF vPrintBar EQU $9F40
-DEF vHUD EQU $9F60
-DEF vAHint EQU $9F80
-DEF vBHint EQU $9F83
-DEF vHeartBar EQU $9F66
+    dtile_section $9800 - 14 * 16
 
-DEF CHARACTER_START_OFFSET EQU 20 ; How many tiles to skip for intial draw?
-DEF SLIDE_IN_AMOUNT EQU 15 ; How many pixels before we've slid in?
+    edtile vHeart
+    edtile vHalfHeart
+    edtile vEmptyHeart
+    edtile vAHint
+    edtile vBHint
+    edtile vAIcon, 4
+    edtile vBIcon, 4
+    edtile vBlankTile
+
+    dregion vHUD, 0, 27, 20, 2, _SCRN1
+    dregion vAItem, 0, 27, 3, 2, _SCRN1
+    dregion vBItem, 3, 27, 3, 2, _SCRN1
+    dregion vHeartBar, 6, 27, 10, 2, _SCRN1
 
 SECTION "Heads Up Display", ROM0
 
 ResetHUD::
-
     ld a, 1
     ldh [rVBK], a
     ld hl, vHUD
@@ -37,23 +43,41 @@ ResetHUD::
 
     ; Clear the HUD
     ld hl, vHUD
-    lb bc, TILE_WHITE, 2 ; 2 rows
+    lb bc, idof_vBlankTile, 2 ; 2 rows
     call ScreenSet
 
     ; Load the button hints
-    ld hl, vAHint
+    ld hl, vAItem + (vAItem_Height - 1) * 32
 
 :   ldh a, [rSTAT]
     and a, STATF_BUSY
     jr nz, :-
 
-    ld a, TILE_A_CHAR
+    ld a, idof_vAHint
     ld [hl], a
-    ASSERT HIGH(vAHint) == HIGH(vBHint)
-    ld l, LOW(vBHint)
-    ASSERT TILE_A_CHAR + 1 == TILE_B_CHAR
+    ASSERT HIGH(vAItem + (vAItem_Height - 1) * 32) == HIGH(vBItem + (vBItem_Height - 1) * 32)
+    ld l, LOW(vBItem + (vBItem_Height - 1) * 32)
+    ASSERT idof_vAHint + 1 == idof_vBHint
     inc a
     ld [hl], a
+
+    ; Set up item icons
+    ld a, idof_vAIcon
+    ld [vAItem + 1], a
+    inc a
+    ld [vAItem + 2], a
+    inc a
+    ld [vAItem + 33], a
+    inc a
+    ld [vAItem + 34], a
+    inc a
+    ld [vBItem + 1], a
+    inc a
+    ld [vBItem + 2], a
+    inc a
+    ld [vBItem + 33], a
+    inc a
+    ld [vBItem + 34], a
 
     ; Signal to reset healthbars
     ld a, -1
@@ -116,26 +140,26 @@ UpdateHUD::
 
     jr c, .heartIncrement
 .heartDecrement
-    ld b, TILE_HEART_EMPTY ; When hurting, hearts empty
+    ld b, idof_vEmptyHeart ; When getting hurt, hearts become empty.
     dec a
     jr .updateHeart
 .heartIncrement
-    ld b, TILE_HEART ; When healing, hearts get full
+    ld b, idof_vHeart ; When being healed, hearts fill up.
     inc a
 .updateHeart
-    ld [hl], a ; `hl` should still contin the health we want to reference, so restore that here.
+    ; Restore the health we want to reference.
+    ld [hl], a
 
     ; We need to clear carry before `rra`
-    scf
-    ccf
+    and a, a
 
     rra
     jr nc, .skipHalf
-    inc a ; Half hearts need to draw one off (basically, round up!)
-    ld b, TILE_HEART_HALF
+    inc a ; Half hearts need to be drawn off by one, so round up.
+    ld b, idof_vHalfHeart
 .skipHalf
     ld c, a
-    ld a, TILE_HEART_EMPTY
+    ld a, idof_vEmptyHeart
     cp a, b
     ld a, c
     jr nz, :+
@@ -161,11 +185,9 @@ UpdateHUD::
     ld [hl], b
     ret
 
-
 .redraw
-
     ; Clear the HUD
-    lb bc, TILE_WHITE, 10
+    lb bc, idof_vBlankTile, 10
     ld hl, vHeartBar
     call ScreenSet
 
@@ -194,6 +216,64 @@ UpdateHUD::
     ld [wPaletteState], a
 
 .skipColor
+    ; Get the active player's equipped items.
+    ld a, [wActivePlayer]
+    add a, LOW(wPlayerEquipped)
+    ld l, a
+    adc a, HIGH(wPlayerEquipped)
+    sub a, l
+    ld h, a
+    ld b, [hl]
+
+    ; Check for equipped item in B.
+    ld b, b
+    ld a, $F0
+    and a, b
+    jr z, .clearBItem
+
+    ld a, BANK(xGetItemGfx)
+    rst SwapBank
+    call xGetItemGfx
+    ; And copy!
+    ld a, BANK(GfxPlayerItems)
+    rst SwapBank
+    ld c, 16 * 4
+    ld de, vBIcon
+    call VRAMCopySmall
+    jr .drawAItem
+
+.clearBItem
+    xor a, a
+    ld c, 16 * 4
+    ld hl, vBIcon
+    call VRAMSetSmall
+
+.drawAItem
+    swap b
+
+    ; Check for equipped item in A.
+    ld a, $F0
+    and a, b
+    jr z, .clearAItem
+
+    ld a, BANK(xGetItemGfx)
+    rst SwapBank
+    call xGetItemGfx
+    ; And copy!
+    ld a, BANK(GfxPlayerItems)
+    rst SwapBank
+    ld c, 16 * 4
+    ld de, vAIcon
+    call VRAMCopySmall
+    jr .skipClearAItem
+
+.clearAItem
+    xor a, a
+    ld c, 16 * 4
+    ld hl, vAIcon
+    call VRAMSetSmall
+
+.skipClearAItem
 
     ld a, [wActivePlayer]
     ld e, a ; save for later!
@@ -215,7 +295,7 @@ UpdateHUD::
     and a, STATF_BUSY
     jr nz, :-
 
-    ld a, TILE_HEART_EMPTY
+    ld a, idof_vEmptyHeart
     ld [hli], a
     dec b
     jr z, .bottom
@@ -232,7 +312,7 @@ UpdateHUD::
     and a, STATF_BUSY
     jr nz, :-
 
-    ld a, TILE_HEART_EMPTY
+    ld a, idof_vEmptyHeart
     ld [hli], a
     dec c
     jr nz, .bottomLoop
@@ -260,8 +340,7 @@ UpdateHUD::
     ld a, b
 
     ; We need to clear carry before `rra`
-    scf
-    ccf
+    and a, a
 
     rra ; This will set carry if A is odd, so we can draw a half-heart
     ld c, a
@@ -284,7 +363,7 @@ UpdateHUD::
     and a, STATF_BUSY
     jr nz, :-
 
-    ld a, TILE_HEART_HALF
+    ld a, idof_vHalfHeart
     ld [hld], a ; We already did a set up, so skip the regular one
     jr .bottomSetUp
 .setUp
@@ -315,7 +394,7 @@ UpdateHUD::
     and a, STATF_BUSY
     jr nz, :-
 
-    ld a, TILE_HEART
+    ld a, idof_vHeart
     ld [hld], a
     dec b
     jr nz, .heartBottomLoop
@@ -328,7 +407,7 @@ UpdateHUD::
     and a, STATF_BUSY
     jr nz, :-
 
-    ld a, TILE_HEART
+    ld a, idof_vHeart
     ld [hld], a
     dec c
     jr nz, .heartTopLoop
@@ -337,6 +416,34 @@ UpdateHUD::
     ld [wHUDActivePlayerBuffer], a
 
     ret
+
+SECTION "Get Item Graphics", ROMX
+; @ b: Input Item in upper nibble.
+; @ returns address in hl
+xGetItemGfx:
+    ; Get the player's item graphics.
+    ld a, [wActivePlayer]
+    ld l, LOW(GfxPlayerItems)
+    add a, HIGH(GfxPlayerItems) ; implicit a * 256
+    ld h, a
+
+    ; Grab equipped item in B.
+    ld a, $F0 ; implicit a * 16
+    and a, b
+    sub a, 1 << 4
+    add a, a ; a * 32 (2 tiles)
+    add a, a ; a * 64 (4 tiles)
+    ; Now offset to the proper item.
+    add a, l
+    ld l, a
+    adc a, h
+    sub a, l
+    ld h, a
+    ret
+    ; And load size.
+    ld c, 16 * 4
+    ld de, vBIcon
+    call VRAMCopySmall
 
 SECTION "HUD Variables", WRAM0
 

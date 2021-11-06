@@ -116,6 +116,9 @@ Initialize::
         ld [hli], a
         ld [hli], a
     ; VRAM
+        ld c, 16
+        ld hl, vBlankTile
+        call MemSetSmall
         ld a, 1
         ldh [rVBK], a
         xor a, a
@@ -147,29 +150,6 @@ Initialize::
 	inc c
 	dec b
 	jr nz, .copyOAMDMA
-
-; Copy Plain Tiles
-    ld hl, vPlainTiles
-    ; Light
-    ld b, 8
-:   ld a, $FF
-    ld [hli], a
-    xor a, a
-    ld [hli], a
-    dec b
-    jr nz, :-
-    ; Dark
-    ld b, 8
-:   xor a, a
-    ld [hli], a
-    ld a, $FF
-    ld [hli], a
-    dec b
-    jr nz, :-
-    ; Black
-    ld a, $FF
-    ld c, sizeof_TILE
-    rst MemSetSmall
 
 ; Configure audio
     call audio_init
@@ -266,14 +246,14 @@ InitializeGameplay::
     ld a, BANK(GfxHeart)
     rst SwapBank
     ld c, GfxHeart.end - GfxHeart
-    ld de, VRAM_TILES_BG + TILE_HEART * 16
+    ld de, vHeart
     ld hl, GfxHeart
     call VRAMCopySmall
     ; Button hints
     ld a, BANK(GameFont)
     rst SwapBank
     get_character "A"
-    ld de, VRAM_TILES_BG + TILE_A_CHAR * 16
+    ld de, vAHint
     ld c, 8 * 2
     call Unpack1bpp
 
@@ -325,7 +305,7 @@ LoadStandardGraphics::
     rst SwapBank
     ; Load player graphics
     ld hl, GfxOctavia
-    ld de, VRAM_TILES_OBJ + TILE_OCTAVIA_DOWN_1 * $10
+    ld de, _VRAM_OBJ + TILE_OCTAVIA_DOWN_1 * $10
     ld bc, (GfxOctavia.end - GfxOctavia) * 3
     call MemCopy
 
