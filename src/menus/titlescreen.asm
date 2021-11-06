@@ -16,11 +16,11 @@ INCLUDE "vdef.inc"
 DEF POINTER_ANIM_MAX EQU 2
 DEF POINTER_ANIM_POINT EQU 16
 
-SECTION "Menu Test", ROMX
+SECTION "Titlescreen", ROMX
 
-TestMenuHeader::
-    DB BANK("Menu Test")
-    DW TestMenuInit
+TitlescreenHeader::
+    DB BANK(@)
+    DW TitlescreenInit
     ; Used Buttons
     DB PADF_A | PADF_UP | PADF_DOWN
     ; Auto-repeat
@@ -35,13 +35,13 @@ TestMenuHeader::
     ; Number of items in the menu
     DB 2
     ; Redraw
-    DW TestMenuRedraw
+    DW TitlescreenRedraw
     ; Private Items Pointer
     DW 0
     ; Close Function
     DW InitializeGameplay ; Initiallize gameplay when this menu closes
 
-TestMenuInit:
+TitlescreenInit:
 ; Wait for VRAM access
     di
 .waitVBlank
@@ -62,11 +62,11 @@ TestMenuInit:
     ld [wPointerYPos], a
 
 ; Load tiles
-    ld a, BANK(obpp_Pointer)
+    ld b, BANK(obpp_Pointer)
     ld hl, obpp_Pointer
     ld de, vPointer
     ld c, 8
-    call Unback1bppBanked
+    call Unpack1bppBanked
 
     ld hl, _SCRN1
     lb bc, idof_vBlank, SCRN_Y_B
@@ -75,14 +75,15 @@ TestMenuInit:
     ld a, idof_vStartStr
     ldh [hDrawStringTileBase], a
     ld bc, MenuString.start
-    ld de, vStartStr + 1
+    ld de, vStartStr
     get_tilemap hl, _SCRN1, 5, 10
+    ;ld b, b
     call DrawString
 
     ld a, idof_vOptionsStr
     ldh [hDrawStringTileBase], a
     ld bc, MenuString.options
-    ld de, vOptionsStr + 1
+    ld de, vOptionsStr
     get_tilemap hl, _SCRN1, 5, 12
     call DrawString
 
@@ -106,10 +107,10 @@ TestMenuInit:
 
     reti
 
-TestMenuRedraw:
+TitlescreenRedraw:
     ldh a, [rSTAT]
     and a, STATF_BUSY
-    jr nz, TestMenuRedraw
+    jr nz, TitlescreenRedraw
 
     ; Grab the menu pointer off the stack
     ld hl, sp + 2
@@ -124,7 +125,7 @@ TestMenuRedraw:
 
     ; Push sprites to OAM
     ld b, a
-    ld hl, TestMenuSprites
+    ld hl, TitlescreenSprites
     and a, a
     jr z, .multSkip
     .mult
@@ -209,7 +210,7 @@ MenuString:
 .options
     DB "Options", 0
 
-TestMenuSprites:
+TitlescreenSprites:
 .start
     DB $B * 8, $4 * 8, idof_vPointer, 0
 .options

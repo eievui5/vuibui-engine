@@ -182,8 +182,8 @@ Initialize::
     ld a, ENGINE_STATE_MENU
     ldh [hEngineState], a
 
-    ld de, TestMenuHeader
-    ld b, BANK("Menu Test")
+    ld de, TitlescreenHeader
+    ld b, BANK(TitlescreenHeader)
     call AddMenu
 
     jp Main

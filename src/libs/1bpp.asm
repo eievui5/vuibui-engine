@@ -6,11 +6,11 @@
 ; This software is provided 'as-is', without any express or implied
 ; warranty.  In no event will the authors be held liable for any damages
 ; arising from the use of this software.
-; 
+;
 ; Permission is granted to anyone to use this software for any purpose,
 ; including commercial applications, and to alter it and redistribute it
 ; freely, subject to the following restrictions:
-; 
+;
 ; 1. The origin of this software must not be misrepresented; you must not
 ;    claim that you wrote the original software. If you use this software
 ;    in a product, an acknowledgment in the product documentation would be
@@ -38,17 +38,20 @@ Unpack1bpp::
     jr nz, Unpack1bpp
     ret
 
-; Switches banks and calls Unpack1bpp, switching back to hCurrent bank when 
+; Switches banks and calls Unpack1bpp, switching back to hCurrent bank when
 ; finished.
-; @ a:  target bank
+; @ b:  target bank
 ; @ c:  length
 ; @ de: destination
 ; @ hl: source
-Unback1bppBanked::
-    ld [rROMB0], a
-    call Unpack1bpp
+Unpack1bppBanked::
     ldh a, [hCurrentBank]
-    ld [rROMB0], a
+    push af
+    ld a, b
+    rst SwapBank
+    call Unpack1bpp
+    pop af
+    rst SwapBank
     ret
 
 ; Complements each byte, inverting the resulting graphics.

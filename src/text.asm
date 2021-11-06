@@ -266,11 +266,6 @@ LoadCharacters::
 ; @ de: VRAM tile destination.
 ; @ hl: Tilemap destination.
 DrawString::
-    ldh a, [hCurrentBank]
-    ldh [hDrawStringBank], a
-.loop
-    ldh a, [hDrawStringBank]
-    rst SwapBank
     ld a, [bc]
     and a, a
     ret z
@@ -281,23 +276,18 @@ DrawString::
         ; `a` still needs to be multiplied to get to 8, so divide the
         ; address by 8 and adjust it later.
         ; 8 * (a + GameFont / 8) == 8a + GameFont
-        add a, LOW(GameFont / 8 - " " + 1)
+        add a, LOW(GameFont / 8 - " ")
         ld l, a
-        adc a, HIGH(GameFont / 8 - " " + 1)
+        adc a, HIGH(GameFont / 8 - " ")
         sub a, l
         ld h, a
         ; Now do the last of the multiplication.
         add hl, hl ; a * 2
         add hl, hl ; a * 4
         add hl, hl ; a * 8
-        dec hl
-        dec hl
 
-        ld a, BANK(GameFont)
-        rst SwapBank
-
-        ld c, 8 ; Load 8 bytes
-        call Unpack1bpp
+        lb bc, BANK(GameFont), 8 ; Load 8 bytes
+        call Unpack1bppBanked
     pop hl
     pop bc
     ; Now write the string to the tilemap.
@@ -310,7 +300,7 @@ DrawString::
     ld [hli], a
     inc a
     ldh [hDrawStringTileBase], a
-    jr .loop
+    jr DrawString
 
 SECTION "Dialogue", ROMX
 ; Used to design the textbox.
@@ -343,6 +333,4 @@ wTextAnswer::
 SECTION "Draw String", HRAM
 ; The ID of the VRAM tile destination for DrawString.
 hDrawStringTileBase::
-    DS 1
-hDrawStringBank:
     DS 1

@@ -150,17 +150,17 @@ InventoryInit:
     get_tile de, TILE_NAME
     call LoadCharacters
 
-    ld a, BANK(obpp_Pointer)
+    ld b, BANK(obpp_Pointer)
     ld hl, obpp_Pointer
     get_tile de, TILE_POINT
     ld c, 8
-    call Unback1bppBanked
+    call Unpack1bppBanked
 
-    ld a, BANK(obpp_ItemSelection)
+    ld b, BANK(obpp_ItemSelection)
     ld hl, obpp_ItemSelection
     get_tile de, TILE_SELECTION
     ld c, 16
-    call Unback1bppBanked
+    call Unpack1bppBanked
 
     ; Load a line into VRAM to use as a dash
     ld a, %01111110
