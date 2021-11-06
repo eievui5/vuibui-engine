@@ -15,21 +15,28 @@ RGBLINK := $(RGBDS)rgblink
 RGBFIX  := $(RGBDS)rgbfix
 RGBGFX  := $(RGBDS)rgbgfx
 
-ROM = bin/$(ROMNAME).$(ROMEXT)
+ROM = bin/vuibui.gb
 
-# Argument constants
+# 0x1B is MBC5 with RAM + Battery
+MBC := 0x1B
+# 0x02 is one bank of SRAM
+SRAMSIZE := 0x02
+VERSION := 0
+
+GAMEID := VUIB
+TITLE := VUIBUI
+LICENSEE := EV
+
 INCDIRS  = src/ src/include/ src/vbstd/
 WARNINGS = all extra
-ASFLAGS  = -p $(PADVALUE) $(addprefix -i, $(INCDIRS)) $(addprefix -W, $(WARNINGS))
-LDFLAGS  = -p $(PADVALUE) -S romx=64
-FIXFLAGS = -p $(PADVALUE) -v -i "$(GAMEID)" -k "$(LICENSEE)" -l $(OLDLIC) -m $(MBC) -n $(VERSION) -r $(SRAMSIZE) -t $(TITLE)
+
+ASFLAGS  = -p 0xFF -h $(addprefix -i, $(INCDIRS)) $(addprefix -W, $(WARNINGS))
+LDFLAGS  = -p 0xFF -w -S romx=64
+FIXFLAGS = -p 0xFF -v -i "$(GAMEID)" -k "$(LICENSEE)" -l 0x33 -m $(MBC) \
+           -n $(VERSION) -r $(SRAMSIZE) -t $(TITLE) -c
 
 # The list of "root" ASM files that RGBASM will be invoked on
 SRCS := $(shell find src -name '*.asm')
-
-## Project-specific configuration
-# Use this to override the above
-include project.mk
 
 ################################################
 #                                              #
@@ -56,10 +63,6 @@ rebuild:
 	$(MAKE) all
 .PHONY: rebuild
 
-usage: all
-	./tools/romusage bin/$(ROMNAME).map -g
-.PHONY: usage
-
 ###############################################
 #                                             #
 #                 COMPILATION                 #
@@ -67,10 +70,10 @@ usage: all
 ###############################################
 
 # How to build a ROM
-bin/%.$(ROMEXT) bin/%.sym bin/%.map: $(patsubst src/%.asm, obj/%.o, $(SRCS))
+bin/%.gb bin/%.sym bin/%.map: $(patsubst src/%.asm, obj/%.o, $(SRCS))
 	@mkdir -p $(@D)
-	$(RGBLINK) $(LDFLAGS) -m bin/$*.map -n bin/$*.sym -o bin/$*.$(ROMEXT) $^ \
-	&& $(RGBFIX) -v $(FIXFLAGS) bin/$*.$(ROMEXT)
+	$(RGBLINK) $(LDFLAGS) -m bin/$*.map -n bin/$*.sym -o bin/$*.gb $^ \
+	&& $(RGBFIX) -v $(FIXFLAGS) bin/$*.gb
 
 # `.mk` files are auto-generated dependency lists of the "root" ASM files, to save a lot of hassle.
 # Also add all obj dependencies to the dep file too, so Make knows to remake it
