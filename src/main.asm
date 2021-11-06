@@ -110,6 +110,6 @@ hSystem::
 
 ; Stack Allocation
 DEF STACK_SIZE EQU 32 * 2
-SECTION "Stack", WRAMX[$E000 - STACK_SIZE]
+SECTION "Stack", WRAM0[$E000 - STACK_SIZE]
     DS STACK_SIZE
 wStackOrigin::
