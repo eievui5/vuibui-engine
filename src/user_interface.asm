@@ -62,22 +62,33 @@ ResetHUD::
     ld [hl], a
 
     ; Set up item icons
+    ld hl, vAItem + 1
+:   ldh a, [rSTAT]
+    and a, STATF_BUSY
+    jr nz, :-
+    ; 16 cycles of VRAM access
     ld a, idof_vAIcon
-    ld [vAItem + 1], a
+    ld [hli], a
     inc a
-    ld [vAItem + 2], a
+    ld [hli], a
+    inc l
+    ld a, idof_vBIcon
+    ld [hli], a
+    ld [hl], idof_vBIcon + 1
+    ; row 2
+    ld hl, vAItem + 33
+:   ldh a, [rSTAT]
+    and a, STATF_BUSY
+    jr nz, :-
+    ; 16 cycles of VRAM access
+    ld a, idof_vAIcon + 2
+    ld [hli], a
     inc a
-    ld [vAItem + 33], a
-    inc a
-    ld [vAItem + 34], a
-    inc a
-    ld [vBItem + 1], a
-    inc a
-    ld [vBItem + 2], a
-    inc a
-    ld [vBItem + 33], a
-    inc a
-    ld [vBItem + 34], a
+    ld [hli], a
+    inc l
+    ld a, idof_vBIcon + 2
+    ld [hli], a
+    ld [hl], idof_vBIcon + 3
 
     ; Signal to reset healthbars
     ld a, -1
