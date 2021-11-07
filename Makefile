@@ -23,17 +23,15 @@ MBC := 0x1B
 SRAMSIZE := 0x02
 VERSION := 0
 
-GAMEID := VUIB
-TITLE := VUIBUI
-LICENSEE := EV
+MAP_OFFSETS := gfx/ui/inventory:128 gfx/ui/gameover:0
 
 INCDIRS  = src/ src/include/ src/vbstd/
 WARNINGS = all extra
 
 ASFLAGS  = -p 0xFF -h $(addprefix -i, $(INCDIRS)) $(addprefix -W, $(WARNINGS))
 LDFLAGS  = -p 0xFF -w -S romx=64
-FIXFLAGS = -p 0xFF -v -i "$(GAMEID)" -k "$(LICENSEE)" -l 0x33 -m $(MBC) \
-           -n $(VERSION) -r $(SRAMSIZE) -t $(TITLE) -c
+FIXFLAGS = -p 0xFF -v -i "VUIB" -k "EV" -l 0x33 -m $(MBC) \
+           -n $(VERSION) -r $(SRAMSIZE) -t "VuiBui     " -c
 
 # The list of "root" ASM files that RGBASM will be invoked on
 SRCS := $(shell find src -name '*.asm')
@@ -119,6 +117,10 @@ res/%.h.1bpp: res/%.png
 	@mkdir -p $(@D)
 	$(RGBGFX) -d 1 -h -o $@ $<
 
+res/%.pal.json: res/%.png
+	@mkdir -p $(@D)
+	superfamiconv palette -M gb -j $@ -i $<
+
 # Convert .png files into .pal files.
 res/%.pal: res/%.png
 	@mkdir -p $(@D)
@@ -129,9 +131,10 @@ res/%.tilemap: res/%.json
 	@mkdir -p $(@D)
 	python3 tools/tiledbin.py -d $(patsubst src/res/%.json, res/%.roomscript, $<) -o $@ $<
 
-res/%.tilemap: res/%.png
+res/%.tilemap: res/%.png res/%.pal.json res/%.2bpp
 	@mkdir -p $(@D)
-	$(RGBGFX) -u -t $@ $<
+	superfamiconv -R -M gb -T $(lastword $(subst :, ,$(filter $*:%,$(MAP_OFFSETS)))) -t res/$*.2bpp -p res/$*.pal.json -i $< -m $@
+#	$(RGBGFX) -u -t $@ $<
 
 # Metatile data conversion.
 res/%.mtile res/%.mtiledata: res/%.png bin/metamaker

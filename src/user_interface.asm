@@ -253,8 +253,7 @@ UpdateHUD::
     jr .drawAItem
 
 .clearBItem
-    xor a, a
-    ld c, 16 * 4
+    lb bc, 0, 16 * 4
     ld hl, vBIcon
     call VRAMSetSmall
 
@@ -278,8 +277,7 @@ UpdateHUD::
     jr .skipClearAItem
 
 .clearAItem
-    xor a, a
-    ld c, 16 * 4
+    lb bc, 0, 16 * 4
     ld hl, vAIcon
     call VRAMSetSmall
 

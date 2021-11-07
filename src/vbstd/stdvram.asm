@@ -91,14 +91,15 @@ VRAMSet::
 
 SECTION "VRAM Memory Set Small", ROM0
 ; Waits for VRAM access before setting data.
-; @ d:  source (is preserved)
-; @ bc: length
+; @ b:  source (is preserved)
+; @ c:  length
 ; @ hl: destination
 VRAMSetSmall::
     ldh a, [rSTAT]
     and STATF_BUSY
     jr nz, VRAMSetSmall
 
+    ld b, a
     ld [hli], a
     dec c
     jr nz, VRAMSetSmall

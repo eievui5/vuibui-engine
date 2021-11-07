@@ -19,16 +19,14 @@ GfxSparkle:: INCBIN "res/gfx/misc/sparkle.h.2bpp"
 SECTION "User Interface", ROMX
 GfxHeart:: INCBIN "res/gfx/ui/heart.2bpp"
 .end::
-GfxMenuSeperators:: INCBIN "res/gfx/ui/menu_seperators.2bpp"
-.end::
+
+SECTION "Item Icons", ROMX
 obpp_Pointer:: INCBIN "res/gfx/ui/pointer.1bpp"
 .end::
 obpp_ItemSelection:: INCBIN "res/gfx/ui/item_selection.h.1bpp"
 .end::
 GfxButtons:: INCBIN "res/gfx/font/buttons.2bpp"
 .end::
-
-SECTION "Item Icons", ROMX
 GfxPlayerItems::
     GfxOctaviaItems::
         GfxFireSpell:: INCBIN "res/gfx/ui/items/fire_spell.2bpp"

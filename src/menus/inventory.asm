@@ -7,71 +7,33 @@ INCLUDE "hardware.inc"
 INCLUDE "map.inc"
 INCLUDE "menu.inc"
 INCLUDE "stdopt.inc"
+INCLUDE "vdef.inc"
 
-; I hate this enum
+    dtile_section $8800
 
-    start_enum TILE, $80
-        enum CLEAR
-        enum HOR_SEP
-        enum VER_SEP
-        enum JUNC_SEP
-        ; Letters
-        enum S, LETTERS
-        enum a
-        enum v
-        enum e
-        enum AND
-        enum x
-        enum i
-        enum t
-        enum C
-        enum l
-        enum o
-        enum s
-        ; Name letters
-        enum O, P, T, NAME
-        enum c, p, b
-        enum y, r
-        ; Pointer
-        enum POINTER_ALIGN ; sprites are in 8*16 mode, align pointer
-        enum POINT
-        enum POINT2
-        enum SELECTION
-        enum SELECTION2
-        ; Items
-        enum ITEM_0_0
-        enum ITEM_0_1
-        enum ITEM_0_2
-        enum ITEM_0_3
-
-        enum ITEM_1_0
-        enum ITEM_1_1
-        enum ITEM_1_2
-        enum ITEM_1_3
-
-        enum ITEM_2_0
-        enum ITEM_2_1
-        enum ITEM_2_2
-        enum ITEM_2_3
-
-        enum ITEM_3_0
-        enum ITEM_3_1
-        enum ITEM_3_2
-        enum ITEM_3_3
-        ; Hints
-        enum DASH
-        enum A_TOP
-        enum B_TOP
-        enum A_BOT
-        enum B_BOT
-    end_enum
+    dtile vHSeperator
+    dtile vJunctionSeperator
+    dtile vBlankTile
+    dtile vVSeperator
+    dtile_align
+    dtile vPointerCursor, 2
+    dtile vSelectionCursor, 2
+    dtile vItem0, 4
+    dtile vItem1, 4
+    dtile vItem2, 4
+    dtile vItem3, 4
+    dtile vDash
+    dtile vHint, 4
+    dtile vCloseText, STRLEN("Close")
+    dtile vSaveText, STRLEN("Save")
+    dtile vAndExitText, STRLEN("Save & Exit")
+    dtile vPlayerName, STRLEN("Octavia")
 
 DEF COLUMN_1 EQU %10000000
 DEF UI_PAL EQU 6
 DEF SEL_PAL EQU 7
 
 SECTION "Inventory", ROM0
-
 ; The inventory uses custom selection logic so that it may have 2 dimensions.
 ; SelectedItem treats bit 7 as the column, and the lower bits are used for
 ; vertical position
@@ -122,50 +84,33 @@ InventoryInit:
 
 ; Load inventory graphics
     ; Unpack seperators
-    ld a, BANK(GfxMenuSeperators)
+    ld a, BANK(InventoryGraphics)
     rst SwapBank
-    ld c, GfxMenuSeperators.end - GfxMenuSeperators
-    get_tile de, TILE_CLEAR
-    ld hl, GfxMenuSeperators
+    ld c, InventoryGraphics.end - InventoryGraphics
+    ld de, vHSeperator
+    ld hl, InventoryGraphics
     call VRAMCopySmall
 
-    ; Default letters
-    ld a, BANK(InventoryLetters)
-    rst SwapBank
-    ld hl, InventoryLetters
-    get_tile de, TILE_LETTERS
-    call LoadCharacters
-
-    ; Load the active player's letters
-    ld a, [wActivePlayer]
-    ; Each entry is 4 bytes, include the 0-terminator.
-    add a, a ; a * 2
-    add a, a ; a * 4
-    ; Add `a` to `OctaviaLetters` and store in `hl`
-    add a, LOW(OctaviaLetters)
-    ld l, a
-    adc a, HIGH(OctaviaLetters)
-    sub a, l
-    ld h, a
-    get_tile de, TILE_NAME
-    call LoadCharacters
-
-    ld b, BANK(obpp_Pointer)
+    lb bc, BANK(obpp_Pointer), 8
+    ld de, vPointerCursor
     ld hl, obpp_Pointer
-    get_tile de, TILE_POINT
-    ld c, 8
     call Unpack1bppBanked
+    lb bc, 0, 16
+    ld hl, vPointerCursor + 16
+    call VRAMSetSmall
 
-    ld b, BANK(obpp_ItemSelection)
+    lb bc, BANK(obpp_ItemSelection), 16
+    ld de, vSelectionCursor
     ld hl, obpp_ItemSelection
-    get_tile de, TILE_SELECTION
-    ld c, 16
     call Unpack1bppBanked
 
     ; Load a line into VRAM to use as a dash
+    lb bc, 0, 16
+    ld hl, vDash
+    call VRAMSetSmall
     ld a, %01111110
-    ld [_VRAM_SHARED + ((TILE_DASH - $80) * sizeof_TILE) + 16-2], a
-    ld [_VRAM_SHARED + ((TILE_DASH - $80) * sizeof_TILE) + 16-1], a
+    ld [vDash + 16-2], a
+    ld [vDash + 16-1], a
 
     ; Load the player's items
     ld a, BANK("Item Icons")
@@ -173,7 +118,7 @@ InventoryInit:
 
     ; Load the button hints
     ld c, GfxButtons.end - GfxButtons
-    get_tile de, TILE_A_TOP
+    ld de, vHint
     ld hl, GfxButtons
     call VRAMCopySmall
 
@@ -184,35 +129,26 @@ InventoryInit:
     jr z, .poppyItems
 
 ; Tiber items
-    ld de, GfxSwordIcon
-    get_tile hl, TILE_ITEM_0_0
-    ASSERT sizeof_TILE * 4 * 4 == 256
-    ld c, 0 ; 0 is 256 bytes.
-    call VRAMCopySmall
-    jr .reloadPalettes
+    ld hl, GfxSwordIcon
+    jr .loadItems
 
 .poppyItems
-    ld de, GfxBow
-    get_tile hl, TILE_ITEM_0_0
-    ASSERT sizeof_TILE * 4 * 4 == 256
-    ld c, 0 ; 0 is 256 bytes.
-    call VRAMCopySmall
-    jr .reloadPalettes
+    ld hl, GfxBow
+    jr .loadItems
 
 .octaviaItems
-    ld de, GfxFireSpell
-    get_tile hl, TILE_ITEM_0_0
+    ld hl, GfxFireSpell
+
+.loadItems
     ASSERT sizeof_TILE * 4 * 4 == 256
     ld c, 0 ; 0 is 256 bytes.
+    ld de, vItem0
     call VRAMCopySmall
-
-.reloadPalettes
 
     ; Load palettes on CGB
     ldh a, [hSystem]
     and a, a
     jr z, .cgbSkip
-
 
     ld hl, PalGrey
     ld de, wBCPD + sizeof_PALETTE * 6
@@ -242,11 +178,6 @@ InventoryInit:
     call MemCopyFar
 
 .cgbSkip
-
-    ; Palette reset moved to after panorama
-
-.scrolling
-
     ; Store current scroll values
     ldh a, [hSCXBuffer]
     ld [wGameplaySC.x], a
@@ -259,20 +190,16 @@ InventoryInit:
     ldh [rSCX], a
     ldh [rSCY], a
     ld [wLastSelectedItem], a
-
-
-; Disable HUD
+    ; Disable HUD
     ld [wStaticFX], a
     ld [wEnableHUD], a
-
-; Reset doll variables
+    ; Reset doll variables
     ld [wPlayerDollDirection], a
     ld [wPlayerDollTimer], a
-
-; Reset OAM
+;    Reset OAM
     call ResetOAM
 
-; Draw the screen
+    ; Draw the screen
     ; Reset pals
     ld a, 1
     ldh [rVBK], a
@@ -289,23 +216,36 @@ InventoryInit:
     ld hl, _SCRN1 + (8 * 32) ; Skip 8 rows
     call ScreenCopy
 
+    ld a, BANK(Text)
+    rst SwapBank
+    ld a, idof_vCloseText
+    ldh [hDrawStringTileBase], a
+    ld de, vCloseText
+
+    ld bc, Text.close
+    get_tilemap hl, _SCRN1, 9, 12
+    call DrawString
+    ld bc, Text.save
+    get_tilemap hl, _SCRN1, 9, 14
+    call DrawString
+    ld bc, Text.saveAndExit
+    get_tilemap hl, _SCRN1, 9, 16
+    call DrawString
+
     ; Load the player's name onto the screen.
-    ; Each name is padded to 7 bytes
     ld a, [wActivePlayer]
-    ld b, a
-    add a, a ; a * 2
-    add a, a ; a * 4
-    add a, a ; a * 8
-    sub a, b ; a * 7 !!!
-    ; Add `a` to `OctaviaString` and store in `hl`
-    add a, LOW(OctaviaString)
-    ld l, a
-    adc a, HIGH(OctaviaString)
-    sub a, l
-    ld h, a
-    get_tilemap de, _SCRN1, 9, 9
-    ld c, 7
-    rst MemCopySmall
+    and a, a
+    jr z, :+
+    dec a
+    jr z, :++
+    ld bc, Text.tiber
+    jr :+++
+:   ld bc, Text.octavia
+    jr :++
+:   ld bc, Text.poppy
+
+:   get_tilemap hl, _SCRN1, 9, 9
+    call DrawString
 
     ; Lookup the active map's panorama
     ld a, [wActiveWorldMap]
@@ -337,8 +277,8 @@ InventoryInit:
     adc a, h
     sub a, l
     ld h, a
-.skipColorOffset
 
+.skipColorOffset
     ; Load the active map's panorama's tiles
     ld a, [hli]
     push hl
@@ -389,7 +329,6 @@ InventoryInit:
     rst MemCopySmall
 
 .cgbPanSkip
-
     ; Both systems need this reset
     ld a, PALETTE_STATE_RESET
     call UpdatePalettes
@@ -405,67 +344,66 @@ InventoryInit:
     ld b, [hl]
 
     ; Item 0
-        bit 0, b
-        jr z, .item1
-        get_tilemap hl, _SCRN1, 1, 9
-        ld a, TILE_ITEM_0_0
-        ld [hli], a
-        inc a
-        ld [hli], a
-        get_tilemap hl, _SCRN1, 1, 10
-        inc a
-        ld [hli], a
-        inc a
-        ld [hli], a
+    bit 0, b
+    jr z, .item1
+    get_tilemap hl, _SCRN1, 1, 9
+    ld a, idof_vItem0
+    ld [hli], a
+    inc a
+    ld [hli], a
+    get_tilemap hl, _SCRN1, 1, 10
+    inc a
+    ld [hli], a
+    inc a
+    ld [hli], a
 
-    .item1
-        bit 1, b
-        jr z, .item2
-        get_tilemap hl, _SCRN1, 1, 11
-        ld a, TILE_ITEM_1_0
-        ld [hli], a
-        inc a
-        ld [hli], a
-        get_tilemap hl, _SCRN1, 1, 12
-        inc a
-        ld [hli], a
-        inc a
-        ld [hli], a
+.item1
+    bit 1, b
+    jr z, .item2
+    get_tilemap hl, _SCRN1, 1, 11
+    ld a, idof_vItem1
+    ld [hli], a
+    inc a
+    ld [hli], a
+    get_tilemap hl, _SCRN1, 1, 12
+    inc a
+    ld [hli], a
+    inc a
+    ld [hli], a
 
-    .item2
-        bit 2, b
-        jr z, .item3
-        get_tilemap hl, _SCRN1, 1, 13
-        ld a, TILE_ITEM_2_0
-        ld [hli], a
-        inc a
-        ld [hli], a
-        get_tilemap hl, _SCRN1, 1, 14
-        inc a
-        ld [hli], a
-        inc a
-        ld [hli], a
+.item2
+    bit 2, b
+    jr z, .item3
+    get_tilemap hl, _SCRN1, 1, 13
+    ld a, idof_vItem2
+    ld [hli], a
+    inc a
+    ld [hli], a
+    get_tilemap hl, _SCRN1, 1, 14
+    inc a
+    ld [hli], a
+    inc a
+    ld [hli], a
 
-    .item3
-        bit 3, b
-        jr z, .exit
-        get_tilemap hl, _SCRN1, 1, 15
-        ld a, TILE_ITEM_3_0
-        ld [hli], a
-        inc a
-        ld [hli], a
-        get_tilemap hl, _SCRN1, 1, 16
-        inc a
-        ld [hli], a
-        inc a
-        ld [hli], a
+.item3
+    bit 3, b
+    jr z, .exit
+    get_tilemap hl, _SCRN1, 1, 15
+    ld a, idof_vItem3
+    ld [hli], a
+    inc a
+    ld [hli], a
+    get_tilemap hl, _SCRN1, 1, 16
+    inc a
+    ld [hli], a
+    inc a
+    ld [hli], a
 
 .exit
-; Configure screen and display the inventory
+    ; Configure screen and display the inventory
     ld a, SCREEN_MENU
     ldh [hLCDCBuffer], a
     ldh [rLCDC], a
-
     reti
 
 InventoryRedraw:
@@ -497,6 +435,7 @@ InventoryRedraw:
 
     ld b, 8
     get_tilemap hl, _SCRN1, 1, 9
+
 .cleanAttributesLoop
     ldh a, [rSTAT]
     and a, STATF_BUSY
@@ -565,8 +504,7 @@ InventoryRedraw:
     ldh [rVBK], a
 
 .cgbSkip
-
-; Render player doll
+    ; Render player doll
     ; Get the active player's metasprites
     ld a, [wActivePlayer]
     ld b, a
@@ -623,11 +561,10 @@ InventoryRedraw:
     ld a, [hli]
     ld h, [hl]
     ld l, a
-
     lb bc, (10*8) + 16, (8*8) + 8
     call RenderMetasprite.absolute
 
-; Handle Cursor
+    ; Handle Cursor
     ; Grab the UI pointer off the stack.
     ld hl, sp+2
     ld a, [hli]
@@ -642,7 +579,6 @@ InventoryRedraw:
     bit 7, [hl]
     jr nz, .options ; if bit 7 is set,
     ; Otherwise, draw the item cursor.
-
     ldh a, [hOAMIndex]
     add a, 4
     ld l, a
@@ -654,7 +590,7 @@ InventoryRedraw:
     ld [hli], a
     ld a, 1 * 8 + 8 - 1
     ld [hli], a
-    ld a, TILE_SELECTION
+    ld a, idof_vSelectionCursor
     ld [hli], a
     xor a, a
     ld [hli], a
@@ -665,20 +601,17 @@ InventoryRedraw:
     ld [hli], a
     ld a, 2 * 8 + 8 + 1
     ld [hli], a
-    ld a, TILE_SELECTION
+    ld a, idof_vSelectionCursor
     ld [hli], a
     ld a, OAMF_XFLIP
     ld [hli], a
 
-
     ldh a, [hOAMIndex]
     add a, 8
     ldh [hOAMIndex], a
-
     ret
 
 .options
-
     ldh a, [hOAMIndex]
     add a, 4
     ld l, a
@@ -695,7 +628,7 @@ InventoryRedraw:
     ld a, (8*8) + 4 ; Static XPos
     ld [hli], a ; Store XPos
 
-    ld a, TILE_POINT
+    ld a, idof_vPointerCursor
     ld [hli], a ; Store Tile
 
     xor a, a
@@ -704,7 +637,6 @@ InventoryRedraw:
     ldh a, [hOAMIndex]
     add a, 4
     ldh [hOAMIndex], a
-
     ret
 
 .metaspriteLookup
@@ -727,15 +659,6 @@ InventoryClose:
     and a, a
     jr nz, .waitFade
 
-    di
-.waitVBlank
-    ldh a, [rLY]
-    cp a, SCRN_Y
-    jr c, .waitVBlank
-
-    xor a, a
-    ldh [rLCDC], a
-
     call ReloadMapGraphics
 
     ld a, [wGameplaySC.x]
@@ -744,21 +667,15 @@ InventoryClose:
     ld a, [wGameplaySC.y]
     ldh [hSCYBuffer], a
     ldh [rSCY], a
-
     ld a, 1
     ld [wEnableHUD], a
     call ResetHUD
-
-    call ResetOAM
-
+    call CleanOAM
     ASSERT ENGINE_STATE_GAMEPLAY == 0
     xor a, a
     ldh [hEngineState], a
-
     ld a, SCREEN_NORMAL
     ldh [hLCDCBuffer], a
-    ldh [rLCDC], a
-
     reti
 
 MoveRight:
@@ -896,8 +813,8 @@ HandleAPress:
     and a, $F0
     ld [de], a
     jr .exit
-.notInA
 
+.notInA
     ld a, [de]
     and a, $F0 ; Mask out old A item
     swap a
@@ -906,15 +823,14 @@ HandleAPress:
     ld a, c
     ld [de], a
     jr .exit
-.notInB
 
+.notInB
     ld a, [de]
     and a, $F0 ; Mask out the old A value
     or a, c ; combine old A and new B
     ld [de], a
 
 .exit
-
     ; Was that item unlocked?
     and a, $0F
     dec a
@@ -939,7 +855,6 @@ HandleAPress:
     ld [de], a
 
 .gotItem
-
     xor a, a
     ld [wMenuAction], a
     ret
@@ -1002,8 +917,8 @@ HandleBPress:
     swap a
     ld [de], a
     jr .exit
-.notInA
 
+.notInA
     ld a, [de]
     and a, $F0 ; Mask out old A item
     swap a ; Push B into the lower nibbel
@@ -1014,8 +929,8 @@ HandleBPress:
     and a, $0F
     ld [de], a
     jr .exit
-.notInB
 
+.notInB
     ld a, [de]
     and a, $0F ; Mask out the old B value
     swap c ; Move new B to the upper nibble
@@ -1048,7 +963,6 @@ HandleBPress:
     ld [de], a
 
 .gotItem
-
     xor a, a
     ld [wMenuAction], a
     ret
@@ -1060,16 +974,14 @@ HandleStartPress:
 
 ; Redraw equipped items each frame
 DrawEquipped:
-
     get_tilemap hl, _SCRN1, 3, 9
     ld b, 4
 .cleanLoop
-
 :   ldh a, [rSTAT]
     and a, STATF_BUSY
     jr nz, :-
 
-    ld a, TILE_CLEAR
+    ld a, idof_vBlankTile
     ld [hli], a
     ld [hl], a
     ld a, 32
@@ -1084,7 +996,7 @@ DrawEquipped:
     and a, STATF_BUSY
     jr nz, :-
 
-    ld a, TILE_CLEAR
+    ld a, idof_vBlankTile
     ld [hl], a
     ld a, 31
     ; Add `a` to `hl`
@@ -1095,7 +1007,6 @@ DrawEquipped:
     ld h, a
     dec b
     jr nz, .cleanLoop
-
 
     ld a, [wActivePlayer]
     ; Add `a` to `wPlayerEquipped` and store in `hl`
@@ -1128,7 +1039,7 @@ DrawEquipped:
     and a, STATF_BUSY
     jr nz, :-
 
-    ld a, TILE_DASH
+    ld a, idof_vDash
     ld [hli], a
     inc a
     ld [hli], a
@@ -1144,7 +1055,7 @@ DrawEquipped:
     and a, STATF_BUSY
     jr nz, :-
 
-    ld a, TILE_A_BOT
+    ld a, idof_vHint + 2
     ld [hli], a
 
 .drawB
@@ -1170,9 +1081,9 @@ DrawEquipped:
     and a, STATF_BUSY
     jr nz, :-
 
-    ld a, TILE_DASH
+    ld a, idof_vDash
     ld [hli], a
-    ld a, TILE_B_TOP
+    ld a, idof_vHint + 1
     ld [hli], a
     ld a, 32 - 1
     ; Add `a` to `hl`
@@ -1186,21 +1097,23 @@ DrawEquipped:
     and a, STATF_BUSY
     jr nz, :-
 
-    ld a, TILE_B_BOT
+    ld a, idof_vHint + 3
     ld [hli], a
     ret
 
 SECTION "Inventory Data", ROMX
-
 InventoryMap:
-    INCBIN "menus/inventory.tilemap"
+    INCBIN "res/gfx/ui/inventory.tilemap"
+.end
+InventoryGraphics:
+    INCBIN "res/gfx/ui/inventory.2bpp"
 .end
 
-InventoryText:
+Text:
 .save
     DB "Save", 0
-.andExit
-    DB "& Exit", 0
+.saveAndExit
+    DB "Save & Exit", 0
 .close
     DB "Close", 0
 .octavia
@@ -1210,25 +1123,7 @@ InventoryText:
 .tiber
     DB "Tiber", 0
 
-InventoryLetters:
-    DB "Save&xitClos", 0
-OctaviaLetters:
-    DB "Oc ", 0
-PoppyLetters:
-    DB "Ppy", 0
-TiberLetters:
-    DB "Tbr", 0
-
-; These must be 7 bytes.
-OctaviaString:
-    DB TILE_O, TILE_c, TILE_t, TILE_a, TILE_v, TILE_i,     TILE_a
-PoppyString:
-    DB TILE_P, TILE_o, TILE_p, TILE_p, TILE_y, TILE_CLEAR, TILE_CLEAR
-TiberString:
-    DB TILE_T, TILE_i, TILE_b, TILE_e, TILE_r, TILE_CLEAR, TILE_CLEAR
-
 SECTION "Inventory Variables", WRAM0
-
 ; Which direction is the doll facing?
 wPlayerDollDirection:
     DS 1

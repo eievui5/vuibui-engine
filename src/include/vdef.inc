@@ -6,6 +6,12 @@ MACRO dtile_section ; address
     REDEF _dtile_section = \1
 ENDM
 
+MACRO dtile_align
+    IF _dtile_section & 1
+        REDEF _dtile_section = \1 + 1
+    ENDC
+ENDM
+
 ; Define a tile in VRAM. Must provide a name for the tile, and optionally its
 ; size in tiles. This produces 2 constants, an address pointing to the beginning
 ; of the tile, and an idof_ constant to get the tile's ID

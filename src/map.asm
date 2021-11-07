@@ -484,7 +484,6 @@ GetActiveMap::
     ret
 
 ; Used to reload the active map's tiles if they were changed for any reason.
-; Must occur during VBlank, and expects interrupts to be off.
 ReloadMapGraphics::
     ldh a, [hCurrentBank]
     push af

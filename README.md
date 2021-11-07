@@ -6,6 +6,7 @@
 - Python 3
 - A C++ compiler
 - GNU Make 4.3
+- [SuperFamiconvX](https://github.com/ISSOtm/SuperFamiconvX)
 
 The included tools are not entirely portable for the time being, but should work across all Linux machines (including WSL), and MacOS with some tweaking.
 Windows *will not* be natively supported. Windows users must use WSL to compile.
