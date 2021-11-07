@@ -465,47 +465,37 @@ PlayerTransitionMovement::
     call PlayerActivityCheck.waiting
     jr nz, .updateAllyPositionsDecrement ; Skip if the player is fully inactive
 
-    ld hl, 0
-
+    ; Get the target position offset.
     ld a, [wRoomTransitionDirection]
     ASSERT TRANSDIR_DOWN == 1
-    dec a
-    jr z, .down2
-    ASSERT TRANSDIR_UP == 2
-    dec a
-    jr z, .up2
-    ASSERT TRANSDIR_RIGHT == 3
-    dec a
-    jr z, .right2
-    ASSERT TRANSDIR_LEFT == 4
-    dec a
-    jr z, .left2
-    ret
-.down2
-    ld h, -16
-    jr .storeAllyPosition
-.up2
-    ld h, 16
-    jr .storeAllyPosition
-.right2
-    ld l, -16
-    jr .storeAllyPosition
-.left2
-    ld l, 16
-.storeAllyPosition
+    dec a ; use direction as an index
+    add a, a
+    add a, LOW(.positionOffsetTable)
+    ld l, a
+    adc HIGH(.positionOffsetTable)
+    sub a, l
+    ld h, a
+    ld a, [hli]
+    ld l, [hl]
+    ld h, a
+    ; hl now contains a position offset of 16 according to the transiton
+    ; direction
+    ; Multiply by 2 if the ally should be in the back.
 
     ld a, c
     cp a, PLAYER_TIBER
-    jr z, :+
+    jr z, .doubleOffset
     ASSERT PLAYER_OCTAVIA == 0
     and a, a
-    jr z, :++
+    jr z, .doubleOffset
     ld a, [wActivePlayer]
     cp a, PLAYER_TIBER
-    jr nz, :++
-:   add hl, hl
+    jr nz, .skipDouble
+.doubleOffset
+    add hl, hl
+.skipDouble
 
-:   ld a, c
+    ld a, c
     push bc
     ASSERT sizeof_Entity == 16
     swap a ; a * 16
@@ -527,26 +517,52 @@ PlayerTransitionMovement::
     ; bc - Player
     ; de - Ally
     ; hl - Offset
+    ; interpolate(ally.y, player.y + offset.y)
+    ld b, b
     ld a, [bc]
     add a, h
+    push bc
+    ld c, a ; player.y + offset.y
+    ld a, [de]
+    ld b, a
+    push de
+    ld d, 4
+    call Interp8
+    pop de
+    ld a, b
     ld [de], a
+    pop bc
+
+    ; Offset to X positions
     inc c
     inc e
+
     ld a, [bc]
     add a, l
-    ld [de], a
-
-    ld h, a
-    dec e
+    push bc
+    ld c, a ; player.y + offset.y
     ld a, [de]
-    add a, h
-    ld c, a ; Store combined position in c to bitcheck later.
+    ld b, a
+    push de
+    ld d, 4
+    call Interp8
+    pop de
+    ld a, b
+    ld [de], a
+    pop bc
 
+    dec e
+    ld c, a
+    ld a, [de]
+    add a, c
+    ld c, a ; Store the combined position in c to bitcheck later.
+
+    ; Set the direction to the transtion direction.
     ld a, Entity_Direction - Entity_YPos
     add a, e
     ld e, a
     ld a, [wRoomTransitionDirection]
-
+    ASSERT TRANSDIR_DOWN == 1
     dec a
     ld [de], a
 
@@ -564,8 +580,20 @@ PlayerTransitionMovement::
     inc c
     ld a, PLAYER_TIBER + 1
     cp a, c
-    jr nz, .updateAllyPositionsLoop
+    jp nz, .updateAllyPositionsLoop
     ret
+
+; Used for determining the offset where the allys should be drawn based on the
+; transition direction.
+.positionOffsetTable
+    ASSERT TRANSDIR_DOWN == 1
+    db -16, 0
+    ASSERT TRANSDIR_UP == 2
+    db 16, 0
+    ASSERT TRANSDIR_RIGHT == 3
+    db 0, -16
+    ASSERT TRANSDIR_LEFT == 4
+    db 0, 16
 
 ; Looks up a position to see if it contains a transition tile, and transitions
 ; to the next screen if it does. Changing screens restarts the stack and main!
