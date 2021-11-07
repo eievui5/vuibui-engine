@@ -11,14 +11,14 @@ INCLUDE "vdef.inc"
 
     dtile_section $9800 - 14 * 16
 
-    edtile vHeart
-    edtile vHalfHeart
-    edtile vEmptyHeart
-    edtile vAHint
-    edtile vBHint
-    edtile vAIcon, 4
-    edtile vBIcon, 4
-    edtile vBlankTile
+    dtile vHeart
+    dtile vHalfHeart
+    dtile vEmptyHeart
+    dtile vAHint
+    dtile vBHint
+    dtile vAIcon, 4
+    dtile vBIcon, 4
+    dtile vBlankTile
 
     dregion vHUD, 0, 27, 20, 2, _SCRN1
     dregion vAItem, 0, 27, 3, 2, _SCRN1
@@ -45,6 +45,28 @@ ResetHUD::
     ld hl, vHUD
     lb bc, idof_vBlankTile, 2 ; 2 rows
     call ScreenSet
+
+    ; Load the HUD tiles.
+
+    ; Heart graphics
+    ld a, BANK(GfxHeart)
+    rst SwapBank
+    ld c, GfxHeart.end - GfxHeart
+    ld de, vHeart
+    ld hl, GfxHeart
+    call VRAMCopySmall
+
+    ; Button hints
+    ld a, BANK(GameFont)
+    rst SwapBank
+    get_character "A"
+    ld de, vAHint
+    ld c, 8 * 2
+    call Unpack1bpp
+
+    lb bc, 0, 16
+    ld hl, vBlankTile
+    call VRAMSetSmall
 
     ; Load the button hints
     ld hl, vAItem + (vAItem_Height - 1) * 32

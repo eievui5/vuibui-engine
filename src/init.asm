@@ -116,9 +116,6 @@ Initialize::
         ld [hli], a
         ld [hli], a
     ; VRAM
-        ld c, 16
-        ld hl, vBlankTile
-        call MemSetSmall
         ld a, 1
         ldh [rVBK], a
         xor a, a
@@ -240,22 +237,6 @@ InitializeGameplay::
 
 ; Load the player's graphics
     call LoadStandardGraphics
-
-; UI graphics
-    ; Heart graphics
-    ld a, BANK(GfxHeart)
-    rst SwapBank
-    ld c, GfxHeart.end - GfxHeart
-    ld de, vHeart
-    ld hl, GfxHeart
-    call VRAMCopySmall
-    ; Button hints
-    ld a, BANK(GameFont)
-    rst SwapBank
-    get_character "A"
-    ld de, vAHint
-    ld c, 8 * 2
-    call Unpack1bpp
 
 ; Reset HUD
     call ResetHUD
