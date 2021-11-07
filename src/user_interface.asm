@@ -280,6 +280,13 @@ UpdateHUD::
     call VRAMSetSmall
 
 .drawAItem
+    ld a, [wActivePlayer]
+    add a, LOW(wPlayerEquipped)
+    ld l, a
+    adc a, HIGH(wPlayerEquipped)
+    sub a, l
+    ld h, a
+    ld b, [hl]
     swap b
 
     ; Check for equipped item in A.
