@@ -610,7 +610,7 @@ ScreenTransitionCheck::
     dec [hl]
 .update
     call PlayerUpdateMapPosition
-    ld a, SPAWN_ENTITIES
+    ld a, CAN_DESPAWN
     call UpdateActiveMap
     call RenderPlayers
     ; End the frame early.

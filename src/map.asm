@@ -21,12 +21,72 @@ UpdateActiveMap::
 
     ld a, 1
     ld [wTransitionBuffer], a
-
-	bit SPAWN_ENTITIES_B, d
-	jr z, :+
-	; ld a, 1
     ldh [hRespawnEntitiesFlag], a
-:
+
+    ; If CAN_DESPAWN is set, check if the entity array is clear. if it is, set
+    ; a flag that the given room has been cleared and should not respawn
+    ; entities until the world is reloaded. If it is not set, clear the despawn
+    ; map.
+    bit CAN_DESPAWN_B, d
+    jr z, .clearDespawn
+    ld b, NB_ENTITIES
+    ld hl, wEntityArray
+.checkEntities
+    ; If a data pointer is not zero, do not set the flag.
+    ld a, [hli]
+    or a, [hl]
+    jr nz, .endDespawn
+    ld a, sizeof_Entity - 1
+    add a, l
+    ld l, a
+    adc a, h
+    sub a, l
+    ld h, a
+    dec b
+    jr nz, .checkEntities
+    ; If we make it here, set a flag in the despawn map.
+    ld a, [wOldMapPosY]
+    ld b, a
+    swap b ; a * 16
+    ld a, [wOldMapPosX]
+    add a, b
+
+    ld b, a
+    ld hl, wDespawnMap
+    call GetBitfieldMask
+    or a, [hl]
+    ld [hl], a
+    jr .endDespawn
+
+.clearDespawn
+    xor a, a
+    ld c, wDespawnMap.end - wDespawnMap
+    ld hl, wDespawnMap
+    call MemSetSmall
+
+.endDespawn
+
+    ld a, [wWorldMapPositionY]
+    ld b, a
+    swap b ; a * 16
+    ld a, [wWorldMapPositionX]
+    add a, b
+
+    ld b, a
+    ld hl, wDespawnMap
+    call GetBitfieldMask
+    and a, [hl]
+    jr z, .noDespawn
+    xor a, a
+    ldh [hRespawnEntitiesFlag], a
+.noDespawn
+
+    ; Set the new old map so that we can check this next time :)
+    ld a, [wWorldMapPositionX]
+    ld [wOldMapPosX], a
+    ld a, [wWorldMapPositionY]
+    ld [wOldMapPosY], a
+
     ; Clear player spell
     ld hl, wOctaviaSpell
     ASSERT wOctaviaSpell + sizeof_Entity == wPoppyArrow0
@@ -272,8 +332,6 @@ UpdateActiveMap::
     rst CrashHandler
 
 MapdataEntity:
-    ldh a, [hRespawnEntitiesFlag]
-    and a, a
     ld a, [hli]
     ld e, a
     ld a, [hli]
@@ -283,6 +341,8 @@ MapdataEntity:
     ld a, [hli]
     ld b, a
     push hl
+    ldh a, [hRespawnEntitiesFlag]
+    and a, a
     call nz, SpawnEntity
     pop hl
     jr UpdateActiveMap.nextData
@@ -382,7 +442,7 @@ MapdataNPC:
     add a, TILEDATA_NPC_0
     ld [bc], a ; Load an NPC tile onto the map.
 
-    jr UpdateActiveMap.nextData
+    jp UpdateActiveMap.nextData
 
 MapdataSetRespawn:
     ld de, wRespawnPoint
@@ -592,10 +652,19 @@ wWorldMapPositionX::
 wWorldMapPositionY::
     DS 1
 
+; Used for setting the despawn flag of the last map we were in.
+wOldMapPosX: DB
+wOldMapPosY: DB
+
     dstructs 4, WarpData, wWarpData
 
+; Bitfield used to keep track of which rooms have despawned their entities.
+wDespawnMap:
+    DS 16 * 16 / 8
+.end
+
 SECTION UNION "Volatile", HRAM
-; Boolean value, set when entities should be respawned
+; Set if this room has been despawned.
 hRespawnEntitiesFlag:
     DS 1
 hWarpDataIndex:

@@ -272,7 +272,7 @@ InitializeGameplay::
     call xLoadSaveFile
     call xLoadRepawnPoint
 
-    ld a, SPAWN_ENTITIES | UPDATE_TILEMAP
+    ld a, UPDATE_TILEMAP
     call UpdateActiveMap
 
 ; Position camera

@@ -117,7 +117,7 @@ SpawnEntity::
     ; Make sure the entity data is null.
     inc l
     ld a, [hld]
-    and a, [hl]
+    or a, [hl]
     jr nz, .loop
     pop de
     pop bc

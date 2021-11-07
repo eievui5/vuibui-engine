@@ -9,11 +9,11 @@ DEF MAP_BKG_PALS EQU 6
 DEF MAP_OBJ_PALS EQU 4
 
 ; UpdateActiveMapFlags
-DEF SPAWN_ENTITIES EQU 1
-DEF UPDATE_TILEMAP EQU 2
+DEF UPDATE_TILEMAP EQU 1
+DEF CAN_DESPAWN EQU 2
 
-DEF SPAWN_ENTITIES_B EQU 0
-DEF UPDATE_TILEMAP_B EQU 1
+DEF UPDATE_TILEMAP_B EQU 0
+DEF CAN_DESPAWN_B EQU 1
 
 ; Defines a new map struct, leaving room at the bottom for the layout and data
 ; @ define_map width, height, tileset, palettes, metatiles
