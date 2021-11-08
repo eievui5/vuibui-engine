@@ -31,11 +31,13 @@ ASSERT TILEDATA_COLLISION - 1 != 0
 
         ; Everything will collide with these tiles.
         enum COLLISION
+        enum BURNABLE
+
+        ; Everything below here can be interacted with (disables using items)
         enum NPC_0
         enum NPC_1
         enum NPC_2
         enum NPC_3
-        enum BURNABLE
     end_enum
 
 
