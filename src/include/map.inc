@@ -92,11 +92,8 @@ ENDM
 ; Spawn an NPC when entering a given room.
 ; @ create_npc ID, Metasprites, Direction, Y, X, Script
 MACRO create_npc
-    IF _NARG != 6
-        FAIL "Expected 8 args."
-    ELIF \1 > 3
-        FAIL "Entity ID cannot be greater than 3."
-    ENDC
+    ASSERT _NARG == 6, "Expected 6 args."
+    ASSERT !(\1 > 3), "Entity ID cannot be greater than 3."
     DB MAPDATA_NPC
     DB \1 ; ID
     DB BANK(\2)
@@ -116,6 +113,11 @@ MACRO set_respawn
     ENDR
 ENDM
 
+MACRO set_destroy_tile
+    ASSERT _NARG == 1, "Expected 1 arg."
+    DB MAPDATA_SET_DESTROY_TILE, \1
+ENDM
+
 ; Macro Data enumerations
     start_enum MAPDATA
         enum END
@@ -124,6 +126,7 @@ ENDM
         enum SET_WARP
         enum NPC
         enum SET_RESPAWN
+        enum SET_DESTROY_TILE
     end_enum
 
 ; Map enumerations

@@ -28,13 +28,14 @@ ASSERT TILEDATA_COLLISION - 1 != 0
         enum WARP_1
         enum WARP_2
         enum WARP_3 ; End of entity walls
-        
+
         ; Everything will collide with these tiles.
         enum COLLISION
         enum NPC_0
         enum NPC_1
         enum NPC_2
         enum NPC_3
+        enum BURNABLE
     end_enum
 
 

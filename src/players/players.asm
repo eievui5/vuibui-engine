@@ -518,7 +518,6 @@ PlayerTransitionMovement::
     ; de - Ally
     ; hl - Offset
     ; interpolate(ally.y, player.y + offset.y)
-    ld b, b
     ld a, [bc]
     add a, h
     push bc

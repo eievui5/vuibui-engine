@@ -37,6 +37,8 @@ OctaviaSpellLogic::
     call LookupMapData
     pop bc
     ld a, [hl]
+    cp a, TILEDATA_BURNABLE
+    jr z, .checkBurn
     cp a, TILEDATA_ENTITY_COLLISION - 1
     jr nc, .destroySelf
     ld a, [wOctaviaSpell_Flags]
@@ -91,6 +93,48 @@ OctaviaSpellLogic::
     rst MemSetSmall
     ld [wOctaviaSpellActive], a
     ret
+
+.checkBurn
+    ld a, [wOctaviaSpell_CollisionData]
+    ASSERT DAMAGE_EFFECT_FIRE == 1 << 4
+    bit 4, a
+    jr z, .destroySelf
+
+    ld [hl], TILEDATA_CLEAR
+
+    ld de, -wMapData & $FFFF
+    add hl, de
+    ; Right now, the lowest 4 bits are the X position and the others are Y.
+    ld a, l
+    ld d, l
+    and a, $F0
+    ld l, a
+    add hl, hl
+    ld a, d
+    and a, $0F
+    ld e, a
+    ld d, 0
+    add hl, de
+    add hl, hl
+
+    ld de, _SCRN0
+    add hl, de
+    ld d, h
+    ld e, l
+
+    ; Finally, get the address of our target tile.
+    ld a, [wDestroyedMapTile]
+    ; Metatiles are 4 bytes.
+    add a, a ; a * 2
+    add a, a ; a * 4
+    add a, LOW(wMetatileDefinitions)
+    ld l, a
+    adc a, HIGH(wMetatileDefinitions)
+    sub a, l
+    ld h, a
+
+    call DrawMetatile
+    jr .destroySelf
 
 .heal
     call CheckAllyCollision

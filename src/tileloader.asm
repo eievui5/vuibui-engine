@@ -57,25 +57,14 @@ LoadMapData::
 LoadMetatile::
     push hl
 
-    ld a, b ; (0 - 16) -> (0 - 32)
-    add a, a  ; a * 2
-    ; Add `a` to `_SCRN0` and store in `de`
-    add a, LOW(_SCRN0)
-    ld e, a
-    adc a, HIGH(_SCRN0)
-    sub a, e
-    ld d, a
-
-    ld  h, c ; c * 256
-    ld  l, $00 ; (0 - 16) -> (0 - 1024)
-    srl h
-    rr l ; c * 128
-    srl h
-    rr l ; c * 64
-    add hl, de
+    ld a, c
+    ; GetScreenTile expects 32x32 coordinates, but we're currently using 16x16.
+    add a, a ; Y * 2
+    sla b ; X * 2
+    call GetScreenTile
+    sra b ; X / 2 (readjust for the next part)
     ld d, h
     ld e, l
-    ; [de] is our map target
 
     ; Let's start by offsetting our map...
     ld a, b
@@ -85,6 +74,7 @@ LoadMetatile::
     adc a, HIGH(wMetatileMap)
     sub a, l
     ld h, a ; add the X value
+    
     ld a, c
     swap a ; c * 16
     ; add the Y value
@@ -109,6 +99,12 @@ LoadMetatile::
     add hl, bc
     ; [hl] is now the metatile data to copy.
 
+    fall DrawMetatile
+
+; Draw a metatile into VRAM.
+; @in hl: Metatile pointer
+; @in de: Desination address
+DrawMetatile::
     ld bc, $0202 ; loop counter: b = x, c = y
 .loadRow
 
@@ -133,6 +129,28 @@ LoadMetatile::
     ld d, a
     jr .loadRow
 
+; @in a:  Metatile Y Location (0 - 31)
+; @in b:  Metatile X Location (0 - 31)
+; @out hl: VRAM address
+GetScreenTile::
+    add a, a ; Y * 2 (64)
+    add a, a ; Y * 4 (128)
+    add a, LOW(_SCRN0 / 8)
+    ld l, a
+    adc a, HIGH(_SCRN0 / 8)
+    sub a, l
+    ld h, a
+    add hl, hl ; Y * 8, hl * 2
+    add hl, hl ; Y * 16, hl * 4
+    add hl, hl ; Y * 32, hl * 8
+
+    ld a, b
+    add a, l
+    ld l, a
+    adc a, h
+    sub a, l
+    ld h, a
+    ret
 
 ; Looks up a given metatile's data and copies it to wMapData
 ; @ b:  Metatile X Location (0 - 15)

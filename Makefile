@@ -157,7 +157,7 @@ res/%.asm: res/%.world
 
 bin/metamaker: tools/metamaker.cpp
 	@mkdir -p $(@D)
-	g++ -std=c++17 -O3 -o $@ $<
+	g++ -std=c++17 -O3 -march=native -o $@ $<
 
 # Catch non-existent files
 # KEEP THIS LAST!!

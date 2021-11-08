@@ -329,6 +329,9 @@ UpdateActiveMap::
     ASSERT MAPDATA_SET_RESPAWN == 5
     dec a
     jr z, MapdataSetRespawn
+    ASSERT MAPDATA_SET_DESTROY_TILE == 6
+    dec a
+    jp z, MapdataSetDestroyTile
     rst CrashHandler
 
 MapdataEntity:
@@ -457,6 +460,11 @@ MapdataSetRespawn:
     inc de
     ld c, sizeof_RespawnPoint - 3
     rst MemCopySmall
+    jp UpdateActiveMap.nextData
+
+MapdataSetDestroyTile:
+    ld a, [hli]
+    ld [wDestroyedMapTile], a
     jp UpdateActiveMap.nextData
 
 ; Returns the active Map in `hl`, and its data in `bc`.
@@ -657,6 +665,8 @@ wOldMapPosX: DB
 wOldMapPosY: DB
 
     dstructs 4, WarpData, wWarpData
+
+wDestroyedMapTile:: DB
 
 ; Bitfield used to keep track of which rooms have despawned their entities.
 wDespawnMap:
