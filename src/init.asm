@@ -18,6 +18,11 @@ SECTION "Header", ROM0[$100]
 SECTION "Initialize", ROM0
 ; Inits system value based off `a` and `b`. Do not jump to this!
 InitializeSystem:
+    ; I've disabled CGB features for now.
+    ASSERT SYSTEM_DMG == 0
+    xor a, a
+    ldh [hSystem], a
+/*
     cp a, $11 ; The CGB boot rom sets `a` to $11
     jr nz, .dmg
     bit 0, b ; The AGB boot rom sets bit 0 of `b`
@@ -50,6 +55,7 @@ InitializeSystem:
     ldh [rKEY1], a
     stop
     jr Initialize.waitSkip
+*/
 
 Initialize::
 .waitVBlank

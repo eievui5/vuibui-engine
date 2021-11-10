@@ -31,7 +31,7 @@ WARNINGS = all extra
 ASFLAGS  = -p 0xFF -h $(addprefix -i, $(INCDIRS)) $(addprefix -W, $(WARNINGS))
 LDFLAGS  = -p 0xFF -w -S romx=64
 FIXFLAGS = -p 0xFF -v -i "VUIB" -k "EV" -l 0x33 -m $(MBC) \
-           -n $(VERSION) -r $(SRAMSIZE) -t "VuiBui     " -c
+           -n $(VERSION) -r $(SRAMSIZE) -t "VuiBui     "
 
 # The list of "root" ASM files that RGBASM will be invoked on
 SRCS := $(shell find src -name '*.asm')
