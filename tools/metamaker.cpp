@@ -1,9 +1,8 @@
-#include <cstdint>
+#include <cstdlib>
 #include <cstring>
 #include <fstream>
 #include <getopt.h>
 #include <iostream>
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -40,24 +39,14 @@ public:
     bool operator==(GBTile rhs) {
         return std::memcmp(data, rhs.data, 16) == 0;
     }
-
-    friend std::ostream& operator<<(std::ostream& os, const GBTile tile) {
-        for (int i = 0; i < 16;) {
-            int line1 = tile.data[i++];
-            int line2 = tile.data[i++] << 1;
-            for (int j = 0; j < 8; j++) {
-                os << GB_SHADES[(line1 >> j & 0b1) | (line2 >> j & 0b10)];
-                os << GB_SHADES[(line1 >> j & 0b1) | (line2 >> j & 0b10)];
-            }
-            os << "\n";
-        }
-        return os;
-
-    }
 };
 
+void fatal(std::string str) {
+    std::cerr << "FATAL: " << str << '\n';
+    exit(1);
+}
+
 int main(int argc, char* argv[]) {
-    // Parse arguments.
     std::string input_file_argument;
     std::string output_tileset_argument;
     std::string output_data_argument;
@@ -70,7 +59,7 @@ int main(int argc, char* argv[]) {
         switch (option_char) {
         case 'h':
             std::cout << HELP_MESSAGE;
-            return 0;
+            std::exit(0);
         case 'i':
             input_file_argument = optarg;
             break;
@@ -81,8 +70,7 @@ int main(int argc, char* argv[]) {
             try {
                 vram_offset = std::stoi(optarg);
             } catch (const std::invalid_argument& ia) {
-                std::cerr << "FATAL: Invalid offset input.\n";
-                return 1;
+                fatal("Invalid offset input.");
             }
             break;
         case 'o':
@@ -92,48 +80,40 @@ int main(int argc, char* argv[]) {
             try {
                 metatile_width = std::stoi(optarg) * 2;
             } catch (const std::invalid_argument& ia) {
-                std::cerr << "FATAL: Invalid width input.\n";
-                return 1;
+                fatal("Invalid width input.");
             }
             break;
         }
     }
 
     // Validate inputs
-    if (input_file_argument.length() == 0) {
-        std::cerr << "FATAL: Missing input file!\n";
-        return 1;
-    }
-    if (output_data_argument.length() == 0) {
-        std::cerr << "FATAL: Missing output file!\n";
-        return 1;
-    }
-    if (metatile_width <= 0) {
-        std::cerr << "FATAL: Invalid or missing width!\n";
-        return 1;
-    }
+    if (input_file_argument.length() == 0)
+        fatal("Missing input file.");
+    if (output_data_argument.length() == 0)
+        fatal("Missing output file.");
+    if (metatile_width <= 0)
+        fatal("Invalid or missing width.");
 
-    std::ifstream input(input_file_argument, std::ios::binary);
-
-    if (not input.is_open()) {
-        std::cerr << "Error opening file \"" << input_file_argument << "\"\n";
-        return 1;
-    }
+    // Open and read the input binary file.
+    std::ifstream input {input_file_argument, std::ios::binary};
+    if (not input.is_open())
+        fatal("Failed to open input file.");
 
     // Get the file size.
     input.seekg(0, std::ios::end);
     std::size_t size = input.tellg();
     input.seekg(0, std::ios::beg);
 
+    // Hmm... isn't this what mmap is for?
     char file_data[size];
     input.read(file_data, size);
 
     input.close();
 
     std::vector<GBTile> tileset;
-    for (int i = 0; i < size; i += 16) {
+
+    for (int i = 0; i < size; i += 16)
         tileset.push_back(&file_data[i]);
-    }
 
     char rawtile_data[tileset.size()];
     std::memset(rawtile_data, -1, sizeof(rawtile_data));
@@ -144,14 +124,12 @@ int main(int argc, char* argv[]) {
     int cur_tile = 0;
     for (int i = 0; i < tileset.size(); i++) {
         int matches = 0;
-        while (rawtile_data[i] != -1) {
+        while (rawtile_data[i] != -1)
             i++;
-        }
         rawtile_data[i] = cur_tile;
         for (int j = 0; j < tileset.size(); j++) {
-            if (i == j) {
+            if (i == j)
                 continue;
-            }
             if (tileset[i] == tileset[j]) {
                 if (rawtile_data[j] == -1) {
                     rawtile_data[j] = cur_tile;
@@ -175,24 +153,19 @@ int main(int argc, char* argv[]) {
     if (output_tileset_argument.length() > 0) {
         std::ofstream output(output_tileset_argument, std::ios::binary);
 
-        if (not output.is_open()) {
-            std::cerr << "Error opening file \"" << output_tileset_argument << "\"\n";
-            return 1;
-        }
+        if (not output.is_open())
+            fatal("Failed to open output tileset file.");
 
-        for (auto& i : optimized) {
+        for (auto& i : optimized)
             output.write(i.data, 16);
-        }
 
         output.close();
     }
 
     std::ofstream output(output_data_argument);
 
-    if (not output.is_open()) {
-        std::cerr << "Error opening file \"" << output_data_argument << "\"\n";
-        return 1;
-    }
+    if (not output.is_open())
+        fatal("Failed to open output assembly file.");
 
     output << "; Metatile data produced by metamaker; written by Eievui.\n";
     for (int i = 0; i < sizeof(metatile_data);) {
