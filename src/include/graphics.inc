@@ -131,6 +131,9 @@ ENDM
 
         enum SPARKLE_LEFT
         enum SPARKLE_RIGHT
+
+        enum HEART_LEFT
+        enum HEART_RIGHT
     end_enum
 
 DEF vTextTiles EQU $9500

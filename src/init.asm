@@ -317,6 +317,13 @@ LoadStandardGraphics::
     ld hl, GfxSparkle
     call VRAMCopySmall
 
+    ld a, BANK(xGfxHeartContainer)
+    rst SwapBank
+    ld c, xGfxHeartContainer.end - xGfxHeartContainer
+    ld de, _VRAM + (TILE_HEART_LEFT * $10)
+    ld hl, xGfxHeartContainer
+    call VRAMCopySmall
+
     pop af
     rst SwapBank
     ret
