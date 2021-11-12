@@ -586,13 +586,13 @@ PlayerTransitionMovement::
 ; transition direction.
 .positionOffsetTable
     ASSERT TRANSDIR_DOWN == 1
-    db -16, 0
+    DB -16, 0
     ASSERT TRANSDIR_UP == 2
-    db 16, 0
+    DB 16, 0
     ASSERT TRANSDIR_RIGHT == 3
-    db 0, -16
+    DB 0, -16
     ASSERT TRANSDIR_LEFT == 4
-    db 0, 16
+    DB 0, 16
 
 ; Looks up a position to see if it contains a transition tile, and transitions
 ; to the next screen if it does. Changing screens restarts the stack and main!

@@ -68,6 +68,7 @@ Gameplay:
     ; Update the camera before rendering
     call PlayerCameraInterpolation
     call RenderEntities
+    call RenderCollectables
     call UpdateHUD
     jr Main.end
 
@@ -89,8 +90,8 @@ wNewFrame::
 
 ; Used by menus to manipulate hSCBuffer without changing the gameplay camera.
 wGameplayScrollBuffer::
-    .x  ds 1
-    .y  ds 1
+    .x  DS 1
+    .y  DS 1
 
 SECTION "Engine Flags", HRAM
 hEngineState::

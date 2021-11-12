@@ -118,6 +118,18 @@ MACRO set_destroy_tile
     DB MAPDATA_SET_DESTROY_TILE, \1
 ENDM
 
+MACRO spawn_item ; Collectable pointer, Y, X, [flag]
+    ASSERT _NARG == 3 || _NARG == 4, "Expected 3 or 4 arguments."
+    DB MAPDATA_SPAWN_ITEM
+    DW \1
+    DB \2, \3
+    IF _NARG == 4
+        DB \4
+    ELSE
+        DB 0
+    ENDC
+ENDM
+
 ; Macro Data enumerations
     start_enum MAPDATA
         enum END
@@ -127,6 +139,7 @@ ENDM
         enum NPC
         enum SET_RESPAWN
         enum SET_DESTROY_TILE
+        enum SPAWN_ITEM
     end_enum
 
 ; Map enumerations

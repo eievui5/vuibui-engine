@@ -79,7 +79,6 @@ RenderNPCs::
 
 
 SECTION "NPC Array", WRAM0, ALIGN[8]
-
 wNPCArray::
     dstructs NB_NPCS, NPC, wNPC
 

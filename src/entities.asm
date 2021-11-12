@@ -29,7 +29,7 @@ HandleEntities::
     sub a, c
     ld b, a
     ld a, c
-    cp a, low(sizeof_Entity * NB_ENTITIES)
+    cp a, LOW(sizeof_Entity * NB_ENTITIES)
     ret z ; Return if we've reached the end of the array
 .skip
     ld hl, wEntityArray
@@ -525,10 +525,10 @@ DetectEntity::
     lb bc, 0, sizeof_Entity
     add hl, bc
     ld a, h
-    cp a, high(sizeof_Entity * NB_ENTITIES)
+    cp a, HIGH(sizeof_Entity * NB_ENTITIES)
     jr nz, .continue ; Skip if there's no match
     ld a, l
-    cp a, low(sizeof_Entity * NB_ENTITIES)
+    cp a, LOW(sizeof_Entity * NB_ENTITIES)
     jr nz, .continue ; Return if we've reached the end of the array
     pop bc ; throw away source index.
     xor a, a ; ld a, 0

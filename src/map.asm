@@ -2,6 +2,7 @@ INCLUDE "banks.inc"
 INCLUDE "engine.inc"
 INCLUDE "entity.inc"
 INCLUDE "graphics.inc"
+INCLUDE "items.inc"
 INCLUDE "hardware.inc"
 INCLUDE "map.inc"
 INCLUDE "npc.inc"
@@ -108,6 +109,11 @@ UpdateActiveMap::
     ; Clear NPC array
     ld c, sizeof_NPC * NB_NPCS
     ld hl, wNPCArray
+    rst MemSetSmall
+
+    ; Clear collectables array
+    ld c, sizeof_Collectable * NB_COLLECTABLES
+    ld hl, wCollectablesArray
     rst MemSetSmall
 
 	bit UPDATE_TILEMAP_B, d
@@ -311,28 +317,40 @@ UpdateActiveMap::
 	rst SwapBank
 .nextData
     ld a, [hli]
+    add a, a
+    add a, LOW(.jumpTable)
+    ld e, a
+    adc a, HIGH(.jumpTable)
+    sub a, e
+    ld d, a
+    ld a, [de]
+    inc de
+    ld b, a
+    ld a, [de]
+    ld e, b
+    ld d, a
+    ; jp de
+    push de
+.knownRet
+    ret
+
+.jumpTable
     ASSERT MAPDATA_END == 0
-    and a, a
-    ret z
+    dw .knownRet
     ASSERT MAPDATA_ENTITY == 1
-    dec a
-    jr z, MapdataEntity
+    dw MapdataEntity
     ASSERT MAPDATA_ALLY_MODE == 2
-    dec a
-    jr z, MapdataAllyLogic
+    dw MapdataAllyLogic
     ASSERT MAPDATA_SET_WARP == 3
-    dec a
-    jr z, MapdataSetWarp
+    dw MapdataSetWarp
     ASSERT MAPDATA_NPC == 4
-    dec a
-    jr z, MapdataNPC
+    dw MapdataNPC
     ASSERT MAPDATA_SET_RESPAWN == 5
-    dec a
-    jr z, MapdataSetRespawn
+    dw MapdataSetRespawn
     ASSERT MAPDATA_SET_DESTROY_TILE == 6
-    dec a
-    jp z, MapdataSetDestroyTile
-    rst CrashHandler
+    dw MapdataSetDestroyTile
+    ASSERT MAPDATA_SPAWN_ITEM == 7
+    dw MapdataSpawnItem
 
 MapdataEntity:
     ld a, [hli]
@@ -465,6 +483,34 @@ MapdataSetRespawn:
 MapdataSetDestroyTile:
     ld a, [hli]
     ld [wDestroyedMapTile], a
+    jp UpdateActiveMap.nextData
+
+MapdataSpawnItem:
+    ld a, [hli]
+    ld c, a
+    ld a, [hli]
+    ld b, a
+    ld a, [hli]
+    ld d, a
+    ld a, [hli]
+    ld e, a
+    push hl
+        call SpawnCollectable
+    ; SpawnCollectable returns a pointer to the collectable in hl, so we'll
+    ; restore the data pointer into de.
+    pop de
+    ; hl is currently the collection flag.
+    ; However, if `l & %111 == 0`, then SpawnCollectable failed. Check for this
+    ; and exit if needed.
+    ld a, l
+    and a, %111
+    jr z, .fail
+        ld a, [de]
+        ld [hl], a
+.fail
+    inc de
+    ld h, d
+    ld l, e
     jp UpdateActiveMap.nextData
 
 ; Returns the active Map in `hl`, and its data in `bc`.
@@ -682,6 +728,6 @@ hNPCIndex:
 hLCDCBuffer:
     DS 1
 hMapBankBuffer:
-	ds 1
+	DS 1
 hMetatileBankBuffer:
-	ds 1
+	DS 1
