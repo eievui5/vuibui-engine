@@ -1,4 +1,5 @@
 INCLUDE "enum.inc"
+INCLUDE "flags.inc"
 INCLUDE "graphics.inc"
 INCLUDE "map.inc"
 INCLUDE "tiledata.inc"
@@ -37,7 +38,7 @@ DebugMap: ; Using DebugMetatiles
 .data
     create_npc 0, PoppyMetasprites, 0, 1, 1, TiberGeneric
     create_entity LesserSlime, (256/2) + 32, (256/2) + 32
-    spawn_item DebugCollectable, 128 - 32, 128
+    spawn_item DebugCollectable, 128 - 32, 128, FLAG_DEBUG
     set_warp 0, 2, 2, MAP_BEACH, 1, 0, 256/2, 256/2
     end_mapdata
 

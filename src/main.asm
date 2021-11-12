@@ -63,6 +63,7 @@ Gameplay:
     jr Menu
 .skipInventoryOpen
     call HandleEntities
+    call DetectCollectables
 .pauseMode
     call CleanOAM
     ; Update the camera before rendering

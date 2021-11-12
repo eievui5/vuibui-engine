@@ -486,6 +486,18 @@ MapdataSetDestroyTile:
     jp UpdateActiveMap.nextData
 
 MapdataSpawnItem:
+    push hl
+        inc hl
+        inc hl
+        inc hl
+        inc hl
+        ld b, [hl]
+        ld hl, wBitfield
+        call GetBitfieldMask
+        and a, [hl]
+    pop hl
+    ; If the flag is set, don't spawn this item.
+    jr nz, .flagSet
     ld a, [hli]
     ld c, a
     ld a, [hli]
@@ -511,6 +523,14 @@ MapdataSpawnItem:
     inc de
     ld h, d
     ld l, e
+    jp UpdateActiveMap.nextData
+
+.flagSet
+    inc hl
+    inc hl
+    inc hl
+    inc hl
+    inc hl
     jp UpdateActiveMap.nextData
 
 ; Returns the active Map in `hl`, and its data in `bc`.
