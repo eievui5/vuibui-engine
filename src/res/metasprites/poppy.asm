@@ -169,7 +169,7 @@ PoppyMetasprites::
 .spriteRightSwing:
     DB -8 ; y
     DB -8 ; x
-    DB TILE_POPPY_RIGHT_1 ; Tile ID
+    DB TILE_POPPY_RIGHT_STEP_1 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_GREEN | OAMF_BANK0 ; Flags
 
     DB -8 ; y
@@ -188,7 +188,7 @@ PoppyMetasprites::
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_POPPY_RIGHT_1 ; Tile ID
+    DB TILE_POPPY_RIGHT_STEP_1 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_GREEN | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     DB METASPRITE_END

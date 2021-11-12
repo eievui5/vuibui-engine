@@ -179,7 +179,7 @@ TiberMetasprites::
 .spriteRightSwing:
     DB -8 ; y
     DB -8 ; x
-    DB TILE_TIBER_RIGHT_1 ; Tile ID
+    DB TILE_TIBER_RIGHT_STEP_1 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB -8 ; y
@@ -198,7 +198,7 @@ TiberMetasprites::
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_TIBER_RIGHT_1 ; Tile ID
+    DB TILE_TIBER_RIGHT_STEP_1 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED | OAMF_XFLIP ; Flags
 
     DB METASPRITE_END
@@ -271,7 +271,7 @@ TiberMetasprites::
 .spriteRightSword:
     DB -8 ; y
     DB -8 ; x
-    DB TILE_TIBER_RIGHT_1 ; Tile ID
+    DB TILE_TIBER_RIGHT_STEP_1 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB -8 ; y
@@ -300,7 +300,7 @@ TiberMetasprites::
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_TIBER_RIGHT_1 ; Tile ID
+    DB TILE_TIBER_RIGHT_STEP_1 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED | OAMF_XFLIP ; Flags
 
     DB -4 ; y
@@ -368,7 +368,7 @@ TiberMetasprites::
 .spriteRightSwoosh:
     DB -8 ; y
     DB -8 ; x
-    DB TILE_TIBER_RIGHT_1 ; Tile ID
+    DB TILE_TIBER_RIGHT_STEP_1 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB -8 ; y
@@ -402,7 +402,7 @@ TiberMetasprites::
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_TIBER_RIGHT_1 ; Tile ID
+    DB TILE_TIBER_RIGHT_STEP_1 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED | OAMF_XFLIP ; Flags
 
     DB -4 ; y
