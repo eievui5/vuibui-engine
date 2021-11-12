@@ -119,6 +119,9 @@ xLoadRepawnPoint::
     ld [wTiber_YPos], a
     ret
 
+; Could I write a function to parse a list of destinations and sizes and delete
+; both these fucntions?
+
 ; Loads a save file to initialize the game.
 ; @ hl:  Pointer to save file
 xLoadSaveFile::
@@ -159,8 +162,12 @@ xLoadSaveFile::
     ld a, [hli]
     ld [wPlayerEquipped.tiber], a
 
+    ld de, wBitfield
+    ld c, (FLAG_MAX + 7)/8
+    rst MemCopySmall
+
     ; Assert that this function is up-to-date with the save file.
-    ASSERT Save_OctaviaEquippedItems + 3 == sizeof_Save
+    ASSERT Save_Bitfield + (FLAG_MAX + 7)/8 == sizeof_Save
 
     ; Disable External Save RAM
     xor a, a
@@ -213,8 +220,12 @@ xStoreSaveFile::
     ld [de], a
     inc de
 
+    ld hl, wBitfield
+    ld c, (FLAG_MAX + 7)/8
+    rst MemCopySmall
+
     ; Assert that this function is up-to-date with the save file.
-    ASSERT Save_OctaviaEquippedItems + 3 == sizeof_Save
+    ASSERT Save_Bitfield + (FLAG_MAX + 7)/8 == sizeof_Save
 
     ; Disable External Save RAM
     xor a, a
@@ -230,19 +241,25 @@ xSaveCheckString:
 
 SECTION "Template Saves", ROMX
 
-    dstruct Save, xDefaultSaveFile, \
-    MAP_OVERWORLD, \ ; World Map.
-    0, 0,       \ ; World Map Position.
-    128, 128,   \ ; Octavia Position.
-    112, 128,   \ ; Poppy Position.
-    144, 128,   \ ; Tiber Position.
-    10, 10, 10, \ ; Max healths.
-    ITEMF_FIRE_WAND | ITEMF_HEAL_WAND, \ ; Octavia items.
-    ITEMF_BOW, \ ; Poppy items.
-    ITEMF_SWORD, \ ; Tiber items.
-    ITEMF_FIRE_WAND, \ ; Octavia equipped.
-    ITEMF_BOW, \ ; Poppy equipped.
-    ITEMF_SWORD \ ; Tiber equipped.
+xDefaultSaveFile:
+    db MAP_OVERWORLD ; World Map.
+    db 0, 0          ; World Map Position.
+
+    db 128, 128   ; Octavia Position.
+    db 112, 128   ; Poppy Position.
+    db 144, 128   ; Tiber Position.
+
+    db 10, 10, 10 ; Max healths.
+
+    db ITEMF_FIRE_WAND | ITEMF_HEAL_WAND ; Octavia items.
+    db ITEMF_BOW                         ; Poppy items.
+    db ITEMF_SWORD                       ; Tiber items.
+
+    db ITEMF_FIRE_WAND ; Octavia equipped.
+    db ITEMF_BOW       ; Poppy equipped.
+    db ITEMF_SWORD     ; Tiber equipped.
+
+    ds (FLAG_MAX + 7)/8, 0 ; Zero-init all flags.
 
 ASSERT @ - xDefaultSaveFile == sizeof_Save, "Incorrect save file size!"
 

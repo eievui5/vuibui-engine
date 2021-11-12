@@ -5,11 +5,10 @@ SECTION "Bitfield Functions", ROM0
 
 ; Returns the mask of the input flag, and the address in `hl`
 ; This can be used to `and a, [hl]` or `or a, [hl] \ ld [hl], a`
-; @ input:
-; @ b:  Flag index
-; @ output:
-; @ a:  Flag mask
-; @ hl: Flag address
+; @in b:  Flag index
+; @in hl: Base address to index into.
+; @out a:  Flag mask
+; @out hl: Flag address
 GetBitfieldMask::
     ; Get the address containing the target bit.
     ld a, b

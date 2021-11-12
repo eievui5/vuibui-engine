@@ -1,9 +1,10 @@
-
     IF !DEF(SAVE_INC)
 DEF SAVE_INC EQU 1
 
+INCLUDE "flags.inc"
 INCLUDE "structs.inc"
 
+DEF NB_SAVES EQU 1
 DEF SAVE_VERSION EQU 0
 
     struct RespawnPoint
@@ -29,8 +30,7 @@ DEF SAVE_VERSION EQU 0
         bytes 1, OctaviaEquippedItems
         bytes 1, PoppyEquippedItems
         bytes 1, TiberEquippedItems
+        bytes (FLAG_MAX + 7)/8, Bitfield
     end_struct
-
-DEF NB_SAVES EQU 1
 
     ENDC
