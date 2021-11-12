@@ -33,16 +33,6 @@ MACRO dtile ; Name, [Size in tiles]
     ENDC
 ENDM
 
-MACRO edtile ; Name, [Size in tiles]
-    ASSERT _NARG == 1 || _NARG == 2, "Expected 1 or 2 arguments!"
-    IF _NARG == 1
-        dtile \1
-    ELSE
-        dtile \1, \2
-    ENDC
-    EXPORT \1
-ENDM
-
 ; Create a tile region in VRAM.
 MACRO dregion ; Name, x, y, width, height, [address]
     IF _NARG == 5
