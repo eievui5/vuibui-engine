@@ -253,7 +253,7 @@ xDefaultSaveFile:
 
     db ITEMF_FIRE_WAND | ITEMF_HEAL_WAND ; Octavia items.
     db ITEMF_BOW                         ; Poppy items.
-    db ITEMF_SWORD                       ; Tiber items.
+    db ITEMF_SWORD | ITEMF_SHIELD        ; Tiber items.
 
     db ITEMF_FIRE_WAND ; Octavia equipped.
     db ITEMF_BOW       ; Poppy equipped.

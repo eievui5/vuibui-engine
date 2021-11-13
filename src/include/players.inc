@@ -69,6 +69,7 @@ DEF TIBER_SWORD_DAMAGE EQU 2
         enum GRAB
         enum SWORD
         enum SWORD_SWOOSH
+        enum SHIELD
     end_enum
 
 ; The state of the 3 players.
@@ -85,14 +86,7 @@ DEF TIBER_SWORD_DAMAGE EQU 2
     start_enum ITEM,
         enum NULL_ITEM
         enum FIRE_WAND, BOW, SWORD
-        enum ICE_WAND
-        enum SHOCK_WAND
-        enum HEAL_WAND
-    end_enum
-
-    start_enum ITEMB
-        enum FIRE_WAND, BOW, SWORD
-        enum ICE_WAND
+        enum ICE_WAND, SHIELD
         enum SHOCK_WAND
         enum HEAL_WAND
     end_enum
@@ -105,6 +99,7 @@ DEF TIBER_SWORD_DAMAGE EQU 2
     DEF ITEMF_BOW           EQU 1
 
     DEF ITEMF_SWORD         EQU 1
+    DEF ITEMF_SHIELD        EQU 2
 
     start_enum SPELL
         enum NONE

@@ -5,35 +5,40 @@ SECTION "Tiber Metasprites", ROMX
 
 TiberMetasprites::
     ; Still
-    .down       DW .spriteDown
-    .up         DW .spriteUp
-    .right      DW .spriteRight
-    .left       DW .spriteLeft
+    DW .spriteDown
+    DW .spriteUp
+    DW .spriteRight
+    DW .spriteLeft
     ; Step
-    .downStep   dw .spriteDownStep
-    .upStep     DW .spriteUpStep
-    .rightStep  dw .spriteRightStep
-    .leftStep   dw .spriteLeftStep
+    DW .spriteDownStep
+    DW .spriteUpStep
+    DW .spriteRightStep
+    DW .spriteLeftStep
     ; Swing
-    .downSwing  dw .spriteDownSwing
-    .upSwing    DW .spriteUpSwing
-    .rightSwing dw .spriteRightSwing
-    .leftSwing  dw .spriteLeftSwing
+    DW .spriteDownSwing
+    DW .spriteUpSwing
+    DW .spriteRightSwing
+    DW .spriteLeftSwing
     ; Grab
-    .downGrab  dw .spriteDownGrab
-    .upGrab    DW .spriteUpGrab
-    .rightGrab dw .spriteRightSwing ; Side swing and
-    .leftGrab  dw .spriteLeftSwing ; grab are the same
+    DW .spriteDownGrab
+    DW .spriteUpGrab
+    DW .spriteRightSwing ; Side swing and
+    DW .spriteLeftSwing ; grab are the same
     ; Sword
-    .downSword  dw .spriteDownSword
-    .upSword    DW .spriteUpSword
-    .rightSword dw .spriteRightSword
-    .leftSword  dw .spriteLeftSword
+    DW .spriteDownSword
+    DW .spriteUpSword
+    DW .spriteRightSword
+    DW .spriteLeftSword
     ; Sword Swoosh
-    .downSwoosh  dw .spriteDownSwoosh
-    .upSwoosh    DW .spriteUpSwoosh
-    .rightSwoosh dw .spriteRightSwoosh
-    .leftSwoosh  dw .spriteLeftSwoosh
+    DW .spriteDownSwoosh
+    DW .spriteUpSwoosh
+    DW .spriteRightSwoosh
+    DW .spriteLeftSwoosh
+    ; Shield
+    DW .spriteDownShield
+    DW .spriteUpSwing
+    DW .spriteRightShield
+    DW .spriteLeftShield
 
 .spriteDown:
     DB -8 ; y
@@ -48,7 +53,6 @@ TiberMetasprites::
 
     DB METASPRITE_END
 
-
 .spriteUp:
     DB -8 ; y
     DB -8 ; x
@@ -62,7 +66,6 @@ TiberMetasprites::
 
     DB METASPRITE_END
 
-
 .spriteRight:
     DB -8 ; y
     DB -8 ; x
@@ -75,7 +78,6 @@ TiberMetasprites::
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB METASPRITE_END
-
 
 .spriteLeft: ; Flipped version of .spriteRight
     DB -8 ; y
@@ -105,7 +107,6 @@ TiberMetasprites::
 
     DB METASPRITE_END
 
-
 .spriteUpStep: ; Flipped version
     DB -8 ; y
     DB -8 ; x
@@ -119,7 +120,6 @@ TiberMetasprites::
 
     DB METASPRITE_END
 
-
 .spriteRightStep:
     DB -8 ; y
     DB -8 ; x
@@ -132,7 +132,6 @@ TiberMetasprites::
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB METASPRITE_END
-
 
 .spriteLeftStep: ; Flipped version of .spriteRight
     DB -8 ; y
@@ -175,7 +174,6 @@ TiberMetasprites::
 
     DB METASPRITE_END
 
-
 .spriteRightSwing:
     DB -8 ; y
     DB -8 ; x
@@ -188,7 +186,6 @@ TiberMetasprites::
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB METASPRITE_END
-
 
 .spriteLeftSwing: ; Flipped version of .spriteRight
     DB -8 ; y
@@ -267,7 +264,6 @@ TiberMetasprites::
 
     DB METASPRITE_END
 
-
 .spriteRightSword:
     DB -8 ; y
     DB -8 ; x
@@ -291,7 +287,6 @@ TiberMetasprites::
 
     DB METASPRITE_END
 
-
 .spriteLeftSword: ; Flipped version of .spriteRight
     DB -8 ; y
     DB -8 ; x
@@ -314,7 +309,6 @@ TiberMetasprites::
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_XFLIP
 
     DB METASPRITE_END
-
 
 ; Swooshs
 
@@ -364,7 +358,6 @@ TiberMetasprites::
 
     DB METASPRITE_END
 
-
 .spriteRightSwoosh:
     DB -8 ; y
     DB -8 ; x
@@ -393,7 +386,6 @@ TiberMetasprites::
 
     DB METASPRITE_END
 
-
 .spriteLeftSwoosh:
     DB -8 ; y
     DB -8 ; x
@@ -419,5 +411,66 @@ TiberMetasprites::
     DB -22 ; x
     DB TILE_SWORD_SWOOSH
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_XFLIP | OAMF_YFLIP
+
+    DB METASPRITE_END
+
+; Shields
+
+.spriteDownShield:
+    DB -8 ; y
+    DB -8 ; x
+    DB TILE_TIBER_DOWN_ACT ; Tile ID
+    DB OAMF_PAL0 | DEFAULT_RED ; Flags
+
+    DB -8 ; y
+    DB 0 ; x
+    DB TILE_TIBER_DOWN_2 ; Tile ID
+    DB OAMF_PAL0 | DEFAULT_RED ; Flags
+
+    DB -2 ; y
+    DB -9 ; x
+    DB TILE_SHIELD_LEFT
+    DB OAMF_PAL0 | DEFAULT_BLUE
+
+    DB -2 ; y
+    DB -1 ; x
+    DB TILE_SHIELD_RIGHT
+    DB OAMF_PAL0 | DEFAULT_BLUE
+
+    DB METASPRITE_END
+
+.spriteRightShield:
+    DB -8 ; y
+    DB -8 ; x
+    DB TILE_TIBER_RIGHT_STEP_1 ; Tile ID
+    DB OAMF_PAL0 | DEFAULT_RED ; Flags
+
+    DB -8 ; y
+    DB 0 ; x
+    DB TILE_TIBER_RIGHT_ACT ; Tile ID
+    DB OAMF_PAL0 | DEFAULT_RED ; Flags
+
+    DB -6 ; y
+    DB 4 ; x
+    DB TILE_SHIELD_SIDE
+    DB OAMF_PAL0 | DEFAULT_BLUE
+
+    DB METASPRITE_END
+
+.spriteLeftShield: ; Flipped version of .spriteRight
+    DB -8 ; y
+    DB -8 ; x
+    DB TILE_TIBER_RIGHT_ACT ; Tile ID
+    DB OAMF_PAL0 | DEFAULT_RED | OAMF_XFLIP ; Flags
+
+    DB -8 ; y
+    DB 0 ; x
+    DB TILE_TIBER_RIGHT_STEP_1 ; Tile ID
+    DB OAMF_PAL0 | DEFAULT_RED | OAMF_XFLIP ; Flags
+
+    DB -6 ; y
+    DB -12 ; x
+    DB TILE_SHIELD_SIDE
+    DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_XFLIP
 
     DB METASPRITE_END

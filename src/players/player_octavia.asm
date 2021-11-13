@@ -188,7 +188,7 @@ OctaviaRod:
     adc a, HIGH(GfxPlayerSpells)
     sub a, l
     ld h, a
-    ; This is what you get when you try to refactor old code. Stack usage.
+
     push bc
     push de
     ld c, 32 ; Size of 2 tiles

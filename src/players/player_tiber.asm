@@ -1,6 +1,7 @@
 INCLUDE "banks.inc"
 INCLUDE "directions.inc"
 INCLUDE "entity.inc"
+INCLUDE "hardware.inc"
 INCLUDE "players.inc"
 INCLUDE "scripting.inc"
 INCLUDE "text.inc"
@@ -59,7 +60,7 @@ TiberPlayerLogic::
     ASSERT PLAYER_STATE_ITEM0 == 2
     DW TiberSword
     ASSERT PLAYER_STATE_ITEM1 == 3
-    DW TiberSword
+    DW TiberShield
     ASSERT PLAYER_STATE_ITEM2 == 4
     DW TiberSword
     ASSERT PLAYER_STATE_ITEM3 == 5
@@ -112,8 +113,42 @@ TiberActiveNormal: ; How to move.
     ldh a, [hCurrentTile]
     jp WarpTileCheck
 
-; Damage should be a function, not a per-player state.
 TiberDamage:
+    ld a, [wIsTiberShielded]
+    and a, a
+    jr z, .noShield
+        ; Ensure we are facing in the right direction.
+        ld a, [wTiber_Direction]
+        ld hl, wTiber_YVel
+        and a, a
+        jr z, .positive
+        dec a
+        jr z, .negative
+        inc l
+        dec a
+        jr nz, .negative
+.positive
+        ld a, [hl]
+        bit 7, a
+        jr z, .noShield
+        jr .success
+.negative
+        ld a, [hl]
+        bit 7, a
+        jr nz, .noShield
+.success
+        ; Halve knockback
+        ld hl, wTiber_YVel
+        sra [hl]
+        inc l
+        sra [hl]
+
+        xor a, a
+        ld [wIsTiberShielded], a
+        ld [wTiber_CollisionData], a
+        ld a, INVINCIBLE_FRAMES / 12
+        ld [wTiber_InvTimer], a
+.noShield
     ld bc, PLAYER_TIBER * sizeof_Entity
     jp PlayerDamage
 
@@ -181,6 +216,22 @@ TiberSword:
     ld [wTiber_State], a
     ret
 
+TiberShield:
+    ldh a, [hCurrentKeys]
+    and a, PADF_A | PADF_B
+    jr nz, .noRelease
+        ASSERT PLAYER_STATE_NORMAL == 0
+        xor a, a ; ld a, PLAYER_STATE_NORMAL
+        ld [wIsTiberShielded], a
+        ld [wTiber_State], a
+        ret
+.noRelease
+    ld a, FRAMEOFF_SHIELD
+    ld [wTiber_Frame], a
+    ld a, 1
+    ld [wIsTiberShielded], a
+    ret
+
 TiberAIFollow:
     ld e, FOLLOW_FAR ; Tiber should always be far.
     ld hl, wActivePlayer
@@ -237,6 +288,9 @@ TiberGeneric::
     ask "Follow me."
     end_ask
 
+SECTION "Tiber Using Shield", WRAM0
+wIsTiberShielded::
+    DS 1
 
 SECTION UNION "Volatile", HRAM
 hCurrentTile:

@@ -214,6 +214,7 @@ InitializeGameplay::
     ld hl, STARTOF("Player Variables")
     rst MemSetSmall
     ld [wPoppyActiveArrows], a
+    ld [wIsTiberShielded], a
 
     ; Set up players and clear array.
     ld hl, wOctavia
@@ -305,17 +306,12 @@ LoadStandardGraphics::
 
     ld a, BANK(GfxSword)
     rst SwapBank
-    ld c, GfxSword.end - GfxSword
+    ASSERT GfxSword.end == xGfxShield
+    ASSERT xGfxShield.end == GfxSparkle
+    ld bc, GfxSparkle.end - GfxSword
     ld de, _VRAM + (TILE_SWORD_UP * $10)
     ld hl, GfxSword
-    call VRAMCopySmall
-
-    ld a, BANK(GfxSparkle)
-    rst SwapBank
-    ld c, GfxSparkle.end - GfxSparkle
-    ld de, _VRAM + (TILE_SPARKLE_LEFT * $10)
-    ld hl, GfxSparkle
-    call VRAMCopySmall
+    call VRAMCopy
 
     ld a, BANK(xGfxHeartContainer)
     rst SwapBank

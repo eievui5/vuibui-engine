@@ -13,6 +13,8 @@ GfxArrow:: INCBIN "res/gfx/misc/arrow.h.2bpp"
 .end::
 GfxSword:: INCBIN "res/gfx/misc/sword.h.2bpp"
 .end::
+xGfxShield:: INCBIN "res/gfx/misc/shield.h.2bpp"
+.end::
 GfxSparkle:: INCBIN "res/gfx/misc/sparkle.h.2bpp"
 .end::
 

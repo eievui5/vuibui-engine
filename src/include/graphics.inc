@@ -128,6 +128,9 @@ ENDM
         enum SWORD_RIGHT_HANDLE
         enum SWORD_RIGHT_POINT
         enum SWORD_SWOOSH
+        enum SHIELD_LEFT
+        enum SHIELD_RIGHT
+        enum SHIELD_SIDE
 
         enum SPARKLE_LEFT
         enum SPARKLE_RIGHT
