@@ -251,7 +251,7 @@ xDefaultSaveFile:
 
     db 10, 10, 10 ; Max healths.
 
-    db ITEMF_FIRE_WAND | ITEMF_HEAL_WAND ; Octavia items.
+    db ITEMF_FIRE_WAND | ITEMF_HEAL_WAND | ITEMF_ICE_WAND ; Octavia items.
     db ITEMF_BOW                         ; Poppy items.
     db ITEMF_SWORD | ITEMF_SHIELD        ; Tiber items.
 
