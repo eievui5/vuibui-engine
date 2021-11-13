@@ -83,6 +83,7 @@ LesserSlimeScript:
     randf COUNTER, %100001
     forf COUNTER
         animate ANIM, %10000, FRAME_NORMAL, FRAME_BOUNCE
+        attack_player 1
         yield
     endfor
     ; Move for a few frames.
