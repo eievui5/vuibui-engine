@@ -296,9 +296,10 @@ MenuValidate:
     ld a, [hl] ; Current item
     ld [wPreviousMenuItem], a
     ld a, MENU_VALIDATED
-    DB $11 ; ld de, XXXX
+    jr :+
 MenuCancel:
     ld a, MENU_CANCELLED
+:
     ld [wMenuClosingReason], a
 
 MenuDoNothing: ; Stub for menu actions that do nothing
