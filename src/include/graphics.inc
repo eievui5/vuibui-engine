@@ -2,7 +2,6 @@
     IF !DEF(GRAPHICS_INC)
 DEF GRAPHICS_INC EQU 1
 
-INCLUDE "enum.inc"
 INCLUDE "hardware.inc"
 INCLUDE "vdef.inc"
 
@@ -82,62 +81,43 @@ ENDM
 
 ; Tile constants
 
-    start_enum TILE, 0, 2
-        ; Player Octavia
-        enum OCTAVIA_DOWN_1
-        enum OCTAVIA_DOWN_2
-        enum OCTAVIA_UP_1
-        enum OCTAVIA_UP_2
-        enum OCTAVIA_RIGHT_1
-        enum OCTAVIA_RIGHT_2
-        enum OCTAVIA_RIGHT_STEP_1
-        enum OCTAVIA_RIGHT_STEP_2
-        enum OCTAVIA_DOWN_ACT
-        enum OCTAVIA_UP_ACT
-        enum OCTAVIA_RIGHT_ACT
-        ; Player Poppy
-        enum POPPY_DOWN_1
-        enum POPPY_DOWN_2
-        enum POPPY_UP_1
-        enum POPPY_UP_2
-        enum POPPY_RIGHT_1
-        enum POPPY_RIGHT_2
-        enum POPPY_RIGHT_STEP_1
-        enum POPPY_RIGHT_STEP_2
-        enum POPPY_DOWN_ACT
-        enum POPPY_UP_ACT
-        enum POPPY_RIGHT_ACT
-        ; Player Tiber
-        enum TIBER_DOWN_1
-        enum TIBER_DOWN_2
-        enum TIBER_UP_1
-        enum TIBER_UP_2
-        enum TIBER_RIGHT_1
-        enum TIBER_RIGHT_2
-        enum TIBER_RIGHT_STEP_1
-        enum TIBER_RIGHT_STEP_2
-        enum TIBER_DOWN_ACT
-        enum TIBER_UP_ACT
-        enum TIBER_RIGHT_ACT
-
-        enum PLAYER_SPELL
-        enum ARROW_DOWN
-        enum ARROW_RIGHT_FLETCH
-        enum ARROW_RIGHT_POINT
-        enum SWORD_UP
-        enum SWORD_RIGHT_HANDLE
-        enum SWORD_RIGHT_POINT
-        enum SWORD_SWOOSH
-        enum SHIELD_LEFT
-        enum SHIELD_RIGHT
-        enum SHIELD_SIDE
-
-        enum SPARKLE_LEFT
-        enum SPARKLE_RIGHT
-
-        enum HEART_LEFT
-        enum HEART_RIGHT
-    end_enum
+    dtile_section $8000
+    ; Octavia
+    dtile vOctaviaDown, 4
+    dtile vOctaviaUp, 4
+    dtile vOctaviaRight, 4
+    dtile vOctaviaRightStep, 4
+    dtile vOctaviaActDown, 2
+    dtile vOctaviaActUp, 2
+    dtile vOctaviaActRight, 2
+    ; Poppy
+    dtile vPoppyDown, 4
+    dtile vPoppyUp, 4
+    dtile vPoppyRight, 4
+    dtile vPoppyRightStep, 4
+    dtile vPoppyActDown, 2
+    dtile vPoppyActUp, 2
+    dtile vPoppyActRight, 2
+    ; Tiber
+    dtile vTiberDown, 4
+    dtile vTiberUp, 4
+    dtile vTiberRight, 4
+    dtile vTiberRightStep, 4
+    dtile vTiberActDown, 2
+    dtile vTiberActUp, 2
+    dtile vTiberActRight, 2
+    ; Player Items
+    dtile vSpell, 2
+    dtile vArrowDown, 2
+    dtile vArrowRight, 4
+    dtile vSwordUp, 2
+    dtile vSwordRight, 4
+    dtile vSwordSwoosh, 2
+    dtile vShield, 4
+    dtile vShieldSide, 2
+    ; Other common sprites
+    dtile vSparkle, 4
+    dtile vHeartContainer, 4
 
 DEF vTextTiles EQU $9500
 DEF TILE_TEXT_START EQU $50

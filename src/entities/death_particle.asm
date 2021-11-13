@@ -49,20 +49,20 @@ DeathParticleMetasprites:
     DW .single
 
 .start
-    DB -16, -16, TILE_SPARKLE_LEFT, 2
-    DB -16, -8, TILE_SPARKLE_RIGHT, 2
-    DB 0, 0, TILE_SPARKLE_LEFT, 2
-    DB 0, 8, TILE_SPARKLE_RIGHT, 2
+    DB -16, -16, idof_vSparkle, 2
+    DB -16, -8, idof_vSparkle + 2, 2
+    DB 0, 0, idof_vSparkle, 2
+    DB 0, 8, idof_vSparkle + 2, 2
     DB METASPRITE_END
 
 .alt
-    DB 0, -16, TILE_SPARKLE_LEFT, 2
-    DB 0, -8, TILE_SPARKLE_RIGHT, 2
-    DB -16, 0, TILE_SPARKLE_LEFT, 2
-    DB -16, 8, TILE_SPARKLE_RIGHT, 2
+    DB 0, -16, idof_vSparkle, 2
+    DB 0, -8, idof_vSparkle + 2, 2
+    DB -16, 0, idof_vSparkle, 2
+    DB -16, 8, idof_vSparkle + 2, 2
     DB METASPRITE_END
 
 .single
-    DB -8, -8, TILE_SPARKLE_LEFT, 2
-    DB -8, 0, TILE_SPARKLE_RIGHT, 2
+    DB -8, -8, idof_vSparkle, 2
+    DB -8, 0, idof_vSparkle + 2, 2
     DB METASPRITE_END

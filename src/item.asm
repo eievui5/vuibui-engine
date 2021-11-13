@@ -10,12 +10,12 @@ DebugCollectable::
 
     DB -8 ; y
     DB -8 ; x
-    DB TILE_OCTAVIA_DOWN_1 ; Tile ID
+    DB idof_vOctaviaDown ; Tile ID
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_BANK0 ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_OCTAVIA_DOWN_2 ; Tile ID
+    DB idof_vOctaviaDown + 2 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_BANK0 ; Flags
 
     DB METASPRITE_END

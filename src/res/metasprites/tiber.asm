@@ -43,12 +43,12 @@ TiberMetasprites::
 .spriteDown:
     DB -8 ; y
     DB -8 ; x
-    DB TILE_TIBER_DOWN_1 ; Tile ID
+    DB idof_vTiberDown ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_TIBER_DOWN_2 ; Tile ID
+    DB idof_vTiberDown + 2 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB METASPRITE_END
@@ -56,12 +56,12 @@ TiberMetasprites::
 .spriteUp:
     DB -8 ; y
     DB -8 ; x
-    DB TILE_TIBER_UP_1 ; Tile ID
+    DB idof_vTiberUp ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_TIBER_UP_2 ; Tile ID
+    DB idof_vTiberUp + 2 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB METASPRITE_END
@@ -69,12 +69,12 @@ TiberMetasprites::
 .spriteRight:
     DB -8 ; y
     DB -8 ; x
-    DB TILE_TIBER_RIGHT_1 ; Tile ID
+    DB idof_vTiberRight ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_TIBER_RIGHT_2 ; Tile ID
+    DB idof_vTiberRight + 2 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB METASPRITE_END
@@ -82,12 +82,12 @@ TiberMetasprites::
 .spriteLeft: ; Flipped version of .spriteRight
     DB -8 ; y
     DB -8 ; x
-    DB TILE_TIBER_RIGHT_2 ; Tile ID
+    DB idof_vTiberRight + 2 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED | OAMF_XFLIP ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_TIBER_RIGHT_1 ; Tile ID
+    DB idof_vTiberRight ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED | OAMF_XFLIP ; Flags
 
     DB METASPRITE_END
@@ -97,12 +97,12 @@ TiberMetasprites::
 .spriteDownStep: ; Flipped version
     DB -8 ; y
     DB -8 ; x
-    DB TILE_TIBER_DOWN_2 ; Tile ID
+    DB idof_vTiberDown + 2 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED | OAMF_XFLIP ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_TIBER_DOWN_1 ; Tile ID
+    DB idof_vTiberDown ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED | OAMF_XFLIP ; Flags
 
     DB METASPRITE_END
@@ -110,12 +110,12 @@ TiberMetasprites::
 .spriteUpStep: ; Flipped version
     DB -8 ; y
     DB -8 ; x
-    DB TILE_TIBER_UP_2 ; Tile ID
+    DB idof_vTiberUp + 2 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED | OAMF_XFLIP ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_TIBER_UP_1 ; Tile ID
+    DB idof_vTiberUp ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED | OAMF_XFLIP ; Flags
 
     DB METASPRITE_END
@@ -123,12 +123,12 @@ TiberMetasprites::
 .spriteRightStep:
     DB -8 ; y
     DB -8 ; x
-    DB TILE_TIBER_RIGHT_STEP_1 ; Tile ID
+    DB idof_vTiberRightStep ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_TIBER_RIGHT_STEP_2 ; Tile ID
+    DB idof_vTiberRightStep + 2 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB METASPRITE_END
@@ -136,12 +136,12 @@ TiberMetasprites::
 .spriteLeftStep: ; Flipped version of .spriteRight
     DB -8 ; y
     DB -8 ; x
-    DB TILE_TIBER_RIGHT_STEP_2 ; Tile ID
+    DB idof_vTiberRightStep + 2 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED | OAMF_XFLIP ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_TIBER_RIGHT_STEP_1 ; Tile ID
+    DB idof_vTiberRightStep ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED | OAMF_XFLIP ; Flags
 
     DB METASPRITE_END
@@ -151,12 +151,12 @@ TiberMetasprites::
 .spriteDownSwing:
     DB -8 ; y
     DB -8 ; x
-    DB TILE_TIBER_DOWN_ACT ; Tile ID
+    DB idof_vTiberActDown ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_TIBER_DOWN_2 ; Tile ID
+    DB idof_vTiberDown + 2 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB METASPRITE_END
@@ -164,12 +164,12 @@ TiberMetasprites::
 .spriteUpSwing:
     DB -8 ; y
     DB -8 ; x
-    DB TILE_TIBER_UP_1 ; Tile ID
+    DB idof_vTiberUp ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_TIBER_UP_ACT ; Tile ID
+    DB idof_vTiberActUp ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB METASPRITE_END
@@ -177,12 +177,12 @@ TiberMetasprites::
 .spriteRightSwing:
     DB -8 ; y
     DB -8 ; x
-    DB TILE_TIBER_RIGHT_STEP_1 ; Tile ID
+    DB idof_vTiberRightStep ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_TIBER_RIGHT_ACT ; Tile ID
+    DB idof_vTiberActRight ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB METASPRITE_END
@@ -190,12 +190,12 @@ TiberMetasprites::
 .spriteLeftSwing: ; Flipped version of .spriteRight
     DB -8 ; y
     DB -8 ; x
-    DB TILE_TIBER_RIGHT_ACT ; Tile ID
+    DB idof_vTiberActRight ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED | OAMF_XFLIP ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_TIBER_RIGHT_STEP_1 ; Tile ID
+    DB idof_vTiberRightStep ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED | OAMF_XFLIP ; Flags
 
     DB METASPRITE_END
@@ -203,12 +203,12 @@ TiberMetasprites::
 .spriteDownGrab
     DB -8 ; y
     DB -8 ; x
-    DB TILE_TIBER_DOWN_ACT ; Tile ID
+    DB idof_vTiberActDown ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_TIBER_DOWN_ACT ; Tile ID
+    DB idof_vTiberActDown ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED | OAMF_XFLIP ; Flags
 
     DB METASPRITE_END
@@ -216,12 +216,12 @@ TiberMetasprites::
 .spriteUpGrab
     DB -8 ; y
     DB -8 ; x
-    DB TILE_TIBER_UP_ACT ; Tile ID
+    DB idof_vTiberActUp ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED | OAMF_XFLIP ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_TIBER_UP_ACT ; Tile ID
+    DB idof_vTiberActUp ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB METASPRITE_END
@@ -231,17 +231,17 @@ TiberMetasprites::
 .spriteDownSword:
     DB -8 ; y
     DB -8 ; x
-    DB TILE_TIBER_DOWN_ACT ; Tile ID
+    DB idof_vTiberActDown ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_TIBER_DOWN_2 ; Tile ID
+    DB idof_vTiberDown + 2 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB 6 ; y
     DB -8 ; x
-    DB TILE_SWORD_UP
+    DB idof_vSwordUp
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_YFLIP
 
     DB METASPRITE_END
@@ -249,17 +249,17 @@ TiberMetasprites::
 .spriteUpSword:
     DB -8 ; y
     DB -8 ; x
-    DB TILE_TIBER_UP_1 ; Tile ID
+    DB idof_vTiberUp ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_TIBER_UP_ACT ; Tile ID
+    DB idof_vTiberActUp ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB -22 ; y
     DB 1 ; x
-    DB TILE_SWORD_UP
+    DB idof_vSwordUp
     DB OAMF_PAL0 | DEFAULT_BLUE
 
     DB METASPRITE_END
@@ -267,22 +267,22 @@ TiberMetasprites::
 .spriteRightSword:
     DB -8 ; y
     DB -8 ; x
-    DB TILE_TIBER_RIGHT_STEP_1 ; Tile ID
+    DB idof_vTiberRightStep ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_TIBER_RIGHT_ACT ; Tile ID
+    DB idof_vTiberActRight ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB -4 ; y
     DB 6 ; x
-    DB TILE_SWORD_RIGHT_HANDLE
+    DB idof_vSwordRight
     DB OAMF_PAL0 | DEFAULT_BLUE
 
     DB -4 ; y
     DB 14 ; x
-    DB TILE_SWORD_RIGHT_POINT
+    DB idof_vSwordRight + 2
     DB OAMF_PAL0 | DEFAULT_BLUE
 
     DB METASPRITE_END
@@ -290,22 +290,22 @@ TiberMetasprites::
 .spriteLeftSword: ; Flipped version of .spriteRight
     DB -8 ; y
     DB -8 ; x
-    DB TILE_TIBER_RIGHT_ACT ; Tile ID
+    DB idof_vTiberActRight ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED | OAMF_XFLIP ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_TIBER_RIGHT_STEP_1 ; Tile ID
+    DB idof_vTiberRightStep ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED | OAMF_XFLIP ; Flags
 
     DB -4 ; y
     DB -14 ; x
-    DB TILE_SWORD_RIGHT_HANDLE
+    DB idof_vSwordRight
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_XFLIP
 
     DB -4 ; y
     DB -22 ; x
-    DB TILE_SWORD_RIGHT_POINT
+    DB idof_vSwordRight + 2
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_XFLIP
 
     DB METASPRITE_END
@@ -315,22 +315,22 @@ TiberMetasprites::
 .spriteDownSwoosh:
     DB -8 ; y
     DB -8 ; x
-    DB TILE_TIBER_DOWN_ACT ; Tile ID
+    DB idof_vTiberActDown ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_TIBER_DOWN_2 ; Tile ID
+    DB idof_vTiberDown + 2 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB 6 ; y
     DB -8 ; x
-    DB TILE_SWORD_UP
+    DB idof_vSwordUp
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_YFLIP
 
     DB 10 ; y
     DB 0 ; x
-    DB TILE_SWORD_SWOOSH
+    DB idof_vSwordSwoosh
     DB OAMF_PAL0 | DEFAULT_BLUE
 
     DB METASPRITE_END
@@ -338,22 +338,22 @@ TiberMetasprites::
 .spriteUpSwoosh:
     DB -8 ; y
     DB -8 ; x
-    DB TILE_TIBER_UP_1 ; Tile ID
+    DB idof_vTiberUp ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_TIBER_UP_ACT ; Tile ID
+    DB idof_vTiberActUp ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB -22 ; y
     DB 1 ; x
-    DB TILE_SWORD_UP
+    DB idof_vSwordUp
     DB OAMF_PAL0 | DEFAULT_BLUE
 
     DB -26 ; y
     DB -7 ; x
-    DB TILE_SWORD_SWOOSH
+    DB idof_vSwordSwoosh
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_XFLIP | OAMF_YFLIP
 
     DB METASPRITE_END
@@ -361,27 +361,27 @@ TiberMetasprites::
 .spriteRightSwoosh:
     DB -8 ; y
     DB -8 ; x
-    DB TILE_TIBER_RIGHT_STEP_1 ; Tile ID
+    DB idof_vTiberRightStep ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_TIBER_RIGHT_ACT ; Tile ID
+    DB idof_vTiberActRight ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB -4 ; y
     DB 6 ; x
-    DB TILE_SWORD_RIGHT_HANDLE
+    DB idof_vSwordRight
     DB OAMF_PAL0 | DEFAULT_BLUE
 
     DB -4 ; y
     DB 14 ; x
-    DB TILE_SWORD_RIGHT_POINT
+    DB idof_vSwordRight + 2
     DB OAMF_PAL0 | DEFAULT_BLUE
 
     DB -12 ; y
     DB 14 ; x
-    DB TILE_SWORD_SWOOSH
+    DB idof_vSwordSwoosh
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_YFLIP
 
     DB METASPRITE_END
@@ -389,27 +389,27 @@ TiberMetasprites::
 .spriteLeftSwoosh:
     DB -8 ; y
     DB -8 ; x
-    DB TILE_TIBER_RIGHT_ACT ; Tile ID
+    DB idof_vTiberActRight ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED | OAMF_XFLIP ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_TIBER_RIGHT_STEP_1 ; Tile ID
+    DB idof_vTiberRightStep ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED | OAMF_XFLIP ; Flags
 
     DB -4 ; y
     DB -14 ; x
-    DB TILE_SWORD_RIGHT_HANDLE
+    DB idof_vSwordRight
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_XFLIP
 
     DB -4 ; y
     DB -22 ; x
-    DB TILE_SWORD_RIGHT_POINT
+    DB idof_vSwordRight + 2
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_XFLIP
 
     DB -12 ; y
     DB -22 ; x
-    DB TILE_SWORD_SWOOSH
+    DB idof_vSwordSwoosh
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_XFLIP | OAMF_YFLIP
 
     DB METASPRITE_END
@@ -419,22 +419,22 @@ TiberMetasprites::
 .spriteDownShield:
     DB -8 ; y
     DB -8 ; x
-    DB TILE_TIBER_DOWN_ACT ; Tile ID
+    DB idof_vTiberActDown ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_TIBER_DOWN_2 ; Tile ID
+    DB idof_vTiberDown + 2 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB -2 ; y
     DB -9 ; x
-    DB TILE_SHIELD_LEFT
+    DB idof_vShield
     DB OAMF_PAL0 | DEFAULT_BLUE
 
     DB -2 ; y
     DB -1 ; x
-    DB TILE_SHIELD_RIGHT
+    DB idof_vShield + 2
     DB OAMF_PAL0 | DEFAULT_BLUE
 
     DB METASPRITE_END
@@ -442,17 +442,17 @@ TiberMetasprites::
 .spriteRightShield:
     DB -8 ; y
     DB -8 ; x
-    DB TILE_TIBER_RIGHT_STEP_1 ; Tile ID
+    DB idof_vTiberRightStep ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_TIBER_RIGHT_ACT ; Tile ID
+    DB idof_vTiberActRight ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED ; Flags
 
     DB -6 ; y
     DB 4 ; x
-    DB TILE_SHIELD_SIDE
+    DB idof_vShieldSide
     DB OAMF_PAL0 | DEFAULT_BLUE
 
     DB METASPRITE_END
@@ -460,17 +460,17 @@ TiberMetasprites::
 .spriteLeftShield: ; Flipped version of .spriteRight
     DB -8 ; y
     DB -8 ; x
-    DB TILE_TIBER_RIGHT_ACT ; Tile ID
+    DB idof_vTiberActRight ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED | OAMF_XFLIP ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_TIBER_RIGHT_STEP_1 ; Tile ID
+    DB idof_vTiberRightStep ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED | OAMF_XFLIP ; Flags
 
     DB -6 ; y
     DB -12 ; x
-    DB TILE_SHIELD_SIDE
+    DB idof_vShieldSide
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_XFLIP
 
     DB METASPRITE_END

@@ -2,7 +2,7 @@ IF !DEF(VDEF_INC)
 DEF VDEF_INC EQU 1
 
 MACRO dtile_section ; address
-    ASSERT _NARG == 1 || _NARG == 2, "Expected 1 argument."
+    ASSERT _NARG == 1, "Expected 1 argument."
     REDEF _dtile_section = \1
 ENDM
 

@@ -28,12 +28,12 @@ PoppyMetasprites::
 .spriteDown:
     DB -8 ; y
     DB -8 ; x
-    DB TILE_POPPY_DOWN_1 ; Tile ID
+    DB idof_vPoppyDown ; Tile ID
     DB OAMF_PAL0 | DEFAULT_GREEN | OAMF_BANK0 ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_POPPY_DOWN_2 ; Tile ID
+    DB idof_vPoppyDown + 2 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_GREEN | OAMF_BANK0 ; Flags
 
     DB METASPRITE_END
@@ -42,12 +42,12 @@ PoppyMetasprites::
 .spriteUp:
     DB -8 ; y
     DB -8 ; x
-    DB TILE_POPPY_UP_1 ; Tile ID
+    DB idof_vPoppyUp ; Tile ID
     DB OAMF_PAL0 | DEFAULT_GREEN | OAMF_BANK0 ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_POPPY_UP_2 ; Tile ID
+    DB idof_vPoppyUp + 2 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_GREEN | OAMF_BANK0 ; Flags
 
     DB METASPRITE_END
@@ -56,12 +56,12 @@ PoppyMetasprites::
 .spriteRight:
     DB -8 ; y
     DB -8 ; x
-    DB TILE_POPPY_RIGHT_1 ; Tile ID
+    DB idof_vPoppyRight ; Tile ID
     DB OAMF_PAL0 | DEFAULT_GREEN | OAMF_BANK0 ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_POPPY_RIGHT_2 ; Tile ID
+    DB idof_vPoppyRight + 2 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_GREEN | OAMF_BANK0 ; Flags
 
     DB METASPRITE_END
@@ -70,12 +70,12 @@ PoppyMetasprites::
 .spriteLeft: ; Flipped version of .spriteRight
     DB -8 ; y
     DB -8 ; x
-    DB TILE_POPPY_RIGHT_2 ; Tile ID
+    DB idof_vPoppyRight + 2 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_GREEN | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_POPPY_RIGHT_1 ; Tile ID
+    DB idof_vPoppyRight ; Tile ID
     DB OAMF_PAL0 | DEFAULT_GREEN | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     DB METASPRITE_END
@@ -85,12 +85,12 @@ PoppyMetasprites::
 .spriteDownStep: ; Flipped version
     DB -8 ; y
     DB -8 ; x
-    DB TILE_POPPY_DOWN_2 ; Tile ID
+    DB idof_vPoppyDown + 2 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_GREEN | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_POPPY_DOWN_1 ; Tile ID
+    DB idof_vPoppyDown ; Tile ID
     DB OAMF_PAL0 | DEFAULT_GREEN | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     DB METASPRITE_END
@@ -99,12 +99,12 @@ PoppyMetasprites::
 .spriteUpStep: ; Flipped version
     DB -8 ; y
     DB -8 ; x
-    DB TILE_POPPY_UP_2 ; Tile ID
+    DB idof_vPoppyUp + 2 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_GREEN | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_POPPY_UP_1 ; Tile ID
+    DB idof_vPoppyUp ; Tile ID
     DB OAMF_PAL0 | DEFAULT_GREEN | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     DB METASPRITE_END
@@ -113,12 +113,12 @@ PoppyMetasprites::
 .spriteRightStep:
     DB -8 ; y
     DB -8 ; x
-    DB TILE_POPPY_RIGHT_STEP_1 ; Tile ID
+    DB idof_vPoppyRightStep ; Tile ID
     DB OAMF_PAL0 | DEFAULT_GREEN | OAMF_BANK0 ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_POPPY_RIGHT_STEP_2 ; Tile ID
+    DB idof_vPoppyRightStep + 2 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_GREEN | OAMF_BANK0 ; Flags
 
     DB METASPRITE_END
@@ -127,12 +127,12 @@ PoppyMetasprites::
 .spriteLeftStep: ; Flipped version of .spriteRight
     DB -8 ; y
     DB -8 ; x
-    DB TILE_POPPY_RIGHT_STEP_2 ; Tile ID
+    DB idof_vPoppyRightStep + 2 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_GREEN | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_POPPY_RIGHT_STEP_1 ; Tile ID
+    DB idof_vPoppyRightStep ; Tile ID
     DB OAMF_PAL0 | DEFAULT_GREEN | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     DB METASPRITE_END
@@ -142,12 +142,12 @@ PoppyMetasprites::
 .spriteDownSwing:
     DB -8 ; y
     DB -8 ; x
-    DB TILE_POPPY_DOWN_ACT ; Tile ID
+    DB idof_vPoppyActDown ; Tile ID
     DB OAMF_PAL0 | DEFAULT_GREEN | OAMF_BANK0 ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_POPPY_DOWN_2 ; Tile ID
+    DB idof_vPoppyDown + 2 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_GREEN | OAMF_BANK0 ; Flags
 
     DB METASPRITE_END
@@ -155,12 +155,12 @@ PoppyMetasprites::
 .spriteUpSwing:
     DB -8 ; y
     DB -8 ; x
-    DB TILE_POPPY_UP_1 ; Tile ID
+    DB idof_vPoppyUp ; Tile ID
     DB OAMF_PAL0 | DEFAULT_GREEN | OAMF_BANK0 ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_POPPY_UP_ACT ; Tile ID
+    DB idof_vPoppyActUp ; Tile ID
     DB OAMF_PAL0 | DEFAULT_GREEN | OAMF_BANK0 ; Flags
 
     DB METASPRITE_END
@@ -169,12 +169,12 @@ PoppyMetasprites::
 .spriteRightSwing:
     DB -8 ; y
     DB -8 ; x
-    DB TILE_POPPY_RIGHT_STEP_1 ; Tile ID
+    DB idof_vPoppyRightStep ; Tile ID
     DB OAMF_PAL0 | DEFAULT_GREEN | OAMF_BANK0 ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_POPPY_RIGHT_ACT ; Tile ID
+    DB idof_vPoppyActRight ; Tile ID
     DB OAMF_PAL0 | DEFAULT_GREEN | OAMF_BANK0 ; Flags
 
     DB METASPRITE_END
@@ -183,12 +183,12 @@ PoppyMetasprites::
 .spriteLeftSwing: ; Flipped version of .spriteRight
     DB -8 ; y
     DB -8 ; x
-    DB TILE_POPPY_RIGHT_ACT ; Tile ID
+    DB idof_vPoppyActRight ; Tile ID
     DB OAMF_PAL0 | DEFAULT_GREEN | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_POPPY_RIGHT_STEP_1 ; Tile ID
+    DB idof_vPoppyRightStep ; Tile ID
     DB OAMF_PAL0 | DEFAULT_GREEN | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     DB METASPRITE_END
@@ -196,12 +196,12 @@ PoppyMetasprites::
 .spriteDownGrab
     DB -8 ; y
     DB -8 ; x
-    DB TILE_POPPY_DOWN_ACT ; Tile ID
+    DB idof_vPoppyActDown ; Tile ID
     DB OAMF_PAL0 | DEFAULT_GREEN | OAMF_BANK0 ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_POPPY_DOWN_ACT ; Tile ID
+    DB idof_vPoppyActDown ; Tile ID
     DB OAMF_PAL0 | DEFAULT_GREEN | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     DB METASPRITE_END
@@ -209,12 +209,12 @@ PoppyMetasprites::
 .spriteUpGrab
     DB -8 ; y
     DB -8 ; x
-    DB TILE_POPPY_UP_ACT ; Tile ID
+    DB idof_vPoppyActUp ; Tile ID
     DB OAMF_PAL0 | DEFAULT_GREEN | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_POPPY_UP_ACT ; Tile ID
+    DB idof_vPoppyActUp ; Tile ID
     DB OAMF_PAL0 | DEFAULT_GREEN | OAMF_BANK0 ; Flags
 
     DB METASPRITE_END

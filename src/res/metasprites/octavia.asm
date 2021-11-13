@@ -28,12 +28,12 @@ OctaviaMetasprites::
 .spriteDown::
     DB -8 ; y
     DB -8 ; x
-    DB TILE_OCTAVIA_DOWN_1 ; Tile ID
+    DB idof_vOctaviaDown ; Tile ID
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_BANK0 ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_OCTAVIA_DOWN_2 ; Tile ID
+    DB idof_vOctaviaDown + 2 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_BANK0 ; Flags
 
     DB METASPRITE_END
@@ -42,12 +42,12 @@ OctaviaMetasprites::
 .spriteUp::
     DB -8 ; y
     DB -8 ; x
-    DB TILE_OCTAVIA_UP_1 ; Tile ID
+    DB idof_vOctaviaUp ; Tile ID
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_BANK0 ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_OCTAVIA_UP_2 ; Tile ID
+    DB idof_vOctaviaUp + 2 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_BANK0 ; Flags
 
     DB METASPRITE_END
@@ -56,12 +56,12 @@ OctaviaMetasprites::
 .spriteRight::
     DB -8 ; y
     DB -8 ; x
-    DB TILE_OCTAVIA_RIGHT_1 ; Tile ID
+    DB idof_vOctaviaRight ; Tile ID
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_BANK0 ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_OCTAVIA_RIGHT_2 ; Tile ID
+    DB idof_vOctaviaRight + 2 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_BANK0 ; Flags
 
     DB METASPRITE_END
@@ -70,12 +70,12 @@ OctaviaMetasprites::
 .spriteLeft:: ; Flipped version of .spriteRight
     DB -8 ; y
     DB -8 ; x
-    DB TILE_OCTAVIA_RIGHT_2 ; Tile ID
+    DB idof_vOctaviaRight + 2 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_OCTAVIA_RIGHT_1 ; Tile ID
+    DB idof_vOctaviaRight ; Tile ID
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     DB METASPRITE_END
@@ -85,12 +85,12 @@ OctaviaMetasprites::
 .spriteDownStep:: ; Flipped version
     DB -8 ; y
     DB -8 ; x
-    DB TILE_OCTAVIA_DOWN_2 ; Tile ID
+    DB idof_vOctaviaDown + 2 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_OCTAVIA_DOWN_1 ; Tile ID
+    DB idof_vOctaviaDown ; Tile ID
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     DB METASPRITE_END
@@ -99,12 +99,12 @@ OctaviaMetasprites::
 .spriteUpStep:: ; Flipped version
     DB -8 ; y
     DB -8 ; x
-    DB TILE_OCTAVIA_UP_2 ; Tile ID
+    DB idof_vOctaviaUp + 2 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_OCTAVIA_UP_1 ; Tile ID
+    DB idof_vOctaviaUp ; Tile ID
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     DB METASPRITE_END
@@ -113,12 +113,12 @@ OctaviaMetasprites::
 .spriteRightStep::
     DB -8 ; y
     DB -8 ; x
-    DB TILE_OCTAVIA_RIGHT_STEP_1 ; Tile ID
+    DB idof_vOctaviaRightStep ; Tile ID
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_BANK0 ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_OCTAVIA_RIGHT_STEP_2 ; Tile ID
+    DB idof_vOctaviaRightStep + 2 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_BANK0 ; Flags
 
     DB METASPRITE_END
@@ -127,12 +127,12 @@ OctaviaMetasprites::
 .spriteLeftStep:: ; Flipped version of .spriteRight
     DB -8 ; y
     DB -8 ; x
-    DB TILE_OCTAVIA_RIGHT_STEP_2 ; Tile ID
+    DB idof_vOctaviaRightStep + 2 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_OCTAVIA_RIGHT_STEP_1 ; Tile ID
+    DB idof_vOctaviaRightStep ; Tile ID
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     DB METASPRITE_END
@@ -142,12 +142,12 @@ OctaviaMetasprites::
 .spriteDownSwing::
     DB -8 ; y
     DB -8 ; x
-    DB TILE_OCTAVIA_DOWN_ACT ; Tile ID
+    DB idof_vOctaviaActDown ; Tile ID
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_BANK0 ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_OCTAVIA_DOWN_2 ; Tile ID
+    DB idof_vOctaviaDown + 2 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_BANK0 ; Flags
 
     DB METASPRITE_END
@@ -155,12 +155,12 @@ OctaviaMetasprites::
 .spriteUpSwing::
     DB -8 ; y
     DB -8 ; x
-    DB TILE_OCTAVIA_UP_1 ; Tile ID
+    DB idof_vOctaviaUp ; Tile ID
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_BANK0 ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_OCTAVIA_UP_ACT ; Tile ID
+    DB idof_vOctaviaActUp ; Tile ID
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_BANK0 ; Flags
 
     DB METASPRITE_END
@@ -169,12 +169,12 @@ OctaviaMetasprites::
 .spriteRightSwing::
     DB -8 ; y
     DB -8 ; x
-    DB TILE_OCTAVIA_RIGHT_STEP_1 ; Tile ID
+    DB idof_vOctaviaRightStep ; Tile ID
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_BANK0 ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_OCTAVIA_RIGHT_ACT ; Tile ID
+    DB idof_vOctaviaActRight ; Tile ID
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_BANK0 ; Flags
 
     DB METASPRITE_END
@@ -183,12 +183,12 @@ OctaviaMetasprites::
 .spriteLeftSwing:: ; Flipped version of .spriteRight
     DB -8 ; y
     DB -8 ; x
-    DB TILE_OCTAVIA_RIGHT_ACT ; Tile ID
+    DB idof_vOctaviaActRight ; Tile ID
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_OCTAVIA_RIGHT_STEP_1 ; Tile ID
+    DB idof_vOctaviaRightStep ; Tile ID
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     DB METASPRITE_END
@@ -196,12 +196,12 @@ OctaviaMetasprites::
 .spriteDownGrab::
     DB -8 ; y
     DB -8 ; x
-    DB TILE_OCTAVIA_DOWN_ACT ; Tile ID
+    DB idof_vOctaviaActDown ; Tile ID
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_BANK0 ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_OCTAVIA_DOWN_ACT ; Tile ID
+    DB idof_vOctaviaActDown ; Tile ID
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     DB METASPRITE_END
@@ -209,12 +209,12 @@ OctaviaMetasprites::
 .spriteUpGrab::
     DB -8 ; y
     DB -8 ; x
-    DB TILE_OCTAVIA_UP_ACT ; Tile ID
+    DB idof_vOctaviaActUp ; Tile ID
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_OCTAVIA_UP_ACT ; Tile ID
+    DB idof_vOctaviaActUp ; Tile ID
     DB OAMF_PAL0 | DEFAULT_BLUE | OAMF_BANK0 ; Flags
 
     DB METASPRITE_END

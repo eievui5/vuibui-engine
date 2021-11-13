@@ -10,12 +10,12 @@ HeartContainerCollectable::
 
     DB -7 ; y
     DB -7 ; x
-    DB TILE_HEART_LEFT ; Tile ID
+    DB idof_vHeartContainer ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED | OAMF_BANK0 ; Flags
 
     DB -7 ; y
     DB 1  ; x
-    DB TILE_HEART_RIGHT ; Tile ID
+    DB idof_vHeartContainer + 2 ; Tile ID
     DB OAMF_PAL0 | DEFAULT_RED | OAMF_BANK0 ; Flags
 
     DB METASPRITE_END

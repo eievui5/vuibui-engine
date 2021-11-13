@@ -174,36 +174,36 @@ dw .blue
 .red
     DB -8 ; y
     DB -8 ; x
-    DB TILE_PLAYER_SPELL ; Tile ID
+    DB idof_vSpell ; Tile ID
     DB OAMF_PAL0 | OAMF_GBCPAL2 | OAMF_BANK0 ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_PLAYER_SPELL ; Tile ID
+    DB idof_vSpell ; Tile ID
     DB OAMF_PAL0 | OAMF_GBCPAL2 | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     DB METASPRITE_END
 .green
     DB -8 ; y
     DB -8 ; x
-    DB TILE_PLAYER_SPELL ; Tile ID
+    DB idof_vSpell ; Tile ID
     DB OAMF_PAL0 | OAMF_GBCPAL1 | OAMF_BANK0 ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_PLAYER_SPELL ; Tile ID
+    DB idof_vSpell ; Tile ID
     DB OAMF_PAL0 | OAMF_GBCPAL1 | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     DB METASPRITE_END
 .blue
     DB -8 ; y
     DB -8 ; x
-    DB TILE_PLAYER_SPELL ; Tile ID
+    DB idof_vSpell ; Tile ID
     DB OAMF_PAL0 | OAMF_GBCPAL0 | OAMF_BANK0 ; Flags
 
     DB -8 ; y
     DB 0 ; x
-    DB TILE_PLAYER_SPELL ; Tile ID
+    DB idof_vSpell ; Tile ID
     DB OAMF_PAL0 | OAMF_GBCPAL0 | OAMF_BANK0 | OAMF_XFLIP ; Flags
 
     DB METASPRITE_END

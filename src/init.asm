@@ -293,14 +293,14 @@ LoadStandardGraphics::
     rst SwapBank
     ; Load player graphics
     ld hl, GfxOctavia
-    ld de, _VRAM_OBJ + TILE_OCTAVIA_DOWN_1 * $10
+    ld de, vOctaviaDown
     ld bc, (GfxOctavia.end - GfxOctavia) * 3
     call MemCopy
 
     ld a, BANK(GfxArrow)
     rst SwapBank
     ld c, GfxArrow.end - GfxArrow
-    ld de, _VRAM + (TILE_ARROW_DOWN * $10)
+    ld de, vArrowDown
     ld hl, GfxArrow
     call VRAMCopySmall
 
@@ -309,14 +309,14 @@ LoadStandardGraphics::
     ASSERT GfxSword.end == xGfxShield
     ASSERT xGfxShield.end == GfxSparkle
     ld bc, GfxSparkle.end - GfxSword
-    ld de, _VRAM + (TILE_SWORD_UP * $10)
+    ld de, vSwordUp
     ld hl, GfxSword
     call VRAMCopy
 
     ld a, BANK(xGfxHeartContainer)
     rst SwapBank
     ld c, xGfxHeartContainer.end - xGfxHeartContainer
-    ld de, _VRAM + (TILE_HEART_LEFT * $10)
+    ld de, vHeartContainer
     ld hl, xGfxHeartContainer
     call VRAMCopySmall
 
