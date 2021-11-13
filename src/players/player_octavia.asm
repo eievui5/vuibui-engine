@@ -150,19 +150,19 @@ OctaviaDamage:
 
 OctaviaRod:
 .heal
-    lb de, 1, SOUND_HEAL_SPELL
+    lb de, 1, SPELL_HEAL
     lb bc, 1, 1 ; b is true if the spell should heal players.
     jr .shootHeal
 .fire
-    lb de, DAMAGE_EFFECT_FIRE | OCTAVIA_FIRE_DAMAGE, SOUND_FLAME
+    lb de, DAMAGE_EFFECT_FIRE | OCTAVIA_FIRE_DAMAGE, SPELL_FIRE
     ld c, 0
     jr .shoot
 .ice
-    lb de, DAMAGE_EFFECT_ICE | OCTAVIA_ICE_DAMAGE, SOUND_ICE_SPELL
+    lb de, DAMAGE_EFFECT_ICE | OCTAVIA_ICE_DAMAGE, SPELL_ICE
     ld c, 2
     jr .shoot
 .shock
-    lb de, DAMAGE_EFFECT_SHOCK | OCTAVIA_SHOCK_DAMAGE, SOUND_SHOCK_SPELL
+    lb de, DAMAGE_EFFECT_SHOCK | OCTAVIA_SHOCK_DAMAGE, SPELL_SHOCK
     ld c, 1
 .shoot
     ld b, 0 ; b is false if the spell should hurt enemies.
@@ -179,7 +179,6 @@ OctaviaRod:
     ld [wOctavia_Flags], a
     ; Update spell graphic
     ld a, e
-    dec a
     add a, a ; a * 2
     swap a ; a * 32
     ; Add `a` to `hl`
@@ -251,6 +250,8 @@ OctaviaRod:
 .playSound
     ; Use value in `e` to find SFX
     ld a, e
+    ASSERT SOUND_FLAME == SPELL_FIRE
+    inc a
     jp audio_play_fx
 .forceExit
     ASSERT PLAYER_STATE_NORMAL == 0
@@ -276,13 +277,13 @@ OctaviaAIFollow:
     jp MoveAndSlide
 
 GfxPlayerSpells::
-    ASSERT SPELL_FIRE == 1
+    ASSERT SPELL_FIRE == 0
     INCBIN "res/gfx/misc/fire.2bpp"
-    ASSERT SPELL_ICE == 2
+    ASSERT SPELL_ICE == 1
     INCBIN "res/gfx/misc/ice.2bpp"
-    ASSERT SPELL_SHOCK == 3
+    ASSERT SPELL_SHOCK == 2
     INCBIN "res/gfx/misc/shock.2bpp"
-    ASSERT SPELL_HEAL == 4
+    ASSERT SPELL_HEAL == 3
     INCBIN "res/gfx/misc/heal.2bpp"
 
 SECTION "Octavia Dialogue", ROMX

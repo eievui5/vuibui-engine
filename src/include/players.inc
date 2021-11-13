@@ -102,7 +102,6 @@ DEF TIBER_SWORD_DAMAGE EQU 2
     DEF ITEMF_SHIELD        EQU 2
 
     start_enum SPELL
-        enum NONE
         enum FIRE
         enum ICE
         enum SHOCK
