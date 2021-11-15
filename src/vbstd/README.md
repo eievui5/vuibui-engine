@@ -13,7 +13,7 @@ but not things such as a print function or metasprite code which would increase
 ROM size and only be useful to some programs.
 
 Please note that some files in this library come from other sources with
-existing licenses, such as hardware.inc and stdjpad.asm.
+existing licenses, such as hardware.inc and input.asm.
 
 ## License
 

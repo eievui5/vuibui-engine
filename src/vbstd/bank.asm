@@ -1,9 +1,5 @@
 ;
-; This file is a part of the VuiBui Standard Library.
-; The VuiBui standard library is an attempt at creating a collection of short,
-; common functions that are universally useful to Game Boy programs.
-;
-; stdbank.asm
+; bank.asm
 ; Functions related to switching and managing ROMX banks.
 ;
 ; Copyright 2021 Eievui

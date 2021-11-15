@@ -1,9 +1,5 @@
 ;
-; This file is a part of the VuiBui Standard Library.
-; The VuiBui standard library is an attempt at creating a collection of short,
-; common functions that are universally useful to Game Boy programs.
-;
-; stdvram.asm
+; vrammem.asm
 ; Memory functions which wait for VRAM access before writing.
 ;
 ; Copyright 2021 Eievui

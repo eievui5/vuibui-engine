@@ -1,22 +1,18 @@
 ;
-; This file is a part of the VuiBui Standard Library.
-; The VuiBui standard library is an attempt at creating a collection of short,
-; common functions that are universally useful to Game Boy programs.
-;
-; stdmem.asm
+; memory.asm
 ; Common memory operations like Copy and Set, as well as faster variations for
 ; blocks of data under 256 bytes.
 ;
 ; Copyright 2021 Eievui
-; 
+;
 ; This software is provided 'as-is', without any express or implied
 ; warranty.  In no event will the authors be held liable for any damages
 ; arising from the use of this software.
-; 
+;
 ; Permission is granted to anyone to use this software for any purpose,
 ; including commercial applications, and to alter it and redistribute it
 ; freely, subject to the following restrictions:
-; 
+;
 ; 1. The origin of this software must not be misrepresented; you must not
 ;    claim that you wrote the original software. If you use this software
 ;    in a product, an acknowledgment in the product documentation would be
@@ -50,7 +46,7 @@ MemCopy::
 SECTION "Memory Copy Small", ROM0[$0010]
 
 ; A slightly faster version of memcopy that requires less setup but can only do
-; up to 256 bytes. Destination and source are both offset by length, in case 
+; up to 256 bytes. Destination and source are both offset by length, in case
 ; you want to copy to or from multiple places
 ; @ c:  length
 ; @ de: destination
@@ -86,7 +82,7 @@ MemSet::
 SECTION "Memset Small", ROM0[$0018]
 
 ; A slightly faster version of memset that requires less setup but can only do
-; up to 256 bytes. Destination and source are both offset by length, in case 
+; up to 256 bytes. Destination and source are both offset by length, in case
 ; you want to copy to or from multiple places
 ; @ a:  source (is preserved)
 ; @ c:  length

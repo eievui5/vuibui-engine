@@ -1,10 +1,7 @@
 ;
-; This file is a part of the VuiBui Standard Library.
-; The VuiBui standard library is an attempt at creating a collection of short,
-; common functions that are universally useful to Game Boy programs.
+; optimize.inc
 ;
-; stdopt.asm
-; Macros used to assert that optimizations are valid.
+; Macros used to enable or assert that certain optimizations are valid.
 ;
 ; Copyright 2021 Eievui
 ;
@@ -24,7 +21,7 @@
 ;    misrepresented as being the original software.
 ; 3. This notice may not be removed or altered from any source distribution.
 
-IF !DEF(STDOPT_INC)
+    IF !DEF(STDOPT_INC)
 DEF STDOPT_INC EQU 1
 
 MACRO fall
@@ -38,4 +35,4 @@ MACRO lb
     ld \1, (((\2) << 8) & $FF00) | ((\3) & $FF)
 ENDM
 
-ENDC
+    ENDC

@@ -1,5 +1,4 @@
-
-
+;
 ; Eievui - swapped bc, d with de, b so that the function was cheaper to entities
 ; (which rely on c) and rewrote the description.
 ;

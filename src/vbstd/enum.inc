@@ -1,4 +1,3 @@
-
 ;
 ; Enumeration macro pack for RGBDS
 ;
