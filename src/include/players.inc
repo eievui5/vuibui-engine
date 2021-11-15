@@ -1,21 +1,7 @@
-
-INCLUDE "enum.inc"
-
     IF !DEF(PLAYERS_INC)
 DEF PLAYERS_INC EQU 1
 
-; Used to find a player's data at a given offset, storing it in hl.
-; @ bc: PLAYER enum * sizeof_Entity
-; @ 3 bytes
-; @ 5 cycles
-MACRO find_player
-    IF _NARG > 0
-        ld hl, wPlayerArray + \1
-    ELSE
-        ld hl, wPlayerArray
-    ENDC
-    add hl, bc
-ENDM
+INCLUDE "enum.inc"
 
 ; Timer constants
 DEF KNOCK_FRAMES EQU 15
@@ -120,4 +106,4 @@ DEF TIBER_SWORD_DAMAGE EQU 2
         enum TIBER
     end_enum
 
-ENDC
+    ENDC

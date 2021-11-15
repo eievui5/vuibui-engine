@@ -1,4 +1,3 @@
-
     IF !DEF(SCRIPTING_INC)
 DEF SCRIPTING_INC EQU 1
 
@@ -51,8 +50,6 @@ MACRO setpos_player
     DB \2, \3 ; Position
     DB \4 ; Direction
 ENDM
-
-    ENDC
 
 ; Branches to `.label` if `pointer` equals `value`
 ; @ branch pointer, value, .label
@@ -173,3 +170,5 @@ MACRO sub_pointer
     DW \1
     DB -(\2)
 ENDM
+
+    ENDC

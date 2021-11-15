@@ -7,11 +7,11 @@
 ; This software is provided 'as-is', without any express or implied
 ; warranty.  In no event will the authors be held liable for any damages
 ; arising from the use of this software.
-; 
+;
 ; Permission is granted to anyone to use this software for any purpose,
 ; including commercial applications, and to alter it and redistribute it
 ; freely, subject to the following restrictions:
-; 
+;
 ; 1. The origin of this software must not be misrepresented; you must not
 ;    claim that you wrote the original software. If you use this software
 ;    in a product, an acknowledgment in the product documentation would be
@@ -26,7 +26,7 @@ DEF ENUM_INC EQU 1
 
 ; Start a new enumeration. Will warn if an unclosed enum is found.
 ; @ start_enum Name, [start], [step]
-MACRO start_enum 
+MACRO start_enum
 
     ; Check for arguments and unclosed enums.
     IF _NARG < 1
@@ -53,7 +53,7 @@ MACRO start_enum
     ENDC
 ENDM
 
-; Add new values to the enumeration, one higher than the last. 
+; Add new values to the enumeration, one higher than the last.
 ; Will result in the constant "Name_Value". If multiple arguments are supplied
 ; they will all share a value.
 ; @ enum Value, [Value]...

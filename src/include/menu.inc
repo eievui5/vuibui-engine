@@ -1,4 +1,4 @@
-        IF !DEF(MENU_INC)
+    IF !DEF(MENU_INC)
 DEF MENU_INC EQU 1
 
 INCLUDE "enum.inc"
@@ -6,7 +6,7 @@ INCLUDE "structs.inc"
 
 DEF MENU_STACK_CAPACITY equ 10
 
-; When an event is called, the struct can be accessed with: 
+; When an event is called, the struct can be accessed with:
 /*
 ld hl, sp+2
 ld a, [hli]

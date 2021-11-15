@@ -10,4 +10,4 @@ MACRO far_pointer
     DW \1
 ENDM
 
-ENDC
+    ENDC

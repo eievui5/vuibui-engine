@@ -1,4 +1,3 @@
-
     IF !DEF(TEXT_INC)
 DEF TEXT_INC EQU 1
 
@@ -64,4 +63,4 @@ ENDM
         enum ASK        ; Allow the player to select a line.
     end_enum
 
-ENDC
+    ENDC

@@ -3,7 +3,7 @@ DEF ENITITY_SCRIPT_INC EQU 1
 
 INCLUDE "enum.inc"
 
-; Reduce this reserve fields for scripting.
+; Reduce this to reserve fields for scripting.
 DEF MAX_FIELDS EQU 14
 
     start_enum ENTITY_SCRIPT

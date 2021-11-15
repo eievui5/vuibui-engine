@@ -1,4 +1,3 @@
-
     IF !DEF(NPCS_INC)
 DEF NPCS_INC EQU 1
 

@@ -1,8 +1,7 @@
-
-INCLUDE "enum.inc"
-
     IF !DEF(DIRECTIONS_INC)
 DEF DIRECTIONS_INC EQU 1
+
+INCLUDE "enum.inc"
 
     start_enum DIR
         enum DOWN

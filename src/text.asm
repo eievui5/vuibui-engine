@@ -2,7 +2,6 @@ INCLUDE "banks.inc"
 INCLUDE "engine.inc"
 INCLUDE "graphics.inc"
 INCLUDE "hardware.inc"
-INCLUDE "stat.inc"
 INCLUDE "stdopt.inc"
 INCLUDE "text.inc"
 

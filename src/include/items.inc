@@ -1,4 +1,4 @@
-IF !DEF(ITEMS_INC)
+	IF !DEF(ITEMS_INC)
 DEF ITEMS_INC EQU 1
 
 INCLUDE "structs.inc"
@@ -28,4 +28,4 @@ DEF MAX_BOUNCE EQU 10
 		bytes 2, AlignmentPadding
 	end_struct
 
-ENDC
+	ENDC

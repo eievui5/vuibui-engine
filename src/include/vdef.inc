@@ -1,4 +1,4 @@
-IF !DEF(VDEF_INC)
+    IF !DEF(VDEF_INC)
 DEF VDEF_INC EQU 1
 
 MACRO dtile_section ; address
@@ -46,4 +46,4 @@ MACRO dregion ; Name, x, y, width, height, [address]
     DEF \1_Height EQU \5
 ENDM
 
-ENDC
+    ENDC

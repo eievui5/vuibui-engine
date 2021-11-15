@@ -1,4 +1,3 @@
-
     IF !DEF(SFX_INC)
 DEF SFX_INC EQU 1
 
