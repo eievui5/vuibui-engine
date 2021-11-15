@@ -4,7 +4,7 @@ INCLUDE "engine.inc"
 INCLUDE "entity.inc"
 INCLUDE "players.inc"
 INCLUDE "scripting.inc"
-INCLUDE "stdopt.inc"
+INCLUDE "optimize.inc"
 INCLUDE "text.inc"
 
 MACRO load_hl_scriptpointer

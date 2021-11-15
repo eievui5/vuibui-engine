@@ -1,7 +1,7 @@
 INCLUDE "directions.inc"
 INCLUDE "engine.inc"
 INCLUDE "hardware.inc"
-INCLUDE "stdopt.inc"
+INCLUDE "optimize.inc"
 INCLUDE "tiledata.inc"
 
 SECTION "Tileloader", ROM0
@@ -74,7 +74,7 @@ LoadMetatile::
     adc a, HIGH(wMetatileMap)
     sub a, l
     ld h, a ; add the X value
-    
+
     ld a, c
     swap a ; c * 16
     ; add the Y value

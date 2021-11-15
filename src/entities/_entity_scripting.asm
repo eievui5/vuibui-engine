@@ -1,7 +1,7 @@
 INCLUDE "directions.inc"
 INCLUDE "entity.inc"
 INCLUDE "entity_script.inc"
-INCLUDE "stdopt.inc"
+INCLUDE "optimize.inc"
 
 SECTION "Entity Script Handler", ROM0
 

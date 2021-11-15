@@ -5,7 +5,7 @@ INCLUDE "graphics.inc"
 INCLUDE "hardware.inc"
 INCLUDE "map.inc"
 INCLUDE "players.inc"
-INCLUDE "stdopt.inc"
+INCLUDE "optimize.inc"
 INCLUDE "text.inc"
 INCLUDE "tiledata.inc"
 

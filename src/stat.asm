@@ -2,7 +2,7 @@ INCLUDE "banks.inc"
 INCLUDE "engine.inc"
 INCLUDE "graphics.inc"
 INCLUDE "hardware.inc"
-INCLUDE "stdopt.inc"
+INCLUDE "optimize.inc"
 
 SECTION "Stat Interrupt", ROM0[$48]
     ; Save register state

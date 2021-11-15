@@ -6,7 +6,7 @@ INCLUDE "graphics.inc"
 INCLUDE "hardware.inc"
 INCLUDE "map.inc"
 INCLUDE "menu.inc"
-INCLUDE "stdopt.inc"
+INCLUDE "optimize.inc"
 INCLUDE "vdef.inc"
 
     dtile_section $8800

@@ -1,7 +1,7 @@
 INCLUDE "engine.inc"
 INCLUDE "graphics.inc"
 INCLUDE "hardware.inc"
-INCLUDE "stdopt.inc"
+INCLUDE "optimize.inc"
 
 SECTION "Game Over menu", ROMX
 

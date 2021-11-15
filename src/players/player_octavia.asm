@@ -5,7 +5,7 @@ INCLUDE "graphics.inc"
 INCLUDE "players.inc"
 INCLUDE "scripting.inc"
 INCLUDE "sfx.inc"
-INCLUDE "stdopt.inc"
+INCLUDE "optimize.inc"
 INCLUDE "text.inc"
 
 /*  Octavia's functions.

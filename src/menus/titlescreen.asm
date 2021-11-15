@@ -2,7 +2,7 @@ INCLUDE "engine.inc"
 INCLUDE "graphics.inc"
 INCLUDE "hardware.inc"
 INCLUDE "menu.inc"
-INCLUDE "stdopt.inc"
+INCLUDE "optimize.inc"
 INCLUDE "text.inc"
 INCLUDE "vdef.inc"
 

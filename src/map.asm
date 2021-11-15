@@ -7,7 +7,7 @@ INCLUDE "hardware.inc"
 INCLUDE "map.inc"
 INCLUDE "npc.inc"
 INCLUDE "save.inc"
-INCLUDE "stdopt.inc"
+INCLUDE "optimize.inc"
 INCLUDE "tiledata.inc"
 
 ; Keep these all in the same bank.

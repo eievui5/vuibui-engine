@@ -4,7 +4,7 @@ INCLUDE "hardware.inc"
 INCLUDE "map.inc"
 INCLUDE "npc.inc"
 INCLUDE "players.inc"
-INCLUDE "stdopt.inc"
+INCLUDE "optimize.inc"
 INCLUDE "tiledata.inc"
 
 SECTION "Player Functions", ROM0

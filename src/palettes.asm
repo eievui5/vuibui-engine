@@ -1,7 +1,7 @@
 INCLUDE "engine.inc"
 INCLUDE "hardware.inc"
 INCLUDE "graphics.inc"
-INCLUDE "stdopt.inc"
+INCLUDE "optimize.inc"
 
 SECTION "Update Palettes", ROM0
 
