@@ -5,7 +5,6 @@ INCLUDE "graphics.inc"
 INCLUDE "hardware.inc"
 INCLUDE "map.inc"
 INCLUDE "players.inc"
-INCLUDE "stat.inc"
 INCLUDE "stdopt.inc"
 INCLUDE "text.inc"
 INCLUDE "tiledata.inc"
@@ -93,12 +92,6 @@ Initialize::
         ldh [hSCYBuffer], a
     ; WRAM
         call ResetOAM
-        ; Reset FX Mode to STATIC
-        ld [wStatFXMode], a
-        ; Clear Raster Array
-        ld hl, wRasterFX
-        ld c, 80
-        rst MemSetSmall
         ; Clear Static FX
         ld [wStaticFX], a
         ; Clear palettes and target palettes

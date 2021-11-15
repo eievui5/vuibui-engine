@@ -2,7 +2,6 @@ INCLUDE "banks.inc"
 INCLUDE "engine.inc"
 INCLUDE "graphics.inc"
 INCLUDE "hardware.inc"
-INCLUDE "stat.inc"
 INCLUDE "stdopt.inc"
 
 SECTION "Stat Interrupt", ROM0[$48]
@@ -18,10 +17,6 @@ Stat:
     ldh a, [hCurrentBank]
     ld [wInterruptBankBuffer], a
 
-    ld a, [wStatFXMode]
-    and a, a
-    jr nz, FXMode
-
     ld a, [wStaticFX]
     ASSERT STATIC_FX_NONE == 0
     and a, a
@@ -36,35 +31,6 @@ Stat:
     dec a
     jr z, TextboxPalette
 
-    rst CrashHandler
-
-
-FXMode:
-    ; Offset rLYC ( uses odd numbers! )
-    ldh a, [rLYC]
-    ld b, a
-    add a, 2
-    cp a, 143
-    jr c, :+
-    ld a, 1
-:   ldh [rLYC], a
-    ld a, b
-
-    ; Index into the FX array.
-    sra a
-    ; Add `a` to `wRasterFX` and store in `hl`
-    add a, LOW(wRasterFX)
-    ld l, a
-    adc a, HIGH(wRasterFX)
-    sub a, l
-    ld h, a
-    ld a, [hl]
-
-    ; If no FX is loaded, exit!
-    and a, a
-    jp z, ExitStat
-
-    ; Error - invalid state
     rst CrashHandler
 
 ShowHUD:
@@ -180,14 +146,6 @@ ExitStat:
     reti
 
 SECTION "Stat Data", WRAM0
-
-; Whether or not to use FX Mode. Requires rLYC to be reset to 1
-wStatFXMode::
-    DS 1
-
-; An array of 80 bytes, each able to play an effect on every odd scan line.
-wRasterFX::
-    DS 160/2
 
 ; Single FX byte for regular STAT processing
 wStaticFX::

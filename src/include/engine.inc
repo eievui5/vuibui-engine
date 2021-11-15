@@ -1,4 +1,3 @@
-
     IF !DEF(ENGINE_INC)
 DEF ENGINE_INC EQU 1
 
@@ -45,6 +44,13 @@ DEF SKIP_FRAME EQU LCDCF_ON
         enum DMG
         enum CGB
         enum AGB
+    end_enum
+
+    start_enum STATIC_FX
+        enum NONE
+        enum SHOW_HUD
+        enum PRINT_SCROLL
+        enum TEXTBOX_PALETTE
     end_enum
 
 DEF STAT_ENABLE_WINDOW EQU 0
