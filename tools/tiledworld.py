@@ -25,6 +25,7 @@ import argparse
 import json
 import os
 import sys
+import tiledbin
 
 class Room(object):
 	name = ""
@@ -32,7 +33,6 @@ class Room(object):
 	json = ""
 	x = 0
 	y = 0
-	has_script = False
 
 def error(string):
 	print(f"ERROR: {string}")
@@ -124,20 +124,22 @@ def __main__():
 	# tiledworld rather than splitting the work with tiledbin.
 	outfile.write("; --- Maps ---\n")
 	for room in rooms:
+		outpath = get_path(infile.name, True) + room.path.split('.', 1)[0]
+		tiledbin.convert_map(open(f"src/{outpath}.json", "r"), open(f"{outpath}.tilemap", "wb"), open(f"{outpath}.datafile", "w"))
 		outfile.write(f"{room.name}:\n")
-		outfile.write(f"    INCBIN \"{get_path(infile.name, True) + room.path.split('.', 1)[0] + '.tilemap'}\"\n")
+		outfile.write(f"    INCBIN \"{outpath + '.tilemap'}\"\n")
 
 	outfile.write("\n; --- Scripts ---\n")
 	for room in rooms:
+		outfile.write(f"{name_from_path(room.name)}_script:\n")
 		try:
 			script_path = get_path(infile.name) + room.path.split('.', 1)[0] + '.roomscript'
 			open(script_path)
-			room.has_script = True
-			outfile.write(f"{name_from_path(room.name)}_script:\n")
 			outfile.write(f"    INCLUDE \"{script_path}\"\n")
-			outfile.write(f"    end_mapdata\n")
 		except:
 			pass
+		outfile.write(f"    INCLUDE \"{get_path(infile.name, True) + room.path.split('.', 1)[0] + '.datafile'}\"\n")
+		outfile.write("    end_mapdata\n")
 
 	# Get the tileset path and assert that there is only one.
 	tileset_path = ""
@@ -227,7 +229,7 @@ x{map_name}::
 		for x in range(lowest_width, highest_width + 1):
 			room = get_room(x, y, rooms)
 
-			if room is None or not room.has_script:
+			if room is None:
 				outfile.write("null, ")
 			else:
 				outfile.write(f"{name_from_path(room.name)}_script, ")

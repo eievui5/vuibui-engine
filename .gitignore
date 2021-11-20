@@ -3,5 +3,6 @@
 /dep/
 /res/
 /.vscode/
+__pycache__/
 TODO*
 *.tiled-session
