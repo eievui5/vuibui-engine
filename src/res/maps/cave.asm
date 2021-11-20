@@ -4,4 +4,4 @@ INCLUDE "graphics.inc"
 INCLUDE "tiledata.inc"
 INCLUDE "save.inc"
 
-INCLUDE "res/maps/beach/beach.asm"
+INCLUDE "res/maps/cave/cave.asm"

@@ -133,7 +133,9 @@ SECTION \"{map_name} World Map\", ROMX
 			script_path = get_path(infile.name) + room.path.split('.', 1)[0] + '.roomscript'
 			open(script_path)
 			room.has_script = True
-			outfile.write(f"{name_from_path(room.name)}_script:\n    INCLUDE \"{script_path}\"\n")
+			outfile.write(f"{name_from_path(room.name)}_script:\n")
+			outfile.write(f"    INCLUDE \"{script_path}\"\n")
+			outfile.write(f"    end_mapdata\n")
 		except:
 			pass
 

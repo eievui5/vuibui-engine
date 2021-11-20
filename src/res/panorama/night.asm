@@ -1,22 +1,22 @@
 INCLUDE "graphics.inc"
 
 SECTION "Night Panorama", ROMX
-    NightPanorama::
+    xNightPanorama::
         ; DMG
-        DW GfxNightPanoramaTiles
-        DW NightPanoramaMap
+        DW xGfxNightPanoramaTiles
+        DW xNightPanoramaMap
         ; CGB
-        DW GfxNightPanoramaTiles
-        DW NightPanoramaMap
-        DW NightPanoramaAttributes
-        DW NightPanoramaPalettes
-    GfxNightPanoramaTiles::
+        DW xGfxNightPanoramaTiles
+        DW xNightPanoramaMap
+        DW xNightPanoramaAttributes
+        DW xNightPanoramaPalettes
+    xGfxNightPanoramaTiles::
         INCBIN "res/panorama/night/night_tiles.2bpp"
-    NightPanoramaMap::
+    xNightPanoramaMap::
         INCBIN "res/panorama/night/night_map.tilemap"
-    NightPanoramaAttributes::
+    xNightPanoramaAttributes::
         INCBIN "res/panorama/night/night_map.attrmap"
-    NightPanoramaPalettes::
+    xNightPanoramaPalettes::
         pal 31, 31, 31, \
             10, 00, 10, \
             00, 10, 10, \

@@ -4,4 +4,3 @@
         144, 128, \ ; Poppy
         112, 128    ; Tiber
     set_destroy_tile 0
-    end_mapdata

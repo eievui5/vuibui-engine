@@ -703,11 +703,13 @@ MapLookup:
     ; World Map 0
     far_pointer OverworldMap
     far_pointer xBeach
+    far_pointer xCave
 
 PanoramaLookup::
     ; World Map 0
-    far_pointer NightPanorama
+    far_pointer xNightPanorama
     far_pointer BeachPanorama
+    far_pointer xNightPanorama
 
 SECTION "Active Map Variables", WRAM0
 

@@ -146,6 +146,7 @@ ENDM
     start_enum MAP
         enum OVERWORLD
         enum BEACH
+        enum CAVE
     end_enum
 
     struct MapData

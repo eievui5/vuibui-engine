@@ -1,0 +1,2 @@
+    set_destroy_tile 0
+	set_warp 0, 2, 9, MAP_CAVE, 0, 0, 14 * 16 + 8, 5 * 16

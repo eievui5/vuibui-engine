@@ -1,0 +1,13 @@
+{
+    "maps": [
+        {
+            "fileName": "cave1.json",
+            "height": 256,
+            "width": 256,
+            "x": 0,
+            "y": 0
+        }
+    ],
+    "onlyShowAdjacentMaps": false,
+    "type": "world"
+}
