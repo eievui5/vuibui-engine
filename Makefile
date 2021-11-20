@@ -147,7 +147,7 @@ res/%.mtile res/%.mtiledata: res/%.png bin/metamaker
 
 res/%.asm: res/%.world
 	@mkdir -p $(@D)
-	python3 tools/tiledworld.py -o $@ $<
+	python3 tools/tiledworld.py -o $@ -i res/$*.inc $<
 
 ################################################
 #                                              #
