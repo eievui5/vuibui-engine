@@ -1,4 +1,3 @@
-    INCLUDE "res/maps/beach/beach1.roomscript"
     set_respawn \
         128, 128, \ ; Octavia
         144, 128, \ ; Poppy

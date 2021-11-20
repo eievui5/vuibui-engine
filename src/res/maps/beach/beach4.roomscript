@@ -1,0 +1,2 @@
+	INCLUDE "flags.inc"
+	spawn_item HeartContainerCollectable, 207, 208, FLAG_BEACH_HEART1

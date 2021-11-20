@@ -8,6 +8,8 @@ INCLUDE "enum.inc"
 
         enum DEBUG
 
+        enum BEACH_HEART1
+
         enum MAX
     end_enum
 
