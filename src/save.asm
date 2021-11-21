@@ -123,55 +123,56 @@ xLoadRepawnPoint::
 ; both these fucntions?
 
 ; Loads a save file to initialize the game.
-; @ hl:  Pointer to save file
+; @ de:  Pointer to save file
 xLoadSaveFile::
     ; Enable External Save RAM
     ld a, CART_SRAM_ENABLE
     ld [rRAMG], a
+    ld hl, xSaveCopyList
+.copy
+    ; Grab length
+    ld a, [hli]
+    ld c, a
+    ld a, [hli]
+    ld b, a
+    ; And WRAM pointer (dest)
+    ld a, [hli]
+    push hl
+    ld h, [hl]
+    ld l, a
 
-    ; Copy the respawn position from the save file.
-    ld de, wRespawnPoint
-    ld c, sizeof_RespawnPoint
-    rst MemCopySmall
+    dec bc
+    inc b
+    inc c
+.loop:
+    ld a, [de]
+    ld [hli], a
+    inc de
+    dec c
+    jr nz, .loop
+    dec b
+    jr nz, .loop
 
-    ; Load Max health values
-    ASSERT sizeof_RespawnPoint == Save_OctaviaMaxHealth
+    pop hl
+    inc hl
     ld a, [hli]
-    ld [wOctavia_Health], a
-    ld [wPlayerMaxHealth.octavia], a
-    ld a, [hli]
-    ld [wPoppy_Health], a
-    ld [wPlayerMaxHealth.poppy], a
-    ld a, [hli]
-    ld [wTiber_Health], a
-    ld [wPlayerMaxHealth.tiber], a
+    or a, [hl]
+    jr z, .exit
+    dec hl
+    jr .copy
 
-    ASSERT Save_OctaviaMaxHealth + 3 == Save_OctaviaUnlockedItems
-    ld a, [hli]
-    ld [wItems.octavia], a
-    ld a, [hli]
-    ld [wItems.poppy], a
-    ld a, [hli]
-    ld [wItems.tiber], a
-
-    ASSERT Save_OctaviaUnlockedItems + 3 == Save_OctaviaEquippedItems
-    ld a, [hli]
-    ld [wPlayerEquipped.octavia], a
-    ld a, [hli]
-    ld [wPlayerEquipped.poppy], a
-    ld a, [hli]
-    ld [wPlayerEquipped.tiber], a
-
-    ld de, wBitfield
-    ld c, (FLAG_MAX + 7)/8
-    rst MemCopySmall
-
-    ; Assert that this function is up-to-date with the save file.
-    ASSERT Save_Bitfield + (FLAG_MAX + 7)/8 == sizeof_Save
-
+.exit
     ; Disable External Save RAM
     xor a, a
     ld [rRAMG], a
+
+    ; Initialize other variables upon load
+    ld a, [wPlayerMaxHealth.octavia]
+    ld [wOctavia_Health], a
+    ld a, [wPlayerMaxHealth.poppy]
+    ld [wPoppy_Health], a
+    ld a, [wPlayerMaxHealth.tiber]
+    ld [wTiber_Health], a
     ret
 
 ; Store a save file to SRAM.
@@ -180,57 +181,45 @@ xStoreSaveFile::
     ; Enable External Save RAM
     ld a, CART_SRAM_ENABLE
     ld [rRAMG], a
+    ld hl, xSaveCopyList
+.copy
+    ; Grab length
+    ld a, [hli]
+    ld c, a
+    ld a, [hli]
+    ld b, a
+    ; And WRAM pointer (source)
+    ld a, [hli]
+    push hl
+    ld h, [hl]
+    ld l, a
+    call MemCopy
+    pop hl
+    inc hl
+    ld a, [hli]
+    or a, [hl]
+    jr z, .exit
+    dec hl
+    jr .copy
 
-    ; Copy the respawn position to the save file.
-    ld hl, wRespawnPoint
-    ld c, sizeof_RespawnPoint
-    rst MemCopySmall
-
-    ; Load Max health values
-    ASSERT sizeof_RespawnPoint == Save_OctaviaMaxHealth
-    ld a, [wPlayerMaxHealth.octavia]
-    ld [de], a
-    inc de
-    ld a, [wPlayerMaxHealth.poppy]
-    ld [de], a
-    inc de
-    ld a, [wPlayerMaxHealth.tiber]
-    ld [de], a
-    inc de
-
-    ASSERT Save_OctaviaMaxHealth + 3 == Save_OctaviaUnlockedItems
-    ld a, [wItems.octavia]
-    ld [de], a
-    inc de
-    ld a, [wItems.poppy]
-    ld [de], a
-    inc de
-    ld a, [wItems.tiber]
-    ld [de], a
-    inc de
-
-    ASSERT Save_OctaviaUnlockedItems + 3 == Save_OctaviaEquippedItems
-    ld a, [wPlayerEquipped.octavia]
-    ld [de], a
-    inc de
-    ld a, [wPlayerEquipped.poppy]
-    ld [de], a
-    inc de
-    ld a, [wPlayerEquipped.tiber]
-    ld [de], a
-    inc de
-
-    ld hl, wBitfield
-    ld c, (FLAG_MAX + 7)/8
-    rst MemCopySmall
-
-    ; Assert that this function is up-to-date with the save file.
-    ASSERT Save_Bitfield + (FLAG_MAX + 7)/8 == sizeof_Save
-
+.exit
     ; Disable External Save RAM
     xor a, a
     ld [rRAMG], a
     ret
+
+MACRO def_copy
+    dw \1
+    dw \2
+ENDM
+
+xSaveCopyList:
+    def_copy sizeof_RespawnPoint, wRespawnPoint
+    def_copy 3, wPlayerMaxHealth
+    def_copy 3, wItems
+    def_copy 3, wPlayerEquipped
+    def_copy (FLAG_MAX + 7)/8, wBitfield
+    dw null
 
 SECTION "Save Verification", ROMX
 

@@ -249,7 +249,7 @@ InitializeGameplay::
     ld a, BANK("Manage Save File")
     rst SwapBank
     ; Load save file 0
-    ld hl, sSave0
+    ld de, sSave0
     call xLoadSaveFile
     call xLoadRepawnPoint
 
