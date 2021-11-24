@@ -35,10 +35,10 @@ MACRO new_script
     ; This creates some defines which the scripting macros rely on.
     ; Used by control structures to "request" a label, which will be provided
     ; by an end block. This is the ID of the last created label.
-    DEF LABEL_ID SET 0
+    DEF LABEL_ID = 0
     ; This is the "level" of the current label, or how deep in a structure it is
     ; and is used to refer to labels in relativity.
-    DEF CURRENT_LABEL SET 0
+    DEF CURRENT_LABEL = 0
 ENDM
 
 MACRO end_script
@@ -47,15 +47,15 @@ MACRO end_script
 ENDM
 
 MACRO _request_label
-    REDEF CURRENT_LABEL SET CURRENT_LABEL + 1
+    DEF CURRENT_LABEL += 1
     DEF SCRLAB{d:CURRENT_LABEL} EQUS ".scrlab{d:LABEL_ID}"
-    REDEF LABEL_ID SET LABEL_ID + 1
+    DEF LABEL_ID += 1
 ENDM
 
 MACRO _fulfill_label
 SCRLAB{d:CURRENT_LABEL}
     PURGE SCRLAB{d:CURRENT_LABEL}
-    REDEF CURRENT_LABEL SET CURRENT_LABEL - 1
+    DEF CURRENT_LABEL -= 1
 ENDM
 
 ; Scripting functions:
@@ -269,9 +269,9 @@ ENDM
 
 MACRO define_fields
     IF DEF(FIELD_INDEX)
-        REDEF FIELD_INDEX SET 0
+        REDEF FIELD_INDEX = 0
     ELSE
-        DEF FIELD_INDEX SET 0
+        DEF FIELD_INDEX = 0
     ENDC
 ENDM
 
@@ -281,7 +281,7 @@ MACRO field
         DEF \1 EQU FIELD_INDEX
         SHIFT 1
     ENDR
-    REDEF FIELD_INDEX SET FIELD_INDEX + 1
+    REDEF FIELD_INDEX = FIELD_INDEX + 1
 ENDM
 
     ENDC
