@@ -334,11 +334,13 @@ update_wave:
   ; Copy wave
   xor a
   ldh [rNR30],a  ; give CPU access to waveram
-WAVEPTR set _AUD3WAVERAM
+
+  DEF WAVEPTR = _AUD3WAVERAM
+
   rept 16
     ld a,[hl+]
     ldh [WAVEPTR],a
-WAVEPTR set WAVEPTR+1
+  DEF WAVEPTR += 1
   endr
   ld a,$80
   ldh [rNR30],a  ; give APU access to waveram
