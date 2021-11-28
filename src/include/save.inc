@@ -30,7 +30,7 @@ DEF SAVE_VERSION EQU 0
         bytes 1, OctaviaEquippedItems
         bytes 1, PoppyEquippedItems
         bytes 1, TiberEquippedItems
-        bytes (FLAG_MAX + 7)/8, Bitfield
+        bytes FLAG_SIZE, Bitfield
     end_struct
 
     ENDC

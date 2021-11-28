@@ -57,4 +57,4 @@ GetBitA::
 SECTION "Flag Bitfield", WRAM0
 
 wBitfield::
-    DS (FLAG_MAX + 7)/8 ; Define enough bytes for every flag in "flags.inc"
+    DS FLAG_SIZE ; Define enough bytes for every flag in "flags.inc"

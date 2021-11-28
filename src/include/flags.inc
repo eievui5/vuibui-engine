@@ -13,4 +13,6 @@ INCLUDE "enum.inc"
         enum MAX
     end_enum
 
+DEF FLAG_SIZE EQU (FLAG_MAX + 7) / 8
+
 ENDC
