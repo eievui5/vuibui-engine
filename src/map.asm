@@ -351,6 +351,8 @@ UpdateActiveMap::
     dw MapdataSetDestroyTile
     ASSERT MAPDATA_SPAWN_ITEM == 7
     dw MapdataSpawnItem
+    ASSERT MAPDATA_EXEC_SCRIPT == 8
+    dw MapdataExecScript
 
 MapdataEntity:
     ld a, [hli]
@@ -533,6 +535,15 @@ MapdataSpawnItem:
     inc hl
     jp UpdateActiveMap.nextData
 
+MapdataExecScript:
+    ld a, [hli]
+    ld [wActiveScriptPointer], a
+    ld a, [hli]
+    ld [wActiveScriptPointer + 1], a
+    ld a, [hli]
+    ld [wActiveScriptPointer + 2], a
+    jp UpdateActiveMap.nextData
+
 ; Returns the active Map in `hl`, and its data in `bc`.
 ; Used to copy map into wMetatileMap and spawn entities/run scripts.
 GetActiveMap::
@@ -580,8 +591,8 @@ GetActiveMap::
     and a, a ; If y = 0 just skip.
     jr z, .skipY
     ld b, a
-    ld a, c
 .multLoop ; Multiply c (width) * b (ypos) and add the result to hl
+    ld a, c
     ; Add `a` to `hl`
     add a, l
     ld l, a

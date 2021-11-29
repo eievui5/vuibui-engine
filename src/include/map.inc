@@ -130,6 +130,12 @@ MACRO spawn_item ; Collectable pointer, Y, X, [flag]
     ENDC
 ENDM
 
+MACRO exec_script
+    DB MAPDATA_EXEC_SCRIPT
+    DB BANK(\1)
+    DW \1
+ENDM
+
 ; Macro Data enumerations
     start_enum MAPDATA
         enum END
@@ -140,6 +146,7 @@ ENDM
         enum SET_RESPAWN
         enum SET_DESTROY_TILE
         enum SPAWN_ITEM
+        enum EXEC_SCRIPT
     end_enum
 
 ; Map enumerations
