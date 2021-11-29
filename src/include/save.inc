@@ -21,6 +21,9 @@ DEF SAVE_VERSION EQU 0
 
     struct Save
         extends RespawnPoint
+        bytes 1, OctaviaDisabled
+        bytes 1, PoppyDisabled
+        bytes 1, TiberDisabled
         bytes 1, OctaviaMaxHealth
         bytes 1, PoppyMaxHealth
         bytes 1, TiberMaxHealth

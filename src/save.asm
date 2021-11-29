@@ -3,6 +3,7 @@ INCLUDE "map.inc"
 INCLUDE "players.inc"
 INCLUDE "save.inc"
 INCLUDE "optimize.inc"
+INCLUDE "res/maps/beach/beach.inc"
 
 SECTION "Save Functions", ROM0
 ; Makes sure the save files is valid, initiallizes SRAM if not.
@@ -168,17 +169,18 @@ xStoreSaveFile::
     jr .copy
 
 .exit
-    ; Disable External Save RAM
+    ; Disable External Save RAM.
     xor a, a
     ld [rRAMG], a
     ret
 
 xSaveCopyList:
     dw sizeof_RespawnPoint, wRespawnPoint
-    dw 3,                   wPlayerMaxHealth
-    dw 3,                   wItems
-    dw 3,                   wPlayerEquipped
-    dw FLAG_SIZE,           wBitfield
+    dw 3, wPlayerDisabled
+    dw 3, wPlayerMaxHealth
+    dw 3, wItems
+    dw 3, wPlayerEquipped
+    dw FLAG_SIZE, wBitfield
     dw null
 
 SECTION "Save Verification", ROMX
@@ -189,9 +191,30 @@ xSaveCheckString:
 
 SECTION "Template Saves", ROMX
 xDefaultSaveFile:
+    db MAP_BEACH ; World Map.
+    db Beach1_X, Beach1_Y ; World Map Position.
+
+    db 128, 128 ; Octavia Position.
+    db 0, 0     ; Poppy Position.
+    db 0, 0     ; Tiber Position.
+
+    db 0, 1, 1 ; Disable Poppy and Tiber.
+    db 10, 10, 10 ; Max healths.
+
+    ; Player items
+    db 0, 0, 0
+    ; Player equipped
+    db 0, 0, 0
+
+    ds FLAG_SIZE, 0 ; Zero-init all flags.
+
+ASSERT @ - xDefaultSaveFile == sizeof_Save, "Incorrect save file size!"
+
+xDebugSaveFile:
     db MAP_OVERWORLD ; World Map.
     db 0, 0          ; World Map Position.
 
+    db 0, 0, 0
     db 128, 128   ; Octavia Position.
     db 112, 128   ; Poppy Position.
     db 144, 128   ; Tiber Position.
@@ -208,7 +231,7 @@ xDefaultSaveFile:
 
     ds FLAG_SIZE, 0 ; Zero-init all flags.
 
-ASSERT @ - xDefaultSaveFile == sizeof_Save, "Incorrect save file size!"
+ASSERT @ - xDebugSaveFile == sizeof_Save, "Incorrect save file size!"
 
 SECTION "Save Position Data", WRAM0
 ; The position of the players. Used for respawning and is merged into the save
