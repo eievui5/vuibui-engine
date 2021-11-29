@@ -34,6 +34,13 @@
             "width": 256,
             "x": -256,
             "y": 0
+        },
+        {
+            "fileName": "beach6.json",
+            "height": 256,
+            "width": 256,
+            "x": 256,
+            "y": -512
         }
     ],
     "onlyShowAdjacentMaps": false,

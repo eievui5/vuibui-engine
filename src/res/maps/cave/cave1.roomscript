@@ -1,2 +1,2 @@
     INCLUDE "res/maps/beach/beach.inc"
-    set_warp 0, 14, 4, MAP_BEACH, Beach3_Y, Beach3_X, 4 * 16, 10 * 16
+    set_warp 0, 14, 4, MAP_BEACH, Beach6_Y, Beach6_X, 11 * 16, 10 * 16

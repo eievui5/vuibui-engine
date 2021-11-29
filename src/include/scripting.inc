@@ -19,6 +19,7 @@ INCLUDE "enum.inc"
         enum WAIT_FADE
         enum JUMP
         enum ADD_POINTER
+        enum BRANCH_AND
     end_enum
 
 ; Returns to normal processing
